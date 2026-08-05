@@ -90,8 +90,8 @@
         </div>
 
         <div class="form-group">
-          <label for="reg-fullname"><i data-lucide="user"></i> Full Name (Optional)</label>
-          <input type="text" id="reg-fullname" class="form-control" placeholder="Dr. Sarah Jenkins" />
+          <label for="reg-fullname"><i data-lucide="user"></i> Full Name</label>
+          <input type="text" id="reg-fullname" class="form-control" placeholder="Dr. Sarah Jenkins" required />
         </div>
 
         <div class="form-group">
@@ -105,7 +105,7 @@
         </div>
 
         <button type="submit" class="btn btn-primary btn-block btn-lg" style="margin-top:8px;">
-          <i data-lucide="user-plus"></i> Create Account & Sign In
+          <i data-lucide="user-plus"></i> Register Account
         </button>
       </form>
 
@@ -1561,13 +1561,13 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
   </div>
 
   <!-- JavaScript App Logic with Cache Busters -->
-  <script src="js/types.js?v=9210"></script>
-  <script src="js/initialData.js?v=9210"></script>
-  <script src="js/storage.js?v=9210"></script>
-  <script src="js/rackViewer.js?v=9210"></script>
-  <script src="js/componentsView.js?v=9210"></script>
-  <script src="js/modalManager.js?v=9210"></script>
-  <script src="js/app.js?v=9210"></script>
+  <script src="js/types.js?v=9220"></script>
+  <script src="js/initialData.js?v=9220"></script>
+  <script src="js/storage.js?v=9220"></script>
+  <script src="js/rackViewer.js?v=9220"></script>
+  <script src="js/componentsView.js?v=9220"></script>
+  <script src="js/modalManager.js?v=9220"></script>
+  <script src="js/app.js?v=9220"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       if (window.lucide) {
@@ -1783,14 +1783,31 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
       const fullName = fullNameInput && fullNameInput.trim() ? fullNameInput.trim() : username;
       const role = document.getElementById('reg-role').value || 'STUDENT';
 
+      // Validate that all required columns/fields are filled in
+      if (!username || !email || !password || !fullNameInput || !fullNameInput.trim()) {
+        showLoginAlert('Please fill in all columns (Username, Email, Password, and Full Name) to create your account.', 'error');
+        return;
+      }
+
       try {
         const newUser = StorageService.createUser(username, email, password, role, fullName);
-        StorageService.createSessionForUser(newUser);
+        
+        // Show prominent creation success message
+        showLoginAlert(`🎉 Account created successfully! Please sign in with your username/email and password.`, 'success');
 
-        if (window.ModalManager && window.ModalManager.showToast) {
-          window.ModalManager.showToast(`Account created successfully! Welcome, ${newUser.fullName} (@${newUser.username}).`, 'success');
-        }
-        redirectToDashboard();
+        // Reset registration fields
+        document.getElementById('reg-username').value = '';
+        document.getElementById('reg-email').value = '';
+        document.getElementById('reg-password').value = '';
+        document.getElementById('reg-fullname').value = '';
+
+        // Switch to sign-in tab after 1.2s and pre-fill username for seamless login
+        setTimeout(() => {
+          switchLoginTab('member');
+          const loginEmailInput = document.getElementById('login-email');
+          if (loginEmailInput) loginEmailInput.value = newUser.username;
+        }, 1200);
+
       } catch (e) {
         showLoginAlert(e.message || 'Registration failed.', 'error');
       }
