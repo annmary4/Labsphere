@@ -1,0 +1,1575 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LabSphere | Enterprise Laboratory Suite & Workflows</title>
+  <meta name="description"
+    content="Enterprise digital laboratory system featuring Request Workflows, Partial Returns, 5 Inventory States, Project Workspaces, Real-Time Notifications, 6-Tier Hierarchy, Multi-Criteria Search, and Rupee Valuation (₹).">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+
+  <!-- CSS with cache buster -->
+  <link rel="stylesheet" href="css/styles.css?v=9041">
+
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+
+</head>
+
+<body>
+  <div id="app">
+    <!-- Header / Navbar -->
+    <header class="navbar">
+      <div class="nav-brand">
+        <div class="brand-logo">
+          <i data-lucide="cpu"></i>
+        </div>
+        <div class="brand-info">
+          <h1>LabSphere</h1>
+          <span class="brand-subtitle">Enterprise Workflows & Project Workspaces</span>
+        </div>
+      </div>
+
+      <!-- User Session Profile & Role Badge -->
+      <div class="nav-user-profile">
+        <div class="user-chip" id="user-chip-container">
+          <div class="user-avatar"><i data-lucide="user"></i></div>
+          <div class="user-details">
+            <span class="user-name" id="user-profile-name" title="Click to Edit Profile Name"
+              style="cursor:pointer; text-decoration:underline dotted #38bdf8;">Lab Administrator</span>
+            <button id="btn-rbac-switch" class="rbac-btn" title="Click to Cycle Active Role Session">
+              <span id="rbac-role-badge" class="role-badge role-admin">Admin (Full Control)</span>
+            </button>
+          </div>
+          <button id="btn-nav-logout" class="btn btn-icon danger-icon" title="Log Out of Session">
+            <i data-lucide="log-out"></i>
+          </button>
+          <button id="btn-nav-login" class="btn btn-secondary btn-sm" title="Log In to Account">
+            <i data-lucide="log-in"></i> Login
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick Metrics Summary Bar -->
+      <div class="nav-metrics">
+        <div class="metric-item">
+          <span class="metric-value" id="metric-total-components">0</span>
+          <span class="metric-label">Components</span>
+        </div>
+        <div class="metric-item">
+          <span class="metric-value" id="metric-total-boxes">0</span>
+          <span class="metric-label">Active Boxes</span>
+        </div>
+        <div class="metric-item warning">
+          <span class="metric-value" id="metric-low-stock">0</span>
+          <span class="metric-label">Low Stock</span>
+        </div>
+        <div class="metric-item danger">
+          <span class="metric-value" id="metric-out-stock">0</span>
+          <span class="metric-label">Out of Stock</span>
+        </div>
+      </div>
+
+      <!-- Persona Action Buttons & Notifications Bell -->
+      <div class="nav-actions">
+        <!-- Notification Center Bell -->
+        <div class="dropdown">
+          <button class="btn btn-icon" id="btn-nav-notif" title="Real-Time Notifications Bell">
+            <i data-lucide="bell"></i>
+            <span id="notif-unread-count" class="count-badge danger hidden">0</span>
+          </button>
+          <div class="dropdown-menu notif-dropdown-menu" id="notif-dropdown">
+            <div class="notif-header">
+              <h3><i data-lucide="bell"></i> Notifications</h3>
+              <button id="btn-mark-notif-read" class="btn btn-secondary btn-sm">Mark All Read</button>
+            </div>
+            <div id="notif-list" class="notif-list-wrapper">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Student Actions -->
+        <button id="btn-student-reqs" class="btn btn-secondary" title="My Component Requests & Issued Items">
+          <i data-lucide="clipboard-list"></i> My Requests
+        </button>
+
+        <!-- Engineer Actions -->
+        <button id="btn-engineer-bom" class="btn btn-secondary" title="Upload BOM (Bill of Materials) CSV">
+          <i data-lucide="file-spreadsheet"></i> Upload BOM
+        </button>
+        <button id="btn-projects-mgr" class="btn btn-secondary" title="Manage Project Workspaces">
+          <i data-lucide="folder-kanban"></i> Projects
+        </button>
+
+        <!-- Admin Actions -->
+        <button id="btn-user-manager" class="btn btn-secondary" title="Administrator User Management">
+          <i data-lucide="users"></i> Users
+        </button>
+        <button id="btn-admin-approve" class="btn btn-warning" title="Approve Student Requests Queue">
+          <i data-lucide="check-square"></i> Approvals <span id="admin-approval-count"
+            class="count-badge danger hidden">0</span>
+        </button>
+        <button id="btn-add-component" class="btn btn-primary" title="Add New Material">
+          <i data-lucide="plus"></i> Add Item
+        </button>
+
+        <!-- Management Actions -->
+        <button id="btn-mgmt-dashboard" class="btn btn-primary" title="Executive Financial Valuation & Usage Dashboard">
+          <i data-lucide="bar-chart-3"></i> Executive Report
+        </button>
+
+        <button id="btn-audit-log" class="btn btn-icon" title="Audit Trail & Security Log">
+          <i data-lucide="shield"></i>
+        </button>
+        <button id="btn-procurement-insights" class="btn btn-icon" title="Procurement Restock List">
+          <i data-lucide="shopping-cart"></i>
+        </button>
+        <div class="dropdown">
+          <button class="btn btn-icon" id="btn-more-options" title="Data & Settings"
+            onclick="event.stopPropagation(); document.getElementById('options-dropdown').classList.toggle('show');"
+            style="min-width:38px; min-height:38px;">
+            <i data-lucide="more-vertical"></i>
+          </button>
+          <div class="dropdown-menu" id="options-dropdown">
+            <button id="btn-restore-full-catalog" class="dropdown-item"
+              onclick="StorageService.restoreFullLabCatalog(); alert('🎉 Successfully restored all 59 laboratory components and physical box layouts!'); location.reload();"
+              style="color:var(--primary); font-weight:700;">
+              <i data-lucide="archive"></i> Restore All 59 Component Box Layouts
+            </button>
+            <button id="btn-restore-custom-setup" class="dropdown-item"
+              onclick="ModalManager.openStorageSnapshotsModal()">
+              <i data-lucide="rotate-ccw"></i> Recover Browser LocalStorage
+            </button>
+            <div class="dropdown-divider"></div>
+            <button id="btn-reset-data" class="dropdown-item danger-item"
+              onclick="if(confirm('Are you sure you want to reset all data back to defaults?')) { StorageService.resetToDefaults(); location.reload(); }">
+              <i data-lucide="rotate-ccw"></i> Reset to Sample Data
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Controls Bar -->
+    <section class="controls-bar">
+      <div class="search-box" style="display:flex; gap:8px;">
+        <div style="position:relative; flex:1;">
+          <i data-lucide="search" class="search-icon"></i>
+          <input type="text" id="search-input"
+            placeholder="Search by Name, Part #, Manufacturer, Category, Tags, Specs, or Compatible Items... [Press '/' to focus]" />
+          <button id="search-clear-btn" class="search-clear hidden" title="Clear Search">
+            <i data-lucide="x"></i>
+          </button>
+        </div>
+        <button id="btn-scan-qr" class="btn btn-primary" title="Scan QR Code or Barcode for Instant Item Lookup">
+          <i data-lucide="qr-code"></i> Scan QR
+        </button>
+      </div>
+
+      <div class="filter-group">
+        <div class="filter-select-wrapper">
+          <i data-lucide="tag" class="select-icon"></i>
+          <select id="filter-category">
+            <option value="ALL">All Categories</option>
+            <option value="Microcontrollers & Dev Boards">Microcontrollers & Dev Boards</option>
+            <option value="Sensors & Modules">Sensors & Modules</option>
+            <option value="Passive Components">Passive Components</option>
+            <option value="Integrated Circuits (ICs)">Integrated Circuits (ICs)</option>
+            <option value="Power & Regulators">Power & Regulators</option>
+            <option value="Wireless & Comms">Wireless & Comms</option>
+            <option value="Optoelectronics & Displays">Optoelectronics & Displays</option>
+            <option value="Connectors & Cabling">Connectors & Cabling</option>
+            <option value="Hardware & Tools">Hardware & Tools</option>
+          </select>
+        </div>
+
+        <div class="filter-select-wrapper">
+          <i data-lucide="activity" class="select-icon"></i>
+          <select id="filter-stock">
+            <option value="ALL">All Stock Levels</option>
+            <option value="IN_STOCK">In Stock</option>
+            <option value="LOW_STOCK">Low Stock Alert</option>
+            <option value="OUT_OF_STOCK">Out of Stock</option>
+          </select>
+        </div>
+
+        <div class="filter-select-wrapper">
+          <i data-lucide="map-pin" class="select-icon"></i>
+          <select id="filter-location">
+            <option value="ALL">All Locations</option>
+            <option value="RACK_1">Rack 1 (Workbench)</option>
+            <option value="RACK_2">Rack 2 (Storage)</option>
+          </select>
+        </div>
+
+        <div class="view-toggle">
+          <button id="view-mode-split" class="toggle-btn active" title="Split View (Racks + Grid)">
+            <i data-lucide="layout-grid"></i> Split View
+          </button>
+          <button id="view-mode-racks" class="toggle-btn" title="Rack Map View">
+            <i data-lucide="columns"></i> Racks Map
+          </button>
+          <button id="view-mode-table" class="toggle-btn" title="Compact Table View">
+            <i data-lucide="list"></i> List View
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Content Area -->
+    <main class="main-container" id="main-container">
+
+      <!-- Left Panel: 6-Tier Storage Hierarchy Explorer -->
+      <aside class="rack-panel" id="rack-panel">
+        <div class="panel-header">
+          <h2><i data-lucide="layers"></i> 6-Tier Storage Hierarchy Explorer</h2>
+          <span class="layout-badge">Lab &rsaquo; Room &rsaquo; Rack &rsaquo; Shelf &rsaquo; Footprint &rsaquo;
+            Layer</span>
+        </div>
+        <p class="panel-hint">Click a shelf or box to view components. Search queries glow on physical box targets!</p>
+
+        <div class="racks-wrapper" id="racks-container">
+          <!-- 6-Tier Racks dynamically generated -->
+        </div>
+      </aside>
+
+      <!-- Right Panel: Components Grid / List -->
+      <section class="components-panel" id="components-panel">
+        <div class="components-header">
+          <div class="results-info">
+            <h2 id="view-title">All Components</h2>
+            <span id="results-count-badge" class="count-badge">0 items</span>
+          </div>
+
+          <div class="sort-controls">
+            <label for="sort-select">Sort by:</label>
+            <select id="sort-select">
+              <option value="name-asc">Name (A - Z)</option>
+              <option value="location-asc">Location (Rack &rarr; Shelf &rarr; Box)</option>
+              <option value="qty-desc">Quantity (High to Low)</option>
+              <option value="qty-asc">Quantity (Low to High)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="active-filters-bar hidden" id="active-filters-bar">
+          <span class="active-filter-label">Active Filter:</span>
+          <span class="filter-tag" id="active-location-tag">
+            <span id="active-location-text">Rack 1</span>
+            <button id="clear-location-filter"><i data-lucide="x"></i></button>
+          </span>
+        </div>
+
+        <div class="component-cards-grid" id="components-grid">
+          <!-- Component Cards -->
+        </div>
+
+        <div class="component-table-wrapper hidden" id="components-table-container">
+          <table class="component-table">
+            <thead>
+              <tr>
+                <th>Component Name & Barcode</th>
+                <th>Part #</th>
+                <th>Location (Rack &gt; Shelf &gt; Box)</th>
+                <th>Category</th>
+                <th>Stock</th>
+                <th>Qty</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="components-table-body">
+              <!-- Rows -->
+            </tbody>
+          </table>
+        </div>
+
+        <div class="empty-state hidden" id="empty-state">
+          <div class="empty-icon"><i data-lucide="search-x"></i></div>
+          <h3>No components found</h3>
+          <p id="empty-state-message">No materials match your current search or filter criteria.</p>
+          <button id="btn-reset-search" class="btn btn-secondary">Clear Filters</button>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Modal: QR Code / Barcode Scanner Simulator Modal -->
+    <div class="modal-backdrop hidden" id="scan-qr-modal">
+      <div class="modal-content modal-md">
+        <div class="modal-header">
+          <div class="modal-title-group">
+            <i data-lucide="qr-code"></i>
+            <h2>Scan Barcode / QR Code</h2>
+          </div>
+          <button class="modal-close" id="btn-close-qr-modal"><i data-lucide="x"></i></button>
+        </div>
+        <div class="modal-body">
+          <div
+            style="text-align:center; padding:16px; background:var(--bg-dark); border-radius:12px; border:1px solid var(--border-color);">
+            <div
+              style="width:140px; height:140px; margin:0 auto 12px; background:#fff; border-radius:10px; display:flex; align-items:center; justify-content:center; color:#000; font-weight:800; font-family:monospace;">
+              [CAMERA SCANNER]<br>📷 LIVE SCAN
+            </div>
+            <p class="text-muted" style="font-size:0.8rem;">Point scanner at physical box QR Code / Barcode tag or enter
+              barcode below:</p>
+          </div>
+
+          <form id="qr-scan-form" style="margin-top:14px;">
+            <div class="form-group">
+              <label for="qr-input-code">Barcode / QR Code / Component ID *</label>
+              <input type="text" id="qr-input-code" required placeholder="e.g. 8901234000019 or COMP-001"
+                class="mono-input" />
+            </div>
+            <button id="btn-submit-qr-scan" class="btn btn-primary" style="width:100%;">
+              <i data-lucide="search"></i> Locate Component by QR / Barcode
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: View / Add / Edit Component (With 5 Inventory States) -->
+    <div class="modal-backdrop hidden" id="component-modal">
+      <div class="modal-content modal-lg">
+        <div class="modal-header">
+          <div class="modal-title-group">
+            <i data-lucide="cpu" id="modal-icon"></i>
+            <h2 id="modal-title">Component Details</h2>
+          </div>
+          <button class="modal-close" id="btn-close-component-modal"><i data-lucide="x"></i></button>
+        </div>
+
+        <div class="modal-body">
+          <div id="modal-view-mode">
+            <div class="inspector-top-banner">
+              <div class="inspector-location-badge">
+                <i data-lucide="map-pin"></i>
+                <span id="insp-location-path">Rack 1 &rsaquo; Shelf A &rsaquo; BOX A-001</span>
+              </div>
+              <div class="inspector-stock-badge" id="insp-stock-badge">
+                <i data-lucide="check-circle-2"></i> <span id="insp-stock-text">In Stock</span>
+              </div>
+            </div>
+
+            <div class="inspector-header">
+              <h3 id="insp-name">Arduino Nano</h3>
+              <p class="insp-part" id="insp-part-number">PN: ATMEGA328P-NANO</p>
+            </div>
+
+            <div class="inspector-grid">
+              <div class="insp-stat-card">
+                <span class="insp-stat-label">Category</span>
+                <span class="insp-stat-value" id="insp-category">Microcontrollers & Dev Boards</span>
+              </div>
+              <div class="insp-stat-card">
+                <span class="insp-stat-label">Box ID</span>
+                <span class="insp-stat-value mono" id="insp-box-id">BOX A-001</span>
+              </div>
+              <div class="insp-stat-card">
+                <span class="insp-stat-label">Quantity in Stock</span>
+                <div class="insp-qty-control">
+                  <button id="insp-qty-minus" class="qty-btn" title="Decrease Stock">-</button>
+                  <span class="insp-stat-value mono" id="insp-quantity">2</span>
+                  <button id="insp-qty-plus" class="qty-btn" title="Increase Stock">+</button>
+                  <span class="insp-unit" id="insp-unit">pcs</span>
+                </div>
+              </div>
+              <div class="insp-stat-card">
+                <span class="insp-stat-label">Reorder Level</span>
+                <span class="insp-stat-value" id="insp-min-qty">2 pcs</span>
+              </div>
+            </div>
+
+            <div class="insp-section">
+              <h4><i data-lucide="info"></i> Purpose & Application</h4>
+              <p id="insp-purpose">Compact breadboard-friendly 8-bit microcontroller board.</p>
+            </div>
+
+            <div class="insp-section">
+              <h4><i data-lucide="sliders"></i> Technical Specs / Pinout Notes</h4>
+              <div class="insp-specs-box" id="insp-specs">5V Logic, 16MHz, 32KB Flash</div>
+            </div>
+
+            <div class="insp-section" id="insp-tags-section">
+              <h4><i data-lucide="hash"></i> Tags</h4>
+              <div class="tags-cloud" id="insp-tags-list"></div>
+            </div>
+
+            <div class="insp-section">
+              <span class="insp-timestamp"><i data-lucide="clock"></i> Last Updated: <span
+                  id="insp-updated">2026-07-27</span></span>
+            </div>
+          </div>
+
+          <!-- Edit / Form Mode -->
+          <form id="component-form" class="hidden">
+            <input type="hidden" id="form-comp-id" value="">
+
+            <div
+              style="background:var(--bg-dark); padding:10px; border-radius:8px; border:1px solid var(--border-color); margin-bottom:12px;">
+              <h4 style="font-size:0.8rem; color:var(--primary); margin-bottom:8px;">🏢 6-Tier Storage Hierarchy
+                Location Path</h4>
+              <div class="form-row">
+                <div class="form-group col-6">
+                  <label for="form-lab-name">Tier 1: Laboratory Name *</label>
+                  <input type="text" id="form-lab-name" value="Main Robotics & Embedded Systems Lab" required />
+                </div>
+                <div class="form-group col-6">
+                  <label for="form-room-name">Tier 2: Room Name / # *</label>
+                  <input type="text" id="form-room-name" value="Room 101 - Prototyping Hall" required />
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group col-3">
+                  <label for="form-rack">Tier 3: Rack *</label>
+                  <select id="form-rack" required>
+                    <option value="1">Rack 1 (Workbench)</option>
+                    <option value="2">Rack 2 (Storage)</option>
+                  </select>
+                </div>
+                <div class="form-group col-3">
+                  <label for="form-shelf">Tier 4: Shelf *</label>
+                  <select id="form-shelf" required>
+                    <option value="1">Shelf A (Top)</option>
+                    <option value="2">Shelf B</option>
+                    <option value="3">Shelf C</option>
+                    <option value="4">Shelf D</option>
+                    <option value="5">Shelf E</option>
+                    <option value="6">Shelf F (Bottom)</option>
+                  </select>
+                </div>
+                <div class="form-group col-3">
+                  <label for="form-box">Tier 5: Footprint (Box ID) *</label>
+                  <input type="text" id="form-box" required placeholder="e.g. BOX A-001" class="mono-input">
+                </div>
+                <div class="form-group col-3">
+                  <label for="form-stack-layer">Tier 6: Stack Layer / Bin *</label>
+                  <input type="text" id="form-stack-layer" value="Layer 1 (Top Compartment Bin #A)" required>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group col-4">
+                <label for="form-name">Component Name *</label>
+                <input type="text" id="form-name" required placeholder="e.g., Arduino Nano, ESP32">
+              </div>
+              <div class="form-group col-3">
+                <label for="form-part-number">Part / Model #</label>
+                <input type="text" id="form-part-number" placeholder="e.g., ATMEGA328P-NANO">
+              </div>
+              <div class="form-group col-3">
+                <label for="form-manufacturer">Manufacturer</label>
+                <input type="text" id="form-manufacturer" placeholder="e.g., Espressif, Microchip">
+              </div>
+              <div class="form-group col-2">
+                <label for="form-barcode">Barcode / QR Code</label>
+                <input type="text" id="form-barcode" placeholder="8901234..." class="mono-input">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group col-6">
+                <label for="form-image-url">Image Photo URL</label>
+                <input type="text" id="form-image-url" placeholder="https://images.unsplash.com/...">
+              </div>
+              <div class="form-group col-6">
+                <label for="form-datasheet-url">PDF Datasheet URL</label>
+                <input type="text" id="form-datasheet-url" placeholder="https://docs.arduino.cc/datasheet.pdf">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group col-4">
+                <label for="form-category">Category *</label>
+                <select id="form-category">
+                  <option value="Microcontrollers & Dev Boards">Microcontrollers & Dev Boards</option>
+                  <option value="Sensors & Modules">Sensors & Modules</option>
+                  <option value="Passive Components">Passive Components</option>
+                  <option value="Integrated Circuits (ICs)">Integrated Circuits (ICs)</option>
+                  <option value="Power & Regulators">Power & Regulators</option>
+                  <option value="Wireless & Comms">Wireless & Comms</option>
+                  <option value="Optoelectronics & Displays">Optoelectronics & Displays</option>
+                  <option value="Connectors & Cabling">Connectors & Cabling</option>
+                  <option value="Hardware & Tools">Hardware & Tools</option>
+                </select>
+              </div>
+              <div class="form-group col-3">
+                <label for="form-state">Inventory State *</label>
+                <select id="form-state">
+                  <option value="AVAILABLE">AVAILABLE (In Stock)</option>
+                  <option value="RESERVED">RESERVED (Project Reserved)</option>
+                  <option value="BORROWED">BORROWED (Issued Out)</option>
+                  <option value="DAMAGED">DAMAGED (Requires Repair)</option>
+                  <option value="ARCHIVED">ARCHIVED (Decommissioned)</option>
+                </select>
+              </div>
+              <div class="form-group col-2">
+                <label for="form-quantity">Current Qty *</label>
+                <input type="number" id="form-quantity" min="0" value="1">
+              </div>
+              <div class="form-group col-2">
+                <label for="form-min-qty">Min Threshold Qty</label>
+                <input type="number" id="form-min-qty" min="0" value="1">
+              </div>
+              <div class="form-group col-2">
+                <label for="form-unit-price">Price (₹ INR)</label>
+                <input type="number" id="form-unit-price" min="0" value="450">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group col-6">
+                <label for="form-compat">Compatible Components (comma separated)</label>
+                <input type="text" id="form-compat" placeholder="e.g. Arduino Uno, ESP32, Breadboard">
+              </div>
+              <div class="form-group col-6">
+                <label for="form-alternatives">Drop-in Alternatives (comma separated)</label>
+                <input type="text" id="form-alternatives" placeholder="e.g. ESP8266 NodeMCU, Raspberry Pi Pico W">
+              </div>
+            </div>
+
+            <div style="border-top: 1px dashed var(--border-color); padding-top: 10px; margin-top: 10px;">
+              <h4 style="font-size:0.8rem; color:var(--primary); margin-bottom:8px;">🏭 Supplier & Procurement
+                Information</h4>
+              <div class="form-row">
+                <div class="form-group col-4">
+                  <label for="form-vendor-name">Vendor Name</label>
+                  <input type="text" id="form-vendor-name" placeholder="e.g. Robu.in, Mouser">
+                </div>
+                <div class="form-group col-3">
+                  <label for="form-vendor-sku">Vendor SKU</label>
+                  <input type="text" id="form-vendor-sku" placeholder="ROBU-NANO-01" class="mono-input">
+                </div>
+                <div class="form-group col-3">
+                  <label for="form-vendor-url">Purchase Buy URL</label>
+                  <input type="text" id="form-vendor-url" placeholder="https://robu.in/">
+                </div>
+                <div class="form-group col-2">
+                  <label for="form-lead-time">Lead Time (Days)</label>
+                  <input type="number" id="form-lead-time" value="3" min="1">
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="form-purpose">Purpose & Application Description</label>
+              <textarea id="form-purpose" rows="2"
+                placeholder="What is this component used for in lab projects?"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="form-specs">Technical Specs & Pinout Notes</label>
+              <textarea id="form-specs" rows="2" placeholder="e.g. 5V DC, 16MHz, ATmega328P"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="form-tags">Tags (comma separated)</label>
+              <input type="text" id="form-tags" placeholder="e.g. arduino, nano, atmega328p">
+            </div>
+          </form>
+        </div>
+
+        <div class="modal-footer">
+          <div id="modal-view-footer" class="footer-actions">
+            <button id="btn-request-component" class="btn btn-warning">
+              <i data-lucide="hand-metal"></i> Request Checkout
+            </button>
+            <button id="btn-print-comp-qr" class="btn btn-secondary" title="Print QR Code Label with Component Name">
+              <i data-lucide="printer"></i> Print QR Label
+            </button>
+            <button id="btn-move-box-component" class="btn btn-secondary">
+              <i data-lucide="box"></i> Move Box
+            </button>
+            <button id="btn-delete-component" class="btn btn-danger">
+              <i data-lucide="trash-2"></i> Delete
+            </button>
+            <div class="spacer"></div>
+            <button id="btn-edit-component" class="btn btn-secondary">
+              <i data-lucide="edit"></i> Edit Details
+            </button>
+            <button id="btn-close-view" class="btn btn-primary">Done</button>
+          </div>
+
+          <div id="modal-form-footer" class="footer-actions hidden">
+            <button id="btn-delete-component-edit" class="btn btn-danger" type="button"
+              title="Delete this component permanently">
+              <i data-lucide="trash-2"></i> Delete Component
+            </button>
+            <div class="spacer"></div>
+            <button id="btn-cancel-edit" class="btn btn-secondary" type="button">Cancel</button>
+            <button id="btn-save-component" class="btn btn-primary" type="button">
+              <i data-lucide="check"></i> Save Component
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Administrator User Management Modal -->
+    <div class="modal-backdrop hidden" id="user-manager-modal">
+      <div class="modal-content modal-lg">
+        <div class="modal-header">
+          <div class="modal-title-group">
+            <i data-lucide="users"></i>
+            <h2>Administrator User Management Suite</h2>
+          </div>
+          <button class="modal-close" id="btn-close-user-mgr-modal"><i data-lucide="x"></i></button>
+        </div>
+        <div class="modal-body">
+          <div class="project-create-box">
+            <h3><i data-lucide="user-plus"></i> Create New User Account</h3>
+            <form id="create-user-form">
+              <div class="form-row">
+                <input type="text" id="new-user-fullname" placeholder="Full Name (e.g. Dr. Alex Mercer)" class="col-6"
+                  required />
+                <input type="email" id="new-user-email" placeholder="Email (e.g. alex@labsphere.io)" class="col-6"
+                  required />
+              </div>
+              <div class="form-row" style="margin-top: 8px;">
+                <input type="text" id="new-user-username" placeholder="Username (e.g. amercer)" class="col-4"
+                  required />
+                <input type="password" id="new-user-password" placeholder="Password" class="col-4" required />
+                <select id="new-user-role" class="col-4">
+                  <option value="STUDENT">Student / Intern</option>
+                  <option value="ENGINEER">Engineer</option>
+                  <option value="ADMIN">Inventory Administrator</option>
+                  <option value="MANAGEMENT">Management</option>
+                </select>
+              </div>
+              <button id="btn-create-user-submit" class="btn btn-primary" style="margin-top: 10px;">
+                <i data-lucide="plus-circle"></i> Register User Account
+              </button>
+            </form>
+          </div>
+
+          <h3 style="margin-top: 20px;"><i data-lucide="shield"></i> Registered User Accounts</h3>
+          <div class="procurement-table-wrapper">
+            <table class="component-table">
+              <thead>
+                <tr>
+                  <th>User & Username</th>
+                  <th>Email</th>
+                  <th>Assigned Role</th>
+                  <th>Account Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="users-table-body">
+                <!-- Rows -->
+              </tbody>
+            </table>
+          </div>
+
+          <div id="user-activity-container" class="audit-log-container hidden"
+            style="margin-top: 20px; background: var(--bg-dark); padding: 14px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+            <!-- History -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Secure Authentication Login Modal -->
+    <div class="modal-backdrop hidden" id="login-modal">
+      <div class="modal-content modal-md">
+        <div class="modal-header">
+          <div class="modal-title-group">
+            <i data-lucide="lock"></i>
+            <h2>LabSphere Secure Login</h2>
+          </div>
+          <button class="modal-close" id="btn-close-login-modal"><i data-lucide="x"></i></button>
+        </div>
+        <div class="modal-body">
+          <form id="login-form">
+            <div class="form-group">
+              <label for="login-email">Username or Email *</label>
+              <input type="text" id="login-email" required placeholder="e.g. admin@labsphere.io" />
+            </div>
+            <div class="form-group">
+              <label for="login-password">Password *</label>
+              <input type="password" id="login-password" required placeholder="Enter password" />
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top: 6px;">
+              <button id="btn-submit-login" class="btn btn-primary" style="width: 100%;">
+                <i data-lucide="key"></i> Log In
+              </button>
+            </div>
+            <p style="text-align:center; margin-top: 12px; font-size: 0.8rem;">
+              <a href="#" id="btn-forgot-password-link" style="color: var(--primary);">Forgot Password? Reset Here</a>
+            </p>
+          </form>
+
+          <div class="demo-login-box"
+            style="margin-top: 20px; border-top: 1px solid var(--border-color); padding-top: 14px;">
+            <h4 style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px;">⚡ 1-Click Demo Accounts:</h4>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+              <button class="btn btn-secondary btn-sm" id="demo-login-admin">👑 Admin</button>
+              <button class="btn btn-secondary btn-sm" id="demo-login-engineer">⚙️ Engineer</button>
+              <button class="btn btn-secondary btn-sm" id="demo-login-student">🎓 Student</button>
+              <button class="btn btn-secondary btn-sm" id="demo-login-mgmt">📊 Management</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Password Reset Modal -->
+    <div class="modal-backdrop hidden" id="reset-pw-modal">
+      <div class="modal-content modal-md">
+        <div class="modal-header">
+          <div class="modal-title-group">
+            <i data-lucide="rotate-ccw"></i>
+            <h2>Password Reset Workflow</h2>
+          </div>
+          <button class="modal-close" id="btn-close-reset-pw-modal"><i data-lucide="x"></i></button>
+        </div>
+        <div class="modal-body">
+          <form id="reset-pw-form">
+            <div class="form-group">
+              <label for="reset-email">Account Email Address *</label>
+              <input type="email" id="reset-email" required placeholder="e.g. student@labsphere.io" />
+            </div>
+            <div class="form-group">
+              <label for="reset-new-password">New Password *</label>
+              <input type="password" id="reset-new-password" required placeholder="Enter new password" />
+            </div>
+            <button id="btn-submit-reset-pw" class="btn btn-primary" style="width: 100%; margin-top: 10px;">
+              <i data-lucide="check"></i> Update Password & Reset
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Student Requests & Returns Modal -->
+    <div class="modal-backdrop hidden" id="student-req-modal">
+      <div class="modal-content modal-lg">
+        <div class="modal-header">
+          <div class="modal-title-group">
+            <i data-lucide="clipboard-list"></i>
+            <h2>Student Component Requests & Returns Log</h2>
+          </div>
+          <button class="modal-close" id="btn-close-student-req-modal"><i data-lucide="x"></i></button>
+        </div>
+        <div class="modal-body">
+          <p class="modal-desc">Track status of submitted checkout requests and return borrowed items back to laboratory
+            stock.</p>
+          <div class="student-requests-container" id="student-requests-container">
+            <!-- Request cards -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Admin Request Approvals Queue Modal -->
+    <div class="modal-backdrop hidden" id="admin-appr-modal">
+      <div class="modal-content modal-lg">
+        <div class="modal-header">
+          <div class="modal-title-group">
+            <i data-lucide="check-square"></i>
+            <h2>Inventory Administrator Request Approval Queue</h2>
+          </div>
+          <button class="modal-close" id="btn-close-admin-appr-modal"><i data-lucide="x"></i></button>
+        </div>
+        <div class="modal-body">
+          <p class="modal-desc">Review and approve or reject pending student/intern component checkout requests.</p>
+          <div class="admin-approval-container" id="admin-approval-container">
+            <!-- Approvals -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Engineer BOM CSV Upload & Matcher Modal -->
+    <div class="modal-backdrop hidden" id="bom-modal">
+      <div class="modal-content modal-lg">
+        <div class="modal-header">
+          <div class="modal-title-group">
+            <i data-lucide="file-spreadsheet"></i>
+            <h2>Engineer BOM (Bill of Materials) Stock Matcher</h2>
+          </div>
+          <button class="modal-close" id="btn-close-bom-modal"><i data-lucide="x"></i></button>
+        </div>
+        <div class="modal-body">
+          <p class="modal-desc">Paste your Bill of Materials (BOM) CSV lines (or component list) to automatically verify
+            lab stock availability and identify shortages.</p>
+          <textarea id="bom-csv-text" rows="5" placeholder="Part Name, Quantity Required
+Arduino Nano, 2
+HC-SR04, 1
+Submersible Water Pump, 1" class="bom-textarea"></textarea>
+          <button id="btn-parse-bom-submit" class="btn btn-primary" style="margin-top: 10px;">
+            <i data-lucide="play"></i> Analyze & Match BOM with Lab Stock
+          </button>
+
+          <div id="bom-results-container" class="bom-results-wrapper hidden" style="margin-top: 20px;">
+            <h3>BOM Stock Matching Results</h3>
+            <table class="component-table">
+              <thead>
+                <tr>
+                  <th>BOM Part Name</th>
+                  <th>Qty Needed</th>
+                  <th>Matched Lab Item</th>
+                  <th>Location Box</th>
+                  <th>Stock Availability</th>
+                </tr>
+              </thead>
+              <tbody id="bom-table-body">
+                <!-- Matched rows -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Management Executive Financial Dashboard Modal (INR ₹) -->
+    <div class="modal-backdrop hidden" id="management-modal">
+      <div class="modal-content modal-lg">
+        <div class="modal-header">
+          <div class="modal-title-group">
+            <i data-lucide="bar-chart-3"></i>
+            <h2>Executive Management Dashboard & Financial Asset Valuation (₹ INR)</h2>
+          </div>
+          <button class="modal-close" id="btn-close-mgmt-modal"><i data-lucide="x"></i></button>
+        </div>
+        <div class="modal-body">
+          <div class="procure-summary-banner">
+            <div class="procure-stat">
+              <span class="procure-label">Total Asset Value (INR)</span>
+              <span class="procure-val primary-text" id="mgmt-total-value">₹0</span>
+            </div>
+            <div class="procure-stat">
+              <span class="procure-label">Total Physical Units</span>
+              <span class="procure-val" id="mgmt-total-units">0</span>
+            </div>
+            <div class="procure-stat">
+              <span class="procure-label">Active Issued Items</span>
+              <span class="procure-val warning-text" id="mgmt-issued-count">0</span>
+            </div>
+            <div class="procure-stat">
+              <span class="procure-label">Active Lab Projects</span>
+              <span class="procure-val primary-text" id="mgmt-active-projects">0</span>
+            </div>
+          </div>
+
+          <h3>Inventory Financial Asset Valuation by Category (₹ INR)</h3>
+          <div class="procurement-table-wrapper">
+            <table class="component-table">
+              <thead>
+                <tr>
+                  <th>Category</th>
+                  <th>Component Diversity</th>
+                  <th>Total Physical Quantity</th>
+                  <th>Total Estimated Asset Valuation (₹)</th>
+                </tr>
+              </thead>
+              <tbody id="mgmt-category-table-body">
+                <!-- Valuation rows -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Audit Log Modal -->
+    <div class="modal-backdrop hidden" id="audit-modal">
+      <div class="modal-content modal-lg">
+        <div class="modal-header">
+          <div class="modal-title-group">
+            <i data-lucide="shield"></i>
+            <h2>Inventory & Security Audit Logs</h2>
+          </div>
+          <button class="modal-close" id="btn-close-audit-modal"><i data-lucide="x"></i></button>
+        </div>
+        <div class="modal-body">
+          <p class="modal-desc">Real-time chronological audit history of logins, logouts, security checks, check-ins,
+            check-outs, and stock updates.</p>
+          <div class="audit-log-container" id="audit-log-container">
+            <!-- Timeline items -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Project Allocation Manager Modal -->
+    <div class="modal-backdrop hidden" id="project-modal">
+      <div class="modal-content modal-lg">
+        <div class="modal-header">
+          <div class="modal-title-group">
+            <i data-lucide="folder-kanban"></i>
+            <h2>Project Workspace Manager</h2>
+          </div>
+          <button class="modal-close" id="btn-close-proj-modal"><i data-lucide="x"></i></button>
+        </div>
+        <div class="modal-body">
+          <p class="modal-desc">Manage project workspaces, team members, BOMs, reserved inventory, consumables, reusable
+            assets, and cost estimates in ₹ INR.</p>
+
+          <div class="project-create-box">
+            <h3><i data-lucide="plus"></i> Register New Lab Project Workspace</h3>
+            <div class="form-row">
+              <input type="text" id="new-proj-name" placeholder="Project Name (e.g. IoT Weather Station)"
+                class="col-6" />
+              <input type="text" id="new-proj-leader" placeholder="Team Leader Name" class="col-6" />
+            </div>
+            <div class="form-row" style="margin-top: 8px;">
+              <input type="text" id="new-proj-desc" placeholder="Project objective / description" class="col-10" />
+              <button id="btn-create-project-submit" class="btn btn-primary col-2">Create Project</button>
+            </div>
+          </div>
+
+          <div class="project-list-container" id="project-list-container">
+            <!-- Projects -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Procurement Insights Modal -->
+    <div class="modal-backdrop hidden" id="procurement-modal">
+      <div class="modal-content modal-lg">
+        <div class="modal-header">
+          <div class="modal-title-group">
+            <i data-lucide="shopping-cart"></i>
+            <h2>Procurement Insights & Reorder Analytics</h2>
+          </div>
+          <button class="modal-close" id="btn-close-procure-modal"><i data-lucide="x"></i></button>
+        </div>
+        <div class="modal-body">
+          <div class="procure-summary-banner">
+            <div class="procure-stat">
+              <span class="procure-label">Low Stock Items</span>
+              <span class="procure-val warning-text" id="procure-total-low">0</span>
+            </div>
+            <div class="procure-stat">
+              <span class="procure-label">Out of Stock Items</span>
+              <span class="procure-val danger-text" id="procure-total-out">0</span>
+            </div>
+            <div class="procure-stat">
+              <span class="procure-label">Total Units Needed</span>
+              <span class="procure-val primary-text" id="procure-total-items">0</span>
+            </div>
+          </div>
+
+          <h3>Items Requiring Reorder</h3>
+          <div class="procurement-table-wrapper">
+            <table class="component-table">
+              <thead>
+                <tr>
+                  <th>Item Name</th>
+                  <th>Part #</th>
+                  <th>Box Location</th>
+                  <th>Current Stock</th>
+                  <th>Min Reorder Threshold</th>
+                  <th>Suggested Reorder Qty</th>
+                </tr>
+              </thead>
+              <tbody id="procurement-table-body">
+                <!-- Loaded dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="btn-export-procure-csv" class="btn btn-secondary">
+            <i data-lucide="download"></i> Export Procurement List (CSV)
+          </button>
+          <div class="spacer"></div>
+          <button class="btn btn-primary" onclick="ModalManager.closeProcurementModal()">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Physical Box Manager Modal -->
+    <div class="modal-backdrop hidden" id="box-manager-modal">
+      <div class="modal-content modal-md">
+        <div class="modal-header">
+          <div class="modal-title-group">
+            <i data-lucide="box"></i>
+            <h2>Physical Box Manager</h2>
+          </div>
+          <button class="modal-close" id="btn-close-box-modal"><i data-lucide="x"></i></button>
+        </div>
+        <div class="modal-body">
+          <p class="modal-desc">Manage boxes assigned across Rack 1 and Rack 2 shelves. Add new box IDs or view
+            contents.</p>
+
+          <div class="box-add-bar">
+            <input type="text" id="new-box-name" placeholder="New Box ID (e.g. BOX A-016)" class="mono-input" />
+            <select id="new-box-rack">
+              <option value="1">Rack 1</option>
+              <option value="2">Rack 2</option>
+            </select>
+            <select id="new-box-shelf">
+              <option value="1">Shelf A</option>
+              <option value="2">Shelf B</option>
+              <option value="3">Shelf C</option>
+              <option value="4">Shelf D</option>
+              <option value="5">Shelf E</option>
+              <option value="6">Shelf F</option>
+            </select>
+            <button id="btn-create-box" class="btn btn-primary"><i data-lucide="plus"></i> Add Box</button>
+          </div>
+
+          <div class="box-list-container" id="box-list-container">
+            <!-- Box list -->
+          </div>
+        </div>
+        <div class="modal-footer" style="display:flex; justify-content:space-between; align-items:center;">
+          <button id="btn-batch-print-boxes" class="btn btn-secondary" onclick="ModalManager.printBatchBoxQrSheet()"
+            style="border-color:var(--success); color:var(--success);">
+            <i data-lucide="printer"></i> 🖨️ Batch Print All Box QR Labels (16 Per Page)
+          </button>
+          <button class="btn btn-primary" id="btn-close-box-mgr">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Component Inspector & Add/Edit Form Modal -->
+    <div class="modal-backdrop hidden" id="component-modal">
+      <div class="modal-content modal-lg">
+        <div class="modal-header">
+          <div class="modal-title-group">
+            <i data-lucide="cpu"></i>
+            <h2 id="modal-title">Component Details</h2>
+          </div>
+          <div style="display:flex; gap:8px; margin-left:auto; margin-right:16px;">
+            <button id="modal-tab-view" class="btn btn-sm btn-secondary" onclick="ModalManager.toggleEditMode(false)"
+              style="padding:4px 12px; font-size:0.8rem; font-weight:700;">
+              👁️ View Info
+            </button>
+            <button id="modal-tab-edit" class="btn btn-sm btn-primary" onclick="ModalManager.toggleEditMode(true)"
+              style="padding:4px 12px; font-size:0.8rem; font-weight:700; background:#0ea5e9; color:white; border:none;">
+              ✏️ Edit Details Form
+            </button>
+          </div>
+          <button class="modal-close" onclick="ModalManager.closeComponentModal()"
+            style="cursor:pointer; background:none; border:none; color:white; font-size:1.6rem; font-weight:800; padding:4px 12px; line-height:1;"
+            title="Close Window">&times;</button>
+        </div>
+
+        <div class="modal-body">
+          <!-- View / Read-Only Inspector Mode -->
+          <div id="modal-view-mode">
+            <div class="inspector-top-banner"
+              style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
+              <div>
+                <h3 id="insp-name" style="margin:0; font-size:1.25rem; color:var(--text-main);">Component Name</h3>
+                <span id="insp-part-number" class="mono text-muted" style="font-size:0.85rem;">PN: N/A</span>
+              </div>
+              <span id="insp-category" class="badge"
+                style="background:var(--primary); color:#0f172a; font-weight:700; padding:4px 10px; border-radius:6px;">Category</span>
+            </div>
+
+            <div class="inspector-location-path" id="insp-location-path"
+              style="font-size:0.85rem; color:var(--primary); font-weight:600; background:var(--bg-dark); padding:8px 12px; border-radius:8px; border:1px solid var(--border-color); margin-bottom:14px;">
+              <!-- Location Breadcrumb -->
+            </div>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:12px; margin-bottom:14px;">
+              <div
+                style="background:var(--bg-dark); padding:10px; border-radius:8px; border:1px solid var(--border-color);">
+                <small class="text-muted" style="display:block;">Physical Box ID</small>
+                <strong id="insp-box-id" class="mono" style="font-size:1rem; color:var(--text-main);">BOX A-001</strong>
+              </div>
+              <div
+                style="background:var(--bg-dark); padding:10px; border-radius:8px; border:1px solid var(--border-color);">
+                <small class="text-muted" style="display:block;">Current Stock Qty</small>
+                <strong style="font-size:1rem; color:var(--success);"><span id="insp-quantity">0</span> <span
+                    id="insp-unit">pcs</span></strong>
+              </div>
+              <div
+                style="background:var(--bg-dark); padding:10px; border-radius:8px; border:1px solid var(--border-color);">
+                <small class="text-muted" style="display:block;">Min Reorder Threshold</small>
+                <strong id="insp-min-qty" class="mono" style="font-size:1rem; color:var(--warning);">1 pcs</strong>
+              </div>
+            </div>
+
+            <div style="margin-bottom:12px;">
+              <h4 style="margin:0 0 4px 0; font-size:0.85rem; color:var(--text-muted);">Purpose / Application:</h4>
+              <p id="insp-purpose" style="margin:0; font-size:0.9rem; color:var(--text-main);">Purpose description.</p>
+            </div>
+
+            <div style="margin-bottom:12px;">
+              <h4 style="margin:0 0 4px 0; font-size:0.85rem; color:var(--text-muted);">Technical Specifications:</h4>
+              <p id="insp-specs"
+                style="margin:0; font-size:0.85rem; color:var(--text-main); font-family:monospace; background:var(--bg-dark); padding:8px; border-radius:6px;">
+                Specs.</p>
+            </div>
+
+            <div style="font-size:0.75rem; color:var(--text-muted);">
+              Last Catalog Update: <span id="insp-updated">2026-07-29</span>
+            </div>
+          </div>
+
+          <!-- Form Edit Mode -->
+          <form id="component-form" class="hidden"
+            onsubmit="event.preventDefault(); ModalManager.handleSaveComponent();">
+            <input type="hidden" id="form-comp-id" />
+
+            <div class="form-row">
+              <div class="form-group col-6">
+                <label>Component Name *</label>
+                <input type="text" id="form-name" placeholder="e.g. Arduino Nano" required />
+              </div>
+              <div class="form-group col-6">
+                <label>Part Number / SKU</label>
+                <input type="text" id="form-part-number" placeholder="e.g. ATMEGA328P-NANO" />
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group col-4">
+                <label>Manufacturer</label>
+                <input type="text" id="form-manufacturer" placeholder="e.g. Microchip / Arduino" />
+              </div>
+              <div class="form-group col-4">
+                <label>Barcode / Serial ID</label>
+                <input type="text" id="form-barcode" placeholder="Barcode ID" />
+              </div>
+              <div class="form-group col-4">
+                <label>Category *</label>
+                <select id="form-category" required>
+                  <option value="Microcontrollers & Dev Boards">Microcontrollers & Dev Boards</option>
+                  <option value="Sensors & Modules">Sensors & Modules</option>
+                  <option value="Power & Energy">Power & Energy</option>
+                  <option value="Connectors & Cabling">Connectors & Cabling</option>
+                  <option value="Passive Components">Passive Components</option>
+                  <option value="Switches & Controls">Switches & Controls</option>
+                  <option value="Wireless & Comms">Wireless & Comms</option>
+                  <option value="Hardware & Tools">Hardware & Tools</option>
+                  <option value="Actuators & Motors">Actuators & Motors</option>
+                  <option value="Displays & Indicators">Displays & Indicators</option>
+                  <option value="IC & Semiconductors">IC & Semiconductors</option>
+                  <option value="Prototyping & Breadboards">Prototyping & Breadboards</option>
+                  <option value="Robotics & Mechanical Parts">Robotics & Mechanical Parts</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group col-3">
+                <label>Rack # (1 or 2)</label>
+                <input type="number" id="form-rack" min="1" max="2" value="1" required />
+              </div>
+              <div class="form-group col-3">
+                <label>Shelf # (1 to 6)</label>
+                <input type="number" id="form-shelf" min="1" max="6" value="1" required />
+              </div>
+              <div class="form-group col-3">
+                <label>Box ID *</label>
+                <input type="text" id="form-box" placeholder="BOX A-001" required />
+              </div>
+              <div class="form-group col-3">
+                <label>Stack Layer / Sub-location</label>
+                <input type="text" id="form-stack-layer" placeholder="Layer 1 (Top Tray)" />
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group col-3">
+                <label>Quantity *</label>
+                <input type="number" id="form-quantity" min="0" value="1" required />
+              </div>
+              <div class="form-group col-3">
+                <label>Min Reorder Qty</label>
+                <input type="number" id="form-min-qty" min="0" value="1" />
+              </div>
+              <div class="form-group col-3">
+                <label>Unit Price (₹)</label>
+                <input type="number" id="form-unit-price" min="0" value="450" />
+              </div>
+              <div class="form-group col-3">
+                <label>Inventory State</label>
+                <select id="form-state">
+                  <option value="AVAILABLE">AVAILABLE</option>
+                  <option value="ISSUED">ISSUED</option>
+                  <option value="RESERVED">RESERVED</option>
+                  <option value="DAMAGED">DAMAGED</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group col-6">
+                <label>Image URL</label>
+                <input type="url" id="form-image-url" placeholder="https://..." />
+              </div>
+              <div class="form-group col-6">
+                <label>Datasheet PDF URL</label>
+                <input type="url" id="form-datasheet-url" placeholder="https://..." />
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group col-6">
+                <label>Purpose / Description</label>
+                <textarea id="form-purpose" rows="2" placeholder="Brief lab application..."></textarea>
+              </div>
+              <div class="form-group col-6">
+                <label>Technical Specifications</label>
+                <textarea id="form-specs" rows="2" placeholder="Operating voltage, pinouts, clock speed..."></textarea>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group col-4">
+                <label>Compatible Components (comma separated)</label>
+                <input type="text" id="form-compat" placeholder="Breadboard, Arduino Shields" />
+              </div>
+              <div class="form-group col-4">
+                <label>Alternative Part Numbers</label>
+                <input type="text" id="form-alternatives" placeholder="COMP-002, COMP-005" />
+              </div>
+              <div class="form-group col-4">
+                <label>Search Tags</label>
+                <input type="text" id="form-tags" placeholder="arduino, microcontroller, 8-bit" />
+              </div>
+            </div>
+
+            <div class="form-row" style="background:var(--bg-dark); padding:10px; border-radius:8px; margin-top:8px;">
+              <div class="form-group col-3">
+                <label>Vendor Name</label>
+                <input type="text" id="form-vendor-name" placeholder="Robu.in / Vendor" />
+              </div>
+              <div class="form-group col-3">
+                <label>Vendor SKU</label>
+                <input type="text" id="form-vendor-sku" placeholder="SKU-1234" />
+              </div>
+              <div class="form-group col-3">
+                <label>Vendor URL</label>
+                <input type="url" id="form-vendor-url" placeholder="https://..." />
+              </div>
+              <div class="form-group col-3">
+                <label>Lead Time (Days)</label>
+                <input type="number" id="form-lead-time" value="3" />
+              </div>
+            </div>
+
+            <input type="hidden" id="form-lab-name" value="Main Robotics & Embedded Systems Lab" />
+            <input type="hidden" id="form-room-name" value="Room 101 - Prototyping Hall" />
+          </form>
+        </div>
+
+        <!-- Read-Only View Footer -->
+        <div class="modal-footer" id="modal-view-footer">
+          <div style="display:flex; gap:6px; flex-wrap:wrap;">
+            <button class="btn btn-secondary" onclick="ModalManager.toggleEditMode(true)">
+              <i data-lucide="edit-3"></i> Edit Details
+            </button>
+            <button class="btn btn-secondary" onclick="ModalManager.handleMoveComponentToBox()">
+              <i data-lucide="move"></i> Relocate Box
+            </button>
+            <button class="btn btn-secondary" onclick="ModalManager.adjustQuantity(1)" title="Add 1 Unit">
+              <i data-lucide="plus"></i> Qty
+            </button>
+            <button class="btn btn-secondary" onclick="ModalManager.adjustQuantity(-1)" title="Remove 1 Unit">
+              <i data-lucide="minus"></i> Qty
+            </button>
+          </div>
+          <div style="display:flex; gap:6px; flex-wrap:wrap;">
+            <button class="btn btn-secondary" onclick="ModalManager.handleStudentRequest()"
+              style="border-color:var(--primary); color:var(--primary);">
+              <i data-lucide="shopping-bag"></i> Checkout / Request
+            </button>
+            <button class="btn btn-secondary" onclick="ModalManager.handleDeleteComponent()"
+              style="border-color:var(--danger); color:var(--danger);">
+              <i data-lucide="trash-2"></i> Delete
+            </button>
+            <button class="btn btn-primary" onclick="ModalManager.closeComponentModal()">Close</button>
+          </div>
+        </div>
+
+        <!-- Form Edit Footer -->
+        <div class="modal-footer hidden" id="modal-form-footer">
+          <button class="btn btn-secondary" onclick="ModalManager.closeComponentModal()">Cancel / Exit</button>
+          <button class="btn btn-primary" onclick="ModalManager.handleSaveComponent()"
+            style="background:#0ea5e9; color:white; font-weight:800; padding:8px 20px;">
+            <i data-lucide="check"></i> Save Component Details
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Multi-Component Physical Box Inspector Modal -->
+    <div class="modal-backdrop hidden" id="box-inspector-modal">
+      <div class="modal-content modal-xl">
+        <div class="modal-header">
+          <div class="modal-title-group">
+            <i data-lucide="package-search"></i>
+            <h2 id="box-insp-modal-title">Box Contents Inspector</h2>
+          </div>
+          <button class="modal-close"
+            onclick="window.closeBoxInspectorModal ? window.closeBoxInspectorModal() : ModalManager.closeBoxInspectorModal()"
+            style="cursor:pointer; background:none; border:none; color:white; font-size:1.6rem; font-weight:800; padding:4px 12px; line-height:1;"
+            title="Close Window">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="inspector-location-path" id="box-insp-location-path"
+            style="margin-bottom: 12px; font-weight: 600;">
+            <!-- Location path -->
+          </div>
+          <p class="modal-desc" id="box-insp-desc">Viewing all physical components stored inside this box.</p>
+
+          <div class="multi-comp-cards-grid" id="box-insp-cards-container"
+            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; margin-top: 14px;">
+            <!-- Both component cards rendered side-by-side here -->
+          </div>
+        </div>
+        <div class="modal-footer" style="display:flex; gap:12px; justify-content:flex-end;">
+          <button class="btn btn-secondary"
+            onclick="document.body.classList.remove('qr-scan-mode'); window.history.pushState({}, '', window.location.pathname); if (window.closeBoxInspectorModal) window.closeBoxInspectorModal(); else ModalManager.closeBoxInspectorModal();"
+            style="cursor:pointer; border:1px solid #38bdf8; color:#38bdf8; font-weight:700; padding:8px 16px; border-radius:8px;">🏠
+            View Full Site</button>
+          <button class="btn btn-primary"
+            onclick="window.closeBoxInspectorModal ? window.closeBoxInspectorModal() : ModalManager.closeBoxInspectorModal()"
+            style="cursor:pointer; background:#0ea5e9; color:white; font-weight:800; padding:8px 24px; border:none; border-radius:8px;">Close
+            Inspector</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Administrator User Account Manager Modal -->
+    <div class="modal-backdrop hidden" id="user-manager-modal">
+      <div class="modal-content modal-lg">
+        <div class="modal-header">
+          <div class="modal-title-group">
+            <i data-lucide="users"></i>
+            <h2>User Account & Persona Manager</h2>
+          </div>
+          <button class="modal-close" id="btn-close-user-modal" onclick="ModalManager.closeUserManagerModal()"><i
+              data-lucide="x"></i></button>
+        </div>
+        <div class="modal-body">
+          <p class="modal-desc">Edit user names, register new system users, manage active roles, or reset account
+            passwords.</p>
+
+          <div class="project-create-box" style="margin-bottom: 16px;">
+            <h3><i data-lucide="user-plus"></i> Register New User Account</h3>
+            <div class="form-row">
+              <input type="text" id="new-user-fullname" placeholder="Full Name (e.g. Ann Mary)" class="col-4" />
+              <input type="text" id="new-user-username" placeholder="Username" class="col-3" />
+              <input type="email" id="new-user-email" placeholder="Email Address" class="col-3" />
+            </div>
+            <div class="form-row" style="margin-top: 8px;">
+              <input type="password" id="new-user-password" placeholder="Password" class="col-4" />
+              <select id="new-user-role" class="col-4">
+                <option value="ADMIN">Administrator (Full Control)</option>
+                <option value="ENGINEER">Systems Engineer (BOM & Design)</option>
+                <option value="STUDENT">Student / Intern (View & Request)</option>
+                <option value="MANAGEMENT">Operations Management (Executive)</option>
+              </select>
+              <button id="btn-create-user-submit" class="btn btn-primary col-4"
+                onclick="ModalManager.handleCreateUserSubmit()">
+                <i data-lucide="plus"></i> Add Account
+              </button>
+            </div>
+          </div>
+
+          <h3>System User Accounts</h3>
+          <div class="procurement-table-wrapper">
+            <table class="component-table">
+              <thead>
+                <tr>
+                  <th>Full Name</th>
+                  <th>Username</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="user-manager-table-body">
+                <!-- Loaded dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary" onclick="ModalManager.closeUserManagerModal()">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Storage Memory Snapshots Modal -->
+    <div id="storage-snapshots-modal" class="modal-backdrop hidden">
+      <div class="modal-card" style="max-width: 650px;">
+        <div class="modal-header">
+          <h2><i data-lucide="database"></i> Recover Saved Browser Memory Snapshots</h2>
+          <button class="btn-close" onclick="ModalManager.closeStorageSnapshotsModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p class="text-muted" style="font-size:0.85rem; margin-bottom:12px;">
+            Select a saved browser snapshot below to restore your exact custom box moves, relocated items, and added
+            components:
+          </p>
+          <div id="snapshots-list-container"
+            style="display:flex; flex-direction:column; gap:8px; max-height:350px; overflow-y:auto;">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" onclick="ModalManager.closeStorageSnapshotsModal()">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toast-container"></div>
+  </div>
+
+  <!-- JavaScript App Logic with Cache Busters -->
+  <script src="js/types.js?v=9038"></script>
+  <script src="js/initialData.js?v=9038"></script>
+  <script src="js/storage.js?v=9038"></script>
+  <script src="js/rackViewer.js?v=9038"></script>
+  <script src="js/componentsView.js?v=9038"></script>
+  <script src="js/modalManager.js?v=9038"></script>
+  <script src="js/app.js?v=9038"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (window.lucide) {
+        window.lucide.createIcons();
+      }
+    });
+  </script>
+
+  <!-- Standalone QR Print System (works independently of ModalManager) -->
+  <script>
+    function _parseShelfId(input) {
+      if (input === null || input === undefined) return 1;
+      const s = String(input).trim().toUpperCase();
+      if (/^[A-Z]$/.test(s)) return s.charCodeAt(0) - 64;
+      const n = parseInt(s);
+      return isNaN(n) ? 1 : n;
+    }
+
+    // Cache the server's LAN IP (fetched once from /api/network-ip)
+    let _serverLanUrl = null;
+    async function _getServerLanUrl() {
+      if (_serverLanUrl) return _serverLanUrl;
+      try {
+        const r = await fetch('/api/network-ip');
+        const d = await r.json();
+        _serverLanUrl = d.serverUrl || window.location.origin;
+      } catch (e) {
+        _serverLanUrl = window.location.origin;
+      }
+      return _serverLanUrl;
+    }
+
+    async function printShelfBoxQR(rackIdInput, shelfIdInput) {
+      const targetRack = parseInt(rackIdInput) || 1;
+      const targetShelf = _parseShelfId(shelfIdInput);
+      const shelfChar = String.fromCharCode(64 + targetShelf);
+
+      const allComponents = StorageService.getComponents();
+      const boxes = StorageService.getBoxes();
+
+      const shelfBoxesMap = new Map();
+      boxes.filter(b => (parseInt(b.rackId) || 1) === targetRack && _parseShelfId(b.shelfId) === targetShelf).forEach(b => {
+        shelfBoxesMap.set((b.id || '').trim().toUpperCase(), b);
+      });
+      allComponents.filter(c => (parseInt(c.rackId) || 1) === targetRack && _parseShelfId(c.shelfId) === targetShelf).forEach(c => {
+        const bid = (c.boxId || '').trim().toUpperCase();
+        if (!shelfBoxesMap.has(bid)) {
+          shelfBoxesMap.set(bid, { id: bid, rackId: targetRack, shelfId: targetShelf });
+        }
+      });
+
+      const activeBoxes = Array.from(shelfBoxesMap.values()).filter(box => {
+        const bid = (box.id || '').trim().toUpperCase();
+        return allComponents.some(c => (c.boxId || '').trim().toUpperCase() === bid);
+      });
+
+      if (activeBoxes.length === 0) {
+        alert(`No occupied boxes found on Rack ${targetRack}, Shelf ${shelfChar}.`);
+        return;
+      }
+
+      // Fetch real LAN IP from server so QR codes work on mobile devices
+      const hostOrigin = await _getServerLanUrl();
+
+      const LABELS_PER_PAGE = 16;
+      const totalPages = Math.ceil(activeBoxes.length / LABELS_PER_PAGE);
+      let pagesHtml = '';
+
+      for (let p = 0; p < totalPages; p++) {
+        const pageBoxes = activeBoxes.slice(p * LABELS_PER_PAGE, (p + 1) * LABELS_PER_PAGE);
+        const cardsHtml = pageBoxes.map(box => {
+          const bid = (box.id || '').trim().toUpperCase();
+          const boxComps = allComponents.filter(c => (c.boxId || '').trim().toUpperCase() === bid);
+          const compLinesHtml = boxComps.length
+            ? boxComps.map(c => `<div class="comp-line">&bull; ${c.name}</div>`).join('')
+            : `<div class="comp-line">Empty (${bid})</div>`;
+          const qrUrl = `${hostOrigin}${window.location.pathname}?box=${encodeURIComponent(bid)}`;
+          const qrImg = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrUrl)}`;
+          return `
+            <div class="sticker-card">
+              <div class="comp-name-container">${compLinesHtml}</div>
+              <div class="box-id-badge">📦 ${bid} &bull; R${targetRack}S${shelfChar}</div>
+              <img src="${qrImg}" alt="${bid} QR" />
+            </div>`;
+        }).join('');
+        pagesHtml += `<div class="print-page"><div class="grid-container">${cardsHtml}</div></div>`;
+      }
+
+      const printWin = window.open('', '_blank', 'width=900,height=1000');
+      if (!printWin) { alert('Please allow popups to print QR labels.'); return; }
+      printWin.document.write(`<!DOCTYPE html><html><head>
+        <title>QR Labels - Rack ${targetRack} Shelf ${shelfChar}</title>
+        <style>
+          @page { size: A4 portrait; margin: 10mm; }
+          body { font-family: sans-serif; margin:0; padding:0; background:#fff; color:#0f172a; -webkit-print-color-adjust:exact; }
+          .header-banner { text-align:center; font-size:16px; font-weight:800; color:#0284c7; margin-bottom:12px; padding-bottom:6px; border-bottom:2px solid #0f172a; }
+          .print-page { page-break-after:always; box-sizing:border-box; margin-bottom:20px; }
+          .grid-container { display:grid; grid-template-columns:repeat(4,1fr); grid-template-rows:repeat(4,1fr); gap:6mm; width:100%; box-sizing:border-box; }
+          .sticker-card { border:2px dashed #0f172a; border-radius:8px; padding:6px 4px; text-align:center; box-sizing:border-box; display:flex; flex-direction:column; align-items:center; justify-content:space-between; height:58mm; background:#fff; }
+          .comp-name-container { display:flex; flex-direction:column; gap:2px; width:100%; max-height:28px; overflow:hidden; }
+          .comp-line { font-size:10px; font-weight:800; color:#0f172a; line-height:1.1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+          .box-id-badge { font-size:10px; font-weight:800; font-family:monospace; color:#0284c7; margin:2px 0; }
+          img { width:34mm; height:34mm; border:1px solid #cbd5e1; border-radius:4px; padding:2px; background:#fff; }
+        </style>
+      </head><body>
+        <div class="header-banner">RACK ${targetRack} - SHELF ${shelfChar} &bull; ${activeBoxes.length} BOXES &bull; QR STICKERS</div>
+        ${pagesHtml}
+        <script>window.onload = function(){ window.print(); };<\/script>
+      </body></html>`);
+      printWin.document.close();
+    }
+
+    // Expose on window so rackViewer.js can find it via window.ModalManager fallback
+    // Also patch window.ModalManager if it's missing
+    document.addEventListener('DOMContentLoaded', () => {
+      window.ModalManager = window.ModalManager || {};
+      window.ModalManager.parseShelfId = _parseShelfId;
+      window.ModalManager.printBatchShelfComponentQrSheet = printShelfBoxQR;
+      window.ModalManager.openShelfQrSelectorPrompt = function () {
+        const shelf = prompt('Enter Shelf letter (A-E) or ALL:', 'A');
+        if (!shelf) return;
+        const clean = shelf.trim().toUpperCase();
+        if (clean === 'ALL' || clean === '*') {
+          [1, 2].forEach(rack => {
+            for (let s = 1; s <= 5; s++) printShelfBoxQR(rack, s);
+          });
+        } else {
+          const rack = prompt('Enter Rack number (1 or 2):', '1');
+          if (!rack) return;
+          printShelfBoxQR(rack, clean);
+        }
+      };
+    });
+  </script>
+</body>
+
+</html>

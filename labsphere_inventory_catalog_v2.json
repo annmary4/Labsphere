@@ -1,0 +1,2785 @@
+{
+  "version": "v55_permanent_user_persistence",
+  "timestamp": "2026-07-29T04:45:12.317Z",
+  "components": [
+    {
+      "id": "COMP-001",
+      "name": "Arduino Nano",
+      "partNumber": "ATMEGA328P-NANO",
+      "manufacturer": "Microchip Technology / Arduino",
+      "barcode": "8901234000019",
+      "imageUrl": "https://images.unsplash.com/photo-1553406830-ef2513450d76?w=400&q=80",
+      "labName": "Main Robotics & Embedded Systems Lab",
+      "roomName": "Room 101 - Prototyping Hall",
+      "rackId": 1,
+      "shelfId": 1,
+      "boxId": "BOX A-003",
+      "stackLayer": "Layer 1 (Top Compartment Bin #3)",
+      "category": "Microcontrollers & Dev Boards",
+      "purpose": "Compact breadboard-friendly 8-bit microcontroller board.",
+      "specifications": "5V Logic, 16MHz, 32KB Flash, ATmega328P",
+      "compatibleComponents": [
+        "Arduino Shields",
+        "Breadboard",
+        "HC-SR04"
+      ],
+      "alternatives": [
+        "COMP-002 (Arduino Uno R3)"
+      ],
+      "inventoryState": "AVAILABLE",
+      "quantity": 2,
+      "unit": "pcs",
+      "minQuantity": 2,
+      "unitPrice": 450,
+      "tags": [
+        "arduino",
+        "nano"
+      ],
+      "lastUpdated": "2026-07-27"
+    },
+    {
+      "id": "COMP-002",
+      "name": "Arduino Uno R3",
+      "partNumber": "ATMEGA328P-PU-UNO",
+      "manufacturer": "Arduino / Microchip Technology",
+      "barcode": "8901234000026",
+      "imageUrl": "https://images.unsplash.com/photo-1608564697071-ddf911d81370?w=400&q=80",
+      "labName": "Main Robotics & Embedded Systems Lab",
+      "roomName": "Room 101 - Prototyping Hall",
+      "rackId": 1,
+      "shelfId": 1,
+      "boxId": "BOX A-002",
+      "stackLayer": "Layer 1 (Top Compartment Bin #B)",
+      "category": "Microcontrollers & Dev Boards",
+      "purpose": "Standard prototyping microcontroller board.",
+      "specifications": "5V Logic, 16MHz, 14 Digital I/O",
+      "compatibleComponents": [
+        "Arduino Uno Shields",
+        "L298N Motor Driver"
+      ],
+      "alternatives": [
+        "COMP-001 (Arduino Nano)"
+      ],
+      "inventoryState": "RESERVED",
+      "quantity": 1,
+      "unit": "pc",
+      "minQuantity": 1,
+      "unitPrice": 1800,
+      "tags": [
+        "arduino",
+        "uno"
+      ],
+      "lastUpdated": "2026-07-27"
+    },
+    {
+      "id": "COMP-003",
+      "name": "Arduino R4 Minima",
+      "partNumber": "ABX00080",
+      "manufacturer": "Arduino / Renesas",
+      "barcode": "8901234000033",
+      "imageUrl": "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&q=80",
+      "labName": "Main Robotics & Embedded Systems Lab",
+      "roomName": "Room 101 - Prototyping Hall",
+      "rackId": 1,
+      "shelfId": 1,
+      "boxId": "BOX A-010",
+      "stackLayer": "Layer 1 (Top Compartment Bin #1)",
+      "category": "Microcontrollers & Dev Boards",
+      "purpose": "32-bit ARM Cortex-M4 board with CAN bus.",
+      "specifications": "48MHz ARM Cortex-M4, 256KB Flash",
+      "compatibleComponents": [
+        "Arduino Shields"
+      ],
+      "alternatives": [
+        "COMP-002 (Arduino Uno R3)"
+      ],
+      "inventoryState": "AVAILABLE",
+      "quantity": 1,
+      "unit": "pc",
+      "minQuantity": 1,
+      "unitPrice": 2250,
+      "tags": [
+        "arduino",
+        "r4"
+      ],
+      "lastUpdated": "2026-07-29"
+    },
+    {
+      "id": "COMP-004",
+      "name": "Teensy 4.1 Development Board",
+      "partNumber": "DEV-16771",
+      "manufacturer": "PJRC / NXP",
+      "barcode": "8901234000040",
+      "imageUrl": "https://images.unsplash.com/photo-1553406830-ef2513450d76?w=400&q=80",
+      "labName": "Main Robotics & Embedded Systems Lab",
+      "roomName": "Room 101 - Prototyping Hall",
+      "rackId": 1,
+      "shelfId": 1,
+      "boxId": "BOX A-007",
+      "stackLayer": "Layer 1 (Top Compartment Bin #D)",
+      "category": "Microcontrollers & Dev Boards",
+      "purpose": "Ultra high-performance 600MHz ARM Cortex-M7 board.",
+      "specifications": "600MHz ARM Cortex-M7, 8MB Flash",
+      "compatibleComponents": [
+        "SD Card"
+      ],
+      "alternatives": [
+        "COMP-010 (Nvidia Jetson Nano)"
+      ],
+      "inventoryState": "AVAILABLE",
+      "quantity": 1,
+      "unit": "pc",
+      "minQuantity": 1,
+      "unitPrice": 3850,
+      "tags": [
+        "teensy"
+      ],
+      "lastUpdated": "2026-07-29"
+    },
+    {
+      "id": "COMP-005",
+      "name": "Mega 2560 Pro (Embed)",
+      "partNumber": "ATMEGA2560-PRO",
+      "manufacturer": "RobotDyn",
+      "barcode": "8901234000057",
+      "imageUrl": "https://images.unsplash.com/photo-1608564697071-ddf911d81370?w=400&q=80",
+      "labName": "Main Robotics & Embedded Systems Lab",
+      "roomName": "Room 101 - Prototyping Hall",
+      "rackId": 1,
+      "shelfId": 1,
+      "boxId": "BOX A-005",
+      "stackLayer": "Layer 1 (Top Compartment Bin #E)",
+      "category": "Microcontrollers & Dev Boards",
+      "purpose": "Compact embedded Mega 2560.",
+      "specifications": "16MHz ATmega2560, 256KB Flash",
+      "compatibleComponents": [
+        "RAMPS 1.4"
+      ],
+      "alternatives": [
+        "COMP-002 (Arduino Uno R3)"
+      ],
+      "inventoryState": "AVAILABLE",
+      "quantity": 4,
+      "unit": "pcs",
+      "minQuantity": 2,
+      "unitPrice": 1250,
+      "tags": [
+        "mega2560"
+      ],
+      "lastUpdated": "2026-07-27"
+    },
+    {
+      "id": "COMP-006",
+      "name": "ESP32 Wi-Fi & Bluetooth Module",
+      "partNumber": "ESP32-WROOM-32",
+      "manufacturer": "Espressif Systems",
+      "barcode": "8901234000064",
+      "imageUrl": "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&q=80",
+      "labName": "Main Robotics & Embedded Systems Lab",
+      "roomName": "Room 101 - Prototyping Hall",
+      "rackId": 1,
+      "shelfId": 1,
+      "boxId": "BOX A-003",
+      "stackLayer": "Layer 2 (Lower Tray Bin #3)",
+      "category": "Microcontrollers & Dev Boards",
+      "purpose": "Dual-core Wi-Fi & Bluetooth microcontroller board.",
+      "specifications": "240MHz Tensilica LX6, 4MB Flash, Wi-Fi & BLE",
+      "compatibleComponents": [
+        "Arduino Shields",
+        "DHT11",
+        "HC-SR04"
+      ],
+      "alternatives": [
+        "COMP-001 (Arduino Nano)",
+        "COMP-008 (Pico W)"
+      ],
+      "inventoryState": "AVAILABLE",
+      "quantity": 8,
+      "unit": "pcs",
+      "minQuantity": 2,
+      "unitPrice": 480,
+      "tags": [
+        "esp32",
+        "wifi",
+        "bluetooth",
+        "arduino"
+      ],
+      "lastUpdated": "2026-07-27"
+    },
+    {
+      "id": "COMP-007",
+      "name": "ESP CAM Module with Camera",
+      "partNumber": "ESP32-CAM",
+      "manufacturer": "Espressif / AI-Thinker",
+      "barcode": "8901234000071",
+      "imageUrl": "https://images.unsplash.com/photo-1553406830-ef2513450d76?w=400&q=80",
+      "labName": "Main Robotics & Embedded Systems Lab",
+      "roomName": "Room 101 - Prototyping Hall",
+      "rackId": 1,
+      "shelfId": 1,
+      "boxId": "BOX A-004",
+      "stackLayer": "Layer 2 (Middle Bin #A)",
+      "category": "Wireless & Comms",
+      "purpose": "Wi-Fi + BLE module with OV2640 2MP Camera.",
+      "specifications": "ESP32 dual-core 240MHz, 2MP camera",
+      "compatibleComponents": [
+        "FTDI Adapter"
+      ],
+      "alternatives": [
+        "COMP-006 (ESP8266)"
+      ],
+      "inventoryState": "AVAILABLE",
+      "quantity": 4,
+      "unit": "pcs",
+      "minQuantity": 2,
+      "unitPrice": 650,
+      "tags": [
+        "espcam"
+      ],
+      "lastUpdated": "2026-07-29"
+    },
+    {
+      "id": "COMP-008",
+      "name": "Raspberry Pi Pico W",
+      "partNumber": "RP2040-W",
+      "manufacturer": "Raspberry Pi Ltd",
+      "barcode": "8901234000088",
+      "imageUrl": "https://images.unsplash.com/photo-1608564697071-ddf911d81370?w=400&q=80",
+      "labName": "Main Robotics & Embedded Systems Lab",
+      "roomName": "Room 101 - Prototyping Hall",
+      "rackId": 1,
+      "shelfId": 1,
+      "boxId": "BOX A-012",
+      "stackLayer": "Layer 2 (Middle Bin #B)",
+      "category": "Microcontrollers & Dev Boards",
+      "purpose": "Wireless-enabled RP2040 board.",
+      "specifications": "Dual-core ARM Cortex-M0+ 133MHz",
+      "compatibleComponents": [
+        "MicroPython"
+      ],
+      "alternatives": [
+        "COMP-001 (Arduino Nano)"
+      ],
+      "inventoryState": "AVAILABLE",
+      "quantity": 9,
+      "unit": "pcs",
+      "minQuantity": 3,
+      "unitPrice": 580,
+      "tags": [
+        "picow"
+      ],
+      "lastUpdated": "2026-07-29",
+      "datasheetUrl": "",
+      "supplierInfo": {
+        "vendorName": "Robu.in / Lab Vendor",
+        "vendorSku": "SKU-RASP",
+        "vendorUrl": "",
+        "unitPrice": 580,
+        "leadTimeDays": 3
+      }
+    },
+    {
+      "id": "COMP-009",
+      "name": "Raspberry Pi Single Board Computer",
+      "partNumber": "RPI4-4GB",
+      "manufacturer": "Raspberry Pi Ltd",
+      "barcode": "8901234000095",
+      "imageUrl": "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&q=80",
+      "labName": "Main Robotics & Embedded Systems Lab",
+      "roomName": "Room 101 - Prototyping Hall",
+      "rackId": 1,
+      "shelfId": 1,
+      "boxId": "BOX A-006",
+      "stackLayer": "Layer 2 (Middle Bin #C)",
+      "category": "Microcontrollers & Dev Boards",
+      "purpose": "Quad-core 64-bit ARM Linux single-board computer.",
+      "specifications": "1.5GHz BCM2711, 4GB LPDDR4",
+      "compatibleComponents": [
+        "RPi Camera"
+      ],
+      "alternatives": [
+        "COMP-010 (Jetson Nano)"
+      ],
+      "inventoryState": "AVAILABLE",
+      "quantity": 1,
+      "unit": "pc",
+      "minQuantity": 1,
+      "unitPrice": 5400,
+      "tags": [
+        "rpi4"
+      ],
+      "lastUpdated": "2026-07-29"
+    },
+    {
+      "id": "COMP-010",
+      "name": "Nvidia Jetson Nano Developer Kit",
+      "partNumber": "JETSON-NANO-4GB",
+      "manufacturer": "NVIDIA Corporation",
+      "barcode": "8901234000101",
+      "imageUrl": "https://images.unsplash.com/photo-1553406830-ef2513450d76?w=400&q=80",
+      "labName": "Main Robotics & Embedded Systems Lab",
+      "roomName": "Room 101 - Prototyping Hall",
+      "rackId": 1,
+      "shelfId": 1,
+      "boxId": "BOX A-011",
+      "stackLayer": "Layer 2 (Middle Bin #D)",
+      "category": "Microcontrollers & Dev Boards",
+      "purpose": "AI & Computer Vision edge computer.",
+      "specifications": "Quad-core ARM A57, 128-core Maxwell GPU",
+      "compatibleComponents": [
+        "CSI Camera"
+      ],
+      "alternatives": [
+        "COMP-009 (RPi4)"
+      ],
+      "inventoryState": "AVAILABLE",
+      "quantity": 1,
+      "unit": "pc",
+      "minQuantity": 1,
+      "unitPrice": 14500,
+      "tags": [
+        "jetson"
+      ],
+      "lastUpdated": "2026-07-29"
+    },
+    {
+      "id": "COMP-011",
+      "name": "STM32 with ST-Link Programmer",
+      "partNumber": "STM32F103C8T6",
+      "manufacturer": "STMicroelectronics",
+      "barcode": "8901234000118",
+      "imageUrl": "https://images.unsplash.com/photo-1608564697071-ddf911d81370?w=400&q=80",
+      "labName": "Main Robotics & Embedded Systems Lab",
+      "roomName": "Room 101 - Prototyping Hall",
+      "rackId": 1,
+      "shelfId": 1,
+      "boxId": "BOX A-013",
+      "stackLayer": "Layer 3 (Bottom Bin #A)",
+      "category": "Microcontrollers & Dev Boards",
+      "purpose": "Blue Pill STM32 ARM Cortex-M3 board with ST-Link.",
+      "specifications": "72MHz ARM Cortex-M3, 64KB Flash",
+      "compatibleComponents": [
+        "STM32CubeIDE"
+      ],
+      "alternatives": [
+        "COMP-013 (BlackPill)"
+      ],
+      "inventoryState": "AVAILABLE",
+      "quantity": 1,
+      "unit": "set",
+      "minQuantity": 1,
+      "unitPrice": 650,
+      "tags": [
+        "stm32"
+      ],
+      "lastUpdated": "2026-07-29"
+    },
+    {
+      "id": "COMP-012",
+      "name": "STM32 F4VE Core Board",
+      "partNumber": "STM32F407VET6",
+      "manufacturer": "STMicroelectronics",
+      "barcode": "8901234000125",
+      "imageUrl": "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&q=80",
+      "labName": "Main Robotics & Embedded Systems Lab",
+      "roomName": "Room 101 - Prototyping Hall",
+      "rackId": 1,
+      "shelfId": 1,
+      "boxId": "BOX A-014",
+      "stackLayer": "Layer 3 (Bottom Bin #B)",
+      "category": "Microcontrollers & Dev Boards",
+      "purpose": "ARM Cortex-M4 core board.",
+      "specifications": "168MHz ARM Cortex-M4, 512KB Flash",
+      "compatibleComponents": [
+        "TFT 3.2 LCD"
+      ],
+      "alternatives": [
+        "COMP-013 (BlackPill)"
+      ],
+      "inventoryState": "AVAILABLE",
+      "quantity": 1,
+      "unit": "pc",
+      "minQuantity": 1,
+      "unitPrice": 1950,
+      "tags": [
+        "stm32f4"
+      ],
+      "lastUpdated": "2026-07-29"
+    },
+    {
+      "id": "COMP-013",
+      "name": "STM32F4DCCU6 Core Board",
+      "partNumber": "STM32F401CCU6",
+      "manufacturer": "STMicroelectronics",
+      "barcode": "8901234000132",
+      "imageUrl": "https://images.unsplash.com/photo-1553406830-ef2513450d76?w=400&q=80",
+      "labName": "Main Robotics & Embedded Systems Lab",
+      "roomName": "Room 101 - Prototyping Hall",
+      "rackId": 1,
+      "shelfId": 1,
+      "boxId": "BOX A-008",
+      "stackLayer": "Layer 3 (Bottom Bin #C)",
+      "category": "Microcontrollers & Dev Boards",
+      "purpose": "Black Pill STM32 ARM Cortex-M4 board.",
+      "specifications": "84MHz ARM Cortex-M4, 256KB Flash",
+      "compatibleComponents": [
+        "ST-Link V2"
+      ],
+      "alternatives": [
+        "COMP-011 (BluePill)"
+      ],
+      "inventoryState": "AVAILABLE",
+      "quantity": 5,
+      "unit": "pcs",
+      "minQuantity": 2,
+      "unitPrice": 480,
+      "tags": [
+        "blackpill"
+      ],
+      "lastUpdated": "2026-07-29"
+    },
+    {
+      "id": "COMP-014",
+      "name": "CP2102 USB to UART Serial Converter",
+      "partNumber": "CP2102-MOD",
+      "manufacturer": "Silicon Labs",
+      "barcode": "8901234000149",
+      "imageUrl": "https://images.unsplash.com/photo-1608564697071-ddf911d81370?w=400&q=80",
+      "labName": "Main Robotics & Embedded Systems Lab",
+      "roomName": "Room 101 - Prototyping Hall",
+      "rackId": 1,
+      "shelfId": 1,
+      "boxId": "BOX A-001",
+      "stackLayer": "Layer 3 (Bottom Bin #D)",
+      "category": "Connectors & Cabling",
+      "purpose": "USB-to-UART bridge converter.",
+      "specifications": "Baud rates up to 1 Mbps",
+      "compatibleComponents": [
+        "ESP-CAM"
+      ],
+      "alternatives": [
+        "FT232RL Converter"
+      ],
+      "inventoryState": "AVAILABLE",
+      "quantity": 2,
+      "unit": "pcs",
+      "minQuantity": 1,
+      "unitPrice": 190,
+      "tags": [
+        "cp2102"
+      ],
+      "lastUpdated": "2026-07-28"
+    },
+    {
+      "id": "COMP-015",
+      "name": "Metal Touch & MPR121 Touch Sensor",
+      "partNumber": "MPR121-TOUCH",
+      "manufacturer": "SparkFun / NXP",
+      "barcode": "8901234000156",
+      "imageUrl": "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&q=80",
+      "labName": "Main Robotics & Embedded Systems Lab",
+      "roomName": "Room 101 - Prototyping Hall",
+      "rackId": 1,
+      "shelfId": 2,
+      "boxId": "BOX B-001",
+      "stackLayer": "Layer 1 (Tray #A)",
+      "category": "Sensors & Modules",
+      "purpose": "Capacitive touch sensing array.",
+      "specifications": "I2C interface, 12 touch inputs",
+      "compatibleComponents": [
+        "Arduino Nano"
+      ],
+      "alternatives": [
+        "TTP223"
+      ],
+      "inventoryState": "AVAILABLE",
+      "quantity": 10,
+      "unit": "pcs",
+      "minQuantity": 3,
+      "unitPrice": 220,
+      "tags": [
+        "touch",
+        "mpr121"
+      ],
+      "lastUpdated": "2026-07-27"
+    },
+    {
+      "id": "COMP-016",
+      "name": "Ultrasonic Distance Sensor",
+      "partNumber": "HC-SR04",
+      "manufacturer": "SparkFun",
+      "barcode": "8901234000163",
+      "imageUrl": "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&q=80",
+      "labName": "Main Robotics & Embedded Systems Lab",
+      "roomName": "Room 101 - Prototyping Hall",
+      "rackId": 1,
+      "shelfId": 2,
+      "boxId": "BOX B-002",
+      "stackLayer": "Layer 1 (Tray #B)",
+      "category": "Sensors & Modules",
+      "purpose": "Ultrasonic distance sensor (2cm to 400cm).",
+      "specifications": "5V DC, 40kHz acoustic frequency",
+      "compatibleComponents": [
+        "Arduino Uno R3"
+      ],
+      "alternatives": [
+        "VL53L0X Laser Sensor"
+      ],
+      "inventoryState": "BORROWED",
+      "quantity": 7,
+      "unit": "pcs",
+      "minQuantity": 3,
+      "unitPrice": 180,
+      "tags": [
+        "ultrasonic",
+        "hc-sr04"
+      ],
+      "lastUpdated": "2026-07-27"
+    },
+    {
+      "id": "COMP-017",
+      "name": "SW-18015P Vibration & Infrared (K) Sensor",
+      "partNumber": "SW-18015P-IR",
+      "manufacturer": "Generic Sensors",
+      "barcode": "8901234000170",
+      "imageUrl": "https://images.unsplash.com/photo-1553406830-ef2513450d76?w=400&q=80",
+      "labName": "Main Robotics & Embedded Systems Lab",
+      "roomName": "Room 101 - Prototyping Hall",
+      "rackId": 1,
+      "shelfId": 2,
+      "boxId": "BOX B-003",
+      "stackLayer": "Layer 1 (Tray #C)",
+      "category": "Sensors & Modules",
+      "purpose": "Vibration tilt switches and IR obstacle sensors.",
+      "specifications": "3.3V-5V DC, LM393 comparator",
+      "compatibleComponents": [
+        "Arduino Nano"
+      ],
+      "alternatives": [
+        "PIR Motion Sensor"
+      ],
+      "inventoryState": "AVAILABLE",
+      "quantity": 9,
+      "unit": "pcs",
+      "minQuantity": 3,
+      "unitPrice": 150,
+      "tags": [
+        "vibration",
+        "infrared"
+      ],
+      "lastUpdated": "2026-07-27"
+    },
+    {
+      "id": "COMP-018",
+      "name": "MQ Gas Sensors Box (MQ-2, MQ-3, MQ-7, MQ-135)",
+      "partNumber": "MQ-GAS-KIT",
+      "manufacturer": "Hanwei Electronics",
+      "barcode": "8901234000187",
+      "imageUrl": "https://images.unsplash.com/photo-1608564697071-ddf911d81370?w=400&q=80",
+      "labName": "Main Robotics & Embedded Systems Lab",
+      "roomName": "Room 101 - Prototyping Hall",
+      "rackId": 1,
+      "shelfId": 2,
+      "boxId": "BOX B-004",
+      "stackLayer": "Layer 2 (Middle Tray #A)",
+      "category": "Sensors & Modules",
+      "purpose": "Gas detection kit (MQ-2, MQ-3, MQ-7, MQ-135).",
+      "specifications": "5V DC heater, Analog & Digital output",
+      "compatibleComponents": [
+        "Arduino Uno"
+      ],
+      "alternatives": [
+        "SGP30 Gas Sensor"
+      ],
+      "inventoryState": "AVAILABLE",
+      "quantity": 10,
+      "unit": "pcs",
+      "minQuantity": 4,
+      "unitPrice": 350,
+      "tags": [
+        "gas",
+        "mq2",
+        "mq135"
+      ],
+      "lastUpdated": "2026-07-27"
+    },
+    {
+      "id": "COMP-019",
+      "name": "Heart Rate Pulse & TTP223 Touch Sensor",
+      "partNumber": "PULSE-TTP223",
+      "manufacturer": "Generic",
+      "barcode": "8901234000194",
+      "imageUrl": "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&q=80",
+      "labName": "Main Robotics & Embedded Systems Lab",
+      "roomName": "Room 101 - Prototyping Hall",
+      "rackId": 1,
+      "shelfId": 2,
+      "boxId": "BOX B-005",
+      "stackLayer": "Layer 2 (Middle Tray #B)",
+      "category": "Sensors & Modules",
+      "purpose": "Optical Pulse sensors & TTP223 touch switches.",
+      "specifications": "3.3V-5V DC, PPG optical sensor",
+      "compatibleComponents": [
+        "ESP32"
+      ],
+      "alternatives": [
+        "MAX30102 Pulse Oximeter"
+      ],
+      "inventoryState": "AVAILABLE",
+      "quantity": 6,
+      "unit": "pcs",
+      "minQuantity": 2,
+      "unitPrice": 280,
+      "tags": [
+        "pulse",
+        "heartrate"
+      ],
+      "lastUpdated": "2026-07-27"
+    },
+    {
+      "id": "COMP-020",
+      "name": "Temperature & Humidity Sensor",
+      "partNumber": "DHT11",
+      "manufacturer": "Aosong Electronics",
+      "barcode": "8901234000200",
+      "imageUrl": "https://images.unsplash.com/photo-1553406830-ef2513450d76?w=400&q=80",
+      "labName": "Main Robotics & Embedded Systems Lab",
+      "roomName": "Room 101 - Prototyping Hall",
+      "rackId": 1,
+      "shelfId": 2,
+      "boxId": "BOX B-006",
+      "stackLayer": "Layer 2 (Middle Tray #C)",
+      "category": "Sensors & Modules",
+      "purpose": "Digital temperature and humidity sensor.",
+      "specifications": "3.3V-5V DC, 20-90% RH, 0-50\u00b0C",
+      "compatibleComponents": [
+        "ESP8266"
+      ],
+      "alternatives": [
+        "DHT22"
+      ],
+      "inventoryState": "AVAILABLE",
+      "quantity": 4,
+      "unit": "pcs",
+      "minQuantity": 2,
+      "unitPrice": 160,
+      "tags": [
+        "dht11",
+        "temperature"
+      ],
+      "lastUpdated": "2026-07-27"
+    },
+    {
+      "id": "COMP-021",
+      "name": "Sound Sensor Module",
+      "partNumber": "KY-038",
+      "manufacturer": "Keyes",
+      "barcode": "8901234000217",
+      "imageUrl": "https://images.unsplash.com/photo-1608564697071-ddf911d81370?w=400&q=80",
+      "labName": "Main Robotics & Embedded Systems Lab",
+      "roomName": "Room 101 - Prototyping Hall",
+      "rackId": 1,
+      "shelfId": 2,
+      "boxId": "BOX B-007",
+      "stackLayer": "Layer 2 (Middle Tray #D)",
+      "category": "Sensors & Modules",
+      "purpose": "Acoustic microphone sound detection module.",
+      "specifications": "LM393 amplifier, adjustable sensitivity",
+      "compatibleComponents": [
+        "Arduino Nano"
+      ],
+      "alternatives": [
+        "MAX4466"
+      ],
+      "inventoryState": "AVAILABLE",
+      "quantity": 3,
+      "unit": "pcs",
+      "minQuantity": 1,
+      "unitPrice": 140,
+      "tags": [
+        "sound",
+        "microphone"
+      ],
+      "lastUpdated": "2026-07-27"
+    },
+    {
+      "id": "COMP-022",
+      "name": "Force Sensing Resistor (FSR)",
+      "partNumber": "FSR-402",
+      "manufacturer": "Interlink Electronics",
+      "barcode": "8901234000224",
+      "imageUrl": "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&q=80",
+      "labName": "Main Robotics & Embedded Systems Lab",
+      "roomName": "Room 101 - Prototyping Hall",
+      "rackId": 1,
+      "shelfId": 2,
+      "boxId": "BOX B-008",
+      "stackLayer": "Layer 3 (Bottom Tray #A)",
+      "category": "Sensors & Modules",
+      "purpose": "Polymer thick film force sensing resistor.",
+      "specifications": "12.7mm active area, force range 0.2N-20N",
+      "compatibleComponents": [
+        "Arduino Nano"
+      ],
+      "alternatives": [
+        "Load Cell 5kg"
+      ],
+      "inventoryState": "AVAILABLE",
+      "quantity": 2,
+      "unit": "pcs",
+      "minQuantity": 1,
+      "unitPrice": 680,
+      "tags": [
+        "fsr",
+        "force"
+      ],
+      "lastUpdated": "2026-07-27"
+    },
+    {
+      "id": "COMP-023",
+      "name": "Rain Drop Sensor Board",
+      "partNumber": "RAIN-SENS",
+      "manufacturer": "Generic",
+      "barcode": "8901234000231",
+      "imageUrl": "https://images.unsplash.com/photo-1553406830-ef2513450d76?w=400&q=80",
+      "labName": "Main Robotics & Embedded Systems Lab",
+      "roomName": "Room 101 - Prototyping Hall",
+      "rackId": 1,
+      "shelfId": 2,
+      "boxId": "BOX B-009",
+      "stackLayer": "Layer 3 (Bottom Tray #B)",
+      "category": "Sensors & Modules",
+      "purpose": "Raindrop moisture sensing board.",
+      "specifications": "Analog & Digital output",
+      "compatibleComponents": [
+        "Arduino Uno"
+      ],
+      "alternatives": [
+        "Soil Moisture Sensor"
+      ],
+      "inventoryState": "AVAILABLE",
+      "quantity": 2,
+      "unit": "pcs",
+      "minQuantity": 1,
+      "unitPrice": 190,
+      "tags": [
+        "rain"
+      ],
+      "lastUpdated": "2026-07-27"
+    },
+    {
+      "id": "COMP-024",
+      "name": "Touch Sensor Module TTP 224 (4-Key)",
+      "partNumber": "TTP224",
+      "manufacturer": "TonTek",
+      "barcode": "8901234000248",
+      "imageUrl": "https://images.unsplash.com/photo-1608564697071-ddf911d81370?w=400&q=80",
+      "labName": "Main Robotics & Embedded Systems Lab",
+      "roomName": "Room 101 - Prototyping Hall",
+      "rackId": 1,
+      "shelfId": 2,
+      "boxId": "BOX B-010",
+      "stackLayer": "Layer 3 (Bottom Tray #C)",
+      "category": "Sensors & Modules",
+      "purpose": "4-Channel capacitive touch keypad.",
+      "specifications": "TTP224 IC, 4 touch status LEDs",
+      "compatibleComponents": [
+        "Arduino Nano"
+      ],
+      "alternatives": [
+        "4x4 Matrix Keypad"
+      ],
+      "inventoryState": "AVAILABLE",
+      "quantity": 3,
+      "unit": "pcs",
+      "minQuantity": 1,
+      "unitPrice": 210,
+      "tags": [
+        "ttp224"
+      ],
+      "lastUpdated": "2026-07-27"
+    },
+    {
+      "id": "COMP-025",
+      "name": "HC-SR501 PIR Motion Sensor Module",
+      "partNumber": "HC-SR501",
+      "manufacturer": "Generic",
+      "barcode": "8901234000255",
+      "imageUrl": "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&q=80",
+      "labName": "Main Robotics & Embedded Systems Lab",
+      "roomName": "Room 101 - Prototyping Hall",
+      "rackId": 1,
+      "shelfId": 2,
+      "boxId": "BOX B-011",
+      "stackLayer": "Layer 3 (Bottom Tray #D)",
+      "category": "Sensors & Modules",
+      "purpose": "PIR human body motion detector.",
+      "specifications": "4.5V-20V input, 7m detection range",
+      "compatibleComponents": [
+        "Arduino Uno"
+      ],
+      "alternatives": [
+        "RCW-0001 Ultrasonic"
+      ],
+      "inventoryState": "AVAILABLE",
+      "quantity": 3,
+      "unit": "pcs",
+      "minQuantity": 1,
+      "unitPrice": 190,
+      "tags": [
+        "pir",
+        "motion"
+      ],
+      "lastUpdated": "2026-07-27"
+    },
+    {
+      "id": "COMP-026",
+      "name": "Sound Sensor (Big Microphone Module)",
+      "partNumber": "BIG-MIC-SOUND",
+      "manufacturer": "Keyes",
+      "barcode": "8901234000262",
+      "imageUrl": "https://images.unsplash.com/photo-1553406830-ef2513450d76?w=400&q=80",
+      "labName": "Main Robotics & Embedded Systems Lab",
+      "roomName": "Room 101 - Prototyping Hall",
+      "rackId": 1,
+      "shelfId": 2,
+      "boxId": "BOX B-012",
+      "stackLayer": "Layer 4 (Bottom Bin #E)",
+      "category": "Sensors & Modules",
+      "purpose": "Big electret microphone sound sensor.",
+      "specifications": "LM393 comparator, analog/digital output",
+      "compatibleComponents": [
+        "Arduino Nano"
+      ],
+      "alternatives": [
+        "KY-038 Sound Sensor"
+      ],
+      "inventoryState": "AVAILABLE",
+      "quantity": 2,
+      "unit": "pcs",
+      "minQuantity": 1,
+      "unitPrice": 175,
+      "tags": [
+        "sound",
+        "bigmic"
+      ],
+      "lastUpdated": "2026-07-27"
+    },
+    {
+      "id": "COMP-027",
+      "name": "Soil Moisture Sensor Module",
+      "partNumber": "SOIL-MOIST-V1",
+      "manufacturer": "Generic AgTech",
+      "barcode": "8901234000279",
+      "imageUrl": "https://images.unsplash.com/photo-1608564697071-ddf911d81370?w=400&q=80",
+      "labName": "Main Robotics & Embedded Systems Lab",
+      "roomName": "Room 101 - Prototyping Hall",
+      "rackId": 1,
+      "shelfId": 2,
+      "boxId": "BOX B-013",
+      "stackLayer": "Layer 4 (Bottom Bin #F)",
+      "category": "Sensors & Modules",
+      "purpose": "Soil humidity moisture probe.",
+      "specifications": "3.3V-5V DC, analog/digital output",
+      "compatibleComponents": [
+        "12V Water Pump"
+      ],
+      "alternatives": [
+        "Capacitive Soil Sensor"
+      ],
+      "inventoryState": "AVAILABLE",
+      "quantity": 4,
+      "unit": "pcs",
+      "minQuantity": 2,
+      "unitPrice": 140,
+      "tags": [
+        "soil",
+        "moisture"
+      ],
+      "lastUpdated": "2026-07-27"
+    },
+    {
+      "id": "COMP-028",
+      "name": "LDR Light Dependent Resistor 5mm",
+      "partNumber": "LDR-5MM",
+      "manufacturer": "Generic Opto",
+      "barcode": "8901234000286",
+      "imageUrl": "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&q=80",
+      "labName": "Main Robotics & Embedded Systems Lab",
+      "roomName": "Room 101 - Prototyping Hall",
+      "rackId": 2,
+      "shelfId": 5,
+      "boxId": "BOX B-014",
+      "stackLayer": "Layer 4 (Bottom Bin #G)",
+      "category": "Passive Components",
+      "purpose": "5mm photoresistors for light measurement.",
+      "specifications": "10k-20k ohm light resistance",
+      "compatibleComponents": [
+        "10k Resistor"
+      ],
+      "alternatives": [
+        "BH1750 Sensor"
+      ],
+      "inventoryState": "AVAILABLE",
+      "quantity": 11,
+      "unit": "pcs",
+      "minQuantity": 5,
+      "unitPrice": 25,
+      "tags": [
+        "ldr",
+        "photoresistor"
+      ],
+      "lastUpdated": "2026-07-27"
+    },
+    {
+      "id": "COMP-029",
+      "name": "Flex Sensor & Color Sensor TCS3200",
+      "partNumber": "FLEX-TCS3200",
+      "manufacturer": "Spectra Symbol / TAOS",
+      "barcode": "8901234000293",
+      "imageUrl": "https://images.unsplash.com/photo-1553406830-ef2513450d76?w=400&q=80",
+      "labName": "Main Robotics & Embedded Systems Lab",
+      "roomName": "Room 101 - Prototyping Hall",
+      "rackId": 1,
+      "shelfId": 2,
+      "boxId": "BOX B-015",
+      "stackLayer": "Layer 4 (Bottom Bin #H)",
+      "category": "Sensors & Modules",
+      "purpose": "2.2-inch Flex sensors & TCS3200 color sensors.",
+      "specifications": "TCS3200 photodiode array, Flex variable resistor",
+      "compatibleComponents": [
+        "Arduino Uno"
+      ],
+      "alternatives": [
+        "TCS34725 RGB Sensor"
+      ],
+      "inventoryState": "AVAILABLE",
+      "quantity": 4,
+      "unit": "pcs",
+      "minQuantity": 2,
+      "unitPrice": 950,
+      "tags": [
+        "flex",
+        "colorsensor"
+      ],
+      "lastUpdated": "2026-07-27"
+    },
+    {
+      "id": "COMP-030",
+      "name": "Johnson DC Motor 60 RPM",
+      "partNumber": "JOHNSON-60RPM",
+      "manufacturer": "Johnson Electric",
+      "barcode": "8901234000309",
+      "imageUrl": "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&q=80",
+      "labName": "Main Robotics & Embedded Systems Lab",
+      "roomName": "Room 101 - Prototyping Hall",
+      "rackId": 1,
+      "shelfId": 3,
+      "boxId": "BOX C-001",
+      "stackLayer": "Heavy Drive Bin #1",
+      "category": "Hardware & Tools",
+      "purpose": "High torque 12V DC motor at 60 RPM.",
+      "specifications": "12V DC, 60 RPM, 12 kg-cm stall torque",
+      "compatibleComponents": [
+        "BTS7960 Driver"
+      ],
+      "alternatives": [
+        "Johnson 300 RPM"
+      ],
+      "inventoryState": "AVAILABLE",
+      "quantity": 4,
+      "unit": "pcs",
+      "minQuantity": 2,
+      "unitPrice": 750,
+      "tags": [
+        "motor",
+        "johnson"
+      ],
+      "lastUpdated": "2026-07-27"
+    },
+    {
+      "id": "COMP-031",
+      "name": "Johnson DC Motor 300 RPM 12V",
+      "partNumber": "JOHNSON-300RPM",
+      "manufacturer": "Johnson Electric",
+      "barcode": "8901234000316",
+      "imageUrl": "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&q=80",
+      "labName": "Main Robotics & Embedded Systems Lab",
+      "roomName": "Room 101 - Prototyping Hall",
+      "rackId": 1,
+      "shelfId": 3,
+      "boxId": "BOX C-002",
+      "stackLayer": "Heavy Drive Bin #2",
+      "category": "Hardware & Tools",
+      "purpose": "High-speed 12V DC geared motor at 300 RPM.",
+      "specifications": "12V DC, 300 RPM, 4.5 kg-cm torque",
+      "compatibleComponents": [
+        "BTS7960 Driver"
+      ],
+      "alternatives": [
+        "Johnson 200 RPM"
+      ],
+      "inventoryState": "AVAILABLE",
+      "quantity": 6,
+      "unit": "pcs",
+      "minQuantity": 2,
+      "unitPrice": 750,
+      "tags": [
+        "motor",
+        "johnson"
+      ],
+      "lastUpdated": "2026-07-27"
+    },
+    {
+      "id": "COMP-032",
+      "name": "Johnson DC Motor 200 RPM 12V",
+      "partNumber": "JOHNSON-200RPM",
+      "manufacturer": "Johnson Electric",
+      "barcode": "8901234000323",
+      "imageUrl": "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&q=80",
+      "labName": "Main Robotics & Embedded Systems Lab",
+      "roomName": "Room 101 - Prototyping Hall",
+      "rackId": 1,
+      "shelfId": 3,
+      "boxId": "BOX C-003",
+      "stackLayer": "Heavy Drive Bin #3",
+      "category": "Hardware & Tools",
+      "purpose": "12V DC geared motor at 200 RPM.",
+      "specifications": "12V DC, 200 RPM, 6.5 kg-cm torque",
+      "compatibleComponents": [
+        "L298N Driver"
+      ],
+      "alternatives": [
+        "Johnson 300 RPM"
+      ],
+      "inventoryState": "AVAILABLE",
+      "quantity": 4,
+      "unit": "pcs",
+      "minQuantity": 2,
+      "unitPrice": 750,
+      "tags": [
+        "motor",
+        "johnson"
+      ],
+      "lastUpdated": "2026-07-27"
+    },
+    {
+      "id": "COMP-033",
+      "name": "Johnson DC Motor 100 RPM 12V",
+      "partNumber": "JOHNSON-100RPM",
+      "manufacturer": "Johnson Electric",
+      "barcode": "8901234000330",
+      "imageUrl": "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&q=80",
+      "labName": "Main Robotics & Embedded Systems Lab",
+      "roomName": "Room 101 - Prototyping Hall",
+      "rackId": 1,
+      "shelfId": 3,
+      "boxId": "BOX C-004",
+      "stackLayer": "Heavy Drive Bin #4",
+      "category": "Hardware & Tools",
+      "purpose": "12V DC geared motor at 100 RPM.",
+      "specifications": "12V DC, 100 RPM, 9.5 kg-cm torque",
+      "compatibleComponents": [
+        "L298N Driver"
+      ],
+      "alternatives": [
+        "Johnson 60 RPM"
+      ],
+      "inventoryState": "AVAILABLE",
+      "quantity": 4,
+      "unit": "pcs",
+      "minQuantity": 2,
+      "unitPrice": 750,
+      "tags": [
+        "motor",
+        "johnson"
+      ],
+      "lastUpdated": "2026-07-27"
+    },
+    {
+      "id": "COMP-034",
+      "name": "Johnson DC Motor 30 RPM 12V",
+      "partNumber": "JOHNSON-30RPM",
+      "manufacturer": "Johnson Electric",
+      "barcode": "8901234000347",
+      "imageUrl": "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&q=80",
+      "labName": "Main Robotics & Embedded Systems Lab",
+      "roomName": "Room 101 - Prototyping Hall",
+      "rackId": 1,
+      "shelfId": 3,
+      "boxId": "BOX C-005",
+      "stackLayer": "Heavy Drive Bin #5",
+      "category": "Hardware & Tools",
+      "purpose": "Ultra high-torque 12V DC motor at 30 RPM.",
+      "specifications": "12V DC, 30 RPM, 18 kg-cm torque",
+      "compatibleComponents": [
+        "BTS7960 Driver"
+      ],
+      "alternatives": [
+        "Johnson 60 RPM"
+      ],
+      "inventoryState": "AVAILABLE",
+      "quantity": 2,
+      "unit": "pcs",
+      "minQuantity": 1,
+      "unitPrice": 790,
+      "tags": [
+        "motor",
+        "johnson"
+      ],
+      "lastUpdated": "2026-07-27"
+    },
+    {
+      "id": "COMP-035",
+      "name": "NEMA Stepper Motor",
+      "partNumber": "NEMA17",
+      "manufacturer": "StepperOnline",
+      "barcode": "8901234000354",
+      "imageUrl": "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&q=80",
+      "labName": "Main Robotics & Embedded Systems Lab",
+      "roomName": "Room 101 - Prototyping Hall",
+      "rackId": 1,
+      "shelfId": 3,
+      "boxId": "BOX C-006",
+      "stackLayer": "Heavy Drive Bin #6",
+      "category": "Hardware & Tools",
+      "purpose": "1.8\u00b0 Bipolar 4-wire NEMA 17 stepper motor.",
+      "specifications": "1.8\u00b0 step angle, 1.5A phase current",
+      "compatibleComponents": [
+        "A4988 Driver"
+      ],
+      "alternatives": [
+        "NEMA 23 Stepper"
+      ],
+      "inventoryState": "AVAILABLE",
+      "quantity": 5,
+      "unit": "pcs",
+      "minQuantity": 2,
+      "unitPrice": 950,
+      "tags": [
+        "nema",
+        "stepper"
+      ],
+      "lastUpdated": "2026-07-27"
+    },
+    {
+      "id": "COMP-036",
+      "name": "Micro Servo SG90",
+      "partNumber": "SG90",
+      "manufacturer": "TowerPro",
+      "barcode": "8901234000361",
+      "imageUrl": "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&q=80",
+      "labName": "Main Robotics & Embedded Systems Lab",
+      "roomName": "Room 101 - Prototyping Hall",
+      "rackId": 1,
+      "shelfId": 3,
+      "boxId": "BOX C-007",
+      "stackLayer": "Servo Tray Bin #A",
+      "category": "Hardware & Tools",
+      "purpose": "Lightweight 9g micro servo motor.",
+      "specifications": "4.8V-6V DC, 1.8 kg-cm torque",
+      "compatibleComponents": [
+        "Arduino Nano"
+      ],
+      "alternatives": [
+        "MG90S Servo"
+      ],
+      "inventoryState": "AVAILABLE",
+      "quantity": 12,
+      "unit": "pcs",
+      "minQuantity": 4,
+      "unitPrice": 120,
+      "tags": [
+        "servo",
+        "sg90"
+      ],
+      "lastUpdated": "2026-07-27"
+    },
+    {
+      "id": "COMP-037",
+      "name": "MG90S Micro Metal Gear Servo",
+      "partNumber": "MG90S",
+      "manufacturer": "TowerPro",
+      "barcode": "8901234000378",
+      "imageUrl": "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&q=80",
+      "labName": "Main Robotics & Embedded Systems Lab",
+      "roomName": "Room 101 - Prototyping Hall",
+      "rackId": 1,
+      "shelfId": 3,
+      "boxId": "BOX C-008",
+      "stackLayer": "Servo Tray Bin #B",
+      "category": "Hardware & Tools",
+      "purpose": "9g micro servo with metal gears.",
+      "specifications": "4.8V-6.0V DC, 2.2 kg-cm torque",
+      "compatibleComponents": [
+        "Arduino Nano"
+      ],
+      "alternatives": [
+        "SG90 Servo"
+      ],
+      "inventoryState": "AVAILABLE",
+      "quantity": 8,
+      "unit": "pcs",
+      "minQuantity": 3,
+      "unitPrice": 220,
+      "tags": [
+        "servo",
+        "mg90s"
+      ],
+      "lastUpdated": "2026-07-27"
+    },
+    {
+      "id": "COMP-038",
+      "name": "Servo MG995 High Torque Motor",
+      "partNumber": "MG995",
+      "manufacturer": "TowerPro",
+      "barcode": "8901234000385",
+      "imageUrl": "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&q=80",
+      "labName": "Main Robotics & Embedded Systems Lab",
+      "roomName": "Room 101 - Prototyping Hall",
+      "rackId": 1,
+      "shelfId": 3,
+      "boxId": "BOX C-009",
+      "stackLayer": "Servo Tray Bin #C",
+      "category": "Hardware & Tools",
+      "purpose": "Heavy-duty high torque metal gear servo.",
+      "specifications": "4.8V-7.2V DC, 10 kg-cm torque",
+      "compatibleComponents": [
+        "PCA9685 Driver"
+      ],
+      "alternatives": [
+        "MG945 Servo"
+      ],
+      "inventoryState": "AVAILABLE",
+      "quantity": 4,
+      "unit": "pcs",
+      "minQuantity": 2,
+      "unitPrice": 480,
+      "tags": [
+        "servo",
+        "mg995"
+      ],
+      "lastUpdated": "2026-07-27"
+    },
+    {
+      "id": "COMP-039",
+      "name": "Tower Pro MG945 Metal Gear Servo Motor",
+      "partNumber": "MG945",
+      "manufacturer": "TowerPro",
+      "barcode": "8901234000392",
+      "imageUrl": "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&q=80",
+      "labName": "Main Robotics & Embedded Systems Lab",
+      "roomName": "Room 101 - Prototyping Hall",
+      "rackId": 1,
+      "shelfId": 3,
+      "boxId": "BOX C-010",
+      "stackLayer": "Servo Tray Bin #D",
+      "category": "Hardware & Tools",
+      "purpose": "12 kg-cm digital metal gear servo.",
+      "specifications": "4.8V-7.2V DC, 12 kg-cm torque",
+      "compatibleComponents": [
+        "Arduino Mega"
+      ],
+      "alternatives": [
+        "MG995 Servo"
+      ],
+      "inventoryState": "AVAILABLE",
+      "quantity": 3,
+      "unit": "pcs",
+      "minQuantity": 1,
+      "unitPrice": 520,
+      "tags": [
+        "servo",
+        "mg945"
+      ],
+      "lastUpdated": "2026-07-27"
+    },
+    {
+      "id": "COMP-040",
+      "name": "12V High Quality DC Mini Submersible Water Pump",
+      "partNumber": "PUMP-12V",
+      "manufacturer": "Robu Hydro",
+      "barcode": "8901234000408",
+      "imageUrl": "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&q=80",
+      "labName": "Main Robotics & Embedded Systems Lab",
+      "roomName": "Room 101 - Prototyping Hall",
+      "rackId": 1,
+      "shelfId": 3,
+      "boxId": "BOX C-011",
+      "stackLayer": "Fluidic Bin #1",
+      "category": "Hardware & Tools",
+      "purpose": "Brushless submersible water pump.",
+      "specifications": "12V DC, 240L/H flow rate, IP68",
+      "compatibleComponents": [
+        "5V Relay Module"
+      ],
+      "alternatives": [
+        "5V Mini USB Pump"
+      ],
+      "inventoryState": "AVAILABLE",
+      "quantity": 4,
+      "unit": "pcs",
+      "minQuantity": 2,
+      "unitPrice": 780,
+      "tags": [
+        "pump"
+      ],
+      "lastUpdated": "2026-07-27"
+    },
+    {
+      "id": "COMP-041",
+      "name": "L293 / L293D Motor Driver Shield Module",
+      "partNumber": "L293D-SHIELD",
+      "manufacturer": "STMicroelectronics",
+      "barcode": "8901234000415",
+      "imageUrl": "https://images.unsplash.com/photo-1608564697071-ddf911d81370?w=400&q=80",
+      "labName": "Main Robotics & Embedded Systems Lab",
+      "roomName": "Room 101 - Prototyping Hall",
+      "rackId": 1,
+      "shelfId": 2,
+      "boxId": "BOX C-012",
+      "stackLayer": "Driver Board Tray #A",
+      "category": "Sensors & Modules",
+      "purpose": "4-Channel H-Bridge motor driver shield.",
+      "specifications": "Drives 4 DC motors, 0.6A per channel",
+      "compatibleComponents": [
+        "Arduino Uno R3"
+      ],
+      "alternatives": [
+        "L298N Motor Driver"
+      ],
+      "inventoryState": "AVAILABLE",
+      "quantity": 5,
+      "unit": "pcs",
+      "minQuantity": 2,
+      "unitPrice": 240,
+      "tags": [
+        "l293d",
+        "motordriver"
+      ],
+      "lastUpdated": "2026-07-27"
+    },
+    {
+      "id": "COMP-042",
+      "name": "L298N Dual H-Bridge Motor Driver Module",
+      "partNumber": "L298N",
+      "manufacturer": "STMicroelectronics",
+      "barcode": "8901234000422",
+      "imageUrl": "https://images.unsplash.com/photo-1608564697071-ddf911d81370?w=400&q=80",
+      "labName": "Main Robotics & Embedded Systems Lab",
+      "roomName": "Room 101 - Prototyping Hall",
+      "rackId": 1,
+      "shelfId": 2,
+      "boxId": "BOX C-013",
+      "stackLayer": "Driver Board Tray #B",
+      "category": "Sensors & Modules",
+      "purpose": "Dual H-Bridge motor driver module.",
+      "specifications": "5V-35V motor power, 2A per channel",
+      "compatibleComponents": [
+        "Johnson DC Motors"
+      ],
+      "alternatives": [
+        "BTS7960 Driver"
+      ],
+      "inventoryState": "AVAILABLE",
+      "quantity": 6,
+      "unit": "pcs",
+      "minQuantity": 2,
+      "unitPrice": 280,
+      "tags": [
+        "l298n",
+        "motordriver"
+      ],
+      "lastUpdated": "2026-07-27"
+    },
+    {
+      "id": "COMP-043",
+      "name": "BTS7960 43A High Power Motor Driver Module",
+      "partNumber": "BTS7960",
+      "manufacturer": "Infineon",
+      "barcode": "8901234000439",
+      "imageUrl": "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&q=80",
+      "labName": "Main Robotics & Embedded Systems Lab",
+      "roomName": "Room 101 - Prototyping Hall",
+      "rackId": 1,
+      "shelfId": 2,
+      "boxId": "BOX C-014",
+      "stackLayer": "Driver Board Tray #C",
+      "category": "Sensors & Modules",
+      "purpose": "43A high power H-bridge motor driver.",
+      "specifications": "5.5V-27V motor power, 43A peak current",
+      "compatibleComponents": [
+        "Johnson DC Motor 300 RPM"
+      ],
+      "alternatives": [
+        "L298N Motor Driver"
+      ],
+      "inventoryState": "AVAILABLE",
+      "quantity": 3,
+      "unit": "pcs",
+      "minQuantity": 1,
+      "unitPrice": 650,
+      "tags": [
+        "bts7960",
+        "43a"
+      ],
+      "lastUpdated": "2026-07-27"
+    },
+    {
+      "id": "COMP-044",
+      "name": "L-Shape Mounting Bracket for Johnson DC Motor",
+      "partNumber": "JOHNSON-BRACKET",
+      "manufacturer": "Robu Mechanics",
+      "barcode": "8901234000446",
+      "imageUrl": "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400&q=80",
+      "labName": "Main Robotics & Embedded Systems Lab",
+      "roomName": "Room 101 - Prototyping Hall",
+      "rackId": 1,
+      "shelfId": 3,
+      "boxId": "BOX C-015",
+      "stackLayer": "Hardware Tray #1",
+      "category": "Hardware & Tools",
+      "purpose": "3mm steel L-bracket for Johnson DC motors.",
+      "specifications": "3mm steel construction, M3 & M4 holes",
+      "compatibleComponents": [
+        "Johnson DC Motors"
+      ],
+      "alternatives": [
+        "Universal Bracket"
+      ],
+      "inventoryState": "AVAILABLE",
+      "quantity": 10,
+      "unit": "pcs",
+      "minQuantity": 4,
+      "unitPrice": 85,
+      "tags": [
+        "bracket",
+        "johnson"
+      ],
+      "lastUpdated": "2026-07-27"
+    },
+    {
+      "id": "COMP-045",
+      "name": "Female 2.54mm 2P Dupont Housing",
+      "partNumber": "DUPONT-2P-FEMALE",
+      "manufacturer": "Harwin",
+      "barcode": "8901234000453",
+      "imageUrl": "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&q=80",
+      "labName": "Main Robotics & Embedded Systems Lab",
+      "roomName": "Room 101 - Prototyping Hall",
+      "rackId": 1,
+      "shelfId": 4,
+      "boxId": "BOX D-001",
+      "stackLayer": "Organizer Drawer #1",
+      "category": "Connectors & Cabling",
+      "purpose": "2.54mm pitch female dupont connector housings.",
+      "specifications": "2.54mm pitch, 2-position female housing",
+      "compatibleComponents": [
+        "Female Crimp Pins"
+      ],
+      "alternatives": [
+        "JST XH Connector"
+      ],
+      "inventoryState": "AVAILABLE",
+      "quantity": 150,
+      "unit": "pcs",
+      "minQuantity": 50,
+      "unitPrice": 2.5,
+      "tags": [
+        "dupont",
+        "2.54mm"
+      ],
+      "lastUpdated": "2026-07-27"
+    },
+    {
+      "id": "COMP-046",
+      "name": "Female 2.54mm Crimp Terminal Pins",
+      "partNumber": "DUPONT-FEMALE-PIN",
+      "manufacturer": "Harwin",
+      "barcode": "8901234000460",
+      "imageUrl": "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&q=80",
+      "labName": "Main Robotics & Embedded Systems Lab",
+      "roomName": "Room 101 - Prototyping Hall",
+      "rackId": 1,
+      "shelfId": 4,
+      "boxId": "BOX D-002",
+      "stackLayer": "Organizer Drawer #2",
+      "category": "Connectors & Cabling",
+      "purpose": "Female crimp terminal contacts for dupont wire.",
+      "specifications": "24-28 AWG wire gauge",
+      "compatibleComponents": [
+        "Dupont Housings"
+      ],
+      "alternatives": [
+        "Male Crimp Pins"
+      ],
+      "inventoryState": "AVAILABLE",
+      "quantity": 300,
+      "unit": "pcs",
+      "minQuantity": 100,
+      "unitPrice": 1.2,
+      "tags": [
+        "crimp",
+        "female-pin"
+      ],
+      "lastUpdated": "2026-07-27"
+    },
+    {
+      "id": "COMP-047",
+      "name": "Male 2.54mm Crimp Terminal Pins",
+      "partNumber": "DUPONT-MALE-PIN",
+      "manufacturer": "Harwin",
+      "barcode": "8901234000477",
+      "imageUrl": "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&q=80",
+      "labName": "Main Robotics & Embedded Systems Lab",
+      "roomName": "Room 101 - Prototyping Hall",
+      "rackId": 1,
+      "shelfId": 4,
+      "boxId": "BOX D-003",
+      "stackLayer": "Organizer Drawer #3",
+      "category": "Connectors & Cabling",
+      "purpose": "Male crimp terminal pins for dupont headers.",
+      "specifications": "24-28 AWG wire gauge",
+      "compatibleComponents": [
+        "Dupont Housings"
+      ],
+      "alternatives": [
+        "Female Crimp Pins"
+      ],
+      "inventoryState": "AVAILABLE",
+      "quantity": 250,
+      "unit": "pcs",
+      "minQuantity": 100,
+      "unitPrice": 1.2,
+      "tags": [
+        "crimp",
+        "male-pin"
+      ],
+      "lastUpdated": "2026-07-27"
+    },
+    {
+      "id": "COMP-048",
+      "name": "JST VH Connectors & Crimp Set",
+      "partNumber": "JST-VH-3.96",
+      "manufacturer": "JST Mfg Co",
+      "barcode": "8901234000484",
+      "imageUrl": "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&q=80",
+      "labName": "Main Robotics & Embedded Systems Lab",
+      "roomName": "Room 101 - Prototyping Hall",
+      "rackId": 1,
+      "shelfId": 4,
+      "boxId": "BOX D-004",
+      "stackLayer": "Organizer Drawer #4",
+      "category": "Connectors & Cabling",
+      "purpose": "3.96mm pitch power connector set.",
+      "specifications": "3.96mm pitch, 10A current rating",
+      "compatibleComponents": [
+        "Power Supply Wires"
+      ],
+      "alternatives": [
+        "JST XH Connector"
+      ],
+      "inventoryState": "AVAILABLE",
+      "quantity": 45,
+      "unit": "pcs",
+      "minQuantity": 15,
+      "unitPrice": 12,
+      "tags": [
+        "jst-vh"
+      ],
+      "lastUpdated": "2026-07-27"
+    },
+    {
+      "id": "COMP-049",
+      "name": "JST XH Connectors & Crimp Set",
+      "partNumber": "JST-XH-2.5",
+      "manufacturer": "JST Mfg Co",
+      "barcode": "8901234000491",
+      "imageUrl": "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&q=80",
+      "labName": "Main Robotics & Embedded Systems Lab",
+      "roomName": "Room 101 - Prototyping Hall",
+      "rackId": 1,
+      "shelfId": 4,
+      "boxId": "BOX D-005",
+      "stackLayer": "Organizer Drawer #5",
+      "category": "Connectors & Cabling",
+      "purpose": "2.5mm pitch LiPo battery balance connectors.",
+      "specifications": "2.5mm pitch, 3A rating",
+      "compatibleComponents": [
+        "LiPo Balance Charger"
+      ],
+      "alternatives": [
+        "Dupont Housing"
+      ],
+      "inventoryState": "AVAILABLE",
+      "quantity": 80,
+      "unit": "pcs",
+      "minQuantity": 25,
+      "unitPrice": 8,
+      "tags": [
+        "jst-xh"
+      ],
+      "lastUpdated": "2026-07-27"
+    },
+    {
+      "id": "COMP-050",
+      "name": "Screw Terminal Block 5.08mm 2-Pin",
+      "partNumber": "SCREW-TERM-5.08-2P",
+      "manufacturer": "Phoenix Contact",
+      "barcode": "8901234000507",
+      "imageUrl": "https://images.unsplash.com/photo-1608564697071-ddf911d81370?w=400&q=80",
+      "labName": "Main Robotics & Embedded Systems Lab",
+      "roomName": "Room 101 - Prototyping Hall",
+      "rackId": 1,
+      "shelfId": 4,
+      "boxId": "BOX D-006",
+      "stackLayer": "Terminal Block Compartment #A",
+      "category": "Connectors & Cabling",
+      "purpose": "5.08mm pitch 2-position PCB screw terminal blocks.",
+      "specifications": "5.08mm pitch, 16A 300V AC rating",
+      "compatibleComponents": [
+        "L298N Driver"
+      ],
+      "alternatives": [
+        "Screw Terminal 3-Pin"
+      ],
+      "inventoryState": "AVAILABLE",
+      "quantity": 40,
+      "unit": "pcs",
+      "minQuantity": 15,
+      "unitPrice": 9.5,
+      "tags": [
+        "screw-terminal"
+      ],
+      "lastUpdated": "2026-07-27"
+    },
+    {
+      "id": "COMP-051",
+      "name": "Terminal Block Connector 3-Pin",
+      "partNumber": "SCREW-TERM-5.08-3P",
+      "manufacturer": "Phoenix Contact",
+      "barcode": "8901234000514",
+      "imageUrl": "https://images.unsplash.com/photo-1608564697071-ddf911d81370?w=400&q=80",
+      "labName": "Main Robotics & Embedded Systems Lab",
+      "roomName": "Room 101 - Prototyping Hall",
+      "rackId": 1,
+      "shelfId": 4,
+      "boxId": "BOX D-007",
+      "stackLayer": "Terminal Block Compartment #B",
+      "category": "Connectors & Cabling",
+      "purpose": "5.08mm pitch 3-position PCB screw terminal blocks.",
+      "specifications": "5.08mm pitch, 16A rating",
+      "compatibleComponents": [
+        "5V Relay Module"
+      ],
+      "alternatives": [
+        "Screw Terminal 2-Pin"
+      ],
+      "inventoryState": "AVAILABLE",
+      "quantity": 30,
+      "unit": "pcs",
+      "minQuantity": 10,
+      "unitPrice": 14,
+      "tags": [
+        "screw-terminal"
+      ],
+      "lastUpdated": "2026-07-27"
+    },
+    {
+      "id": "COMP-052",
+      "name": "Quick Wire Connector Clamp",
+      "partNumber": "WAGO-STYLE-221",
+      "manufacturer": "WAGO",
+      "barcode": "8901234000521",
+      "imageUrl": "https://images.unsplash.com/photo-1608564697071-ddf911d81370?w=400&q=80",
+      "labName": "Main Robotics & Embedded Systems Lab",
+      "roomName": "Room 101 - Prototyping Hall",
+      "rackId": 2,
+      "shelfId": 5,
+      "boxId": "BOX D-008",
+      "stackLayer": "Quick Splicing Bin #1",
+      "category": "Connectors & Cabling",
+      "purpose": "Tool-free lever lock quick wire splicing clamps.",
+      "specifications": "32A 450V rating, 24-12 AWG",
+      "compatibleComponents": [
+        "12V Power Wires"
+      ],
+      "alternatives": [
+        "Screw Terminal"
+      ],
+      "inventoryState": "AVAILABLE",
+      "quantity": 25,
+      "unit": "pcs",
+      "minQuantity": 10,
+      "unitPrice": 18,
+      "tags": [
+        "wago",
+        "lever-nut"
+      ],
+      "lastUpdated": "2026-07-27"
+    },
+    {
+      "id": "COMP-053",
+      "name": "Male & Female Battery Connectors (XT60/T-Plug)",
+      "partNumber": "XT60-PAIRS",
+      "manufacturer": "AMASS",
+      "barcode": "8901234000538",
+      "imageUrl": "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&q=80",
+      "labName": "Main Robotics & Embedded Systems Lab",
+      "roomName": "Room 101 - Prototyping Hall",
+      "rackId": 2,
+      "shelfId": 3,
+      "boxId": "BOX C2-001",
+      "stackLayer": "High Current Battery Bin #1",
+      "category": "Connectors & Cabling",
+      "purpose": "Gold-plated XT60 and T-Plug battery connector pairs.",
+      "specifications": "60A continuous rating",
+      "compatibleComponents": [
+        "3S LiPo Battery"
+      ],
+      "alternatives": [
+        "Bullet Connector 3.5mm"
+      ],
+      "inventoryState": "AVAILABLE",
+      "quantity": 15,
+      "unit": "pairs",
+      "minQuantity": 5,
+      "unitPrice": 45,
+      "tags": [
+        "xt60",
+        "lipo"
+      ],
+      "lastUpdated": "2026-07-27"
+    },
+    {
+      "id": "COMP-054",
+      "name": "Male & Female Bullet Connectors 3.5mm",
+      "partNumber": "BULLET-3.5MM",
+      "manufacturer": "AMASS",
+      "barcode": "8901234000545",
+      "imageUrl": "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&q=80",
+      "labName": "Main Robotics & Embedded Systems Lab",
+      "roomName": "Room 101 - Prototyping Hall",
+      "rackId": 1,
+      "shelfId": 4,
+      "boxId": "BOX D-010",
+      "stackLayer": "High Current Battery Bin #2",
+      "category": "Connectors & Cabling",
+      "purpose": "3.5mm gold-plated bullet connectors.",
+      "specifications": "3.5mm diameter, 45A max current",
+      "compatibleComponents": [
+        "BLDC Motor"
+      ],
+      "alternatives": [
+        "XT60 Connector"
+      ],
+      "inventoryState": "AVAILABLE",
+      "quantity": 20,
+      "unit": "pairs",
+      "minQuantity": 8,
+      "unitPrice": 25,
+      "tags": [
+        "bullet-connector"
+      ],
+      "lastUpdated": "2026-07-27"
+    },
+    {
+      "id": "COMP-055",
+      "name": "USB Female 3.0 Panel Mount Port",
+      "partNumber": "USB3-PANEL-MOUNT",
+      "manufacturer": "Amphenol",
+      "barcode": "8901234000552",
+      "imageUrl": "https://images.unsplash.com/photo-1553406830-ef2513450d76?w=400&q=80",
+      "labName": "Main Robotics & Embedded Systems Lab",
+      "roomName": "Room 101 - Prototyping Hall",
+      "rackId": 1,
+      "shelfId": 4,
+      "boxId": "BOX D-011",
+      "stackLayer": "USB Hardware Drawer #1",
+      "category": "Connectors & Cabling",
+      "purpose": "9-Pin USB 3.0 Type-A female panel mount socket.",
+      "specifications": "USB 3.0 5Gbps, 9-pin DIP",
+      "compatibleComponents": [
+        "Raspberry Pi 4"
+      ],
+      "alternatives": [
+        "Mini USB Port"
+      ],
+      "inventoryState": "AVAILABLE",
+      "quantity": 8,
+      "unit": "pcs",
+      "minQuantity": 3,
+      "unitPrice": 35,
+      "tags": [
+        "usb3"
+      ],
+      "lastUpdated": "2026-07-27"
+    },
+    {
+      "id": "COMP-056",
+      "name": "Mini USB Type-B Port Connectors",
+      "partNumber": "MINI-USB-5P",
+      "manufacturer": "Molex",
+      "barcode": "8901234000569",
+      "imageUrl": "https://images.unsplash.com/photo-1553406830-ef2513450d76?w=400&q=80",
+      "labName": "Main Robotics & Embedded Systems Lab",
+      "roomName": "Room 101 - Prototyping Hall",
+      "rackId": 1,
+      "shelfId": 4,
+      "boxId": "BOX D-012",
+      "stackLayer": "USB Hardware Drawer #2",
+      "category": "Connectors & Cabling",
+      "purpose": "Right-angle 5-pin DIP Mini-USB female sockets.",
+      "specifications": "5-pin Mini-B format, right angle",
+      "compatibleComponents": [
+        "Arduino Nano"
+      ],
+      "alternatives": [
+        "Micro-USB Port"
+      ],
+      "inventoryState": "AVAILABLE",
+      "quantity": 18,
+      "unit": "pcs",
+      "minQuantity": 5,
+      "unitPrice": 15,
+      "tags": [
+        "mini-usb"
+      ],
+      "lastUpdated": "2026-07-27"
+    },
+    {
+      "id": "COMP-057",
+      "name": "White Silicon Wire 20mm",
+      "partNumber": "SILICONE-WIRE-20AWG",
+      "manufacturer": "BN-TECH",
+      "barcode": "8901234000576",
+      "imageUrl": "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&q=80",
+      "labName": "Main Robotics & Embedded Systems Lab",
+      "roomName": "Room 101 - Prototyping Hall",
+      "rackId": 2,
+      "shelfId": 5,
+      "boxId": "BOX D-013",
+      "stackLayer": "Wire Spool Compartment #1",
+      "category": "Connectors & Cabling",
+      "purpose": "20 AWG white high-temperature silicone wire.",
+      "specifications": "200\u00b0C temperature rating, tinned copper",
+      "compatibleComponents": [
+        "Johnson DC Motor"
+      ],
+      "alternatives": [
+        "Red/Black Silicone Wire"
+      ],
+      "inventoryState": "AVAILABLE",
+      "quantity": 20,
+      "unit": "meters",
+      "minQuantity": 5,
+      "unitPrice": 35,
+      "tags": [
+        "silicone-wire"
+      ],
+      "lastUpdated": "2026-07-27"
+    },
+    {
+      "id": "COMP-058",
+      "name": "Heatshrink Sleeve 3.5m",
+      "partNumber": "HEATSHRINK-3.5MM",
+      "manufacturer": "Generic",
+      "barcode": "8901234000583",
+      "imageUrl": "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&q=80",
+      "labName": "Main Robotics & Embedded Systems Lab",
+      "roomName": "Room 101 - Prototyping Hall",
+      "rackId": 1,
+      "shelfId": 4,
+      "boxId": "BOX D-014",
+      "stackLayer": "Insulation Tubing Drawer #1",
+      "category": "Hardware & Tools",
+      "purpose": "3.5mm 2:1 shrink ratio polyolefin heatshrink tubing.",
+      "specifications": "3.5mm diameter, 2:1 shrink ratio",
+      "compatibleComponents": [
+        "Solder Joints"
+      ],
+      "alternatives": [
+        "Electrical Tape"
+      ],
+      "inventoryState": "AVAILABLE",
+      "quantity": 15,
+      "unit": "meters",
+      "minQuantity": 5,
+      "unitPrice": 20,
+      "tags": [
+        "heatshrink"
+      ],
+      "lastUpdated": "2026-07-27"
+    },
+    {
+      "id": "COMP-059",
+      "name": "100 Ohm Carbon Film Resistors 1/4W",
+      "partNumber": "RES-100R-0.25W",
+      "manufacturer": "Yageo",
+      "barcode": "8901234000590",
+      "imageUrl": "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&q=80",
+      "labName": "Main Robotics & Embedded Systems Lab",
+      "roomName": "Room 101 - Prototyping Hall",
+      "rackId": 2,
+      "shelfId": 5,
+      "boxId": "BOX D-015",
+      "stackLayer": "Passive Component Tray #1",
+      "category": "Passive Components",
+      "purpose": "100 Ohm 5% 0.25W carbon film resistors.",
+      "specifications": "100 Ohms, 0.25W (1/4W), \u00b15% tolerance",
+      "compatibleComponents": [
+        "LEDs",
+        "Breadboard"
+      ],
+      "alternatives": [
+        "220 Ohm Resistor"
+      ],
+      "inventoryState": "AVAILABLE",
+      "quantity": 200,
+      "unit": "pcs",
+      "minQuantity": 50,
+      "unitPrice": 1,
+      "tags": [
+        "resistor",
+        "100ohm"
+      ],
+      "lastUpdated": "2026-07-27"
+    },
+    {
+      "id": "COMP-061",
+      "name": "SIM7600G-H 4G High Speed SIM Modem",
+      "partNumber": "SIM7600G-H-CAT4",
+      "manufacturer": "SimCom / Waveshare",
+      "barcode": "8901234000613",
+      "imageUrl": "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&q=80",
+      "labName": "Main Robotics & Embedded Systems Lab",
+      "roomName": "Room 101 - Prototyping Hall",
+      "rackId": 2,
+      "shelfId": 1,
+      "boxId": "BOX A2-002",
+      "stackLayer": "Layer 1 (Wireless Modem Bin #2)",
+      "category": "Wireless & Comms",
+      "purpose": "High-speed 4G LTE Cat-4 global SIM modem with GNSS positioning.",
+      "specifications": "150Mbps Downlink / 50Mbps Uplink, LTE-TDD/LTE-FDD/HSPA+/GSM",
+      "compatibleComponents": [
+        "Raspberry Pi 4",
+        "Jetson Nano"
+      ],
+      "alternatives": [
+        "COMP-060 (SIM800L GSM Module)"
+      ],
+      "inventoryState": "AVAILABLE",
+      "quantity": 4,
+      "unit": "pcs",
+      "minQuantity": 1,
+      "unitPrice": 2850,
+      "tags": [
+        "sim",
+        "modem",
+        "4g",
+        "lte",
+        "high-speed"
+      ],
+      "lastUpdated": "2026-07-28"
+    },
+    {
+      "id": "COMP-062",
+      "name": "18650 Battery Holder Case 2-Slot",
+      "partNumber": "BATT-HOLDER-18650-2S",
+      "manufacturer": "Keystone Electronics",
+      "barcode": "8901234000620",
+      "imageUrl": "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&q=80",
+      "labName": "Main Robotics & Embedded Systems Lab",
+      "roomName": "Room 101 - Prototyping Hall",
+      "rackId": 2,
+      "shelfId": 3,
+      "boxId": "BOX C2-002",
+      "stackLayer": "Layer 1 (Battery Storage Bin #2)",
+      "category": "Power & Energy",
+      "purpose": "2-Slot 18650 Li-Ion battery holder case with wire leads.",
+      "specifications": "7.4V series output, dual 18650 cell format",
+      "compatibleComponents": [
+        "COMP-040 (18650 Battery)"
+      ],
+      "alternatives": [
+        "18650 Battery Shield"
+      ],
+      "inventoryState": "AVAILABLE",
+      "quantity": 15,
+      "unit": "pcs",
+      "minQuantity": 4,
+      "unitPrice": 65,
+      "tags": [
+        "battery",
+        "holder",
+        "18650"
+      ],
+      "lastUpdated": "2026-07-28"
+    },
+    {
+      "id": "COMP-063",
+      "name": "Mini Rocker & Toggle Switch Pack",
+      "partNumber": "ROCKER-SWITCH-PACK",
+      "manufacturer": "C&K Switches",
+      "barcode": "8901234000637",
+      "imageUrl": "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&q=80",
+      "labName": "Main Robotics & Embedded Systems Lab",
+      "roomName": "Room 101 - Prototyping Hall",
+      "rackId": 2,
+      "shelfId": 4,
+      "boxId": "BOX D2-002",
+      "stackLayer": "Layer 1 (Switch & Control Bin #2)",
+      "category": "Switches & Controls",
+      "purpose": "SPST Mini rocker switches for power supply control.",
+      "specifications": "2-Pin SPST ON-OFF, 6A 250V AC / 10A 125V AC",
+      "compatibleComponents": [
+        "Control Box",
+        "Power Supply"
+      ],
+      "alternatives": [
+        "Push Button Switch"
+      ],
+      "inventoryState": "AVAILABLE",
+      "quantity": 25,
+      "unit": "pcs",
+      "minQuantity": 5,
+      "unitPrice": 15,
+      "tags": [
+        "switch",
+        "rocker",
+        "toggle"
+      ],
+      "lastUpdated": "2026-07-28"
+    },
+    {
+      "id": "COMP-0597",
+      "name": "ESP 8266",
+      "partNumber": "NODEMCU",
+      "manufacturer": "Lab Component Vendor",
+      "barcode": "8901234950597",
+      "imageUrl": "https://images.unsplash.com/photo-1553406830-ef2513450d76?w=400&q=80",
+      "datasheetUrl": "",
+      "labName": "Main Robotics & Embedded Systems Lab",
+      "roomName": "Room 101 - Prototyping Hall",
+      "rackId": 1,
+      "shelfId": 1,
+      "boxId": "BOX A-009",
+      "stackLayer": "Layer 1 (Top Compartment Bin #A)",
+      "inventoryState": "AVAILABLE",
+      "category": "Microcontrollers & Dev Boards",
+      "quantity": 1,
+      "unit": "pcs",
+      "minQuantity": 1,
+      "unitPrice": 450,
+      "purpose": "Standard laboratory electronic component.",
+      "specifications": "Standard operating parameters.",
+      "compatibleComponents": [],
+      "alternatives": [],
+      "tags": [],
+      "supplierInfo": {
+        "vendorName": "Robu.in / Lab Vendor",
+        "vendorSku": "SKU-ESP ",
+        "vendorUrl": "",
+        "unitPrice": 450,
+        "leadTimeDays": 3
+      },
+      "lastUpdated": "2026-07-29"
+    },
+    {
+      "id": "COMP-4710",
+      "name": "Arduino Protoshield",
+      "partNumber": "PN-ARDUI",
+      "manufacturer": "Lab Component Vendor",
+      "barcode": "8901234294710",
+      "imageUrl": "https://images.unsplash.com/photo-1553406830-ef2513450d76?w=400&q=80",
+      "datasheetUrl": "",
+      "labName": "Main Robotics & Embedded Systems Lab",
+      "roomName": "Room 101 - Prototyping Hall",
+      "rackId": 1,
+      "shelfId": 1,
+      "boxId": "BOX A-015",
+      "stackLayer": "Layer 1 (Top Compartment Bin #A)",
+      "inventoryState": "AVAILABLE",
+      "category": "Microcontrollers & Dev Boards",
+      "quantity": 1,
+      "unit": "pcs",
+      "minQuantity": 1,
+      "unitPrice": 450,
+      "purpose": "Standard laboratory electronic component.",
+      "specifications": "Standard operating parameters.",
+      "compatibleComponents": [],
+      "alternatives": [],
+      "tags": [],
+      "supplierInfo": {
+        "vendorName": "Robu.in / Lab Vendor",
+        "vendorSku": "SKU-ARDU",
+        "vendorUrl": "",
+        "unitPrice": 450,
+        "leadTimeDays": 3
+      },
+      "lastUpdated": "2026-07-29"
+    }
+  ],
+  "boxes": [
+    {
+      "id": "BOX A-001",
+      "rackId": 1,
+      "shelfId": 1,
+      "label": "BOX A-001: Arduino R4 Minima"
+    },
+    {
+      "id": "BOX A-002",
+      "rackId": 1,
+      "shelfId": 1,
+      "label": "BOX A-002: Arduino Uno R3"
+    },
+    {
+      "id": "BOX A-003",
+      "rackId": 1,
+      "shelfId": 1,
+      "label": "BOX A-003: Arduino Nano & ESP32 Microcontrollers"
+    },
+    {
+      "id": "BOX A-004",
+      "rackId": 1,
+      "shelfId": 1,
+      "label": "BOX A-004: Teensy 4.1 Development Board"
+    },
+    {
+      "id": "BOX A-005",
+      "rackId": 1,
+      "shelfId": 1,
+      "label": "BOX A-005: Mega 2560 Pro (Embed)"
+    },
+    {
+      "id": "BOX A-006",
+      "rackId": 1,
+      "shelfId": 1,
+      "label": "BOX A-006: ESP8266 Wi-Fi Module"
+    },
+    {
+      "id": "BOX A-007",
+      "rackId": 1,
+      "shelfId": 1,
+      "label": "BOX A-007: ESP CAM Module with Camera"
+    },
+    {
+      "id": "BOX A-008",
+      "rackId": 1,
+      "shelfId": 1,
+      "label": "BOX A-008: Raspberry Pi Pico W"
+    },
+    {
+      "id": "BOX A-009",
+      "rackId": 1,
+      "shelfId": 1,
+      "label": "BOX A-009: Raspberry Pi Single Board Computer"
+    },
+    {
+      "id": "BOX A-010",
+      "rackId": 1,
+      "shelfId": 1,
+      "label": "BOX A-010: Nvidia Jetson Nano Developer Kit"
+    },
+    {
+      "id": "BOX A-011",
+      "rackId": 1,
+      "shelfId": 1,
+      "label": "BOX A-011: STM32 with ST-Link Programmer"
+    },
+    {
+      "id": "BOX A-012",
+      "rackId": 1,
+      "shelfId": 1,
+      "label": "BOX A-012: STM32 F4VE Core Board"
+    },
+    {
+      "id": "BOX A-013",
+      "rackId": 1,
+      "shelfId": 1,
+      "label": "BOX A-013: STM32F4DCCU6 Core Board"
+    },
+    {
+      "id": "BOX A-014",
+      "rackId": 1,
+      "shelfId": 1,
+      "label": "BOX A-014: CP2102 USB to UART Serial Converter"
+    },
+    {
+      "id": "BOX B-001",
+      "rackId": 1,
+      "shelfId": 2,
+      "label": "BOX B-001: Metal Touch & MPR121 Touch Sensors"
+    },
+    {
+      "id": "BOX B-002",
+      "rackId": 1,
+      "shelfId": 2,
+      "label": "BOX B-002: Ultrasonic Distance Sensor"
+    },
+    {
+      "id": "BOX B-003",
+      "rackId": 1,
+      "shelfId": 2,
+      "label": "BOX B-003: SW-18015P Vibration & Infrared (K) Sensors"
+    },
+    {
+      "id": "BOX B-004",
+      "rackId": 1,
+      "shelfId": 2,
+      "label": "BOX B-004: MQ Gas Sensors Box (MQ-2, MQ-3, MQ-7, MQ-135)"
+    },
+    {
+      "id": "BOX B-005",
+      "rackId": 1,
+      "shelfId": 2,
+      "label": "BOX B-005: Heart Rate Pulse & TTP223 Touch Sensors"
+    },
+    {
+      "id": "BOX B-006",
+      "rackId": 1,
+      "shelfId": 2,
+      "label": "BOX B-006: Temperature & Humidity Sensor"
+    },
+    {
+      "id": "BOX B-007",
+      "rackId": 1,
+      "shelfId": 2,
+      "label": "BOX B-007: Sound Sensor Module"
+    },
+    {
+      "id": "BOX B-008",
+      "rackId": 1,
+      "shelfId": 2,
+      "label": "BOX B-008: Force Sensing Resistor (FSR)"
+    },
+    {
+      "id": "BOX B-009",
+      "rackId": 1,
+      "shelfId": 2,
+      "label": "BOX B-009: Rain Drop Sensor Board"
+    },
+    {
+      "id": "BOX B-010",
+      "rackId": 1,
+      "shelfId": 2,
+      "label": "BOX B-010: Touch Sensor Module TTP 224 (4-Key)"
+    },
+    {
+      "id": "BOX B-011",
+      "rackId": 1,
+      "shelfId": 2,
+      "label": "BOX B-011: HC-SR501 PIR Motion Sensor Module"
+    },
+    {
+      "id": "BOX B-012",
+      "rackId": 1,
+      "shelfId": 2,
+      "label": "BOX B-012: Sound Sensor (Big Microphone Module)"
+    },
+    {
+      "id": "BOX B-013",
+      "rackId": 1,
+      "shelfId": 2,
+      "label": "BOX B-013: Soil Moisture Sensor Module"
+    },
+    {
+      "id": "BOX B-014",
+      "rackId": 1,
+      "shelfId": 2,
+      "label": "BOX B-014: LDR Light Dependent Resistor 5mm"
+    },
+    {
+      "id": "BOX B-015",
+      "rackId": 1,
+      "shelfId": 2,
+      "label": "BOX B-015: Flex Sensor & Color Sensor TCS3200"
+    },
+    {
+      "id": "BOX C-001",
+      "rackId": 1,
+      "shelfId": 3,
+      "label": "BOX C-001: Johnson DC Motor 60 RPM"
+    },
+    {
+      "id": "BOX C-002",
+      "rackId": 1,
+      "shelfId": 3,
+      "label": "BOX C-002: Johnson DC Motor 300 RPM 12V"
+    },
+    {
+      "id": "BOX C-003",
+      "rackId": 1,
+      "shelfId": 3,
+      "label": "BOX C-003: Johnson DC Motor 200 RPM 12V"
+    },
+    {
+      "id": "BOX C-004",
+      "rackId": 1,
+      "shelfId": 3,
+      "label": "BOX C-004: Johnson DC Motor 100 RPM 12V"
+    },
+    {
+      "id": "BOX C-005",
+      "rackId": 1,
+      "shelfId": 3,
+      "label": "BOX C-005: Johnson DC Motor 30 RPM 12V"
+    },
+    {
+      "id": "BOX C-006",
+      "rackId": 1,
+      "shelfId": 3,
+      "label": "BOX C-006: NEMA Stepper Motor"
+    },
+    {
+      "id": "BOX C-007",
+      "rackId": 1,
+      "shelfId": 3,
+      "label": "BOX C-007: Micro Servo SG90"
+    },
+    {
+      "id": "BOX C-008",
+      "rackId": 1,
+      "shelfId": 3,
+      "label": "BOX C-008: MG90S Micro Metal Gear Servo"
+    },
+    {
+      "id": "BOX C-009",
+      "rackId": 1,
+      "shelfId": 3,
+      "label": "BOX C-009: Servo MG995 High Torque Motor"
+    },
+    {
+      "id": "BOX C-010",
+      "rackId": 1,
+      "shelfId": 3,
+      "label": "BOX C-010: Tower Pro MG945 Metal Gear Servo Motor"
+    },
+    {
+      "id": "BOX C-011",
+      "rackId": 1,
+      "shelfId": 3,
+      "label": "BOX C-011: 12V High Quality DC Mini Submersible Water Pump"
+    },
+    {
+      "id": "BOX C-012",
+      "rackId": 1,
+      "shelfId": 3,
+      "label": "BOX C-012: L293 / L293D Motor Driver Shield Module"
+    },
+    {
+      "id": "BOX C-013",
+      "rackId": 1,
+      "shelfId": 3,
+      "label": "BOX C-013: L298N Dual H-Bridge Motor Driver Module"
+    },
+    {
+      "id": "BOX C-014",
+      "rackId": 1,
+      "shelfId": 3,
+      "label": "BOX C-014: BTS7960 43A High Power Motor Driver Module"
+    },
+    {
+      "id": "BOX C-015",
+      "rackId": 1,
+      "shelfId": 3,
+      "label": "BOX C-015: L-Shape Mounting Bracket for Johnson DC Motor"
+    },
+    {
+      "id": "BOX D-001",
+      "rackId": 1,
+      "shelfId": 4,
+      "label": "BOX D-001: Female 2.54mm 2P Dupont Housing"
+    },
+    {
+      "id": "BOX D-002",
+      "rackId": 1,
+      "shelfId": 4,
+      "label": "BOX D-002: Female 2.54mm Crimp Terminal Pins"
+    },
+    {
+      "id": "BOX D-003",
+      "rackId": 1,
+      "shelfId": 4,
+      "label": "BOX D-003: Male 2.54mm Crimp Terminal Pins"
+    },
+    {
+      "id": "BOX D-004",
+      "rackId": 1,
+      "shelfId": 4,
+      "label": "BOX D-004: JST VH Connectors & Crimp Set"
+    },
+    {
+      "id": "BOX D-005",
+      "rackId": 1,
+      "shelfId": 4,
+      "label": "BOX D-005: JST XH Connectors & Crimp Set"
+    },
+    {
+      "id": "BOX D-006",
+      "rackId": 1,
+      "shelfId": 4,
+      "label": "BOX D-006: Screw Terminal Block 5.08mm 2-Pin"
+    },
+    {
+      "id": "BOX D-007",
+      "rackId": 1,
+      "shelfId": 4,
+      "label": "BOX D-007: Terminal Block Connector 3-Pin"
+    },
+    {
+      "id": "BOX D-008",
+      "rackId": 1,
+      "shelfId": 4,
+      "label": "BOX D-008: Quick Wire Connector Clamp"
+    },
+    {
+      "id": "BOX D-009",
+      "rackId": 1,
+      "shelfId": 4,
+      "label": "BOX D-009: Male & Female Battery Connectors (XT60/T-Plug)"
+    },
+    {
+      "id": "BOX D-010",
+      "rackId": 1,
+      "shelfId": 4,
+      "label": "BOX D-010: Male & Female Bullet Connectors 3.5mm"
+    },
+    {
+      "id": "BOX D-011",
+      "rackId": 1,
+      "shelfId": 4,
+      "label": "BOX D-011: USB Female 3.0 Panel Mount Port"
+    },
+    {
+      "id": "BOX D-012",
+      "rackId": 1,
+      "shelfId": 4,
+      "label": "BOX D-012: Mini USB Type-B Port Connectors"
+    },
+    {
+      "id": "BOX D-013",
+      "rackId": 1,
+      "shelfId": 4,
+      "label": "BOX D-013: White Silicon Wire 20mm"
+    },
+    {
+      "id": "BOX D-014",
+      "rackId": 1,
+      "shelfId": 4,
+      "label": "BOX D-014: Heatshrink Sleeve 3.5m"
+    },
+    {
+      "id": "BOX D-015",
+      "rackId": 1,
+      "shelfId": 4,
+      "label": "BOX D-015: 100 Ohm Carbon Film Resistors 1/4W"
+    },
+    {
+      "id": "BOX A2-001",
+      "rackId": 1,
+      "shelfId": 1,
+      "label": "BOX A2-001: Storage Footprint"
+    },
+    {
+      "id": "BOX B2-001",
+      "rackId": 1,
+      "shelfId": 2,
+      "label": "BOX B2-001: Storage Footprint"
+    },
+    {
+      "id": "BOX C2-001",
+      "rackId": 1,
+      "shelfId": 3,
+      "label": "BOX C2-001: Storage Footprint"
+    },
+    {
+      "id": "BOX D2-001",
+      "rackId": 1,
+      "shelfId": 4,
+      "label": "BOX D2-001: Storage Footprint"
+    },
+    {
+      "id": "BOX A2-012",
+      "rackId": 1,
+      "shelfId": 1,
+      "label": "BOX A2-012: Storage Footprint"
+    },
+    {
+      "id": "BOX A-015",
+      "rackId": 1,
+      "shelfId": 1,
+      "label": "BOX A-015: Storage Footprint"
+    }
+  ],
+  "racks": [
+    {
+      "id": 1,
+      "name": "Rack 1",
+      "subtitle": "Microcontrollers, Sensors, Motors, Connectors & Passive Components",
+      "shelvesCount": 6
+    },
+    {
+      "id": 2,
+      "name": "Rack 2",
+      "subtitle": "Wireless Comms, Displays & Traffic Lights, Batteries & Power, Hardware",
+      "shelvesCount": 6
+    }
+  ],
+  "projects": [
+    {
+      "id": "PROJ-001",
+      "projectName": "Autonomous Line Follower & Maze Solver Robot",
+      "leaderName": "Alex Turner (Robotics Lead)",
+      "description": "High-speed line follower robot utilizing BFD-1000 IR sensor array, BTS7960 motor driver, and NEMA stepper motor.",
+      "members": [
+        "Alex Turner",
+        "Sarah Jenkins",
+        "David Chen"
+      ],
+      "bom": [
+        {
+          "name": "BTS7960 43A High Power Motor Driver Module",
+          "qtyNeeded": 1,
+          "inStock": true
+        }
+      ],
+      "allocatedInventory": [
+        {
+          "componentId": "COMP-043",
+          "componentName": "BTS7960 43A High Power Motor Driver Module",
+          "qtyAllocated": 1
+        }
+      ],
+      "consumables": [
+        {
+          "name": "Silicon Wire Spool (Red/Black)",
+          "qty": "5 meters",
+          "costRupees": 250
+        }
+      ],
+      "reusableAssets": [
+        {
+          "name": "Arduino Nano V3 (ATmega328P)",
+          "qty": 2,
+          "costRupees": 900
+        }
+      ],
+      "estimatedCostRupees": 3850,
+      "createdAt": "2026-07-25"
+    }
+  ],
+  "requests": [
+    {
+      "id": "REQ-5001",
+      "componentId": "COMP-001",
+      "componentName": "Arduino Nano",
+      "requesterName": "Sarah Jenkins (Intern)",
+      "role": "Student / Intern",
+      "projectId": "PROJ-001",
+      "projectName": "Autonomous Line Follower & Maze Solver Robot",
+      "qtyRequested": 2,
+      "returnedQty": 1,
+      "dueDate": "2026-08-05",
+      "condition": "GOOD",
+      "status": "PARTIAL_RETURN",
+      "requestedAt": "2026-07-27 09:15:00",
+      "approvedAt": "2026-07-27 09:30:00",
+      "notes": "Partial return: 1 unit returned in GOOD working condition."
+    }
+  ],
+  "transactions": [
+    {
+      "id": "TXN-1785300294712",
+      "componentId": "COMP-4710",
+      "componentName": "Arduino Protoshield",
+      "actionType": "CREATE",
+      "qtyChanged": 1,
+      "previousQty": 0,
+      "newQty": 1,
+      "userRole": "Inventory Administrator (Maintain, Approve & Procure)",
+      "timestamp": "29/7/2026, 10:14:54 am",
+      "notes": "Created new laboratory component entry with inventory state."
+    },
+    {
+      "id": "TXN-1785300214798",
+      "componentId": "COMP-008",
+      "componentName": "Raspberry Pi Pico W",
+      "actionType": "EDIT_DETAILS",
+      "qtyChanged": 0,
+      "previousQty": 9,
+      "newQty": 9,
+      "userRole": "Inventory Administrator (Maintain, Approve & Procure)",
+      "timestamp": "29/7/2026, 10:13:34 am",
+      "notes": "Updated component details, state, compatibility, & alternatives."
+    },
+    {
+      "id": "TXN-1785300084965",
+      "componentId": "COMP-012",
+      "componentName": "STM32 F4VE Core Board",
+      "actionType": "BOX_TRANSFER",
+      "qtyChanged": 0,
+      "previousQty": 1,
+      "newQty": 1,
+      "userRole": "Inventory Administrator (Maintain, Approve & Procure)",
+      "timestamp": "29/7/2026, 10:11:24 am",
+      "notes": "Moved component 'STM32 F4VE Core Board' from BOX A-012 to BOX A-014."
+    },
+    {
+      "id": "TXN-1785300069361",
+      "componentId": "COMP-011",
+      "componentName": "STM32 with ST-Link Programmer",
+      "actionType": "BOX_TRANSFER",
+      "qtyChanged": 0,
+      "previousQty": 1,
+      "newQty": 1,
+      "userRole": "Inventory Administrator (Maintain, Approve & Procure)",
+      "timestamp": "29/7/2026, 10:11:09 am",
+      "notes": "Moved component 'STM32 with ST-Link Programmer' from BOX A-014 to BOX A-013."
+    },
+    {
+      "id": "TXN-1785300042783",
+      "componentId": "COMP-008",
+      "componentName": "Raspberry Pi Pico W",
+      "actionType": "BOX_TRANSFER",
+      "qtyChanged": 0,
+      "previousQty": 9,
+      "newQty": 9,
+      "userRole": "Inventory Administrator (Maintain, Approve & Procure)",
+      "timestamp": "29/7/2026, 10:10:42 am",
+      "notes": "Moved component 'Raspberry Pi Pico W' from BOX A2-001 to BOX A2-012."
+    },
+    {
+      "id": "TXN-1785300013195",
+      "componentId": "COMP-010",
+      "componentName": "Nvidia Jetson Nano Developer Kit",
+      "actionType": "MUTUAL_BOX_SWAP",
+      "qtyChanged": 0,
+      "previousQty": 1,
+      "newQty": 1,
+      "userRole": "Inventory Administrator (Maintain, Approve & Procure)",
+      "timestamp": "29/7/2026, 10:10:13 am",
+      "notes": "Mutually swapped components and Box IDs between BOX A-014 and BOX A-011."
+    },
+    {
+      "id": "TXN-1785299989209",
+      "componentId": "COMP-003",
+      "componentName": "Arduino R4 Minima",
+      "actionType": "MUTUAL_BOX_SWAP",
+      "qtyChanged": 0,
+      "previousQty": 1,
+      "newQty": 1,
+      "userRole": "Inventory Administrator (Maintain, Approve & Procure)",
+      "timestamp": "29/7/2026, 10:09:49 am",
+      "notes": "Mutually swapped components and Box IDs between BOX A-014 and BOX A-010."
+    },
+    {
+      "id": "TXN-1785299950600",
+      "componentId": "COMP-0597",
+      "componentName": "ESP 8266",
+      "actionType": "CREATE",
+      "qtyChanged": 1,
+      "previousQty": 0,
+      "newQty": 1,
+      "userRole": "Inventory Administrator (Maintain, Approve & Procure)",
+      "timestamp": "29/7/2026, 10:09:10 am",
+      "notes": "Created new laboratory component entry with inventory state."
+    },
+    {
+      "id": "TXN-1785299895449",
+      "componentId": "COMP-013",
+      "componentName": "STM32F4DCCU6 Core Board",
+      "actionType": "BOX_TRANSFER",
+      "qtyChanged": 0,
+      "previousQty": 5,
+      "newQty": 5,
+      "userRole": "Inventory Administrator (Maintain, Approve & Procure)",
+      "timestamp": "29/7/2026, 10:08:15 am",
+      "notes": "Moved component 'STM32F4DCCU6 Core Board' from BOX A-013 to BOX A-008."
+    },
+    {
+      "id": "TXN-1785299866737",
+      "componentId": "COMP-004",
+      "componentName": "Teensy 4.1 Development Board",
+      "actionType": "BOX_TRANSFER",
+      "qtyChanged": 0,
+      "previousQty": 1,
+      "newQty": 1,
+      "userRole": "Inventory Administrator (Maintain, Approve & Procure)",
+      "timestamp": "29/7/2026, 10:07:46 am",
+      "notes": "Moved component 'Teensy 4.1 Development Board' from BOX A-008 to BOX A-007."
+    },
+    {
+      "id": "TXN-1785299848789",
+      "componentId": "COMP-009",
+      "componentName": "Raspberry Pi Single Board Computer",
+      "actionType": "BOX_TRANSFER",
+      "qtyChanged": 0,
+      "previousQty": 1,
+      "newQty": 1,
+      "userRole": "Inventory Administrator (Maintain, Approve & Procure)",
+      "timestamp": "29/7/2026, 10:07:28 am",
+      "notes": "Moved component 'Raspberry Pi Single Board Computer' from BOX A-009 to BOX A-006."
+    },
+    {
+      "id": "TXN-1785299825724",
+      "componentId": "COMP-060",
+      "componentName": "SIM800L Quad-Band GSM / GPRS Module",
+      "actionType": "DELETE",
+      "qtyChanged": -6,
+      "previousQty": 6,
+      "newQty": 0,
+      "userRole": "Inventory Administrator (Maintain, Approve & Procure)",
+      "timestamp": "29/7/2026, 10:07:05 am",
+      "notes": "Permanently deleted component entry 'SIM800L Quad-Band GSM / GPRS Module' from BOX A-004."
+    },
+    {
+      "id": "TXN-1785299445716",
+      "componentId": "COMP-007",
+      "componentName": "ESP CAM Module with Camera",
+      "actionType": "MUTUAL_BOX_SWAP",
+      "qtyChanged": 0,
+      "previousQty": 4,
+      "newQty": 4,
+      "userRole": "Inventory Administrator (Maintain, Approve & Procure)",
+      "timestamp": "29/7/2026, 10:00:45 am",
+      "notes": "Mutually swapped components and Box IDs between BOX A2-001 and BOX A-004."
+    },
+    {
+      "id": "TXN-1785229586675",
+      "componentId": "COMP-014",
+      "componentName": "CP2102 USB to UART Serial Converter",
+      "actionType": "MUTUAL_BOX_SWAP",
+      "qtyChanged": 0,
+      "previousQty": 2,
+      "newQty": 2,
+      "userRole": "Inventory Administrator (Maintain, Approve & Procure)",
+      "timestamp": "28/7/2026, 2:36:26 pm",
+      "notes": "Mutually swapped components and Box IDs between BOX A-014 and BOX A-001."
+    },
+    {
+      "id": "TXN-1785220612592",
+      "componentId": "COMP-004",
+      "componentName": "Teensy 4.1 Development Board",
+      "actionType": "MUTUAL_BOX_SWAP",
+      "qtyChanged": 0,
+      "previousQty": 1,
+      "newQty": 1,
+      "userRole": "Inventory Administrator (Maintain, Approve & Procure)",
+      "timestamp": "28/7/2026, 12:06:52 pm",
+      "notes": "Mutually swapped components and Box IDs between BOX A-004 and BOX A-008."
+    },
+    {
+      "id": "TXN-1001",
+      "componentId": "COMP-001",
+      "componentName": "Arduino Nano",
+      "actionType": "CHECK_OUT",
+      "qtyChanged": -1,
+      "previousQty": 3,
+      "newQty": 2,
+      "userRole": "Student / Intern",
+      "timestamp": "2026-07-26 10:15:00",
+      "notes": "Checked out 1 unit for Robotics Lab experiment."
+    }
+  ]
+}
