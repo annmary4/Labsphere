@@ -62,11 +62,11 @@ class StorageService {
 
   static async pullCentralServerSync() {
     try {
-      let res = await fetch("/api/db?t=" + Date.now());
-      if (!res.ok) {
-        res = await fetch("/data/db.json?t=" + Date.now());
+      let res = await fetch("api/db?t=" + Date.now()).catch(() => null);
+      if (!res || !res.ok) {
+        res = await fetch("data/db.json?t=" + Date.now()).catch(() => null);
       }
-      if (res.ok) {
+      if (res && res.ok) {
         const data = await res.json();
         if (data && typeof data === "object") {
           console.log("Central Server Master DB fetched successfully.");
