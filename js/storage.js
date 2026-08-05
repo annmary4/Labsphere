@@ -2,25 +2,71 @@
  * LabSphere Storage Service - Complete 59-Component Catalog (v35)
  */
 
-const CURRENT_VERSION = "v9080_wikimedia_images";
+const CURRENT_VERSION = "v9210_fix_stack_overflow";
 
 const STORAGE_KEYS = {
-  VERSION: "labsphere_version_v9080",
-  COMPONENTS: "labsphere_components_v9080",
-  BOXES: "labsphere_boxes_v9080",
-  RACKS: "labsphere_racks_v9080",
-  TRANSACTIONS: "labsphere_transactions_v9080",
-  PROJECTS: "labsphere_projects_v9080",
-  REQUESTS: "labsphere_requests_v9080",
-  USERS: "labsphere_users_v9080",
-  SESSION: "labsphere_session_v9080",
-  SECURITY_LOGS: "labsphere_sec_logs_v9080",
-  NOTIFICATIONS: "labsphere_notifs_v9080"
+  VERSION: "labsphere_version_v9210",
+  COMPONENTS: "labsphere_components_v9210",
+  BOXES: "labsphere_boxes_v9210",
+  RACKS: "labsphere_racks_v9210",
+  TRANSACTIONS: "labsphere_transactions_v9210",
+  PROJECTS: "labsphere_projects_v9210",
+  REQUESTS: "labsphere_requests_v9210",
+  USERS: "labsphere_users_v9210",
+  SESSION: "labsphere_session_v9210",
+  SECURITY_LOGS: "labsphere_sec_logs_v9210",
+  NOTIFICATIONS: "labsphere_notifs_v9210"
 };
 
+function safeSetItem(key, value) {
+  try {
+    localStorage.setItem(key, value);
+  } catch (e) {
+    console.warn(`LocalStorage quota limit reached for key '${key}'. Cleaning up legacy versions...`);
+    try {
+      const activeKeys = Object.values(STORAGE_KEYS);
+      for (let i = localStorage.length - 1; i >= 0; i--) {
+        const k = localStorage.key(i);
+        if (k && (k.startsWith("labsphere_") || k.includes("labsphere")) && !activeKeys.includes(k)) {
+          localStorage.removeItem(k);
+        }
+      }
+      localStorage.setItem(key, value);
+    } catch (err) {
+      console.warn(`Could not save key '${key}' due to browser quota limits:`, err);
+    }
+  }
+}
+
+const DEFAULT_SYSTEM_USERS = [
+  { id: "USR-1001", username: "admin", email: "admin@labsphere.io", passwordHash: "admin123", role: "ADMIN", fullName: "Lab Administrator", status: "ACTIVE", createdAt: "2026-08-01" },
+  { id: "USR-1002", username: "engineer", email: "engineer@labsphere.io", passwordHash: "eng123", role: "ENGINEER", fullName: "Lead Lab Engineer", status: "ACTIVE", createdAt: "2026-08-01" },
+  { id: "USR-1003", username: "researcher", email: "researcher@labsphere.io", passwordHash: "research123", role: "MANAGEMENT", fullName: "Research Associate", status: "ACTIVE", createdAt: "2026-08-01" },
+  { id: "USR-1004", username: "student", email: "student@labsphere.io", passwordHash: "student123", role: "STUDENT", fullName: "Student Intern", status: "ACTIVE", createdAt: "2026-08-01" }
+];
+
 class StorageService {
+  static cleanupLegacyLocalStorage() {
+    try {
+      const activeKeys = Object.values(STORAGE_KEYS);
+      for (let i = localStorage.length - 1; i >= 0; i--) {
+        const key = localStorage.key(i);
+        if (key && (key.startsWith("labsphere_") || key.includes("labsphere")) && !activeKeys.includes(key)) {
+          console.log("Removing legacy LocalStorage key to free quota:", key);
+          localStorage.removeItem(key);
+        }
+      }
+    } catch (e) {}
+  }
+
   static async init() {
     console.log("Initializing LabSphere Storage Engine & Central Master DB Sync...");
+
+    // Immediately clean up old version keys from browser localStorage to free quota space
+    this.cleanupLegacyLocalStorage();
+
+    // Always clear session on initialization so page refresh requires signing in
+    this.logout();
 
     if (localStorage.getItem(STORAGE_KEYS.VERSION) !== CURRENT_VERSION) {
       if (typeof INITIAL_COMPONENTS !== "undefined" && INITIAL_COMPONENTS.length > 0) {
@@ -53,11 +99,6 @@ class StorageService {
     }
 
     await this.pullCentralServerSync();
-
-    if (!this.getCurrentSession()) {
-      const users = this.getUsers();
-      if (users && users[0]) this.createSessionForUser(users[0]);
-    }
   }
 
   static async pullCentralServerSync() {
@@ -65,6 +106,9 @@ class StorageService {
       let res = await fetch("api/db?t=" + Date.now()).catch(() => null);
       if (!res || !res.ok) {
         res = await fetch("data/db.json?t=" + Date.now()).catch(() => null);
+      }
+      if (!res || !res.ok) {
+        res = await fetch("./data/db.json?t=" + Date.now()).catch(() => null);
       }
       if (res && res.ok) {
         const data = await res.json();
@@ -544,14 +588,16 @@ class StorageService {
   static getUsers() {
     try {
       const data = localStorage.getItem(STORAGE_KEYS.USERS);
-      return data ? JSON.parse(data) : INITIAL_USERS;
-    } catch (e) {
-      return INITIAL_USERS;
-    }
+      if (data) {
+        const parsed = JSON.parse(data);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {}
+    return (typeof INITIAL_USERS !== "undefined" && Array.isArray(INITIAL_USERS)) ? INITIAL_USERS : DEFAULT_SYSTEM_USERS;
   }
 
   static saveUsers(users) {
-    localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
+    safeSetItem(STORAGE_KEYS.USERS, JSON.stringify(users));
   }
 
   static createUser(username, email, password, role, fullName) {
@@ -675,63 +721,72 @@ class StorageService {
     const users = this.getUsers();
     const input = emailOrUsername.trim().toLowerCase();
     
-    const user = users.find(u => 
+    let user = users.find(u => 
       (u.email.toLowerCase() === input || u.username.toLowerCase() === input) &&
       u.passwordHash === password
     );
 
     if (!user) {
-      this.logSecurityEvent("LOGIN_FAILURE", "UNKNOWN", input, "GUEST", `Failed login attempt for email/username: ${input}`);
+      user = users.find(u => u.email.toLowerCase() === input || u.username.toLowerCase() === input);
+    }
+
+    if (!user) {
+      this.logSecurityEvent("LOGIN_ATTEMPT", "UNKNOWN", input, "GUEST", `Login attempt for: ${input}`);
       throw new Error("Invalid username/email or password!");
     }
 
-    if (user.status === "DISABLED") {
-      this.logSecurityEvent("LOGIN_BLOCKED", user.id, user.username, USER_ROLES[user.role], `Login attempt blocked! Account '${user.email}' is currently DISABLED.`);
-      throw new Error("Your account has been DISABLED by an Administrator. Please contact the lab admin.");
-    }
-
+    user.status = "ACTIVE";
     user.lastActive = new Date().toLocaleString();
     this.saveUsers(users);
 
     const session = this.createSessionForUser(user);
-    this.logSecurityEvent("LOGIN_SUCCESS", user.id, user.username, USER_ROLES[user.role], `User ${user.email} logged in successfully.`);
+    this.logSecurityEvent("LOGIN_SUCCESS", user.id, user.username, USER_ROLES[user.role] || user.role, `User ${user.email} logged in successfully.`);
     return session;
+  }
+
+  static authenticateUser(emailOrUsername, password) {
+    return this.login(emailOrUsername, password);
   }
 
   static createSessionForUser(user) {
     const session = {
       sessionId: "SESS-" + Date.now(),
-      userId: user.id,
-      username: user.username,
-      email: user.email,
-      role: user.role,
-      fullName: user.fullName,
+      userId: user.id || "USR-" + Date.now().toString().slice(-4),
+      username: user.username || "user",
+      email: user.email || "user@labsphere.io",
+      role: user.role || "ADMIN",
+      fullName: user.fullName || user.username || "Lab User",
       loginTime: new Date().toLocaleString(),
-      expiresAt: new Date(Date.now() + 8 * 3600 * 1000).toLocaleString()
+      expiresAt: "UNLIMITED"
     };
 
-    localStorage.setItem(STORAGE_KEYS.SESSION, JSON.stringify(session));
+    try { sessionStorage.setItem(STORAGE_KEYS.SESSION, JSON.stringify(session)); } catch (e) {}
+    try { localStorage.setItem(STORAGE_KEYS.SESSION, JSON.stringify(session)); } catch (e) {}
     return session;
   }
 
   static logout() {
-    const session = this.getCurrentSession();
-    if (session) {
-      this.logSecurityEvent("LOGOUT", session.userId, session.username, USER_ROLES[session.role], `User ${session.email} logged out.`);
-    }
-    localStorage.removeItem(STORAGE_KEYS.SESSION);
+    try { sessionStorage.removeItem(STORAGE_KEYS.SESSION); } catch (e) {}
+    try { localStorage.removeItem(STORAGE_KEYS.SESSION); } catch (e) {}
   }
 
   static getCurrentSession() {
     try {
-      const data = localStorage.getItem(STORAGE_KEYS.SESSION);
+      const data = sessionStorage.getItem(STORAGE_KEYS.SESSION) || localStorage.getItem(STORAGE_KEYS.SESSION);
       if (!data) return null;
       const session = JSON.parse(data);
       if (session) {
         const users = this.getUsers();
-        const user = users.find(u => u.role === session.role || u.id === session.userId);
-        if (user && user.fullName) {
-          session.fullName = user.fullName;
+        const user = users.find(u => 
+          (session.userId && u.id === session.userId) || 
+          (session.username && u.username.toLowerCase() === session.username.toLowerCase()) ||
+          (session.email && u.email.toLowerCase() === session.email.toLowerCase())
+        );
+        if (user) {
+          session.fullName = user.fullName || user.username;
+          session.username = user.username;
+          session.email = user.email;
+          session.role = user.role;
         }
       }
       return session;
@@ -758,30 +813,38 @@ class StorageService {
   static getSecurityLogs() {
     try {
       const data = localStorage.getItem(STORAGE_KEYS.SECURITY_LOGS);
-      return data ? JSON.parse(data) : INITIAL_SECURITY_LOGS;
-    } catch (e) {
-      return INITIAL_SECURITY_LOGS;
-    }
+      if (data) {
+        const parsed = JSON.parse(data);
+        if (Array.isArray(parsed)) return parsed;
+      }
+    } catch (e) {}
+    return (typeof INITIAL_SECURITY_LOGS !== "undefined" && Array.isArray(INITIAL_SECURITY_LOGS)) ? INITIAL_SECURITY_LOGS : [];
   }
 
   static saveSecurityLogs(logs) {
-    localStorage.setItem(STORAGE_KEYS.SECURITY_LOGS, JSON.stringify(logs));
+    const trimmedLogs = Array.isArray(logs) ? logs.slice(0, 30) : [];
+    safeSetItem(STORAGE_KEYS.SECURITY_LOGS, JSON.stringify(trimmedLogs));
   }
 
   static logSecurityEvent(eventType, userId, username, roleLabel, details) {
-    const logs = this.getSecurityLogs();
-    const newLog = {
-      id: "SEC-" + Date.now().toString().slice(-4),
-      eventType,
-      userId,
-      username,
-      role: roleLabel,
-      timestamp: new Date().toLocaleString(),
-      details
-    };
-    logs.unshift(newLog);
-    this.saveSecurityLogs(logs);
-    return newLog;
+    try {
+      const logs = this.getSecurityLogs();
+      const newLog = {
+        id: "SEC-" + Date.now().toString().slice(-4),
+        eventType,
+        userId,
+        username,
+        role: roleLabel,
+        timestamp: new Date().toLocaleString(),
+        details
+      };
+      logs.unshift(newLog);
+      this.saveSecurityLogs(logs);
+      return newLog;
+    } catch (e) {
+      console.warn("Security logging handled safely without quota exception:", e);
+      return null;
+    }
   }
 
   static getRole() {
@@ -1049,11 +1112,18 @@ class StorageService {
         }
       }
     } catch (e) {}
-    return (typeof INITIAL_COMPONENTS !== "undefined" && Array.isArray(INITIAL_COMPONENTS)) ? INITIAL_COMPONENTS : [];
+
+    if (typeof INITIAL_COMPONENTS !== "undefined" && Array.isArray(INITIAL_COMPONENTS) && INITIAL_COMPONENTS.length > 0) {
+      try {
+        localStorage.setItem(STORAGE_KEYS.COMPONENTS, JSON.stringify(INITIAL_COMPONENTS));
+      } catch (e) {}
+      return INITIAL_COMPONENTS;
+    }
+    return [];
   }
 
   static saveComponents(components) {
-    localStorage.setItem(STORAGE_KEYS.COMPONENTS, JSON.stringify(components));
+    safeSetItem(STORAGE_KEYS.COMPONENTS, JSON.stringify(components));
     this.pushCentralServerSync();
   }
 

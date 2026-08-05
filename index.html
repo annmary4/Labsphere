@@ -25,7 +25,139 @@
 </head>
 
 <body>
-  <div id="app">
+  <!-- LabSphere Enterprise Authentication & Login Screen Overlay -->
+  <div id="login-screen" class="login-screen-overlay" style="display:flex;">
+    <div class="login-grid-pattern"></div>
+    <div class="login-ambient-orb orb-1"></div>
+    <div class="login-ambient-orb orb-2"></div>
+
+    <div class="login-card-wrapper">
+      <div class="login-brand-header">
+        <div class="login-logo-box">
+          <i data-lucide="cpu"></i>
+        </div>
+        <h1 class="login-title">LabSphere Authentication</h1>
+        <p class="login-subtitle">Enterprise Laboratory System & Inventory Portal</p>
+      </div>
+
+      <!-- Dynamic Inline Login Feedback Banner -->
+      <div id="login-alert-box" class="login-alert-banner hidden"></div>
+
+      <div class="login-tabs">
+        <button id="tab-btn-member" class="login-tab-btn active" onclick="switchLoginTab('member')">
+          <i data-lucide="lock"></i> Account Sign In
+        </button>
+        <button id="tab-btn-register" class="login-tab-btn" onclick="switchLoginTab('register')">
+          <i data-lucide="user-plus"></i> Create Account
+        </button>
+        <button id="tab-btn-quick" class="login-tab-btn" onclick="switchLoginTab('quick')">
+          <i data-lucide="zap"></i> Express Access
+        </button>
+      </div>
+
+      <!-- TAB 1: CREDENTIAL SIGN IN FORM (DEFAULT ACTIVE) -->
+      <form id="login-panel-member" class="login-panel" onsubmit="handleMemberSignIn(event)">
+        <div class="form-group">
+          <label for="login-email"><i data-lucide="mail"></i> Email Address or Username</label>
+          <input type="text" id="login-email" class="form-control" placeholder="admin@labsphere.io or admin" required />
+        </div>
+
+        <div class="form-group">
+          <label for="login-password"><i data-lucide="lock"></i> Password</label>
+          <input type="password" id="login-password" class="form-control" placeholder="••••••••" required />
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block btn-lg" style="margin-top:8px;">
+          <i data-lucide="log-in"></i> Sign In to LabSphere
+        </button>
+      </form>
+
+      <!-- TAB 2: REGISTER NEW USER ACCOUNT FORM -->
+      <form id="login-panel-register" class="login-panel hidden" onsubmit="handleUserRegistration(event)">
+        <div class="form-group">
+          <label for="reg-username"><i data-lucide="at-sign"></i> Username</label>
+          <input type="text" id="reg-username" class="form-control" placeholder="e.g. sarah_j" required />
+        </div>
+
+        <div class="form-group">
+          <label for="reg-email"><i data-lucide="mail"></i> Email Address (Usermail)</label>
+          <input type="email" id="reg-email" class="form-control" placeholder="sarah@labsphere.io" required />
+        </div>
+
+        <div class="form-group">
+          <label for="reg-password"><i data-lucide="key"></i> Password</label>
+          <input type="password" id="reg-password" class="form-control" placeholder="••••••••" required />
+        </div>
+
+        <div class="form-group">
+          <label for="reg-fullname"><i data-lucide="user"></i> Full Name (Optional)</label>
+          <input type="text" id="reg-fullname" class="form-control" placeholder="Dr. Sarah Jenkins" />
+        </div>
+
+        <div class="form-group">
+          <label for="reg-role"><i data-lucide="shield"></i> Laboratory Role</label>
+          <select id="reg-role" class="form-control" style="background:var(--bg-dark); color:var(--text-main);">
+            <option value="ADMIN">Lab Administrator</option>
+            <option value="ENGINEER">Lab Engineer / Maintainer</option>
+            <option value="MANAGEMENT">Research Lead</option>
+            <option value="STUDENT" selected>Student / Intern</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block btn-lg" style="margin-top:8px;">
+          <i data-lucide="user-plus"></i> Create Account & Sign In
+        </button>
+      </form>
+
+      <!-- TAB 3: QUICK ACCESS ROLE CARDS -->
+      <div id="login-panel-quick" class="login-panel hidden">
+        <p class="panel-desc">Select an authorized laboratory account role to sign in instantly:</p>
+        <div class="role-grid">
+          <div class="quick-role-card role-admin" onclick="loginWithRole('ADMIN')">
+            <div class="role-icon"><i data-lucide="shield-check"></i></div>
+            <div class="role-info">
+              <h4>Lab Administrator</h4>
+              <span class="role-tag">Full Control, Approvals & Maintenance</span>
+            </div>
+            <i data-lucide="arrow-right" class="role-arrow"></i>
+          </div>
+
+          <div class="quick-role-card role-engineer" onclick="loginWithRole('ENGINEER')">
+            <div class="role-icon"><i data-lucide="wrench"></i></div>
+            <div class="role-info">
+              <h4>Lab Engineer / Maintainer</h4>
+              <span class="role-tag">Equipment Checkout & Calibration</span>
+            </div>
+            <i data-lucide="arrow-right" class="role-arrow"></i>
+          </div>
+
+          <div class="quick-role-card role-management" onclick="loginWithRole('MANAGEMENT')">
+            <div class="role-icon"><i data-lucide="folder-kanban"></i></div>
+            <div class="role-info">
+              <h4>Research Lead / Management</h4>
+              <span class="role-tag">Project Workspaces & BOM Tracking</span>
+            </div>
+            <i data-lucide="arrow-right" class="role-arrow"></i>
+          </div>
+
+          <div class="quick-role-card role-student" onclick="loginWithRole('STUDENT')">
+            <div class="role-icon"><i data-lucide="graduation-cap"></i></div>
+            <div class="role-info">
+              <h4>Student / Intern</h4>
+              <span class="role-tag">Catalog Browsing & Item Requests</span>
+            </div>
+            <i data-lucide="arrow-right" class="role-arrow"></i>
+          </div>
+        </div>
+      </div>
+
+      <div class="login-card-footer">
+        <span><i data-lucide="shield-check"></i> Encrypted Laboratory Authentication Portal</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="app" style="display:none;">
     <!-- Header / Navbar -->
     <header class="navbar">
       <div class="nav-brand">
@@ -1429,13 +1561,13 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
   </div>
 
   <!-- JavaScript App Logic with Cache Busters -->
-  <script src="js/types.js?v=9038"></script>
-  <script src="js/initialData.js?v=9038"></script>
-  <script src="js/storage.js?v=9038"></script>
-  <script src="js/rackViewer.js?v=9038"></script>
-  <script src="js/componentsView.js?v=9038"></script>
-  <script src="js/modalManager.js?v=9038"></script>
-  <script src="js/app.js?v=9038"></script>
+  <script src="js/types.js?v=9210"></script>
+  <script src="js/initialData.js?v=9210"></script>
+  <script src="js/storage.js?v=9210"></script>
+  <script src="js/rackViewer.js?v=9210"></script>
+  <script src="js/componentsView.js?v=9210"></script>
+  <script src="js/modalManager.js?v=9210"></script>
+  <script src="js/app.js?v=9210"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       if (window.lucide) {
@@ -1569,6 +1701,100 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
         }
       };
     });
+  </script>
+
+  <!-- Login Screen Controller Script -->
+  <script>
+    function switchLoginTab(tabName) {
+      document.querySelectorAll('.login-tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.login-panel').forEach(panel => panel.classList.add('hidden'));
+
+      if (tabName === 'quick') {
+        document.getElementById('tab-btn-quick').classList.add('active');
+        document.getElementById('login-panel-quick').classList.remove('hidden');
+      } else if (tabName === 'member') {
+        document.getElementById('tab-btn-member').classList.add('active');
+        document.getElementById('login-panel-member').classList.remove('hidden');
+      } else if (tabName === 'register') {
+        document.getElementById('tab-btn-register').classList.add('active');
+        document.getElementById('login-panel-register').classList.remove('hidden');
+      }
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    function redirectToDashboard() {
+      const loginScreen = document.getElementById('login-screen');
+      const mainApp = document.getElementById('app');
+      if (loginScreen) loginScreen.style.display = 'none';
+      if (mainApp) mainApp.style.display = 'block';
+      if (window.app) {
+        window.app.updateAuthUI();
+        window.app.refreshApp();
+      }
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    function loginWithRole(roleKey) {
+      const users = StorageService.getUsers();
+      const user = users.find(u => u.role === roleKey) || users[0];
+      StorageService.createSessionForUser(user);
+      
+      if (window.ModalManager && window.ModalManager.showToast) {
+        window.ModalManager.showToast(`Welcome back, ${user.fullName}! Logged in as ${USER_ROLES[user.role] || user.role}.`, 'success');
+      }
+      
+      redirectToDashboard();
+    }
+
+    function showLoginAlert(message, type = 'success') {
+      const alertBox = document.getElementById('login-alert-box');
+      if (alertBox) {
+        alertBox.className = `login-alert-banner ${type}`;
+        alertBox.innerHTML = `<span>${type === 'success' ? '✅' : '⚠️'} ${message}</span>`;
+        alertBox.classList.remove('hidden');
+      }
+      if (window.ModalManager && window.ModalManager.showToast) {
+        window.ModalManager.showToast(message, type);
+      }
+    }
+
+    function handleMemberSignIn(event) {
+      event.preventDefault();
+      const emailOrUser = document.getElementById('login-email').value.trim();
+      const passInput = document.getElementById('login-password').value;
+
+      try {
+        const session = StorageService.login(emailOrUser, passInput);
+        if (window.ModalManager && window.ModalManager.showToast) {
+          window.ModalManager.showToast(`Welcome back, ${session.fullName}! Signed in successfully.`, 'success');
+        }
+        redirectToDashboard();
+      } catch (e) {
+        showLoginAlert(e.message || 'Invalid username/email or password.', 'error');
+      }
+    }
+
+    function handleUserRegistration(event) {
+      event.preventDefault();
+      const username = document.getElementById('reg-username').value.trim();
+      const email = document.getElementById('reg-email').value.trim();
+      const password = document.getElementById('reg-password').value;
+      const fullNameInput = document.getElementById('reg-fullname').value;
+      const fullName = fullNameInput && fullNameInput.trim() ? fullNameInput.trim() : username;
+      const role = document.getElementById('reg-role').value || 'STUDENT';
+
+      try {
+        const newUser = StorageService.createUser(username, email, password, role, fullName);
+        StorageService.createSessionForUser(newUser);
+
+        if (window.ModalManager && window.ModalManager.showToast) {
+          window.ModalManager.showToast(`Account created successfully! Welcome, ${newUser.fullName} (@${newUser.username}).`, 'success');
+        }
+        redirectToDashboard();
+      } catch (e) {
+        showLoginAlert(e.message || 'Registration failed.', 'error');
+      }
+    }
   </script>
 </body>
 

@@ -441,9 +441,21 @@ class App {
   }
 
   updateAuthUI() {
+    const loginScreen = document.getElementById("login-screen");
+    const mainApp = document.getElementById("app");
     const session = StorageService.getCurrentSession();
+
+    if (!session) {
+      if (loginScreen) loginScreen.style.display = "flex";
+      if (mainApp) mainApp.style.display = "none";
+      if (window.lucide) window.lucide.createIcons();
+      return;
+    }
+
+    if (loginScreen) loginScreen.style.display = "none";
+    if (mainApp) mainApp.style.display = "block";
+
     const roleKey = StorageService.getRole();
-    const isAdmin = roleKey === "ADMIN";
     const roleBadge = document.getElementById("rbac-role-badge");
     const userChip = document.getElementById("user-profile-name");
 
@@ -453,7 +465,15 @@ class App {
     }
 
     if (userChip && session) {
-      userChip.innerText = session.fullName;
+      const displayName = session.fullName || session.username || "Lab User";
+      userChip.innerText = displayName;
+      userChip.title = `@${session.username || 'user'} (${session.email || 'N/A'}) - Click to Edit Profile Name`;
+    }
+
+    const btnLogout = document.getElementById("btn-nav-logout");
+    if (btnLogout) {
+      btnLogout.style.display = "inline-flex";
+      btnLogout.onclick = () => this.handleLogout();
     }
 
     // ALWAYS DISPLAY ALL FEATURE BUTTONS ON SCREEN AT ALL TIMES
@@ -476,6 +496,14 @@ class App {
     }
   }
 
+  handleLogout() {
+    StorageService.logout();
+    if (window.ModalManager && window.ModalManager.showToast) {
+      window.ModalManager.showToast("Logged out successfully.", "info");
+    }
+    this.updateAuthUI();
+  }
+
   setViewMode(mode) {
     this.currentViewMode = mode;
     const mainContainer = document.getElementById("main-container");
@@ -494,7 +522,6 @@ class App {
   }
 
   refreshApp() {
-    this.updateAuthUI();
     this.renderMetrics();
     this.renderRacks();
     this.renderComponents();

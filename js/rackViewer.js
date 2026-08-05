@@ -4,10 +4,13 @@
  */
 
 class RackViewer {
-  // Static set to persist expanded racks state across app re-renders
-  static expandedRackIds = new Set([1]);
-  // Static set to persist expanded shelves state across app re-renders (keys like "1_1", "1_2")
-  static expandedShelfKeys = new Set(["1_1", "1_2", "2_1"]);
+  // Static set to persist expanded racks state across app re-renders (expand Racks 1 & 2 by default)
+  static expandedRackIds = new Set([1, 2]);
+  // Static set to persist expanded shelves state across app re-renders (expand all 10 shelves by default)
+  static expandedShelfKeys = new Set([
+    "1_1", "1_2", "1_3", "1_4", "1_5",
+    "2_1", "2_2", "2_3", "2_4", "2_5"
+  ]);
 
   static render(options) {
     const {
@@ -57,9 +60,16 @@ class RackViewer {
       });
     }
 
-    // Fallback: If no rack is expanded, default to expanding Rack 1 (or first rack)
+    // Fallback: Default to expanding all racks and shelves if set was cleared
     if (this.expandedRackIds.size === 0 && activeRacks.length > 0) {
-      this.expandedRackIds.add(Number(activeRacks[0].id));
+      activeRacks.forEach(r => this.expandedRackIds.add(Number(r.id)));
+    }
+    if (this.expandedShelfKeys.size === 0) {
+      for (let r = 1; r <= 2; r++) {
+        for (let s = 1; s <= 5; s++) {
+          this.expandedShelfKeys.add(`${r}_${s}`);
+        }
+      }
     }
 
     const racksGrid = document.createElement("div");
@@ -89,15 +99,18 @@ class RackViewer {
         const isShelfExpanded = this.expandedShelfKeys.has(shelfKey);
         const isShelfSelected = Number(selectedRackId) === rackIdNum && Number(selectedShelfId) === shelfNum;
         
-        // Dynamic Rack Box Synthesis: Only include boxes containing active components on this shelf
+        // Dynamic Rack Box Synthesis: Include boxes for this rack & shelf and any box with components
         const shelfComponents = activeComps.filter(c => Number(c.rackId) === rackIdNum && Number(c.shelfId) === shelfNum);
 
         const shelfBoxesMap = new Map();
+        activeBoxes.filter(b => Number(b.rackId) === rackIdNum && Number(b.shelfId) === shelfNum).forEach(b => {
+          shelfBoxesMap.set(b.id, b);
+        });
+
         shelfComponents.forEach(c => {
           const bId = c.boxId || "Unassigned Box";
           if (!shelfBoxesMap.has(bId)) {
-            const existingBox = activeBoxes.find(b => b.id === bId && Number(b.rackId) === rackIdNum);
-            shelfBoxesMap.set(bId, existingBox || {
+            shelfBoxesMap.set(bId, {
               id: bId,
               rackId: rack.id,
               shelfId: shelfNum,
@@ -112,8 +125,7 @@ class RackViewer {
         shelfBoxes.forEach(box => {
           const isBoxSelected = selectedBoxId === box.id;
           const isHighlighted = highlightedBoxIds.includes(box.id);
-          const boxComponents = shelfComponents.filter(c => c.boxId === box.id);
-          if (boxComponents.length === 0) return;
+          const boxComponents = activeComps.filter(c => c.boxId === box.id && Number(c.rackId) === rackIdNum && Number(c.shelfId) === shelfNum);
 
           const compNames = boxComponents.map(c => c.name).join(" + ");
 
@@ -121,12 +133,12 @@ class RackViewer {
           if (isBoxSelected) pillClass += " selected";
           if (isHighlighted) pillClass += " search-highlight";
 
-          const itemsListHtml = boxComponents.map(c => 
-            `<div style="font-size:0.75rem; color:var(--text-main); font-weight:600; display:flex; align-items:center; gap:4px;">&bull; ${c.name}</div>`
-          ).join('');
+          const itemsListHtml = boxComponents.length > 0
+            ? boxComponents.map(c => `<div style="font-size:0.75rem; color:var(--text-main); font-weight:600; display:flex; align-items:center; gap:4px;">&bull; ${c.name}</div>`).join('')
+            : `<div style="font-size:0.7rem; color:var(--text-muted); font-style:italic;">Empty Box</div>`;
 
           boxesPillsHtml += `
-            <div class="${pillClass}" data-box-id="${box.id}" data-rack-id="${rack.id}" data-shelf-id="${shelfNum}" title="${box.id}: ${compNames}" style="cursor:pointer; display:inline-flex; flex-direction:column; background:var(--bg-dark); border:1px solid var(--border-color); padding:8px 12px; border-radius:8px; gap:4px; min-width:140px; margin-right:8px; margin-bottom:8px; transition:all 0.2s;">
+            <div class="${pillClass}" data-box-id="${box.id}" data-rack-id="${rack.id}" data-shelf-id="${shelfNum}" title="${box.id}: ${compNames || 'Empty Box'}" style="cursor:pointer; display:inline-flex; flex-direction:column; background:var(--bg-dark); border:1px solid var(--border-color); padding:8px 12px; border-radius:8px; gap:4px; min-width:140px; margin-right:8px; margin-bottom:8px; transition:all 0.2s;">
               <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-color); padding-bottom:4px; margin-bottom:2px;">
                 <span style="font-weight:800; color:var(--primary); font-size:0.8rem;">📦 ${box.id}</span>
                 <span style="background:rgba(56,189,248,0.15); color:var(--primary); padding:1px 6px; border-radius:4px; font-size:0.65rem; font-weight:700;">${boxComponents.length} ${boxComponents.length === 1 ? 'Item' : 'Items'}</span>
