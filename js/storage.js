@@ -2,20 +2,20 @@
  * LabSphere Storage Service - Complete 59-Component Catalog (v35)
  */
 
-const CURRENT_VERSION = "v9370_fluid_responsive_design_system";
+const CURRENT_VERSION = "v9380_desktop_mode_seamless_session";
 
 const STORAGE_KEYS = {
-  VERSION: "labsphere_version_v9370",
-  COMPONENTS: "labsphere_components_v9370",
-  BOXES: "labsphere_boxes_v9370",
-  RACKS: "labsphere_racks_v9370",
-  TRANSACTIONS: "labsphere_transactions_v9370",
-  PROJECTS: "labsphere_projects_v9370",
-  REQUESTS: "labsphere_requests_v9370",
-  USERS: "labsphere_users_v9370",
-  SESSION: "labsphere_session_v9370",
-  SECURITY_LOGS: "labsphere_sec_logs_v9370",
-  NOTIFICATIONS: "labsphere_notifs_v9370"
+  VERSION: "labsphere_version_v9380",
+  COMPONENTS: "labsphere_components_v9380",
+  BOXES: "labsphere_boxes_v9380",
+  RACKS: "labsphere_racks_v9380",
+  TRANSACTIONS: "labsphere_transactions_v9380",
+  PROJECTS: "labsphere_projects_v9380",
+  REQUESTS: "labsphere_requests_v9380",
+  USERS: "labsphere_users_v9380",
+  SESSION: "labsphere_session_v9380",
+  SECURITY_LOGS: "labsphere_sec_logs_v9380",
+  NOTIFICATIONS: "labsphere_notifs_v9380"
 };
 
 function safeSetItem(key, value) {
@@ -839,17 +839,24 @@ class StorageService {
 
     try { sessionStorage.setItem(STORAGE_KEYS.SESSION, JSON.stringify(session)); } catch (e) {}
     try { localStorage.setItem(STORAGE_KEYS.SESSION, JSON.stringify(session)); } catch (e) {}
+    try { localStorage.setItem("labsphere_session_master", JSON.stringify(session)); } catch (e) {}
+    try { sessionStorage.setItem("labsphere_session_master", JSON.stringify(session)); } catch (e) {}
     return session;
   }
 
   static logout() {
     try { sessionStorage.removeItem(STORAGE_KEYS.SESSION); } catch (e) {}
     try { localStorage.removeItem(STORAGE_KEYS.SESSION); } catch (e) {}
+    try { localStorage.removeItem("labsphere_session_master"); } catch (e) {}
+    try { sessionStorage.removeItem("labsphere_session_master"); } catch (e) {}
   }
 
   static getCurrentSession() {
     try {
-      const data = sessionStorage.getItem(STORAGE_KEYS.SESSION) || localStorage.getItem(STORAGE_KEYS.SESSION);
+      const data = sessionStorage.getItem(STORAGE_KEYS.SESSION) || 
+                   localStorage.getItem(STORAGE_KEYS.SESSION) ||
+                   sessionStorage.getItem("labsphere_session_master") ||
+                   localStorage.getItem("labsphere_session_master");
       if (!data) return null;
       const session = JSON.parse(data);
       if (session) {

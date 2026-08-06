@@ -29,6 +29,12 @@ class App {
     this.setViewMode("split");
     this.refreshApp();
 
+    // Auto-bypass login overlay on startup if session is already active (e.g. switching to Desktop Mode)
+    const activeSession = StorageService.getCurrentSession();
+    if (activeSession && typeof redirectToDashboard === "function") {
+      redirectToDashboard();
+    }
+
     // Auto-open mobile passport if QR code URL parameters present (?box=BOX_A-003 or ?comp=COMP-001)
     this.checkUrlParamsForQrScan();
 

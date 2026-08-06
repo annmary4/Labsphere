@@ -19,7 +19,7 @@
     rel="stylesheet">
 
   <!-- CSS with cache buster -->
-  <link rel="stylesheet" href="css/styles.css?v=9370">
+  <link rel="stylesheet" href="css/styles.css?v=9380">
 
   <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -1567,18 +1567,27 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
   </div>
 
   <!-- JavaScript App Logic with Cache Busters -->
-  <script src="js/types.js?v=9370"></script>
-  <script src="js/initialData.js?v=9370"></script>
-  <script src="js/storage.js?v=9370"></script>
-  <script src="js/rackViewer.js?v=9370"></script>
-  <script src="js/componentsView.js?v=9370"></script>
-  <script src="js/modalManager.js?v=9370"></script>
-  <script src="js/app.js?v=9370"></script>
+  <script src="js/types.js?v=9380"></script>
+  <script src="js/initialData.js?v=9380"></script>
+  <script src="js/storage.js?v=9380"></script>
+  <script src="js/rackViewer.js?v=9380"></script>
+  <script src="js/componentsView.js?v=9380"></script>
+  <script src="js/modalManager.js?v=9380"></script>
+  <script src="js/app.js?v=9380"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       if (window.lucide) {
         window.lucide.createIcons();
       }
+
+      // Automatically bypass login screen if user is already logged in (e.g. switching to Desktop Site mode or refreshing)
+      try {
+        const session = StorageService.getCurrentSession();
+        if (session) {
+          console.log("🔒 Active Session Restored on Startup:", session.fullName);
+          redirectToDashboard();
+        }
+      } catch (err) {}
     });
   </script>
 
