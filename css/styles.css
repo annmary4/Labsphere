@@ -1700,9 +1700,9 @@ body.qr-scan-mode #direct-edit-dialog {
     gap: 8px !important;
   }
 
-  /* 10px gaps at left + right screen edges */
+  /* 12px gaps at left + right screen edges, 10px centre gap */
   .components-panel {
-    padding: 0 10px !important;
+    padding: 0 12px !important;
     margin: 0 !important;
     gap: 6px !important;
     width: 100% !important;
