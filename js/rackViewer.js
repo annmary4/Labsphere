@@ -4,13 +4,10 @@
  */
 
 class RackViewer {
-  // Static set to persist expanded racks state across app re-renders (expand Racks 1 & 2 by default)
-  static expandedRackIds = new Set([1, 2]);
-  // Static set to persist expanded shelves state across app re-renders (expand all 10 shelves by default)
-  static expandedShelfKeys = new Set([
-    "1_1", "1_2", "1_3", "1_4", "1_5",
-    "2_1", "2_2", "2_3", "2_4", "2_5"
-  ]);
+  // Static set to persist expanded racks state across app re-renders (Collapsed by default on login)
+  static expandedRackIds = new Set();
+  // Static set to persist expanded shelves state across app re-renders (Collapsed by default on login)
+  static expandedShelfKeys = new Set();
 
   static render(options) {
     const {
@@ -58,18 +55,6 @@ class RackViewer {
           if (c.shelfId) this.expandedShelfKeys.add(`${c.rackId}_${c.shelfId}`);
         }
       });
-    }
-
-    // Fallback: Default to expanding all racks and shelves if set was cleared
-    if (this.expandedRackIds.size === 0 && activeRacks.length > 0) {
-      activeRacks.forEach(r => this.expandedRackIds.add(Number(r.id)));
-    }
-    if (this.expandedShelfKeys.size === 0) {
-      for (let r = 1; r <= 2; r++) {
-        for (let s = 1; s <= 5; s++) {
-          this.expandedShelfKeys.add(`${r}_${s}`);
-        }
-      }
     }
 
     const racksGrid = document.createElement("div");
