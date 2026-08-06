@@ -31,24 +31,14 @@ class RackViewer {
     const activeBoxes = (Array.isArray(boxes)) ? boxes : INITIAL_BOXES;
     const activeComps = (Array.isArray(components)) ? components : INITIAL_COMPONENTS;
 
-    const isMobile = window.innerWidth <= 767;
+    // Ensure selectedRackId is expanded if specified
+    if (selectedRackId && !this.expandedRackIds.has(Number(selectedRackId))) {
+      this.expandedRackIds.add(Number(selectedRackId));
+    }
 
-    // On mobile: always expand both racks so nested shelves are directly visible
-    if (isMobile) {
-      RackViewer.expandedRackIds.add(1);
-      RackViewer.expandedRackIds.add(2);
-      // Shelves remain collapsed by default unless user has selected a shelf
-      if (!selectedShelfId) {
-        RackViewer.expandedShelfKeys.clear();
-      }
-    } else {
-      // Desktop: Ensure selectedRackId is expanded if specified
-      if (selectedRackId && !this.expandedRackIds.has(Number(selectedRackId))) {
-        this.expandedRackIds.add(Number(selectedRackId));
-      }
-      if (selectedRackId && selectedShelfId) {
-        this.expandedShelfKeys.add(`${selectedRackId}_${selectedShelfId}`);
-      }
+    // Ensure selectedShelfId is expanded if specified
+    if (selectedRackId && selectedShelfId) {
+      this.expandedShelfKeys.add(`${selectedRackId}_${selectedShelfId}`);
     }
 
     // Ensure racks containing highlighted boxes (from search) are expanded
@@ -56,13 +46,13 @@ class RackViewer {
       activeBoxes.filter(b => highlightedBoxIds.includes(b.id)).forEach(b => {
         if (b.rackId) {
           this.expandedRackIds.add(Number(b.rackId));
-          if (!isMobile && b.shelfId) this.expandedShelfKeys.add(`${b.rackId}_${b.shelfId}`);
+          if (b.shelfId) this.expandedShelfKeys.add(`${b.rackId}_${b.shelfId}`);
         }
       });
       activeComps.filter(c => highlightedBoxIds.includes(c.boxId)).forEach(c => {
         if (c.rackId) {
           this.expandedRackIds.add(Number(c.rackId));
-          if (!isMobile && c.shelfId) this.expandedShelfKeys.add(`${c.rackId}_${c.shelfId}`);
+          if (c.shelfId) this.expandedShelfKeys.add(`${c.rackId}_${c.shelfId}`);
         }
       });
     }
@@ -239,25 +229,6 @@ class RackViewer {
             chevronEl.innerHTML = `<i data-lucide="chevron-down"></i>`;
           }
           if (statusBadge) statusBadge.innerText = "Expanded";
-
-          // On mobile: collapse all shelves inside this rack when it opens
-          if (window.innerWidth <= 767) {
-            RackViewer.expandedShelfKeys.clear();
-            rackCard.querySelectorAll(".shelf-row").forEach(shelfEl => {
-              shelfEl.classList.remove("is-expanded");
-              shelfEl.classList.add("is-collapsed");
-              const shelfContent = shelfEl.querySelector(".shelf-accordion-content");
-              const shelfChevron = shelfEl.querySelector(".shelf-chevron");
-              if (shelfContent) shelfContent.style.display = "none";
-              if (shelfChevron) {
-                shelfChevron.style.transform = "rotate(-90deg)";
-                shelfChevron.innerHTML = `<i data-lucide="chevron-right"></i>`;
-              }
-            });
-            if (onShelfClick) {
-              onShelfClick(rackIdNum, null);
-            }
-          }
         }
         if (window.lucide) window.lucide.createIcons();
       });
@@ -300,23 +271,6 @@ class RackViewer {
                 chevronEl.innerHTML = `<i data-lucide="chevron-right"></i>`;
               }
             } else {
-              // On mobile: close all other shelves in this rack first (accordion)
-              if (window.innerWidth <= 767) {
-                rackCard.querySelectorAll(".shelf-row").forEach(otherShelfEl => {
-                  if (otherShelfEl === shelfEl) return;
-                  const otherKey = otherShelfEl.getAttribute("data-shelf-key");
-                  RackViewer.expandedShelfKeys.delete(otherKey);
-                  otherShelfEl.classList.remove("is-expanded");
-                  otherShelfEl.classList.add("is-collapsed");
-                  const otherContent = otherShelfEl.querySelector(".shelf-accordion-content");
-                  const otherChevron = otherShelfEl.querySelector(".shelf-chevron");
-                  if (otherContent) otherContent.style.display = "none";
-                  if (otherChevron) {
-                    otherChevron.style.transform = "rotate(-90deg)";
-                    otherChevron.innerHTML = `<i data-lucide="chevron-right"></i>`;
-                  }
-                });
-              }
               RackViewer.expandedShelfKeys.add(sKey);
               shelfEl.classList.remove("is-collapsed");
               shelfEl.classList.add("is-expanded");
