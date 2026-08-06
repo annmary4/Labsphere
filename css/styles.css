@@ -1692,6 +1692,44 @@ body.qr-scan-mode #direct-edit-dialog {
     justify-content: center !important;
   }
 
+  /* ===== MOBILE RACK & NESTED SHELVES TREE HIERARCHY ===== */
+  .rack-panel {
+    padding: 10px 12px !important;
+    gap: 12px !important;
+  }
+
+  .vertical-cabinet-frame {
+    padding: 12px !important;
+    border-radius: 10px !important;
+    background: rgba(15, 23, 42, 0.95) !important;
+    border-left: 4px solid var(--primary) !important;
+  }
+
+  /* Indent vertical shelves stack to create a clear tree hierarchy under the rack */
+  .vertical-shelves-stack {
+    padding-left: 12px !important;
+    margin-left: 6px !important;
+    border-left: 2px dashed rgba(56, 189, 248, 0.35) !important;
+    gap: 8px !important;
+  }
+
+  /* Distinct nested appearance for shelf rows */
+  .shelf-row {
+    margin-left: 0 !important;
+    border-left: 3px solid #38bdf8 !important;
+    border-radius: 0 8px 8px 0 !important;
+    background: rgba(30, 41, 59, 0.8) !important;
+    padding: 8px 10px !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25) !important;
+  }
+
+  /* Indent box items inside shelf when expanded */
+  .shelf-accordion-content {
+    padding-left: 10px !important;
+    margin-top: 6px !important;
+    border-left: 2px solid rgba(56, 189, 248, 0.25) !important;
+  }
+
   /* ===== MOBILE COMPONENT GRID: 2 columns, perfectly inside screen ===== */
   .main-container,
   .main-container.view-split,
