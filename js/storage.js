@@ -2,20 +2,20 @@
  * LabSphere Storage Service - Complete 59-Component Catalog (v35)
  */
 
-const CURRENT_VERSION = "v9320_twoway_cloud_user_sync";
+const CURRENT_VERSION = "v9330_jsonblob_realtime_auth";
 
 const STORAGE_KEYS = {
-  VERSION: "labsphere_version_v9320",
-  COMPONENTS: "labsphere_components_v9320",
-  BOXES: "labsphere_boxes_v9320",
-  RACKS: "labsphere_racks_v9320",
-  TRANSACTIONS: "labsphere_transactions_v9320",
-  PROJECTS: "labsphere_projects_v9320",
-  REQUESTS: "labsphere_requests_v9320",
-  USERS: "labsphere_users_v9320",
-  SESSION: "labsphere_session_v9320",
-  SECURITY_LOGS: "labsphere_sec_logs_v9320",
-  NOTIFICATIONS: "labsphere_notifs_v9320"
+  VERSION: "labsphere_version_v9330",
+  COMPONENTS: "labsphere_components_v9330",
+  BOXES: "labsphere_boxes_v9330",
+  RACKS: "labsphere_racks_v9330",
+  TRANSACTIONS: "labsphere_transactions_v9330",
+  PROJECTS: "labsphere_projects_v9330",
+  REQUESTS: "labsphere_requests_v9330",
+  USERS: "labsphere_users_v9330",
+  SESSION: "labsphere_session_v9330",
+  SECURITY_LOGS: "labsphere_sec_logs_v9330",
+  NOTIFICATIONS: "labsphere_notifs_v9330"
 };
 
 function safeSetItem(key, value) {
@@ -106,13 +106,16 @@ class StorageService {
 
   static async pullCentralServerSync() {
     try {
-      // 1. Two-Way Cross-Device Cloud User Sync from Restful API Store
-      const cloudUsersRes = await fetch("https://api.restful-api.dev/objects/ff8081819f7e10ae019fd56da7af7eba?t=" + Date.now()).catch(() => null);
+      // 1. Two-Way Cross-Device Cloud User Sync via JsonBlob Store
+      const cloudUsersRes = await fetch("https://jsonblob.com/api/jsonBlob/019fd57b-3e4a-7996-8d3b-034f027f9209", {
+        headers: { "Accept": "application/json" }
+      }).catch(() => null);
+
       let cloudUsers = [];
       if (cloudUsersRes && cloudUsersRes.ok) {
         const cloudObj = await cloudUsersRes.json();
-        if (cloudObj && cloudObj.data && Array.isArray(cloudObj.data.users)) {
-          cloudUsers = cloudObj.data.users;
+        if (cloudObj && Array.isArray(cloudObj.users)) {
+          cloudUsers = cloudObj.users;
         }
       }
 
@@ -121,13 +124,13 @@ class StorageService {
       let hasNewLocalToPush = false;
 
       cloudUsers.forEach(cu => {
-        if (!merged.some(lu => lu.username.toLowerCase() === cu.username.toLowerCase() || lu.email.toLowerCase() === cu.email.toLowerCase())) {
+        if (cu && cu.username && !merged.some(lu => (lu.username && lu.username.toLowerCase() === cu.username.toLowerCase()) || (lu.email && cu.email && lu.email.toLowerCase() === cu.email.toLowerCase()))) {
           merged.push(cu);
         }
       });
 
       localUsers.forEach(lu => {
-        if (!cloudUsers.some(cu => cu.username.toLowerCase() === lu.username.toLowerCase() || cu.email.toLowerCase() === lu.email.toLowerCase())) {
+        if (lu && lu.username && !cloudUsers.some(cu => (cu.username && cu.username.toLowerCase() === lu.username.toLowerCase()) || (cu.email && lu.email && cu.email.toLowerCase() === lu.email.toLowerCase()))) {
           hasNewLocalToPush = true;
         }
       });
@@ -137,15 +140,12 @@ class StorageService {
 
       // If local device created accounts that aren't in the cloud yet, push them to the cloud!
       if (hasNewLocalToPush) {
-        fetch("https://api.restful-api.dev/objects/ff8081819f7e10ae019fd56da7af7eba", {
+        fetch("https://jsonblob.com/api/jsonBlob/019fd57b-3e4a-7996-8d3b-034f027f9209", {
           method: "PUT",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", "Accept": "application/json" },
           body: JSON.stringify({
-            name: "LabSphere Master Users Store",
-            data: {
-              updatedAt: new Date().toISOString(),
-              users: merged
-            }
+            updatedAt: new Date().toISOString(),
+            users: merged
           })
         }).catch(() => {});
       }
@@ -208,17 +208,33 @@ class StorageService {
   static async pushCentralServerSync() {
     try {
       const allUsers = this.getUsers();
-      fetch("https://api.restful-api.dev/objects/ff8081819f7e10ae019fd56da7af7eba", {
+      fetch("https://jsonblob.com/api/jsonBlob/019fd57b-3e4a-7996-8d3b-034f027f9209", {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
         body: JSON.stringify({
-          name: "LabSphere Master Users Store",
-          data: {
-            updatedAt: new Date().toISOString(),
-            users: allUsers
-          }
+          updatedAt: new Date().toISOString(),
+          users: allUsers
         })
       }).catch(() => {});
+
+      const masterData = {
+        components: this.getComponents(),
+        boxes: this.getBoxes(),
+        racks: this.getRacks(),
+        projects: this.getProjects(),
+        requests: this.getRequests(),
+        transactions: this.getTransactions(),
+        users: allUsers,
+        notifications: this.getNotifications(),
+        securityLogs: this.getSecurityLogs()
+      };
+      await fetch("/api/db", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(masterData)
+      });
+    } catch (e) {}
+  }
 
       const masterData = {
         components: this.getComponents(),
@@ -669,16 +685,13 @@ class StorageService {
       localStorage.setItem(MASTER_USERS_KEY, JSON.stringify(users));
     } catch (e) {}
 
-    // Cloud Multi-Device Sync across all phones/PCs
-    fetch("https://api.restful-api.dev/objects/ff8081819f7e10ae019fd56da7af7eba", {
+    // Cloud Multi-Device Sync across all phones/PCs via JsonBlob
+    fetch("https://jsonblob.com/api/jsonBlob/019fd57b-3e4a-7996-8d3b-034f027f9209", {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", "Accept": "application/json" },
       body: JSON.stringify({
-        name: "LabSphere Master Users Store",
-        data: {
-          updatedAt: new Date().toISOString(),
-          users: users
-        }
+        updatedAt: new Date().toISOString(),
+        users: users
       })
     }).catch(() => {});
   }
@@ -809,8 +822,8 @@ class StorageService {
     let users = this.getUsers();
     
     let user = users.find(u => 
-      (u.email.toLowerCase() === input || u.username.toLowerCase() === input) &&
-      u.passwordHash === password
+      ((u.email && u.email.toLowerCase() === input) || (u.username && u.username.toLowerCase() === input)) &&
+      (u.passwordHash === password || u.password === password)
     );
 
     if (!user) {
