@@ -1693,16 +1693,16 @@ body.qr-scan-mode #direct-edit-dialog {
   }
 
   /* ===== MOBILE COMPONENT GRID: 2 columns, perfectly inside screen ===== */
-  /* Kill all padding/margin on every wrapper down to the grid */
   .main-container,
   .main-container.view-split,
   .main-container.view-table {
-    padding: 6px !important;
-    gap: 6px !important;
+    padding: 8px !important;
+    gap: 8px !important;
   }
 
+  /* 8px gaps at left + right screen edges */
   .components-panel {
-    padding: 0 !important;
+    padding: 0 8px !important;
     margin: 0 !important;
     gap: 6px !important;
     width: 100% !important;
@@ -1719,7 +1719,7 @@ body.qr-scan-mode #direct-edit-dialog {
   #components-grid,
   .component-cards-grid {
     display: grid !important;
-    /* 2 columns with a visible 10px gap between them */
+    /* 2 equal columns with 10px gap between them */
     grid-template-columns: calc(50% - 5px) calc(50% - 5px) !important;
     gap: 10px !important;
     width: 100% !important;
