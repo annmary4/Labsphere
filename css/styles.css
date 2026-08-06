@@ -1667,13 +1667,16 @@ body.qr-scan-mode #direct-edit-dialog {
     justify-content: center !important;
   }
 
-  /* Native Mobile Phone Proportional Horizontal Card Ratio (3:1 Aspect Ratio) */
-  #components-grid {
+  /* Native Mobile Phone 100% Screen Containment Architecture */
+  #components-grid,
+  .component-cards-grid {
     display: flex !important;
     flex-direction: column !important;
     gap: 10px !important;
     width: 100% !important;
+    max-width: 100% !important;
     box-sizing: border-box !important;
+    overflow: hidden !important;
   }
 
   .component-card {
@@ -1684,16 +1687,18 @@ body.qr-scan-mode #direct-edit-dialog {
     padding: 10px !important;
     border-radius: 10px !important;
     width: 100% !important;
+    max-width: 100% !important;
     box-sizing: border-box !important;
     gap: 10px !important;
     background: var(--bg-card) !important;
     border: 1px solid var(--border-color) !important;
+    overflow: hidden !important;
   }
 
   .component-card .card-image-wrap {
-    width: 85px !important;
-    min-width: 85px !important;
-    height: 85px !important;
+    width: 75px !important;
+    min-width: 75px !important;
+    height: 75px !important;
     margin-bottom: 0 !important;
     flex-shrink: 0 !important;
     border-radius: 8px !important;
@@ -1706,19 +1711,24 @@ body.qr-scan-mode #direct-edit-dialog {
     display: flex !important;
     flex-direction: column !important;
     margin-bottom: 0 !important;
+    overflow: hidden !important;
   }
 
   .component-card .card-top h3 {
-    font-size: 0.92rem !important;
+    font-size: 0.9rem !important;
     font-weight: 700 !important;
     line-height: 1.25 !important;
     margin: 0 0 2px 0 !important;
     color: var(--text-main) !important;
+    word-break: break-word !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
   }
 
   .component-card .card-part-no {
-    font-size: 0.72rem !important;
+    font-size: 0.7rem !important;
     color: var(--text-muted) !important;
+    word-break: break-word !important;
   }
 
   .component-card .card-box-badge {
@@ -1729,18 +1739,20 @@ body.qr-scan-mode #direct-edit-dialog {
   }
 
   .component-card .card-desc {
-    display: none !important; /* Hide long description in mobile mini-row to keep clean ratio */
+    display: none !important; /* Hide long description on mobile cards to prevent vertical bloat */
   }
 
   .component-card .card-meta-tags {
     width: 100% !important;
     font-size: 0.7rem !important;
     margin-top: 2px !important;
+    word-break: break-word !important;
   }
 
   .component-card .card-footer {
     width: 100% !important;
     display: flex !important;
+    flex-wrap: wrap !important;
     align-items: center !important;
     justify-content: space-between !important;
     gap: 6px !important;
