@@ -33,10 +33,13 @@ class RackViewer {
 
     const isMobile = window.innerWidth <= 767;
 
-    // On mobile: always clear expanded shelves so racks expand with ALL shelves closed by default
+    // On mobile: reset expanded shelves to ONLY the currently selected shelf (or empty if no shelf selected)
     if (isMobile) {
       RackViewer.expandedShelfKeys.clear();
-      // Collapse racks if no active search or box selection
+      if (selectedRackId && selectedShelfId) {
+        RackViewer.expandedShelfKeys.add(`${selectedRackId}_${selectedShelfId}`);
+      }
+      // Collapse racks if no active rack or box selection and no search highlights
       if (!selectedRackId && !selectedBoxId && (!highlightedBoxIds || highlightedBoxIds.length === 0)) {
         RackViewer.expandedRackIds.clear();
       }
@@ -47,7 +50,7 @@ class RackViewer {
       this.expandedRackIds.add(Number(selectedRackId));
     }
 
-    // Ensure selectedShelfId is expanded ONLY on desktop (on mobile, shelves must remain collapsed until clicked)
+    // Ensure selectedShelfId is expanded on desktop
     if (!isMobile && selectedRackId && selectedShelfId) {
       this.expandedShelfKeys.add(`${selectedRackId}_${selectedShelfId}`);
     }
@@ -206,7 +209,9 @@ class RackViewer {
 
       // Event listener for nested rack accordion expand/collapse toggle
       const headerTrigger = rackCard.querySelector(".rack-accordion-trigger");
-      headerTrigger.addEventListener("click", () => {
+      headerTrigger.addEventListener("click", (e) => {
+        e.stopPropagation();
+        e.preventDefault();
         const currentlyExpanded = RackViewer.expandedRackIds.has(rackIdNum);
         const contentEl = rackCard.querySelector(".rack-accordion-content");
         const chevronEl = rackCard.querySelector(".accordion-chevron");
@@ -281,6 +286,8 @@ class RackViewer {
 
         if (triggerEl) {
           triggerEl.addEventListener("click", (e) => {
+            e.stopPropagation();
+            e.preventDefault();
             if (e.target.closest(".btn-print-shelf-qr")) return;
 
             const contentEl = shelfEl.querySelector(".shelf-accordion-content");
