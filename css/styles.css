@@ -1730,21 +1730,23 @@ body.qr-scan-mode #direct-edit-dialog {
     overflow: hidden !important;
   }
 
-  /* ===== COMPACT CARD ===== */
+  /* ===== ULTRA MINIMAL MOBILE CARD ===== */
+  /* Tap the card to see all details in the full modal */
   .component-card {
     display: flex !important;
     flex-direction: column !important;
-    padding: 5px 5px 4px 5px !important;
-    border-radius: 6px !important;
+    align-items: stretch !important;
+    padding: 6px !important;
+    border-radius: 8px !important;
     width: 100% !important;
     min-width: 0 !important;
     max-width: 100% !important;
     box-sizing: border-box !important;
-    gap: 3px !important;
+    gap: 4px !important;
     overflow: hidden !important;
+    cursor: pointer !important;
   }
 
-  /* Every child element must NOT exceed card width */
   .component-card,
   .component-card * {
     min-width: 0 !important;
@@ -1752,93 +1754,84 @@ body.qr-scan-mode #direct-edit-dialog {
     box-sizing: border-box !important;
   }
 
-  /* ===== IMAGE: Smaller thumbnail ===== */
+  /* Small square thumbnail */
   .component-card .card-image-wrap {
-    height: 40px !important;
-    max-height: 40px !important;
+    height: 60px !important;
+    max-height: 60px !important;
     width: 100% !important;
-    border-radius: 4px !important;
+    border-radius: 6px !important;
     flex-shrink: 0 !important;
     overflow: hidden !important;
-    margin-bottom: 2px !important;
+    margin-bottom: 0 !important;
+  }
+
+  /* Hide overlay buttons (datasheet link, edit-image) on mobile */
+  .component-card .card-image-wrap a,
+  .component-card .btn-edit-image {
+    display: none !important;
   }
 
   .component-card .card-image-wrap img {
     width: 100% !important;
     height: 100% !important;
     object-fit: contain !important;
-    padding: 2px !important;
+    padding: 4px !important;
   }
 
-  /* ===== TITLE ===== */
+  /* Component name — one line, truncated */
   .component-card .card-top {
     width: 100% !important;
     overflow: hidden !important;
   }
 
   .component-card .card-top h3 {
-    font-size: 0.65rem !important;
+    font-size: 0.62rem !important;
     font-weight: 700 !important;
     line-height: 1.2 !important;
     margin: 0 !important;
     white-space: nowrap !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
+    color: var(--text-main) !important;
   }
 
-  /* ===== HIDE non-essential details on small cards ===== */
+  /* Hide everything except the stock indicator dot */
   .component-card .card-part-no,
   .component-card .card-box-badge,
   .component-card .card-desc,
-  .component-card .card-meta-tags {
+  .component-card .card-meta-tags,
+  .component-card .card-title-group small,
+  .component-card .card-footer .card-qty,
+  .component-card .card-footer .btn-edit-direct,
+  .component-card .card-footer .btn-inspect-direct,
+  .component-card .card-footer .btn-print-qr-direct {
     display: none !important;
   }
 
-  /* ===== FOOTER: qty + stock badge only ===== */
+  /* Footer: only the stock status badge */
   .component-card .card-footer {
     display: flex !important;
-    flex-direction: column !important;
-    gap: 2px !important;
-    margin-top: 2px !important;
-    padding-top: 2px !important;
-    border-top: 1px solid rgba(255,255,255,0.08) !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 3px !important;
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+    border-top: none !important;
     width: 100% !important;
     overflow: hidden !important;
   }
 
+  /* Stock dot indicator */
   .component-card .card-footer .stock-tag {
     font-size: 0.5rem !important;
-    padding: 1px 3px !important;
-    border-radius: 3px !important;
+    padding: 1px 5px !important;
+    border-radius: 10px !important;
     white-space: nowrap !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
     max-width: 100% !important;
-  }
-
-  .component-card .card-footer .card-qty {
-    font-size: 0.6rem !important;
     font-weight: 700 !important;
-    white-space: nowrap !important;
-  }
-
-  .component-card .card-footer .btn-edit-direct {
-    width: 100% !important;
-    padding: 2px 4px !important;
-    font-size: 0.58rem !important;
-    font-weight: 600 !important;
-    min-height: 20px !important;
-    border-radius: 4px !important;
-    text-align: center !important;
-    justify-content: center !important;
-    white-space: nowrap !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-  }
-
-  .component-card .card-footer .btn-inspect-direct,
-  .component-card .card-footer .btn-print-qr-direct {
-    display: none !important;
+    letter-spacing: 0.02em !important;
   }
 
   /* Touch Tables */
