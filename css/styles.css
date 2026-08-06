@@ -1719,9 +1719,9 @@ body.qr-scan-mode #direct-edit-dialog {
   #components-grid,
   .component-cards-grid {
     display: grid !important;
-    /* Exactly 2 equal columns that always sum to 100% container width */
-    grid-template-columns: 1fr 1fr !important;
-    gap: 5px !important;
+    /* 2 columns with a visible 10px gap between them */
+    grid-template-columns: calc(50% - 5px) calc(50% - 5px) !important;
+    gap: 10px !important;
     width: 100% !important;
     max-width: 100% !important;
     margin: 0 !important;
