@@ -2,20 +2,20 @@
  * LabSphere Storage Service - Complete 59-Component Catalog (v35)
  */
 
-const CURRENT_VERSION = "v9310_async_cloud_login_sync";
+const CURRENT_VERSION = "v9320_twoway_cloud_user_sync";
 
 const STORAGE_KEYS = {
-  VERSION: "labsphere_version_v9310",
-  COMPONENTS: "labsphere_components_v9310",
-  BOXES: "labsphere_boxes_v9310",
-  RACKS: "labsphere_racks_v9310",
-  TRANSACTIONS: "labsphere_transactions_v9310",
-  PROJECTS: "labsphere_projects_v9310",
-  REQUESTS: "labsphere_requests_v9310",
-  USERS: "labsphere_users_v9310",
-  SESSION: "labsphere_session_v9310",
-  SECURITY_LOGS: "labsphere_sec_logs_v9310",
-  NOTIFICATIONS: "labsphere_notifs_v9310"
+  VERSION: "labsphere_version_v9320",
+  COMPONENTS: "labsphere_components_v9320",
+  BOXES: "labsphere_boxes_v9320",
+  RACKS: "labsphere_racks_v9320",
+  TRANSACTIONS: "labsphere_transactions_v9320",
+  PROJECTS: "labsphere_projects_v9320",
+  REQUESTS: "labsphere_requests_v9320",
+  USERS: "labsphere_users_v9320",
+  SESSION: "labsphere_session_v9320",
+  SECURITY_LOGS: "labsphere_sec_logs_v9320",
+  NOTIFICATIONS: "labsphere_notifs_v9320"
 };
 
 function safeSetItem(key, value) {
@@ -106,21 +106,48 @@ class StorageService {
 
   static async pullCentralServerSync() {
     try {
-      // 1. Cross-Device Cloud User Sync from Restful API Store
+      // 1. Two-Way Cross-Device Cloud User Sync from Restful API Store
       const cloudUsersRes = await fetch("https://api.restful-api.dev/objects/ff8081819f7e10ae019fd56da7af7eba?t=" + Date.now()).catch(() => null);
+      let cloudUsers = [];
       if (cloudUsersRes && cloudUsersRes.ok) {
         const cloudObj = await cloudUsersRes.json();
         if (cloudObj && cloudObj.data && Array.isArray(cloudObj.data.users)) {
-          const cloudUsers = cloudObj.data.users;
-          const localUsers = this.getUsers();
-          cloudUsers.forEach(cu => {
-            if (!localUsers.some(lu => lu.username.toLowerCase() === cu.username.toLowerCase() || lu.email.toLowerCase() === cu.email.toLowerCase())) {
-              localUsers.push(cu);
-            }
-          });
-          safeSetItem(STORAGE_KEYS.USERS, JSON.stringify(localUsers));
-          try { localStorage.setItem(MASTER_USERS_KEY, JSON.stringify(localUsers)); } catch (e) {}
+          cloudUsers = cloudObj.data.users;
         }
+      }
+
+      const localUsers = this.getUsers();
+      let merged = [...localUsers];
+      let hasNewLocalToPush = false;
+
+      cloudUsers.forEach(cu => {
+        if (!merged.some(lu => lu.username.toLowerCase() === cu.username.toLowerCase() || lu.email.toLowerCase() === cu.email.toLowerCase())) {
+          merged.push(cu);
+        }
+      });
+
+      localUsers.forEach(lu => {
+        if (!cloudUsers.some(cu => cu.username.toLowerCase() === lu.username.toLowerCase() || cu.email.toLowerCase() === lu.email.toLowerCase())) {
+          hasNewLocalToPush = true;
+        }
+      });
+
+      safeSetItem(STORAGE_KEYS.USERS, JSON.stringify(merged));
+      try { localStorage.setItem(MASTER_USERS_KEY, JSON.stringify(merged)); } catch (e) {}
+
+      // If local device created accounts that aren't in the cloud yet, push them to the cloud!
+      if (hasNewLocalToPush) {
+        fetch("https://api.restful-api.dev/objects/ff8081819f7e10ae019fd56da7af7eba", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: "LabSphere Master Users Store",
+            data: {
+              updatedAt: new Date().toISOString(),
+              users: merged
+            }
+          })
+        }).catch(() => {});
       }
 
       let res = await fetch("api/db?t=" + Date.now()).catch(() => null);
