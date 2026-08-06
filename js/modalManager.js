@@ -3288,7 +3288,7 @@ ModalManager.openPrintableInventorySheet = function() {
             </div>
           </div>
           <div style="display:flex; gap:10px;">
-            <button class="btn btn-primary" onclick="window.print()" style="background:#0284c7; color:#fff; font-weight:600; padding:10px 18px; border-radius:8px; display:inline-flex; align-items:center; gap:8px; cursor:pointer; border:none; box-shadow:0 4px 14px rgba(2,132,199,0.4);">
+            <button class="btn btn-primary" onclick="window.triggerInventoryPrint()" style="background:#0284c7; color:#fff; font-weight:600; padding:10px 18px; border-radius:8px; display:inline-flex; align-items:center; gap:8px; cursor:pointer; border:none; box-shadow:0 4px 14px rgba(2,132,199,0.4);">
               <i data-lucide="printer" style="width:18px; height:18px;"></i> Print / Save as PDF
             </button>
             <button class="btn btn-secondary" onclick="ModalManager.exportInventoryCSV()" style="padding:10px 16px; border-radius:8px; display:inline-flex; align-items:center; gap:8px; cursor:pointer; background:rgba(255,255,255,0.08); color:#f8fafc; border:1px solid rgba(255,255,255,0.15);">
@@ -3395,6 +3395,14 @@ ModalManager.exportInventoryCSV = function() {
 
 window.openPrintableInventorySheet = function() {
   ModalManager.openPrintableInventorySheet();
+};
+
+window.triggerInventoryPrint = function() {
+  const container = document.querySelector('.printable-report-container');
+  if (container) container.scrollTop = 0;
+  setTimeout(() => {
+    window.print();
+  }, 100);
 };
 
 document.addEventListener("keydown", (e) => {

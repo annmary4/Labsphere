@@ -1398,19 +1398,35 @@ body.qr-scan-mode #direct-edit-dialog {
 
 /* Print Media Styles for Printable Inventory Sheet */
 @media print {
+  html, body {
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
   body * {
     visibility: hidden !important;
   }
+
   #printable-sheet-modal,
   #printable-sheet-modal #printable-area,
   #printable-sheet-modal #printable-area * {
     visibility: visible !important;
   }
+
   #printable-sheet-modal {
-    position: absolute !important;
-    left: 0 !important;
-    top: 0 !important;
+    position: static !important;
+    display: block !important;
+    left: auto !important;
+    top: auto !important;
     width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
     margin: 0 !important;
     padding: 0 !important;
     background: #ffffff !important;
@@ -1418,36 +1434,60 @@ body.qr-scan-mode #direct-edit-dialog {
     box-shadow: none !important;
     border: none !important;
   }
+
   .printable-report-container {
+    position: static !important;
+    display: block !important;
     background: #ffffff !important;
     color: #000000 !important;
     border: none !important;
     box-shadow: none !important;
     max-width: 100% !important;
     width: 100% !important;
+    height: auto !important;
     max-height: none !important;
     overflow: visible !important;
     padding: 0 !important;
+    margin: 0 !important;
   }
+
   .print-hide {
     display: none !important;
   }
+
   .report-table {
+    border-collapse: collapse !important;
     border: 1px solid #000000 !important;
     width: 100% !important;
     color: #000000 !important;
+    margin-top: 10px !important;
   }
+
+  .report-table tr {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
   .report-table th,
   .report-table td {
-    border: 1px solid #94a3b8 !important;
+    border: 1px solid #64748b !important;
     color: #000000 !important;
-    padding: 6px 8px !important;
+    padding: 5px 8px !important;
   }
+
   .report-table th {
     background: #e2e8f0 !important;
     color: #0f172a !important;
     font-weight: bold !important;
   }
+
+  .report-table tfoot {
+    display: table-footer-group !important;
+    page-break-before: auto !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
   .stock-tag {
     border: 1px solid #64748b !important;
     color: #000000 !important;
