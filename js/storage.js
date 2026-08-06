@@ -2,20 +2,20 @@
  * LabSphere Storage Service - Complete 59-Component Catalog (v35)
  */
 
-const CURRENT_VERSION = "v9330_jsonblob_realtime_auth";
+const CURRENT_VERSION = "v9340_fixed_storageservice_syntax";
 
 const STORAGE_KEYS = {
-  VERSION: "labsphere_version_v9330",
-  COMPONENTS: "labsphere_components_v9330",
-  BOXES: "labsphere_boxes_v9330",
-  RACKS: "labsphere_racks_v9330",
-  TRANSACTIONS: "labsphere_transactions_v9330",
-  PROJECTS: "labsphere_projects_v9330",
-  REQUESTS: "labsphere_requests_v9330",
-  USERS: "labsphere_users_v9330",
-  SESSION: "labsphere_session_v9330",
-  SECURITY_LOGS: "labsphere_sec_logs_v9330",
-  NOTIFICATIONS: "labsphere_notifs_v9330"
+  VERSION: "labsphere_version_v9340",
+  COMPONENTS: "labsphere_components_v9340",
+  BOXES: "labsphere_boxes_v9340",
+  RACKS: "labsphere_racks_v9340",
+  TRANSACTIONS: "labsphere_transactions_v9340",
+  PROJECTS: "labsphere_projects_v9340",
+  REQUESTS: "labsphere_requests_v9340",
+  USERS: "labsphere_users_v9340",
+  SESSION: "labsphere_session_v9340",
+  SECURITY_LOGS: "labsphere_sec_logs_v9340",
+  NOTIFICATIONS: "labsphere_notifs_v9340"
 };
 
 function safeSetItem(key, value) {
@@ -216,25 +216,6 @@ class StorageService {
           users: allUsers
         })
       }).catch(() => {});
-
-      const masterData = {
-        components: this.getComponents(),
-        boxes: this.getBoxes(),
-        racks: this.getRacks(),
-        projects: this.getProjects(),
-        requests: this.getRequests(),
-        transactions: this.getTransactions(),
-        users: allUsers,
-        notifications: this.getNotifications(),
-        securityLogs: this.getSecurityLogs()
-      };
-      await fetch("/api/db", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(masterData)
-      });
-    } catch (e) {}
-  }
 
       const masterData = {
         components: this.getComponents(),
