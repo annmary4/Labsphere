@@ -1551,6 +1551,13 @@ body.qr-scan-mode #direct-edit-dialog {
     max-width: 90vw !important;
     width: 90vw !important;
   }
+
+  .filter-select-wrapper,
+  #filter-category,
+  #filter-stock,
+  #filter-location {
+    display: none !important;
+  }
 }
 
 /* 3. Native Mobile Phone Breakpoint System (320px - 767px) */
@@ -1672,8 +1679,12 @@ body.qr-scan-mode #direct-edit-dialog {
     border-radius: 8px !important;
   }
 
-  /* Hide category, stock, and location filter dropdowns on mobile screen */
-  .filter-group .filter-select-wrapper {
+  /* Hide category, stock, and location filter dropdowns on mobile & tablet screens */
+  .filter-group .filter-select-wrapper,
+  .filter-select-wrapper,
+  #filter-category,
+  #filter-stock,
+  #filter-location {
     display: none !important;
   }
 
