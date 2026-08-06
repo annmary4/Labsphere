@@ -31,6 +31,19 @@ class RackViewer {
     const activeBoxes = (Array.isArray(boxes)) ? boxes : INITIAL_BOXES;
     const activeComps = (Array.isArray(components)) ? components : INITIAL_COMPONENTS;
 
+    const isMobile = window.innerWidth <= 767;
+
+    // On mobile: collapse all racks and shelves unless something is actively selected or highlighted
+    if (isMobile) {
+      const hasSelection = selectedRackId || selectedShelfId || selectedBoxId;
+      const hasHighlights = highlightedBoxIds && highlightedBoxIds.length > 0;
+      if (!hasSelection && !hasHighlights) {
+        // No active selection — collapse everything for a clean mobile view
+        RackViewer.expandedRackIds.clear();
+        RackViewer.expandedShelfKeys.clear();
+      }
+    }
+
     // Ensure selectedRackId is expanded if specified
     if (selectedRackId && !this.expandedRackIds.has(Number(selectedRackId))) {
       this.expandedRackIds.add(Number(selectedRackId));
