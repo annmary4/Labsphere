@@ -229,6 +229,25 @@ class RackViewer {
             chevronEl.innerHTML = `<i data-lucide="chevron-down"></i>`;
           }
           if (statusBadge) statusBadge.innerText = "Expanded";
+
+          // When expanding a rack, collapse all shelves inside it so only shelf headers are shown
+          for (let s = 1; s <= 5; s++) {
+            RackViewer.expandedShelfKeys.delete(`${rackIdNum}_${s}`);
+          }
+          rackCard.querySelectorAll(".shelf-row").forEach(shelfEl => {
+            shelfEl.classList.remove("is-expanded");
+            shelfEl.classList.add("is-collapsed");
+            const shelfContent = shelfEl.querySelector(".shelf-accordion-content");
+            const shelfChevron = shelfEl.querySelector(".shelf-chevron");
+            if (shelfContent) shelfContent.style.display = "none";
+            if (shelfChevron) {
+              shelfChevron.style.transform = "rotate(-90deg)";
+              shelfChevron.innerHTML = `<i data-lucide="chevron-right"></i>`;
+            }
+          });
+          if (onShelfClick) {
+            onShelfClick(rackIdNum, null);
+          }
         }
         if (window.lucide) window.lucide.createIcons();
       });
