@@ -3343,15 +3343,13 @@ ModalManager.openPrintableInventorySheet = function() {
             </thead>
             <tbody>
               ${rowsHtml}
-            </tbody>
-            <tfoot>
-              <tr style="background:rgba(30,41,59,0.95); font-weight:800; border-top:2px solid #38bdf8; color:#f8fafc;">
+              <tr class="grand-total-row" style="background:rgba(30,41,59,0.95); font-weight:800; border-top:2px solid #38bdf8; color:#f8fafc; page-break-inside:avoid; break-inside:avoid;">
                 <td colspan="5" style="padding:14px; text-align:right; font-size:0.9rem;">GRAND TOTAL INVENTORY SUMMARY:</td>
                 <td style="padding:14px 8px; text-align:right; color:#38bdf8; font-size:0.95rem;">${totalQty.toLocaleString('en-IN')} pcs</td>
                 <td style="padding:14px 8px; text-align:right;">-</td>
                 <td style="padding:14px; text-align:right; color:#4ade80; font-size:1.05rem; font-family:monospace;">₹${totalValuation.toLocaleString('en-IN')}</td>
               </tr>
-            </tfoot>
+            </tbody>
           </table>
 
           <div style="margin-top:32px; font-size:0.75rem; color:#64748b; display:flex; justify-content:space-between; border-top:1px solid rgba(255,255,255,0.1); padding-top:14px;">

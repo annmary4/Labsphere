@@ -1479,11 +1479,20 @@ body.qr-scan-mode #direct-edit-dialog {
     font-weight: bold !important;
   }
 
-  .report-table tfoot {
-    display: table-footer-group !important;
+  .grand-total-row {
+    background: #e2e8f0 !important;
+    color: #000000 !important;
+    font-weight: bold !important;
+    border-top: 2px solid #000000 !important;
     page-break-before: auto !important;
     page-break-inside: avoid !important;
     break-inside: avoid !important;
+  }
+
+  .grand-total-row td {
+    border-top: 2px solid #000000 !important;
+    font-weight: bold !important;
+    color: #000000 !important;
   }
 
   .stock-tag {
