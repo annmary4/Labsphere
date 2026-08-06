@@ -36,9 +36,9 @@ class RackViewer {
       this.expandedRackIds.add(Number(selectedRackId));
     }
 
-    // Ensure selectedShelfId is expanded if specified
-    if (selectedRackId && selectedShelfId) {
-      this.expandedShelfKeys.add(`${selectedRackId}_${selectedShelfId}`);
+    // Ensure components under all shelves are hidden by default unless a shelf was selected
+    if (!selectedShelfId && (!highlightedBoxIds || highlightedBoxIds.length === 0)) {
+      RackViewer.expandedShelfKeys.clear();
     }
 
     // Ensure racks containing highlighted boxes (from search) are expanded
