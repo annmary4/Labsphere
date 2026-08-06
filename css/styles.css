@@ -1667,77 +1667,109 @@ body.qr-scan-mode #direct-edit-dialog {
     justify-content: center !important;
   }
 
-  /* Compact Component Size Ratio for Mobile Phones */
+  /* Native Mobile Phone Proportional Horizontal Card Ratio (3:1 Aspect Ratio) */
   #components-grid {
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 8px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
     width: 100% !important;
     box-sizing: border-box !important;
   }
 
   .component-card {
-    padding: 8px 10px !important;
-    border-radius: 8px !important;
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    align-items: flex-start !important;
+    padding: 10px !important;
+    border-radius: 10px !important;
     width: 100% !important;
     box-sizing: border-box !important;
+    gap: 10px !important;
+    background: var(--bg-card) !important;
+    border: 1px solid var(--border-color) !important;
+  }
+
+  .component-card .card-image-wrap {
+    width: 85px !important;
+    min-width: 85px !important;
+    height: 85px !important;
+    margin-bottom: 0 !important;
+    flex-shrink: 0 !important;
+    border-radius: 8px !important;
+    background: #0f172a !important;
+  }
+
+  .component-card .card-top {
+    flex: 1 !important;
+    min-width: 0 !important;
     display: flex !important;
     flex-direction: column !important;
-    justify-content: space-between !important;
+    margin-bottom: 0 !important;
   }
 
-  .component-card .card-image-wrapper {
-    height: 75px !important;
-    max-height: 80px !important;
-    width: 100% !important;
-    border-radius: 6px !important;
-    margin-bottom: 6px !important;
-  }
-
-  .component-card .component-title {
-    font-size: 0.8rem !important;
+  .component-card .card-top h3 {
+    font-size: 0.92rem !important;
     font-weight: 700 !important;
-    margin-bottom: 2px !important;
     line-height: 1.25 !important;
-    display: -webkit-box !important;
-    -webkit-line-clamp: 2 !important;
-    -webkit-box-orient: vertical !important;
-    overflow: hidden !important;
+    margin: 0 0 2px 0 !important;
+    color: var(--text-main) !important;
   }
 
-  .component-card .part-number {
-    font-size: 0.68rem !important;
-    margin-bottom: 4px !important;
-    white-space: nowrap !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-  }
-
-  .component-card .card-meta {
-    gap: 3px !important;
-    margin-bottom: 6px !important;
-    flex-wrap: wrap !important;
-  }
-
-  .component-card .stock-tag,
-  .component-card .location-badge,
-  .component-card .category-badge {
-    font-size: 0.62rem !important;
-    padding: 1px 4px !important;
-    border-radius: 3px !important;
-  }
-
-  .component-card .card-actions {
-    gap: 4px !important;
-    margin-top: 4px !important;
-    flex-direction: column !important;
-  }
-
-  .component-card .card-actions .btn {
-    min-height: 32px !important;
-    padding: 4px 6px !important;
+  .component-card .card-part-no {
     font-size: 0.72rem !important;
+    color: var(--text-muted) !important;
+  }
+
+  .component-card .card-box-badge {
+    align-self: flex-start !important;
+    font-size: 0.65rem !important;
+    padding: 2px 6px !important;
+    margin-top: 4px !important;
+  }
+
+  .component-card .card-desc {
+    display: none !important; /* Hide long description in mobile mini-row to keep clean ratio */
+  }
+
+  .component-card .card-meta-tags {
     width: 100% !important;
-    justify-content: center !important;
+    font-size: 0.7rem !important;
+    margin-top: 2px !important;
+  }
+
+  .component-card .card-footer {
+    width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 6px !important;
+    margin-top: 6px !important;
+    padding-top: 6px !important;
+    border-top: 1px solid rgba(255,255,255,0.06) !important;
+  }
+
+  .component-card .card-footer .stock-tag {
+    font-size: 0.68rem !important;
+    padding: 2px 6px !important;
+  }
+
+  .component-card .card-footer .card-qty {
+    font-size: 0.82rem !important;
+    font-weight: 700 !important;
+  }
+
+  .component-card .card-footer .btn-edit-direct {
+    padding: 6px 10px !important;
+    font-size: 0.78rem !important;
+    min-height: 34px !important;
+  }
+
+  .component-card .card-footer .btn-inspect-direct,
+  .component-card .card-footer .btn-print-qr-direct {
+    padding: 4px 8px !important;
+    font-size: 0.7rem !important;
+    min-height: 32px !important;
   }
 
   /* Touch Tables */
