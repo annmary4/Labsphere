@@ -2,20 +2,20 @@
  * LabSphere Storage Service - Complete 59-Component Catalog (v35)
  */
 
-const CURRENT_VERSION = "v9630_mobile_nested_shelf_tree_hierarchy";
+const CURRENT_VERSION = "v9640_racks_and_shelves_closed_by_default";
 
 const STORAGE_KEYS = {
-  VERSION: "labsphere_version_v9630",
-  COMPONENTS: "labsphere_components_v9630",
-  BOXES: "labsphere_boxes_v9630",
-  RACKS: "labsphere_racks_v9630",
-  TRANSACTIONS: "labsphere_transactions_v9630",
-  PROJECTS: "labsphere_projects_v9630",
-  REQUESTS: "labsphere_requests_v9630",
-  USERS: "labsphere_users_v9630",
-  SESSION: "labsphere_session_v9630",
-  SECURITY_LOGS: "labsphere_sec_logs_v9630",
-  NOTIFICATIONS: "labsphere_notifs_v9630"
+  VERSION: "labsphere_version_v9640",
+  COMPONENTS: "labsphere_components_v9640",
+  BOXES: "labsphere_boxes_v9640",
+  RACKS: "labsphere_racks_v9640",
+  TRANSACTIONS: "labsphere_transactions_v9640",
+  PROJECTS: "labsphere_projects_v9640",
+  REQUESTS: "labsphere_requests_v9640",
+  USERS: "labsphere_users_v9640",
+  SESSION: "labsphere_session_v9640",
+  SECURITY_LOGS: "labsphere_sec_logs_v9640",
+  NOTIFICATIONS: "labsphere_notifs_v9640"
 };
 
 function safeSetItem(key, value) {
