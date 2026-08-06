@@ -19,7 +19,7 @@
     rel="stylesheet">
 
   <!-- CSS with cache buster -->
-  <link rel="stylesheet" href="css/styles.css?v=9300">
+  <link rel="stylesheet" href="css/styles.css?v=9310">
 
   <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -1567,13 +1567,13 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
   </div>
 
   <!-- JavaScript App Logic with Cache Busters -->
-  <script src="js/types.js?v=9300"></script>
-  <script src="js/initialData.js?v=9300"></script>
-  <script src="js/storage.js?v=9300"></script>
-  <script src="js/rackViewer.js?v=9300"></script>
-  <script src="js/componentsView.js?v=9300"></script>
-  <script src="js/modalManager.js?v=9300"></script>
-  <script src="js/app.js?v=9300"></script>
+  <script src="js/types.js?v=9310"></script>
+  <script src="js/initialData.js?v=9310"></script>
+  <script src="js/storage.js?v=9310"></script>
+  <script src="js/rackViewer.js?v=9310"></script>
+  <script src="js/componentsView.js?v=9310"></script>
+  <script src="js/modalManager.js?v=9310"></script>
+  <script src="js/app.js?v=9310"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       if (window.lucide) {
@@ -1764,13 +1764,14 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
       }
     }
 
-    function handleMemberSignIn(event) {
-      event.preventDefault();
+    async function handleMemberSignIn(event) {
+      if (event) event.preventDefault();
       const emailOrUser = document.getElementById('login-email').value.trim();
       const passInput = document.getElementById('login-password').value;
 
       try {
-        const session = StorageService.login(emailOrUser, passInput);
+        showLoginAlert('⌛ Authenticating across cloud account database...', 'success');
+        const session = await StorageService.login(emailOrUser, passInput);
         if (window.ModalManager && window.ModalManager.showToast) {
           window.ModalManager.showToast(`Welcome back, ${session.fullName}! Signed in successfully.`, 'success');
         }

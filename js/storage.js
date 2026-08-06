@@ -2,20 +2,20 @@
  * LabSphere Storage Service - Complete 59-Component Catalog (v35)
  */
 
-const CURRENT_VERSION = "v9300_cross_device_cloud_auth";
+const CURRENT_VERSION = "v9310_async_cloud_login_sync";
 
 const STORAGE_KEYS = {
-  VERSION: "labsphere_version_v9300",
-  COMPONENTS: "labsphere_components_v9300",
-  BOXES: "labsphere_boxes_v9300",
-  RACKS: "labsphere_racks_v9300",
-  TRANSACTIONS: "labsphere_transactions_v9300",
-  PROJECTS: "labsphere_projects_v9300",
-  REQUESTS: "labsphere_requests_v9300",
-  USERS: "labsphere_users_v9300",
-  SESSION: "labsphere_session_v9300",
-  SECURITY_LOGS: "labsphere_sec_logs_v9300",
-  NOTIFICATIONS: "labsphere_notifs_v9300"
+  VERSION: "labsphere_version_v9310",
+  COMPONENTS: "labsphere_components_v9310",
+  BOXES: "labsphere_boxes_v9310",
+  RACKS: "labsphere_racks_v9310",
+  TRANSACTIONS: "labsphere_transactions_v9310",
+  PROJECTS: "labsphere_projects_v9310",
+  REQUESTS: "labsphere_requests_v9310",
+  USERS: "labsphere_users_v9310",
+  SESSION: "labsphere_session_v9310",
+  SECURITY_LOGS: "labsphere_sec_logs_v9310",
+  NOTIFICATIONS: "labsphere_notifs_v9310"
 };
 
 function safeSetItem(key, value) {
@@ -773,18 +773,18 @@ class StorageService {
     };
   }
 
-  static login(emailOrUsername, password) {
-    let users = this.getUsers();
+  static async login(emailOrUsername, password) {
     const input = emailOrUsername.trim().toLowerCase();
+    
+    // Always sync latest cloud user accounts first so phone/mobile devices pull accounts created on PCs instantly
+    await this.pullCentralServerSync().catch(() => {});
+
+    let users = this.getUsers();
     
     let user = users.find(u => 
       (u.email.toLowerCase() === input || u.username.toLowerCase() === input) &&
       u.passwordHash === password
     );
-
-    if (!user) {
-      user = users.find(u => u.email.toLowerCase() === input || u.username.toLowerCase() === input);
-    }
 
     if (!user) {
       this.logSecurityEvent("LOGIN_ATTEMPT", "UNKNOWN", input, "GUEST", `Login attempt for: ${input}`);
