@@ -2,20 +2,20 @@
  * LabSphere Storage Service - Complete 59-Component Catalog (v35)
  */
 
-const CURRENT_VERSION = "v9220_account_creation_then_login";
+const CURRENT_VERSION = "v9230_persistent_user_accounts";
 
 const STORAGE_KEYS = {
-  VERSION: "labsphere_version_v9220",
-  COMPONENTS: "labsphere_components_v9220",
-  BOXES: "labsphere_boxes_v9220",
-  RACKS: "labsphere_racks_v9220",
-  TRANSACTIONS: "labsphere_transactions_v9220",
-  PROJECTS: "labsphere_projects_v9220",
-  REQUESTS: "labsphere_requests_v9220",
-  USERS: "labsphere_users_v9220",
-  SESSION: "labsphere_session_v9220",
-  SECURITY_LOGS: "labsphere_sec_logs_v9220",
-  NOTIFICATIONS: "labsphere_notifs_v9220"
+  VERSION: "labsphere_version_v9230",
+  COMPONENTS: "labsphere_components_v9230",
+  BOXES: "labsphere_boxes_v9230",
+  RACKS: "labsphere_racks_v9230",
+  TRANSACTIONS: "labsphere_transactions_v9230",
+  PROJECTS: "labsphere_projects_v9230",
+  REQUESTS: "labsphere_requests_v9230",
+  USERS: "labsphere_users_v9230",
+  SESSION: "labsphere_session_v9230",
+  SECURITY_LOGS: "labsphere_sec_logs_v9230",
+  NOTIFICATIONS: "labsphere_notifs_v9230"
 };
 
 function safeSetItem(key, value) {
@@ -38,6 +38,8 @@ function safeSetItem(key, value) {
   }
 }
 
+const MASTER_USERS_KEY = "labsphere_master_user_accounts";
+
 const DEFAULT_SYSTEM_USERS = [
   { id: "USR-1001", username: "admin", email: "admin@labsphere.io", passwordHash: "admin123", role: "ADMIN", fullName: "Lab Administrator", status: "ACTIVE", createdAt: "2026-08-01" },
   { id: "USR-1002", username: "engineer", email: "engineer@labsphere.io", passwordHash: "eng123", role: "ENGINEER", fullName: "Lead Lab Engineer", status: "ACTIVE", createdAt: "2026-08-01" },
@@ -48,7 +50,7 @@ const DEFAULT_SYSTEM_USERS = [
 class StorageService {
   static cleanupLegacyLocalStorage() {
     try {
-      const activeKeys = Object.values(STORAGE_KEYS);
+      const activeKeys = [...Object.values(STORAGE_KEYS), MASTER_USERS_KEY];
       for (let i = localStorage.length - 1; i >= 0; i--) {
         const key = localStorage.key(i);
         if (key && (key.startsWith("labsphere_") || key.includes("labsphere")) && !activeKeys.includes(key)) {
@@ -78,9 +80,10 @@ class StorageService {
       if (typeof INITIAL_RACKS !== "undefined" && INITIAL_RACKS.length > 0) {
         localStorage.setItem(STORAGE_KEYS.RACKS, JSON.stringify(INITIAL_RACKS));
       }
-      if (typeof INITIAL_USERS !== "undefined") {
-        this.saveUsers(INITIAL_USERS);
-      }
+      // Preserve all registered user accounts on version updates
+      const existingUsers = this.getUsers();
+      this.saveUsers(existingUsers);
+
       if (typeof INITIAL_PROJECTS !== "undefined") {
         this.saveProjects(INITIAL_PROJECTS);
       }
@@ -586,18 +589,37 @@ class StorageService {
   }
 
   static getUsers() {
+    let users = [];
     try {
-      const data = localStorage.getItem(STORAGE_KEYS.USERS);
+      const data = localStorage.getItem(MASTER_USERS_KEY) || localStorage.getItem(STORAGE_KEYS.USERS);
       if (data) {
         const parsed = JSON.parse(data);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          users = parsed;
+        }
       }
     } catch (e) {}
-    return (typeof INITIAL_USERS !== "undefined" && Array.isArray(INITIAL_USERS)) ? INITIAL_USERS : DEFAULT_SYSTEM_USERS;
+
+    const defaultUsers = (typeof INITIAL_USERS !== "undefined" && Array.isArray(INITIAL_USERS)) ? INITIAL_USERS : DEFAULT_SYSTEM_USERS;
+
+    if (!users || users.length === 0) {
+      users = [...defaultUsers];
+    } else {
+      defaultUsers.forEach(defU => {
+        if (!users.some(u => u.username.toLowerCase() === defU.username.toLowerCase() || u.email.toLowerCase() === defU.email.toLowerCase())) {
+          users.push(defU);
+        }
+      });
+    }
+
+    return users;
   }
 
   static saveUsers(users) {
     safeSetItem(STORAGE_KEYS.USERS, JSON.stringify(users));
+    try {
+      localStorage.setItem(MASTER_USERS_KEY, JSON.stringify(users));
+    } catch (e) {}
   }
 
   static createUser(username, email, password, role, fullName) {
