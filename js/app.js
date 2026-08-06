@@ -682,15 +682,9 @@ class App {
     // Bypass shelf/box filtering when searchQuery is active so all matched items show globally
     if (!this.searchQuery) {
       if (this.selectedBoxId) {
-        const boxComps = components.filter(c => String(c.boxId || "").trim().toUpperCase() === String(this.selectedBoxId).trim().toUpperCase());
-        if (boxComps.length > 0) {
-          components = boxComps;
-        }
+        components = components.filter(c => String(c.boxId || "").trim().toUpperCase() === String(this.selectedBoxId).trim().toUpperCase());
       } else if (this.selectedRackId && this.selectedShelfId) {
-        const shelfComps = components.filter(c => Number(c.rackId) === Number(this.selectedRackId) && Number(c.shelfId) === Number(this.selectedShelfId));
-        if (shelfComps.length > 0) {
-          components = shelfComps;
-        }
+        components = components.filter(c => Number(c.rackId) === Number(this.selectedRackId) && Number(c.shelfId) === Number(this.selectedShelfId));
       }
     }
 

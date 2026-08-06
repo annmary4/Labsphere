@@ -290,8 +290,24 @@ class RackViewer {
                 chevronEl.style.transform = "rotate(-90deg)";
                 chevronEl.innerHTML = `<i data-lucide="chevron-right"></i>`;
               }
+              if (onShelfClick) onShelfClick(rId, null);
             } else {
-              // Expand Shelf
+              // Close all other shelves first so ONLY this clicked shelf is expanded!
+              document.querySelectorAll(".shelf-row").forEach(otherShelfEl => {
+                const otherKey = otherShelfEl.getAttribute("data-shelf-key");
+                RackViewer.expandedShelfKeys.delete(otherKey);
+                otherShelfEl.classList.remove("is-expanded");
+                otherShelfEl.classList.add("is-collapsed");
+                const otherContent = otherShelfEl.querySelector(".shelf-accordion-content");
+                const otherChevron = otherShelfEl.querySelector(".shelf-chevron");
+                if (otherContent) otherContent.style.display = "none";
+                if (otherChevron) {
+                  otherChevron.style.transform = "rotate(-90deg)";
+                  otherChevron.innerHTML = `<i data-lucide="chevron-right"></i>`;
+                }
+              });
+
+              // Expand ONLY this shelf
               RackViewer.expandedShelfKeys.add(sKey);
               shelfEl.classList.remove("is-collapsed");
               shelfEl.classList.add("is-expanded");
@@ -300,6 +316,7 @@ class RackViewer {
                 chevronEl.style.transform = "rotate(0deg)";
                 chevronEl.innerHTML = `<i data-lucide="chevron-down"></i>`;
               }
+              if (onShelfClick) onShelfClick(rId, sId);
             }
             if (window.lucide) window.lucide.createIcons();
           });
