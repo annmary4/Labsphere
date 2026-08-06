@@ -135,7 +135,8 @@ class RackViewer {
           `;
         });
 
-        const shelfNameLabel = shelfLabels[shelfNum - 1] || `Shelf ${String.fromCharCode(64 + shelfNum)}`;
+        const shelfLetter = String.fromCharCode(64 + shelfNum);
+        const shelfNameLabel = `Shelf ${shelfLetter}`;
         const totalItemsInShelf = activeComps.filter(c => Number(c.rackId) === rackIdNum && Number(c.shelfId) === shelfNum).length;
 
         shelvesHtml += `
@@ -145,8 +146,7 @@ class RackViewer {
                 <span class="shelf-chevron" style="display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; border-radius:4px; background:rgba(56,189,248,0.12); color:var(--primary); font-size:0.75rem; transition:transform 0.2s ease; transform:${isShelfExpanded ? 'rotate(0deg)' : 'rotate(-90deg)'};">
                   <i data-lucide="${isShelfExpanded ? 'chevron-down' : 'chevron-right'}"></i>
                 </span>
-                <span class="shelf-level-tag">L${6 - shelfNum}</span>
-                <span class="shelf-letter font-bold" style="font-size:0.8rem;">🏢 ${shelfNameLabel}</span>
+                <span class="shelf-letter font-bold" style="font-size:0.85rem; color:var(--text-main);">🏢 ${shelfNameLabel}</span>
               </div>
               <div style="display:flex; align-items:center; gap:6px;">
                 <span class="shelf-count text-muted" style="font-size:0.7rem;">${shelfBoxes.length} Boxes &bull; ${totalItemsInShelf} Items</span>
