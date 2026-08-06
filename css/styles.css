@@ -1547,8 +1547,14 @@ body.qr-scan-mode #direct-edit-dialog {
   }
 }
 
-/* 3. Native Mobile Phone Breakpoint System (320px - 767px) */
+/* /* 3. Native Mobile Phone Breakpoint System (320px - 767px) */
 @media screen and (max-width: 767px) {
+  /* Ensure 100% viewport containment with zero overflow */
+  html, body {
+    overflow-x: hidden !important;
+    width: 100% !important;
+  }
+
   /* Prevent browser auto-zoom on input focus */
   input[type="text"],
   input[type="password"],
@@ -1562,64 +1568,66 @@ body.qr-scan-mode #direct-edit-dialog {
   /* Main Container Layout on Mobile */
   .main-container {
     grid-template-columns: 1fr !important;
-    padding: 10px 12px !important;
-    gap: 14px !important;
+    padding: 8px 10px !important;
+    gap: 12px !important;
     width: 100% !important;
+    max-width: 100% !important;
     box-sizing: border-box !important;
   }
 
-  /* Header & Navbar for Touch Screens */
+  /* Header & Navbar on Mobile */
   .navbar {
-    padding: 10px 12px !important;
+    padding: 8px 10px !important;
     flex-wrap: wrap !important;
-    gap: 10px !important;
-    border-radius: 0 0 12px 12px !important;
+    gap: 8px !important;
+    border-radius: 0 0 10px 10px !important;
   }
 
   .nav-brand h1 {
-    font-size: 1.15rem !important;
+    font-size: 1.1rem !important;
   }
 
   .nav-actions {
     flex-wrap: wrap !important;
-    gap: 8px !important;
+    gap: 6px !important;
     width: 100% !important;
-    justify-content: flex-start !important;
   }
 
   .nav-actions .btn,
   .btn {
-    min-height: 42px !important;
-    padding: 10px 14px !important;
-    font-size: 0.85rem !important;
+    min-height: 38px !important;
+    padding: 8px 10px !important;
+    font-size: 0.82rem !important;
     font-weight: 600 !important;
-    border-radius: 8px !important;
+    border-radius: 6px !important;
   }
 
   .nav-metrics {
     width: 100% !important;
     display: grid !important;
     grid-template-columns: repeat(2, 1fr) !important;
-    gap: 8px !important;
-    margin-top: 6px !important;
+    gap: 6px !important;
+    margin-top: 4px !important;
   }
 
   .metric-item {
-    padding: 10px 8px !important;
+    padding: 8px 6px !important;
     text-align: center !important;
-    border-radius: 8px !important;
+    border-radius: 6px !important;
   }
 
   .metric-item .metric-value {
-    font-size: 1.1rem !important;
+    font-size: 1rem !important;
   }
 
-  /* Search & Filters Bar on Mobile */
+  /* Compact Search & Filter Box on Mobile */
   .search-section {
-    padding: 12px !important;
+    padding: 10px !important;
     flex-direction: column !important;
-    gap: 10px !important;
-    border-radius: 12px !important;
+    gap: 8px !important;
+    border-radius: 10px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
 
   .search-box {
@@ -1627,22 +1635,24 @@ body.qr-scan-mode #direct-edit-dialog {
   }
 
   .search-box input {
-    min-height: 44px !important;
+    min-height: 40px !important;
     font-size: 16px !important;
-    padding: 10px 14px 10px 40px !important;
+    padding: 8px 12px 8px 36px !important;
+    border-radius: 8px !important;
   }
 
   .filter-group {
     width: 100% !important;
     display: grid !important;
     grid-template-columns: repeat(2, 1fr) !important;
-    gap: 8px !important;
+    gap: 6px !important;
   }
 
   .filter-group select {
-    min-height: 42px !important;
+    min-height: 38px !important;
     font-size: 16px !important;
-    padding: 8px 10px !important;
+    padding: 6px 8px !important;
+    border-radius: 6px !important;
   }
 
   .view-toggle-group {
@@ -1657,24 +1667,61 @@ body.qr-scan-mode #direct-edit-dialog {
     justify-content: center !important;
   }
 
-  /* Component Grid Layout on Mobile */
+  /* Compact Component Card Box on Mobile */
   #components-grid {
     grid-template-columns: 1fr !important;
-    gap: 14px !important;
+    gap: 10px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
 
   .component-card {
-    padding: 14px !important;
-    border-radius: 12px !important;
+    padding: 10px 12px !important;
+    border-radius: 10px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
 
   .component-card .card-image-wrapper {
-    height: 150px !important;
+    height: 100px !important;
+    max-height: 110px !important;
+    width: 100% !important;
+    border-radius: 8px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .component-card .component-title {
+    font-size: 0.9rem !important;
+    margin-bottom: 3px !important;
+  }
+
+  .component-card .part-number {
+    font-size: 0.75rem !important;
+    margin-bottom: 6px !important;
+  }
+
+  .component-card .card-meta {
+    gap: 4px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .component-card .stock-tag,
+  .component-card .location-badge,
+  .component-card .category-badge {
+    font-size: 0.7rem !important;
+    padding: 2px 6px !important;
+    border-radius: 4px !important;
+  }
+
+  .component-card .card-actions {
+    gap: 6px !important;
+    margin-top: 6px !important;
   }
 
   .component-card .card-actions .btn {
-    min-height: 40px !important;
-    font-size: 0.85rem !important;
+    min-height: 36px !important;
+    padding: 6px 10px !important;
+    font-size: 0.8rem !important;
   }
 
   /* Touch Tables */
@@ -1684,119 +1731,144 @@ body.qr-scan-mode #direct-edit-dialog {
     -webkit-overflow-scrolling: touch !important;
     width: 100% !important;
     max-width: 100% !important;
-    border-radius: 10px !important;
+    border-radius: 8px !important;
   }
 
   .table-responsive table,
   #components-table-container table {
-    min-width: 600px !important;
+    min-width: 550px !important;
   }
 
   .table-responsive td,
   .table-responsive th,
   #components-table-container td,
   #components-table-container th {
-    padding: 12px 10px !important;
-    font-size: 0.85rem !important;
+    padding: 8px 8px !important;
+    font-size: 0.8rem !important;
+  }
+
+  /* Rack & Box Cards on Mobile */
+  .rack-panel {
+    padding: 10px !important;
+    border-radius: 10px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .rack-card {
+    padding: 10px !important;
+    border-radius: 8px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .rack-cabinet-header {
+    min-height: 42px !important;
+  }
+
+  .shelf-row {
+    padding: 8px 10px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .boxes-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 6px !important;
+    width: 100% !important;
+  }
+
+  .box-pill {
+    width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+    margin-right: 0 !important;
+    margin-bottom: 4px !important;
+    padding: 8px 10px !important;
+    border-radius: 6px !important;
   }
 
   /* Login Card Overlay on Mobile */
   .login-card {
-    max-width: 94vw !important;
-    width: 94vw !important;
-    padding: 22px 16px !important;
-    margin: 12px auto !important;
-    border-radius: 16px !important;
+    max-width: 92vw !important;
+    width: 92vw !important;
+    padding: 16px 14px !important;
+    margin: 10px auto !important;
+    border-radius: 14px !important;
+    box-sizing: border-box !important;
   }
 
   .login-card-header h2 {
-    font-size: 1.3rem !important;
+    font-size: 1.2rem !important;
   }
 
   .login-card-header p {
-    font-size: 0.85rem !important;
+    font-size: 0.8rem !important;
   }
 
   .login-card input {
-    min-height: 46px !important;
+    min-height: 42px !important;
     font-size: 16px !important;
   }
 
   .login-card button[type="submit"] {
-    min-height: 48px !important;
-    font-size: 1rem !important;
+    min-height: 44px !important;
+    font-size: 0.95rem !important;
     font-weight: 700 !important;
   }
 
   .quick-roles-grid {
     grid-template-columns: 1fr !important;
-    gap: 8px !important;
+    gap: 6px !important;
   }
 
   .quick-role-card {
-    min-height: 48px !important;
-    padding: 12px 14px !important;
-    border-radius: 10px !important;
+    min-height: 44px !important;
+    padding: 10px 12px !important;
+    border-radius: 8px !important;
   }
 
   /* Modals on Mobile */
   .modal-container {
-    max-width: 95vw !important;
-    width: 95vw !important;
-    max-height: 88vh !important;
-    padding: 16px 14px !important;
-    border-radius: 14px !important;
+    max-width: 94vw !important;
+    width: 94vw !important;
+    max-height: 85vh !important;
+    padding: 14px 10px !important;
+    border-radius: 12px !important;
+    box-sizing: border-box !important;
   }
 
   .modal-header h3 {
-    font-size: 1.1rem !important;
+    font-size: 1.05rem !important;
   }
 
   .modal-close {
-    width: 42px !important;
-    height: 42px !important;
+    width: 38px !important;
+    height: 38px !important;
   }
 
   .printable-report-container {
-    padding: 12px 10px !important;
+    padding: 10px 8px !important;
   }
 
   .printable-document h1 {
-    font-size: 1.15rem !important;
+    font-size: 1.1rem !important;
   }
 
   .printable-document h3 {
-    font-size: 0.9rem !important;
-  }
-
-  /* Rack Viewer on Mobile */
-  .rack-panel {
-    padding: 12px !important;
-    border-radius: 12px !important;
-  }
-
-  .rack-cabinet-header {
-    min-height: 46px !important;
-  }
-
-  .shelf-row {
-    padding: 8px 10px !important;
-  }
-
-  .box-pill {
-    min-width: 130px !important;
-    padding: 8px 10px !important;
+    font-size: 0.85rem !important;
   }
 }
 
 @media screen and (max-width: 480px) {
   body {
-    font-size: 14px !important;
+    font-size: 13.5px !important;
   }
 
   .main-container {
-    padding: 8px 10px !important;
-    gap: 12px !important;
+    padding: 6px 8px !important;
+    gap: 10px !important;
   }
 
   .filter-group {
@@ -1804,12 +1876,12 @@ body.qr-scan-mode #direct-edit-dialog {
   }
 
   .btn {
-    min-height: 42px !important;
-    font-size: 0.85rem !important;
+    min-height: 38px !important;
+    font-size: 0.8rem !important;
   }
 
   .metric-item .metric-value {
-    font-size: 1.05rem !important;
+    font-size: 0.98rem !important;
   }
 }
 
