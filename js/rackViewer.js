@@ -33,14 +33,14 @@ class RackViewer {
 
     const isMobile = window.innerWidth <= 767;
 
-    // On mobile: collapse all racks and shelves unless something is actively selected or highlighted
+    // On mobile: always collapse all shelves — they only open when tapped individually
     if (isMobile) {
+      RackViewer.expandedShelfKeys.clear();
+      // Also collapse racks if nothing is selected
       const hasSelection = selectedRackId || selectedShelfId || selectedBoxId;
       const hasHighlights = highlightedBoxIds && highlightedBoxIds.length > 0;
       if (!hasSelection && !hasHighlights) {
-        // No active selection — collapse everything for a clean mobile view
         RackViewer.expandedRackIds.clear();
-        RackViewer.expandedShelfKeys.clear();
       }
     }
 
@@ -298,6 +298,23 @@ class RackViewer {
                 chevronEl.innerHTML = `<i data-lucide="chevron-right"></i>`;
               }
             } else {
+              // On mobile: close all other shelves in this rack first (accordion)
+              if (window.innerWidth <= 767) {
+                rackCard.querySelectorAll(".shelf-row").forEach(otherShelfEl => {
+                  if (otherShelfEl === shelfEl) return;
+                  const otherKey = otherShelfEl.getAttribute("data-shelf-key");
+                  RackViewer.expandedShelfKeys.delete(otherKey);
+                  otherShelfEl.classList.remove("is-expanded");
+                  otherShelfEl.classList.add("is-collapsed");
+                  const otherContent = otherShelfEl.querySelector(".shelf-accordion-content");
+                  const otherChevron = otherShelfEl.querySelector(".shelf-chevron");
+                  if (otherContent) otherContent.style.display = "none";
+                  if (otherChevron) {
+                    otherChevron.style.transform = "rotate(-90deg)";
+                    otherChevron.innerHTML = `<i data-lucide="chevron-right"></i>`;
+                  }
+                });
+              }
               RackViewer.expandedShelfKeys.add(sKey);
               shelfEl.classList.remove("is-collapsed");
               shelfEl.classList.add("is-expanded");
