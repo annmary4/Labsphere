@@ -33,26 +33,22 @@ class RackViewer {
 
     const isMobile = window.innerWidth <= 767;
 
-    // On mobile: reset expanded shelves to ONLY the currently selected shelf (or empty if no shelf selected)
+    // On mobile: always expand both racks so nested shelves are directly visible
     if (isMobile) {
-      RackViewer.expandedShelfKeys.clear();
+      RackViewer.expandedRackIds.add(1);
+      RackViewer.expandedRackIds.add(2);
+      // Shelves remain collapsed by default unless user has selected a shelf
+      if (!selectedShelfId) {
+        RackViewer.expandedShelfKeys.clear();
+      }
+    } else {
+      // Desktop: Ensure selectedRackId is expanded if specified
+      if (selectedRackId && !this.expandedRackIds.has(Number(selectedRackId))) {
+        this.expandedRackIds.add(Number(selectedRackId));
+      }
       if (selectedRackId && selectedShelfId) {
-        RackViewer.expandedShelfKeys.add(`${selectedRackId}_${selectedShelfId}`);
+        this.expandedShelfKeys.add(`${selectedRackId}_${selectedShelfId}`);
       }
-      // Collapse racks if no active rack or box selection and no search highlights
-      if (!selectedRackId && !selectedBoxId && (!highlightedBoxIds || highlightedBoxIds.length === 0)) {
-        RackViewer.expandedRackIds.clear();
-      }
-    }
-
-    // Ensure selectedRackId is expanded if specified
-    if (selectedRackId && !this.expandedRackIds.has(Number(selectedRackId))) {
-      this.expandedRackIds.add(Number(selectedRackId));
-    }
-
-    // Ensure selectedShelfId is expanded on desktop
-    if (!isMobile && selectedRackId && selectedShelfId) {
-      this.expandedShelfKeys.add(`${selectedRackId}_${selectedShelfId}`);
     }
 
     // Ensure racks containing highlighted boxes (from search) are expanded
