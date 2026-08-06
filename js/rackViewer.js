@@ -33,13 +33,11 @@ class RackViewer {
 
     const isMobile = window.innerWidth <= 767;
 
-    // On mobile: always collapse all shelves — they only open when tapped individually
+    // On mobile: always clear expanded shelves so racks expand with ALL shelves closed by default
     if (isMobile) {
       RackViewer.expandedShelfKeys.clear();
-      // Also collapse racks if nothing is selected
-      const hasSelection = selectedRackId || selectedShelfId || selectedBoxId;
-      const hasHighlights = highlightedBoxIds && highlightedBoxIds.length > 0;
-      if (!hasSelection && !hasHighlights) {
+      // Collapse racks if no active search or box selection
+      if (!selectedRackId && !selectedBoxId && (!highlightedBoxIds || highlightedBoxIds.length === 0)) {
         RackViewer.expandedRackIds.clear();
       }
     }
@@ -49,8 +47,8 @@ class RackViewer {
       this.expandedRackIds.add(Number(selectedRackId));
     }
 
-    // Ensure selectedShelfId is expanded if specified
-    if (selectedRackId && selectedShelfId) {
+    // Ensure selectedShelfId is expanded ONLY on desktop (on mobile, shelves must remain collapsed until clicked)
+    if (!isMobile && selectedRackId && selectedShelfId) {
       this.expandedShelfKeys.add(`${selectedRackId}_${selectedShelfId}`);
     }
 
@@ -59,13 +57,13 @@ class RackViewer {
       activeBoxes.filter(b => highlightedBoxIds.includes(b.id)).forEach(b => {
         if (b.rackId) {
           this.expandedRackIds.add(Number(b.rackId));
-          if (b.shelfId) this.expandedShelfKeys.add(`${b.rackId}_${b.shelfId}`);
+          if (!isMobile && b.shelfId) this.expandedShelfKeys.add(`${b.rackId}_${b.shelfId}`);
         }
       });
       activeComps.filter(c => highlightedBoxIds.includes(c.boxId)).forEach(c => {
         if (c.rackId) {
           this.expandedRackIds.add(Number(c.rackId));
-          if (c.shelfId) this.expandedShelfKeys.add(`${c.rackId}_${c.shelfId}`);
+          if (!isMobile && c.shelfId) this.expandedShelfKeys.add(`${c.rackId}_${c.shelfId}`);
         }
       });
     }
@@ -242,11 +240,9 @@ class RackViewer {
           if (statusBadge) statusBadge.innerText = "Expanded";
 
           // On mobile: collapse all shelves inside this rack when it opens
-          // User must click each shelf individually to expand it
           if (window.innerWidth <= 767) {
+            RackViewer.expandedShelfKeys.clear();
             rackCard.querySelectorAll(".shelf-row").forEach(shelfEl => {
-              const sKey = shelfEl.getAttribute("data-shelf-key");
-              RackViewer.expandedShelfKeys.delete(sKey);
               shelfEl.classList.remove("is-expanded");
               shelfEl.classList.add("is-collapsed");
               const shelfContent = shelfEl.querySelector(".shelf-accordion-content");
@@ -257,6 +253,9 @@ class RackViewer {
                 shelfChevron.innerHTML = `<i data-lucide="chevron-right"></i>`;
               }
             });
+            if (onShelfClick) {
+              onShelfClick(rackIdNum, null);
+            }
           }
         }
         if (window.lucide) window.lucide.createIcons();
