@@ -1398,6 +1398,18 @@ body.qr-scan-mode #direct-edit-dialog {
 
 /* Print Media Styles for Printable Inventory Sheet */
 @media print {
+  /* Hide main dashboard, overlays, navbars, and toasts from document layout flow so print starts on Page 1 */
+  #app, 
+  #login-screen, 
+  .navbar, 
+  .main-container, 
+  .metrics-grid, 
+  .search-section, 
+  .toast-container,
+  .print-hide {
+    display: none !important;
+  }
+
   html, body {
     height: auto !important;
     max-height: none !important;
@@ -1406,16 +1418,6 @@ body.qr-scan-mode #direct-edit-dialog {
     color: #000000 !important;
     margin: 0 !important;
     padding: 0 !important;
-  }
-
-  body * {
-    visibility: hidden !important;
-  }
-
-  #printable-sheet-modal,
-  #printable-sheet-modal #printable-area,
-  #printable-sheet-modal #printable-area * {
-    visibility: visible !important;
   }
 
   #printable-sheet-modal {
@@ -1449,10 +1451,6 @@ body.qr-scan-mode #direct-edit-dialog {
     overflow: visible !important;
     padding: 0 !important;
     margin: 0 !important;
-  }
-
-  .print-hide {
-    display: none !important;
   }
 
   .report-table {
