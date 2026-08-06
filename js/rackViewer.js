@@ -31,6 +31,13 @@ class RackViewer {
     const activeBoxes = (Array.isArray(boxes)) ? boxes : INITIAL_BOXES;
     const activeComps = (Array.isArray(components)) ? components : INITIAL_COMPONENTS;
 
+    const isMobile = window.innerWidth <= 767;
+
+    // On mobile: keep all racks expanded by default so nested shelves are directly visible under each rack
+    if (isMobile) {
+      activeRacks.forEach(r => this.expandedRackIds.add(Number(r.id)));
+    }
+
     // Ensure selectedRackId is expanded if specified
     if (selectedRackId && !this.expandedRackIds.has(Number(selectedRackId))) {
       this.expandedRackIds.add(Number(selectedRackId));
