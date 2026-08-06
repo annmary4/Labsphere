@@ -1547,12 +1547,25 @@ body.qr-scan-mode #direct-edit-dialog {
   }
 }
 
-/* /* 3. Native Mobile Phone Breakpoint System (320px - 767px) */
+/* 3. Native Mobile Phone Breakpoint System (320px - 767px) */
 @media screen and (max-width: 767px) {
   /* Ensure 100% viewport containment with zero overflow */
   html, body {
     overflow-x: hidden !important;
     width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  #app, .app-container {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+    overflow-x: hidden !important;
   }
 
   /* Prevent browser auto-zoom on input focus */
@@ -1565,19 +1578,31 @@ body.qr-scan-mode #direct-edit-dialog {
     font-size: 16px !important;
   }
 
-  /* Main Container Layout on Mobile */
+  /* Symmetrical 8px Side Padding for Top-Level Containers */
+  .navbar,
+  .search-section,
   .main-container {
     grid-template-columns: 1fr !important;
-    padding: 8px 10px !important;
-    gap: 12px !important;
+    padding: 8px !important;
+    gap: 10px !important;
     width: 100% !important;
     max-width: 100% !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  .components-panel,
+  .rack-panel {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
     box-sizing: border-box !important;
   }
 
   /* Header & Navbar on Mobile */
   .navbar {
-    padding: 8px 10px !important;
+    padding: 8px !important;
     flex-wrap: wrap !important;
     gap: 8px !important;
     border-radius: 0 0 10px 10px !important;
@@ -1622,7 +1647,7 @@ body.qr-scan-mode #direct-edit-dialog {
 
   /* Compact Search & Filter Box on Mobile */
   .search-section {
-    padding: 10px !important;
+    padding: 8px !important;
     flex-direction: column !important;
     gap: 8px !important;
     border-radius: 10px !important;
