@@ -110,7 +110,11 @@ class RackViewer {
         shelfBoxes.forEach(box => {
           const isBoxSelected = selectedBoxId === box.id;
           const isHighlighted = highlightedBoxIds.includes(box.id);
-          const boxComponents = activeComps.filter(c => c.boxId === box.id && Number(c.rackId) === rackIdNum && Number(c.shelfId) === shelfNum);
+          const boxComponents = activeComps.filter(c => 
+            String(c.boxId || "").trim().toUpperCase() === String(box.id || "").trim().toUpperCase() && 
+            Number(c.rackId) === rackIdNum && 
+            Number(c.shelfId) === shelfNum
+          );
 
           const compNames = boxComponents.map(c => c.name).join(" + ");
 

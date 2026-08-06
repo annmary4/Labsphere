@@ -596,8 +596,12 @@ class App {
     this.selectedShelfId = shelfId;
     this.refreshApp();
 
-    // POP UP MULTI-COMPONENT BOX INSPECTOR FOR ALL ITEMS IN THIS BOX
-    const components = StorageService.getComponents().filter(c => c.boxId === boxId);
+    // POP UP MULTI-COMPONENT BOX INSPECTOR FOR EXACT ITEMS IN THIS BOX AT THIS LOCATION
+    const components = StorageService.getComponents().filter(c => 
+      String(c.boxId || "").trim().toUpperCase() === String(boxId || "").trim().toUpperCase() &&
+      (!rackId || Number(c.rackId) === Number(rackId)) &&
+      (!shelfId || Number(c.shelfId) === Number(shelfId))
+    );
     if (components.length > 0) {
       ModalManager.openBoxInspectorModal(boxId, components);
     } else {
@@ -682,7 +686,11 @@ class App {
     // Bypass shelf/box filtering when searchQuery is active so all matched items show globally
     if (!this.searchQuery) {
       if (this.selectedBoxId) {
-        components = components.filter(c => String(c.boxId || "").trim().toUpperCase() === String(this.selectedBoxId).trim().toUpperCase());
+        components = components.filter(c => 
+          String(c.boxId || "").trim().toUpperCase() === String(this.selectedBoxId).trim().toUpperCase() &&
+          (!this.selectedRackId || Number(c.rackId) === Number(this.selectedRackId)) &&
+          (!this.selectedShelfId || Number(c.shelfId) === Number(this.selectedShelfId))
+        );
       } else if (this.selectedRackId && this.selectedShelfId) {
         components = components.filter(c => Number(c.rackId) === Number(this.selectedRackId) && Number(c.shelfId) === Number(this.selectedShelfId));
       }

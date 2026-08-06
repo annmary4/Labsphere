@@ -2,20 +2,20 @@
  * LabSphere Storage Service - Complete 59-Component Catalog (v35)
  */
 
-const CURRENT_VERSION = "v9710_single_shelf_strict_content_filter";
+const CURRENT_VERSION = "v9720_exact_box_component_filtering";
 
 const STORAGE_KEYS = {
-  VERSION: "labsphere_version_v9710",
-  COMPONENTS: "labsphere_components_v9710",
-  BOXES: "labsphere_boxes_v9710",
-  RACKS: "labsphere_racks_v9710",
-  TRANSACTIONS: "labsphere_transactions_v9710",
-  PROJECTS: "labsphere_projects_v9710",
-  REQUESTS: "labsphere_requests_v9710",
-  USERS: "labsphere_users_v9710",
-  SESSION: "labsphere_session_v9710",
-  SECURITY_LOGS: "labsphere_sec_logs_v9710",
-  NOTIFICATIONS: "labsphere_notifs_v9710"
+  VERSION: "labsphere_version_v9720",
+  COMPONENTS: "labsphere_components_v9720",
+  BOXES: "labsphere_boxes_v9720",
+  RACKS: "labsphere_racks_v9720",
+  TRANSACTIONS: "labsphere_transactions_v9720",
+  PROJECTS: "labsphere_projects_v9720",
+  REQUESTS: "labsphere_requests_v9720",
+  USERS: "labsphere_users_v9720",
+  SESSION: "labsphere_session_v9720",
+  SECURITY_LOGS: "labsphere_sec_logs_v9720",
+  NOTIFICATIONS: "labsphere_notifs_v9720"
 };
 
 function safeSetItem(key, value) {
