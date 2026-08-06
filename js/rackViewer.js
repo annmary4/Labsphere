@@ -4,9 +4,9 @@
  */
 
 class RackViewer {
-  // Static set to persist expanded racks state (Rack 1 & Rack 2 expanded by default so nested shelves show)
-  static expandedRackIds = new Set([1, 2]);
-  // Static set to persist expanded shelves state (Collapsed by default on login)
+  // Static set to persist expanded racks state (Racks start closed by default on load)
+  static expandedRackIds = new Set();
+  // Static set to persist expanded shelves state (Shelves start closed by default on load)
   static expandedShelfKeys = new Set();
 
   static render(options) {
