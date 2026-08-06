@@ -3230,6 +3230,169 @@ window.openMoveBoxDialog = function (compId) {
   }
 };
 
+ModalManager.openPrintableInventorySheet = function() {
+  let modal = document.getElementById("printable-sheet-modal");
+  if (modal) modal.remove();
+
+  const components = StorageService.getComponents();
+  let totalQty = 0;
+  let totalValuation = 0;
+
+  components.forEach(c => {
+    const price = c.unitPrice || 450;
+    const qty = c.quantity || 0;
+    totalQty += qty;
+    totalValuation += (qty * price);
+  });
+
+  const now = new Date();
+  const dateFormatted = now.toLocaleDateString("en-IN", { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+  let rowsHtml = "";
+  components.forEach((c, idx) => {
+    const price = c.unitPrice || 450;
+    const qty = c.quantity || 0;
+    const itemVal = qty * price;
+    const locText = c.boxId ? `${c.boxId} (Rack ${c.rackId || 1}, Shelf ${c.shelfId || 1})` : 'Unassigned';
+
+    rowsHtml += `
+      <tr style="border-bottom: 1px solid rgba(255,255,255,0.06);">
+        <td style="padding: 10px 8px; text-align: center; font-weight: 600; color:#94a3b8;">${idx + 1}</td>
+        <td style="padding: 10px 12px;">
+          <strong style="color:var(--text-bright); font-size:0.9rem;">${c.name || 'N/A'}</strong>
+          <div style="font-size:0.75rem; color:#64748b; font-family:monospace; margin-top:2px;">${c.id}</div>
+        </td>
+        <td style="padding: 10px 8px; font-family:monospace; font-size:0.85rem; color:#cbd5e1;">${c.partNumber || '-'}</td>
+        <td style="padding: 10px 8px;"><span class="stock-tag" style="background:rgba(56,189,248,0.12); color:#38bdf8; border:1px solid rgba(56,189,248,0.3); padding:3px 8px; border-radius:4px; font-size:0.75rem; font-weight:600;">${c.category || 'General'}</span></td>
+        <td style="padding: 10px 8px; font-size:0.85rem; color:#cbd5e1;">${locText}</td>
+        <td style="padding: 10px 8px; text-align: right; font-weight: 700; font-size:0.9rem; ${qty <= (c.minQuantity || 5) ? 'color:#f87171;' : 'color:#f8fafc;'}">${qty} ${c.unit || 'pcs'}</td>
+        <td style="padding: 10px 8px; text-align: right; font-family: monospace; color:#cbd5e1;">₹${price.toLocaleString('en-IN')}</td>
+        <td style="padding: 10px 12px; text-align: right; font-weight: 700; font-family: monospace; color:#4ade80;">₹${itemVal.toLocaleString('en-IN')}</td>
+      </tr>
+    `;
+  });
+
+  const modalHtml = `
+    <div id="printable-sheet-modal" class="modal-overlay show" style="z-index:999999; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.85); backdrop-filter:blur(10px);">
+      <div class="modal-container printable-report-container" style="max-width:1150px; width:95%; max-height:92vh; overflow-y:auto; background:#0f172a; border:1px solid rgba(56,189,248,0.3); border-radius:16px; padding:28px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.8);">
+        
+        <!-- Screen Action Bar (Hidden when Printing) -->
+        <div class="print-hide" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; padding-bottom:18px; border-bottom:1px solid rgba(255,255,255,0.12);">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <div style="background:rgba(56,189,248,0.15); border:1px solid rgba(56,189,248,0.3); border-radius:10px; width:42px; height:42px; display:flex; align-items:center; justify-content:center; color:#38bdf8;">
+              <i data-lucide="printer" style="width:22px; height:22px;"></i>
+            </div>
+            <div>
+              <h2 style="margin:0; font-size:1.25rem; font-weight:700; color:#f8fafc;">Printable Component Inventory Sheet & Valuation Ledger</h2>
+              <p style="margin:2px 0 0 0; font-size:0.8rem; color:#94a3b8;">Generate and print official hardware inventory datasheets with quantities and rates</p>
+            </div>
+          </div>
+          <div style="display:flex; gap:10px;">
+            <button class="btn btn-primary" onclick="window.print()" style="background:#0284c7; color:#fff; font-weight:600; padding:10px 18px; border-radius:8px; display:inline-flex; align-items:center; gap:8px; cursor:pointer; border:none; box-shadow:0 4px 14px rgba(2,132,199,0.4);">
+              <i data-lucide="printer" style="width:18px; height:18px;"></i> Print / Save as PDF
+            </button>
+            <button class="btn btn-secondary" onclick="ModalManager.exportInventoryCSV()" style="padding:10px 16px; border-radius:8px; display:inline-flex; align-items:center; gap:8px; cursor:pointer; background:rgba(255,255,255,0.08); color:#f8fafc; border:1px solid rgba(255,255,255,0.15);">
+              <i data-lucide="download" style="width:18px; height:18px;"></i> Export CSV
+            </button>
+            <button class="btn btn-secondary" onclick="document.getElementById('printable-sheet-modal').remove()" style="padding:10px 16px; border-radius:8px; cursor:pointer; background:rgba(255,255,255,0.08); color:#94a3b8; border:1px solid rgba(255,255,255,0.15);">
+              ✕ Close
+            </button>
+          </div>
+        </div>
+
+        <!-- Printable Document Area -->
+        <div id="printable-area" class="printable-document">
+          <div style="text-align:center; margin-bottom:24px; border-bottom:2px solid #38bdf8; padding-bottom:16px;">
+            <h1 style="margin:0 0 6px 0; font-size:1.6rem; color:#f8fafc; font-weight:800; letter-spacing:0.5px;">LABSPHERE ENTERPRISE LABORATORY SYSTEM</h1>
+            <h3 style="margin:0 0 10px 0; font-size:1.1rem; color:#38bdf8; font-weight:600;">MASTER HARDWARE INVENTORY & RATE LEDGER SHEET</h3>
+            <div style="font-size:0.85rem; color:#94a3b8;">
+              <span><strong>Report Generated Date:</strong> ${dateFormatted}</span> &nbsp;|&nbsp;
+              <span><strong>System Scope:</strong> Physical Stock Valuation & Itemized Catalog</span>
+            </div>
+          </div>
+
+          <!-- Report Summary KPI Cards -->
+          <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:16px; margin-bottom:24px;">
+            <div style="background:rgba(15,23,42,0.6); border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:14px 18px; text-align:center;">
+              <div style="font-size:0.75rem; text-transform:uppercase; color:#94a3b8; letter-spacing:0.5px; font-weight:600;">Total Component Types</div>
+              <div style="font-size:1.6rem; font-weight:800; color:#38bdf8; margin-top:4px;">${components.length} Items</div>
+            </div>
+            <div style="background:rgba(15,23,42,0.6); border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:14px 18px; text-align:center;">
+              <div style="font-size:0.75rem; text-transform:uppercase; color:#94a3b8; letter-spacing:0.5px; font-weight:600;">Total Physical Quantity</div>
+              <div style="font-size:1.6rem; font-weight:800; color:#a855f7; margin-top:4px;">${totalQty.toLocaleString('en-IN')} pcs</div>
+            </div>
+            <div style="background:rgba(15,23,42,0.6); border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:14px 18px; text-align:center;">
+              <div style="font-size:0.75rem; text-transform:uppercase; color:#94a3b8; letter-spacing:0.5px; font-weight:600;">Total Stock Valuation</div>
+              <div style="font-size:1.6rem; font-weight:800; color:#4ade80; margin-top:4px;">₹${totalValuation.toLocaleString('en-IN')}</div>
+            </div>
+          </div>
+
+          <!-- Component Inventory Data Table -->
+          <table class="report-table" style="width:100%; border-collapse:collapse; font-size:0.85rem; margin-top:10px;">
+            <thead>
+              <tr style="background:rgba(30,41,59,0.9); color:#f8fafc; border-bottom:2px solid #38bdf8;">
+                <th style="padding:12px 8px; text-align:center;">#</th>
+                <th style="padding:12px; text-align:left;">Component Name & ID</th>
+                <th style="padding:12px 8px; text-align:left;">Part Number</th>
+                <th style="padding:12px 8px; text-align:left;">Category</th>
+                <th style="padding:12px 8px; text-align:left;">Storage Location</th>
+                <th style="padding:12px 8px; text-align:right;">Quantity</th>
+                <th style="padding:12px 8px; text-align:right;">Unit Rate (₹)</th>
+                <th style="padding:12px; text-align:right;">Total Value (₹)</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rowsHtml}
+            </tbody>
+            <tfoot>
+              <tr style="background:rgba(30,41,59,0.95); font-weight:800; border-top:2px solid #38bdf8; color:#f8fafc;">
+                <td colspan="5" style="padding:14px; text-align:right; font-size:0.9rem;">GRAND TOTAL INVENTORY SUMMARY:</td>
+                <td style="padding:14px 8px; text-align:right; color:#38bdf8; font-size:0.95rem;">${totalQty.toLocaleString('en-IN')} pcs</td>
+                <td style="padding:14px 8px; text-align:right;">-</td>
+                <td style="padding:14px; text-align:right; color:#4ade80; font-size:1.05rem; font-family:monospace;">₹${totalValuation.toLocaleString('en-IN')}</td>
+              </tr>
+            </tfoot>
+          </table>
+
+          <div style="margin-top:32px; font-size:0.75rem; color:#64748b; display:flex; justify-content:space-between; border-top:1px solid rgba(255,255,255,0.1); padding-top:14px;">
+            <span>Verified by Lab Controller Signature: _______________________</span>
+            <span>LabSphere Official Hardware Inventory Sheet</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  `;
+
+  document.body.insertAdjacentHTML("beforeend", modalHtml);
+  if (window.lucide) window.lucide.createIcons();
+};
+
+ModalManager.exportInventoryCSV = function() {
+  const components = StorageService.getComponents();
+  let csvContent = "data:text/csv;charset=utf-8,#,Component Name,Component ID,Part Number,Category,Location,Quantity,Unit Rate (INR),Total Value (INR)\n";
+
+  components.forEach((c, idx) => {
+    const price = c.unitPrice || 450;
+    const qty = c.quantity || 0;
+    const itemVal = qty * price;
+    const locText = c.boxId ? `${c.boxId} (Rack ${c.rackId || 1} Shelf ${c.shelfId || 1})` : 'Unassigned';
+    const cleanName = `"${(c.name || '').replace(/"/g, '""')}"`;
+    const cleanCat = `"${(c.category || '').replace(/"/g, '""')}"`;
+    const cleanLoc = `"${locText.replace(/"/g, '""')}"`;
+
+    csvContent += `${idx + 1},${cleanName},${c.id},${c.partNumber || ''},${cleanCat},${cleanLoc},${qty},${price},${itemVal}\n`;
+  });
+
+  const encodedUri = encodeURI(csvContent);
+  const link = document.createElement("a");
+  link.setAttribute("href", encodedUri);
+  link.setAttribute("download", `LabSphere_Inventory_Sheet_${Date.now()}.csv`);
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+};
+
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape") {
     if (window.closeComponentModal) window.closeComponentModal();

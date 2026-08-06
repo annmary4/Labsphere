@@ -1396,4 +1396,63 @@ body.qr-scan-mode #direct-edit-dialog {
   display: none !important;
 }
 
+/* Print Media Styles for Printable Inventory Sheet */
+@media print {
+  body * {
+    visibility: hidden !important;
+  }
+  #printable-sheet-modal,
+  #printable-sheet-modal #printable-area,
+  #printable-sheet-modal #printable-area * {
+    visibility: visible !important;
+  }
+  #printable-sheet-modal {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+  .printable-report-container {
+    background: #ffffff !important;
+    color: #000000 !important;
+    border: none !important;
+    box-shadow: none !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    max-height: none !important;
+    overflow: visible !important;
+    padding: 0 !important;
+  }
+  .print-hide {
+    display: none !important;
+  }
+  .report-table {
+    border: 1px solid #000000 !important;
+    width: 100% !important;
+    color: #000000 !important;
+  }
+  .report-table th,
+  .report-table td {
+    border: 1px solid #94a3b8 !important;
+    color: #000000 !important;
+    padding: 6px 8px !important;
+  }
+  .report-table th {
+    background: #e2e8f0 !important;
+    color: #0f172a !important;
+    font-weight: bold !important;
+  }
+  .stock-tag {
+    border: 1px solid #64748b !important;
+    color: #000000 !important;
+    background: none !important;
+  }
+}
+
 

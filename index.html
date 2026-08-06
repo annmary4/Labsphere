@@ -254,9 +254,12 @@
           <i data-lucide="plus"></i> Add Item
         </button>
 
-        <!-- Management Actions -->
+        <!-- Management & Reporting Actions -->
         <button id="btn-mgmt-dashboard" class="btn btn-primary" title="Executive Financial Valuation & Usage Dashboard">
           <i data-lucide="bar-chart-3"></i> Executive Report
+        </button>
+        <button id="btn-print-inventory-sheet" class="btn btn-secondary" title="Generate & Print Component Inventory Sheet (with Quantities & Rates)" onclick="ModalManager.openPrintableInventorySheet()">
+          <i data-lucide="printer"></i> Inventory Sheet
         </button>
 
         <button id="btn-audit-log" class="btn btn-icon" title="Audit Trail & Security Log">
@@ -1561,13 +1564,13 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
   </div>
 
   <!-- JavaScript App Logic with Cache Busters -->
-  <script src="js/types.js?v=9230"></script>
-  <script src="js/initialData.js?v=9230"></script>
-  <script src="js/storage.js?v=9230"></script>
-  <script src="js/rackViewer.js?v=9230"></script>
-  <script src="js/componentsView.js?v=9230"></script>
-  <script src="js/modalManager.js?v=9230"></script>
-  <script src="js/app.js?v=9230"></script>
+  <script src="js/types.js?v=9240"></script>
+  <script src="js/initialData.js?v=9240"></script>
+  <script src="js/storage.js?v=9240"></script>
+  <script src="js/rackViewer.js?v=9240"></script>
+  <script src="js/componentsView.js?v=9240"></script>
+  <script src="js/modalManager.js?v=9240"></script>
+  <script src="js/app.js?v=9240"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       if (window.lucide) {
