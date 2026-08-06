@@ -1692,22 +1692,25 @@ body.qr-scan-mode #direct-edit-dialog {
     justify-content: center !important;
   }
 
-  /* Perfectly Proportional 2-Component Per Row Mobile Grid (320px - 767px) */
+  /* Foolproof Symmetrical 2-Component Per Row Mobile Grid (320px - 767px) */
   #components-grid,
   .component-cards-grid {
     display: grid !important;
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    grid-template-columns: calc(50% - 3px) calc(50% - 3px) !important;
     gap: 6px !important;
     width: 100% !important;
     max-width: 100% !important;
     box-sizing: border-box !important;
+    overflow: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
   .component-card {
     display: flex !important;
     flex-direction: column !important;
     justify-content: space-between !important;
-    padding: 5px 6px !important;
+    padding: 5px !important;
     border-radius: 6px !important;
     width: 100% !important;
     min-width: 0 !important;
@@ -1717,6 +1720,15 @@ body.qr-scan-mode #direct-edit-dialog {
     background: var(--bg-card) !important;
     border: 1px solid var(--border-color) !important;
     overflow: hidden !important;
+  }
+
+  .component-card * {
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .component-card div[style*="Multi-Item Box"] {
+    display: none !important; /* Hide long multi-item box text string on mobile 2-column cards */
   }
 
   .component-card .card-image-wrap {
