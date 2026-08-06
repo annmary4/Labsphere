@@ -278,9 +278,10 @@ class RackViewer {
 
             const contentEl = shelfEl.querySelector(".shelf-accordion-content");
             const chevronEl = shelfEl.querySelector(".shelf-chevron");
-            const currentlyExpanded = RackViewer.expandedShelfKeys.has(sKey);
+            const isCurrentlyExpanded = shelfEl.classList.contains("is-expanded") || RackViewer.expandedShelfKeys.has(sKey);
 
-            if (currentlyExpanded) {
+            if (isCurrentlyExpanded) {
+              // Collapse Shelf
               RackViewer.expandedShelfKeys.delete(sKey);
               shelfEl.classList.remove("is-expanded");
               shelfEl.classList.add("is-collapsed");
@@ -289,8 +290,8 @@ class RackViewer {
                 chevronEl.style.transform = "rotate(-90deg)";
                 chevronEl.innerHTML = `<i data-lucide="chevron-right"></i>`;
               }
-              if (onShelfClick) onShelfClick(rId, null);
             } else {
+              // Expand Shelf
               RackViewer.expandedShelfKeys.add(sKey);
               shelfEl.classList.remove("is-collapsed");
               shelfEl.classList.add("is-expanded");
@@ -299,7 +300,6 @@ class RackViewer {
                 chevronEl.style.transform = "rotate(0deg)";
                 chevronEl.innerHTML = `<i data-lucide="chevron-down"></i>`;
               }
-              if (onShelfClick) onShelfClick(rId, sId);
             }
             if (window.lucide) window.lucide.createIcons();
           });
