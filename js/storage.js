@@ -2,20 +2,20 @@
  * LabSphere Storage Service - Complete 59-Component Catalog (v35)
  */
 
-const CURRENT_VERSION = "v9290_grand_total_only_at_end";
+const CURRENT_VERSION = "v9300_cross_device_cloud_auth";
 
 const STORAGE_KEYS = {
-  VERSION: "labsphere_version_v9290",
-  COMPONENTS: "labsphere_components_v9290",
-  BOXES: "labsphere_boxes_v9290",
-  RACKS: "labsphere_racks_v9290",
-  TRANSACTIONS: "labsphere_transactions_v9290",
-  PROJECTS: "labsphere_projects_v9290",
-  REQUESTS: "labsphere_requests_v9290",
-  USERS: "labsphere_users_v9290",
-  SESSION: "labsphere_session_v9290",
-  SECURITY_LOGS: "labsphere_sec_logs_v9290",
-  NOTIFICATIONS: "labsphere_notifs_v9290"
+  VERSION: "labsphere_version_v9300",
+  COMPONENTS: "labsphere_components_v9300",
+  BOXES: "labsphere_boxes_v9300",
+  RACKS: "labsphere_racks_v9300",
+  TRANSACTIONS: "labsphere_transactions_v9300",
+  PROJECTS: "labsphere_projects_v9300",
+  REQUESTS: "labsphere_requests_v9300",
+  USERS: "labsphere_users_v9300",
+  SESSION: "labsphere_session_v9300",
+  SECURITY_LOGS: "labsphere_sec_logs_v9300",
+  NOTIFICATIONS: "labsphere_notifs_v9300"
 };
 
 function safeSetItem(key, value) {
@@ -106,6 +106,23 @@ class StorageService {
 
   static async pullCentralServerSync() {
     try {
+      // 1. Cross-Device Cloud User Sync from Restful API Store
+      const cloudUsersRes = await fetch("https://api.restful-api.dev/objects/ff8081819f7e10ae019fd56da7af7eba?t=" + Date.now()).catch(() => null);
+      if (cloudUsersRes && cloudUsersRes.ok) {
+        const cloudObj = await cloudUsersRes.json();
+        if (cloudObj && cloudObj.data && Array.isArray(cloudObj.data.users)) {
+          const cloudUsers = cloudObj.data.users;
+          const localUsers = this.getUsers();
+          cloudUsers.forEach(cu => {
+            if (!localUsers.some(lu => lu.username.toLowerCase() === cu.username.toLowerCase() || lu.email.toLowerCase() === cu.email.toLowerCase())) {
+              localUsers.push(cu);
+            }
+          });
+          safeSetItem(STORAGE_KEYS.USERS, JSON.stringify(localUsers));
+          try { localStorage.setItem(MASTER_USERS_KEY, JSON.stringify(localUsers)); } catch (e) {}
+        }
+      }
+
       let res = await fetch("api/db?t=" + Date.now()).catch(() => null);
       if (!res || !res.ok) {
         res = await fetch("data/db.json?t=" + Date.now()).catch(() => null);
@@ -144,22 +161,13 @@ class StorageService {
           if (data.requests && Array.isArray(data.requests)) localStorage.setItem(STORAGE_KEYS.REQUESTS, JSON.stringify(data.requests));
           if (data.transactions && Array.isArray(data.transactions)) localStorage.setItem(STORAGE_KEYS.TRANSACTIONS, JSON.stringify(data.transactions));
           if (data.users && Array.isArray(data.users)) {
-            try {
-              const localUsersData = localStorage.getItem(STORAGE_KEYS.USERS);
-              if (localUsersData) {
-                const localUsers = JSON.parse(localUsersData);
-                if (Array.isArray(localUsers)) {
-                  const localNameMap = new Map();
-                  localUsers.forEach(lu => {
-                    if (lu.role && lu.fullName) localNameMap.set(lu.role, lu.fullName);
-                  });
-                  data.users.forEach(su => {
-                    if (localNameMap.has(su.role)) su.fullName = localNameMap.get(su.role);
-                  });
-                }
+            const currentUsers = this.getUsers();
+            data.users.forEach(su => {
+              if (!currentUsers.some(cu => cu.username.toLowerCase() === su.username.toLowerCase() || cu.email.toLowerCase() === su.email.toLowerCase())) {
+                currentUsers.push(su);
               }
-            } catch (err) {}
-            localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(data.users));
+            });
+            this.saveUsers(currentUsers);
           }
           if (data.notifications && Array.isArray(data.notifications)) localStorage.setItem(STORAGE_KEYS.NOTIFICATIONS, JSON.stringify(data.notifications));
           if (data.securityLogs && Array.isArray(data.securityLogs)) localStorage.setItem(STORAGE_KEYS.SECURITY_LOGS, JSON.stringify(data.securityLogs));
@@ -172,6 +180,19 @@ class StorageService {
 
   static async pushCentralServerSync() {
     try {
+      const allUsers = this.getUsers();
+      fetch("https://api.restful-api.dev/objects/ff8081819f7e10ae019fd56da7af7eba", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: "LabSphere Master Users Store",
+          data: {
+            updatedAt: new Date().toISOString(),
+            users: allUsers
+          }
+        })
+      }).catch(() => {});
+
       const masterData = {
         components: this.getComponents(),
         boxes: this.getBoxes(),
@@ -179,7 +200,7 @@ class StorageService {
         projects: this.getProjects(),
         requests: this.getRequests(),
         transactions: this.getTransactions(),
-        users: this.getUsers(),
+        users: allUsers,
         notifications: this.getNotifications(),
         securityLogs: this.getSecurityLogs()
       };
@@ -620,6 +641,19 @@ class StorageService {
     try {
       localStorage.setItem(MASTER_USERS_KEY, JSON.stringify(users));
     } catch (e) {}
+
+    // Cloud Multi-Device Sync across all phones/PCs
+    fetch("https://api.restful-api.dev/objects/ff8081819f7e10ae019fd56da7af7eba", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: "LabSphere Master Users Store",
+        data: {
+          updatedAt: new Date().toISOString(),
+          users: users
+        }
+      })
+    }).catch(() => {});
   }
 
   static createUser(username, email, password, role, fullName) {
@@ -740,7 +774,7 @@ class StorageService {
   }
 
   static login(emailOrUsername, password) {
-    const users = this.getUsers();
+    let users = this.getUsers();
     const input = emailOrUsername.trim().toLowerCase();
     
     let user = users.find(u => 
