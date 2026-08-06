@@ -289,6 +289,7 @@ class RackViewer {
                 chevronEl.style.transform = "rotate(-90deg)";
                 chevronEl.innerHTML = `<i data-lucide="chevron-right"></i>`;
               }
+              if (onShelfClick) onShelfClick(rId, null);
             } else {
               RackViewer.expandedShelfKeys.add(sKey);
               shelfEl.classList.remove("is-collapsed");
@@ -298,10 +299,9 @@ class RackViewer {
                 chevronEl.style.transform = "rotate(0deg)";
                 chevronEl.innerHTML = `<i data-lucide="chevron-down"></i>`;
               }
+              if (onShelfClick) onShelfClick(rId, sId);
             }
             if (window.lucide) window.lucide.createIcons();
-
-            if (onShelfClick) onShelfClick(rId, sId);
           });
         }
       });
