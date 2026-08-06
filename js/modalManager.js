@@ -3273,7 +3273,7 @@ ModalManager.openPrintableInventorySheet = function() {
   });
 
   const modalHtml = `
-    <div id="printable-sheet-modal" class="modal-overlay show" style="z-index:999999; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.85); backdrop-filter:blur(10px);">
+    <div id="printable-sheet-modal" class="modal-overlay show" style="position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:999999; display:flex; align-items:center; justify-content:center; background:rgba(15,23,42,0.92); backdrop-filter:blur(12px);">
       <div class="modal-container printable-report-container" style="max-width:1150px; width:95%; max-height:92vh; overflow-y:auto; background:#0f172a; border:1px solid rgba(56,189,248,0.3); border-radius:16px; padding:28px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.8);">
         
         <!-- Screen Action Bar (Hidden when Printing) -->
@@ -3393,10 +3393,16 @@ ModalManager.exportInventoryCSV = function() {
   link.remove();
 };
 
+window.openPrintableInventorySheet = function() {
+  ModalManager.openPrintableInventorySheet();
+};
+
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape") {
     if (window.closeComponentModal) window.closeComponentModal();
     if (window.closeBoxInspectorModal) window.closeBoxInspectorModal();
+    const sheetModal = document.getElementById("printable-sheet-modal");
+    if (sheetModal) sheetModal.remove();
     const directEdit = document.getElementById("direct-edit-dialog");
     if (directEdit) directEdit.remove();
   }
