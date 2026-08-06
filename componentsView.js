@@ -158,7 +158,6 @@ class ComponentsView {
       const manufacturer = c.manufacturer || "Lab Component Vendor";
       const siblingComps = components.filter(x => x.boxId === c.boxId);
       const boxBadgeText = siblingComps.length > 1 ? `${c.boxId} (${siblingComps.length} items)` : c.boxId;
-      const siblingsText = siblingComps.length > 1 ? `<div style="font-size:0.7rem; color:var(--primary); font-weight:700; margin-top:2px;">📦 Multi-Item Box (${c.boxId}): ${siblingComps.map(x => x.name).join(" + ")}</div>` : '';
 
       card.innerHTML = `
         <div class="card-image-wrap" style="width:100%; height:120px; border-radius:8px; overflow:hidden; margin-bottom:10px; background:#0f172a; position:relative;">
@@ -178,7 +177,6 @@ class ComponentsView {
         </div>
 
         <p class="card-desc">${c.purpose || 'No purpose description available.'}</p>
-        ${siblingsText}
 
         <div class="card-meta-tags" style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">
           📍 Rack ${c.rackId} &rsaquo; Shelf ${String.fromCharCode(64 + Number(c.shelfId))} ${c.subLocation || c.stackLayer ? `&rsaquo; ${c.subLocation || c.stackLayer}` : ''}
