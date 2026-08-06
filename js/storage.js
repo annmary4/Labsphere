@@ -2,20 +2,20 @@
  * LabSphere Storage Service - Complete 59-Component Catalog (v35)
  */
 
-const CURRENT_VERSION = "v9380_desktop_mode_seamless_session";
+const CURRENT_VERSION = "v9390_persistent_desktop_mobile_session";
 
 const STORAGE_KEYS = {
-  VERSION: "labsphere_version_v9380",
-  COMPONENTS: "labsphere_components_v9380",
-  BOXES: "labsphere_boxes_v9380",
-  RACKS: "labsphere_racks_v9380",
-  TRANSACTIONS: "labsphere_transactions_v9380",
-  PROJECTS: "labsphere_projects_v9380",
-  REQUESTS: "labsphere_requests_v9380",
-  USERS: "labsphere_users_v9380",
-  SESSION: "labsphere_session_v9380",
-  SECURITY_LOGS: "labsphere_sec_logs_v9380",
-  NOTIFICATIONS: "labsphere_notifs_v9380"
+  VERSION: "labsphere_version_v9390",
+  COMPONENTS: "labsphere_components_v9390",
+  BOXES: "labsphere_boxes_v9390",
+  RACKS: "labsphere_racks_v9390",
+  TRANSACTIONS: "labsphere_transactions_v9390",
+  PROJECTS: "labsphere_projects_v9390",
+  REQUESTS: "labsphere_requests_v9390",
+  USERS: "labsphere_users_v9390",
+  SESSION: "labsphere_session_v9390",
+  SECURITY_LOGS: "labsphere_sec_logs_v9390",
+  NOTIFICATIONS: "labsphere_notifs_v9390"
 };
 
 function safeSetItem(key, value) {
@@ -50,7 +50,7 @@ const DEFAULT_SYSTEM_USERS = [
 class StorageService {
   static cleanupLegacyLocalStorage() {
     try {
-      const activeKeys = [...Object.values(STORAGE_KEYS), MASTER_USERS_KEY];
+      const activeKeys = [...Object.values(STORAGE_KEYS), MASTER_USERS_KEY, "labsphere_session_master"];
       for (let i = localStorage.length - 1; i >= 0; i--) {
         const key = localStorage.key(i);
         if (key && (key.startsWith("labsphere_") || key.includes("labsphere")) && !activeKeys.includes(key)) {
@@ -67,8 +67,7 @@ class StorageService {
     // Immediately clean up old version keys from browser localStorage to free quota space
     this.cleanupLegacyLocalStorage();
 
-    // Always clear session on initialization so page refresh requires signing in
-    this.logout();
+    // Preserve active login session across desktop/mobile mode switches & refreshes (logout only occurs on explicit Logout click)
 
     if (localStorage.getItem(STORAGE_KEYS.VERSION) !== CURRENT_VERSION) {
       if (typeof INITIAL_COMPONENTS !== "undefined" && INITIAL_COMPONENTS.length > 0) {
