@@ -597,33 +597,59 @@ class App {
       btnLogout.onclick = () => this.handleLogout();
     }
 
-    // ALWAYS DISPLAY ALL FEATURE BUTTONS ON SCREEN AT ALL TIMES
     const isAdmin = StorageService.isRole("ADMIN");
+    const isMobile = window.innerWidth <= 768;
 
-    // Admin-Only Options Toggles (User Manager, Approvals Queue, Executive Report, Audit Logs, Procurement List, Add Item Drawer)
-    const adminElements = [
-      document.getElementById("popover-btn-user-manager"),
+    // Header buttons (shown on Desktop only for Admin)
+    const headerAdminButtons = [
       document.getElementById("btn-admin-approve"),
-      document.getElementById("drawer-btn-approvals"),
       document.getElementById("btn-mgmt-dashboard"),
-      document.getElementById("drawer-btn-mgmt-dashboard"),
       document.getElementById("btn-audit-log"),
-      document.getElementById("drawer-btn-audit-log"),
-      document.getElementById("btn-procurement-insights"),
-      document.getElementById("drawer-btn-procurement-insights"),
-      document.getElementById("drawer-btn-add-component")
+      document.getElementById("btn-procurement-insights")
     ];
 
-    adminElements.forEach(el => {
+    headerAdminButtons.forEach(el => {
       if (el) {
-        if (isAdmin) {
-          const displayVal = el.tagName === "BUTTON" && !el.classList.contains("drawer-menu-item") ? "inline-flex" : "flex";
-          el.style.setProperty("display", displayVal, "important");
+        if (isAdmin && !isMobile) {
+          el.style.setProperty("display", "inline-flex", "important");
         } else {
           el.style.setProperty("display", "none", "important");
         }
       }
     });
+
+    // Drawer items (shown inside hamburger menu for Admin)
+    const drawerAdminElements = [
+      document.getElementById("popover-btn-user-manager"),
+      document.getElementById("drawer-btn-approvals"),
+      document.getElementById("drawer-btn-mgmt-dashboard"),
+      document.getElementById("drawer-btn-audit-log"),
+      document.getElementById("drawer-btn-procurement-insights"),
+      document.getElementById("drawer-btn-add-component")
+    ];
+
+    drawerAdminElements.forEach(el => {
+      if (el) {
+        if (isAdmin) {
+          el.style.setProperty("display", "flex", "important");
+        } else {
+          el.style.setProperty("display", "none", "important");
+        }
+      }
+    });
+
+    // On mobile phone screen, hide top bell dropdown from navbar so Notifications lives cleanly inside hamburger menu
+    const btnNavNotif = document.getElementById("btn-nav-notif");
+    if (btnNavNotif) {
+      const notifParent = btnNavNotif.closest(".dropdown");
+      if (isMobile) {
+        if (notifParent) notifParent.style.setProperty("display", "none", "important");
+        btnNavNotif.style.setProperty("display", "none", "important");
+      } else {
+        if (notifParent) notifParent.style.setProperty("display", "inline-block", "important");
+        btnNavNotif.style.setProperty("display", "inline-flex", "important");
+      }
+    }
 
     const pendingReqs = StorageService.getRequests().filter(r => r.status === "PENDING").length;
     const apprBadge = document.getElementById("admin-approval-count");

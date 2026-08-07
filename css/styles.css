@@ -1849,14 +1849,18 @@ body.qr-scan-mode #direct-edit-dialog {
     width: 100% !important;
   }
 
-  /* Standalone Header Actions - Living inside View Navigation Drawer Box */
+  /* On Mobile Phone Screens, hide all standalone header buttons & notifications bell from main page header */
+  .nav-actions #btn-admin-approve,
+  .nav-actions #btn-mgmt-dashboard,
+  .nav-actions #btn-audit-log,
+  .nav-actions #btn-procurement-insights,
+  .nav-actions #btn-nav-notif,
+  .nav-actions .dropdown,
   .nav-actions #btn-user-manager,
   .nav-actions #btn-print-inventory-sheet,
   .nav-actions #btn-student-reqs,
   .nav-actions #btn-engineer-bom,
-  .nav-actions #btn-projects-mgr,
-  .nav-actions #btn-audit-log,
-  .nav-actions #btn-procurement-insights {
+  .nav-actions #btn-projects-mgr {
     display: none !important;
   }
 
