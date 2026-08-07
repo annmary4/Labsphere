@@ -150,6 +150,8 @@ class ComponentsView {
       if (window.lucide) window.lucide.createIcons();
       return;
     }
+
+    components.forEach(c => {
       const card = document.createElement("div");
       card.className = "component-card";
       card.setAttribute("data-comp-id", c.id);
