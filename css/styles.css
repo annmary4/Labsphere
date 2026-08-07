@@ -2363,7 +2363,7 @@ body.drawer-open {
   overflow-y: auto !important;
   flex-grow: 1;
   padding-right: 6px;
-  padding-bottom: 80px !important;
+  padding-bottom: 140px !important;
   -webkit-overflow-scrolling: touch !important;
   overscroll-behavior: contain !important;
 }
