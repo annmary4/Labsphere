@@ -1624,6 +1624,16 @@ body.qr-scan-mode #direct-edit-dialog {
     box-sizing: border-box !important;
   }
 
+  /* Mobile View Mode Window Isolation */
+  .main-container.view-split .rack-panel { display: flex !important; }
+  .main-container.view-split .components-panel { display: flex !important; }
+
+  .main-container.view-racks .rack-panel { display: flex !important; }
+  .main-container.view-racks .components-panel { display: none !important; }
+
+  .main-container.view-table .rack-panel { display: none !important; }
+  .main-container.view-table .components-panel { display: flex !important; }
+
   /* Header & Navbar on Mobile */
   .navbar {
     padding: 8px !important;
