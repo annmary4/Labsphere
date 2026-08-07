@@ -253,15 +253,24 @@ class ModalManager {
     if (list) {
       list.innerHTML = "";
       if (notifs.length === 0) {
-        list.innerHTML = `<p class="empty-hint" style="padding:12px; text-align:center;">No notifications at this time.</p>`;
+        list.innerHTML = `
+          <div style="padding: 24px 16px; text-align: center; color: var(--text-muted);">
+            <i data-lucide="bell-off" style="font-size: 2rem; margin-bottom: 8px; opacity: 0.5; color: var(--primary); display: inline-block;"></i>
+            <h4 style="font-weight: 700; color: var(--text-main); margin: 0 0 4px 0; font-size: 0.95rem;">No Recent Notifications</h4>
+            <p style="font-size: 0.78rem; margin: 0; color: var(--text-muted);">You're all caught up! Real-time activity alerts and inventory requisitions will appear here.</p>
+          </div>
+        `;
       } else {
         notifs.forEach(n => {
           const item = document.createElement("div");
           item.className = `notif-item ${n.read ? 'read' : 'unread'}`;
           item.innerHTML = `
-            <div class="notif-title"><strong>${n.title}</strong></div>
-            <p class="notif-msg">${n.message}</p>
-            <span class="notif-time">${n.timestamp}</span>
+            <div class="notif-title" style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
+              <strong>${n.title}</strong>
+              ${!n.read ? '<span style="font-size:0.65rem; background:rgba(239,68,68,0.2); color:#ef4444; border:1px solid rgba(239,68,68,0.4); padding:1px 6px; border-radius:4px; font-weight:700;">NEW</span>' : ''}
+            </div>
+            <p class="notif-msg" style="margin:4px 0 6px 0; font-size:0.8rem; color:var(--text-muted); line-height:1.4;">${n.message}</p>
+            <span class="notif-time" style="font-size:0.7rem; color:var(--primary); font-weight:600;">${n.timestamp}</span>
           `;
           list.appendChild(item);
         });

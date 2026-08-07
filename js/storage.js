@@ -2,20 +2,20 @@
  * LabSphere Storage Service - Complete 59-Component Catalog (v35)
  */
 
-const CURRENT_VERSION = "v10080_projects_inside_hamburger_drawer";
+const CURRENT_VERSION = "v10090_clean_accurate_notifications_and_empty_state";
 
 const STORAGE_KEYS = {
-  VERSION: "labsphere_version_v10080",
-  COMPONENTS: "labsphere_components_v10080",
-  BOXES: "labsphere_boxes_v10080",
-  RACKS: "labsphere_racks_v10080",
-  TRANSACTIONS: "labsphere_transactions_v10080",
-  PROJECTS: "labsphere_projects_v10080",
-  REQUESTS: "labsphere_requests_v10080",
-  USERS: "labsphere_users_v10080",
-  SESSION: "labsphere_session_v10080",
-  SECURITY_LOGS: "labsphere_sec_logs_v10080",
-  NOTIFICATIONS: "labsphere_notifs_v10080"
+  VERSION: "labsphere_version_v10090",
+  COMPONENTS: "labsphere_components_v10090",
+  BOXES: "labsphere_boxes_v10090",
+  RACKS: "labsphere_racks_v10090",
+  TRANSACTIONS: "labsphere_transactions_v10090",
+  PROJECTS: "labsphere_projects_v10090",
+  REQUESTS: "labsphere_requests_v10090",
+  USERS: "labsphere_users_v10090",
+  SESSION: "labsphere_session_v10090",
+  SECURITY_LOGS: "labsphere_sec_logs_v10090",
+  NOTIFICATIONS: "labsphere_notifs_v10090"
 };
 
 function safeSetItem(key, value) {
@@ -279,10 +279,48 @@ class StorageService {
   static getNotifications() {
     try {
       const data = localStorage.getItem(STORAGE_KEYS.NOTIFICATIONS);
-      return data ? JSON.parse(data) : INITIAL_NOTIFICATIONS;
+      if (data) {
+        const parsed = JSON.parse(data);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
     } catch (e) {
-      return INITIAL_NOTIFICATIONS;
+      console.warn("Error reading notifications:", e);
     }
+    return this.generateSystemNotifications();
+  }
+
+  static generateSystemNotifications() {
+    const notifs = [];
+    const components = this.getComponents();
+    const requests = this.getRequests();
+
+    // 1. Check for actual low stock components in inventory
+    const lowStockComps = components.filter(c => c.quantity <= (c.minQuantity || 2));
+    lowStockComps.slice(0, 3).forEach(c => {
+      notifs.push({
+        id: "NOTIF-LOW-" + c.id,
+        type: "LOW_STOCK",
+        title: `⚠️ Low Stock Alert: ${c.name}`,
+        message: `Current quantity: ${c.quantity} ${c.unit || 'pcs'} (Min threshold: ${c.minQuantity || 2}). Location: Rack ${c.rackId || 1}, Shelf ${c.shelfId || 1}, ${c.boxId || 'Box A-001'}.`,
+        timestamp: c.lastUpdated || "Just now",
+        read: false
+      });
+    });
+
+    // 2. Check for pending student requisitions
+    const pendingReqs = requests.filter(r => r.status === "PENDING");
+    pendingReqs.forEach(r => {
+      notifs.push({
+        id: "NOTIF-REQ-" + r.id,
+        type: "PENDING_APPROVAL",
+        title: `📋 Requisition Approval Pending`,
+        message: `${r.requesterName} requested ${r.qtyRequested} pcs of ${r.componentName}.`,
+        timestamp: r.requestedAt || "Just now",
+        read: false
+      });
+    });
+
+    return notifs;
   }
 
   static saveNotifications(notifs) {
