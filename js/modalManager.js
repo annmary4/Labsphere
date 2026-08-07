@@ -1531,6 +1531,10 @@ class ModalManager {
   }
 
   static openAuditModal() {
+    if (!StorageService.isRole("ADMIN")) {
+      alert("Access Restricted: System Audit Logs are strictly reserved for the Lab Administrator.");
+      return;
+    }
     const backdrop = document.getElementById("audit-modal");
     const container = document.getElementById("audit-log-container");
     const transactions = StorageService.getTransactions();
@@ -1657,6 +1661,10 @@ class ModalManager {
   }
 
   static openAdminApprovalModal() {
+    if (!StorageService.isRole("ADMIN")) {
+      alert("Access Restricted: Checkout Requests Queue & Approvals are strictly reserved for the Lab Administrator.");
+      return;
+    }
     const backdrop = document.getElementById("admin-appr-modal");
     const container = document.getElementById("admin-approval-container");
     const requests = StorageService.getRequests().filter(r => r.status === "PENDING");
@@ -1762,6 +1770,10 @@ class ModalManager {
   }
 
   static openManagementModal() {
+    if (!StorageService.isRole("ADMIN")) {
+      alert("Access Restricted: Executive Reports & Valuation Dashboards are strictly reserved for the Lab Administrator.");
+      return;
+    }
     const backdrop = document.getElementById("management-modal");
     const report = StorageService.getManagementReport();
 

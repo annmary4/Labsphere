@@ -597,26 +597,39 @@ class App {
     }
 
     // ALWAYS DISPLAY ALL FEATURE BUTTONS ON SCREEN AT ALL TIMES
-    const popoverBtnUserManager = document.getElementById("popover-btn-user-manager");
-    if (popoverBtnUserManager) {
-      if (StorageService.isRole("ADMIN")) {
-        popoverBtnUserManager.style.display = "flex";
-      } else {
-        popoverBtnUserManager.style.display = "none";
+    const isAdmin = StorageService.isRole("ADMIN");
+
+    // Admin-Only Options Toggles (User Manager, Approvals Queue, Executive Report, Audit Logs, Procurement List, Add Item Drawer)
+    const adminElements = [
+      document.getElementById("popover-btn-user-manager"),
+      document.getElementById("btn-admin-approve"),
+      document.getElementById("drawer-btn-approvals"),
+      document.getElementById("btn-mgmt-dashboard"),
+      document.getElementById("drawer-btn-mgmt-dashboard"),
+      document.getElementById("btn-audit-log"),
+      document.getElementById("drawer-btn-audit-log"),
+      document.getElementById("btn-procurement-insights"),
+      document.getElementById("drawer-btn-procurement-insights"),
+      document.getElementById("drawer-btn-add-component")
+    ];
+
+    adminElements.forEach(el => {
+      if (el) {
+        el.style.display = isAdmin ? (el.tagName === "BUTTON" && el.classList.contains("btn-secondary") ? "inline-flex" : "flex") : "none";
       }
-    }
+    });
 
     const pendingReqs = StorageService.getRequests().filter(r => r.status === "PENDING").length;
     const apprBadge = document.getElementById("admin-approval-count");
     const drawerApprBadge = document.getElementById("drawer-approvals-badge");
     if (apprBadge) {
       apprBadge.innerText = pendingReqs;
-      if (pendingReqs > 0) apprBadge.classList.remove("hidden");
+      if (pendingReqs > 0 && isAdmin) apprBadge.classList.remove("hidden");
       else apprBadge.classList.add("hidden");
     }
     if (drawerApprBadge) {
       drawerApprBadge.innerText = pendingReqs;
-      if (pendingReqs > 0) drawerApprBadge.classList.remove("hidden");
+      if (pendingReqs > 0 && isAdmin) drawerApprBadge.classList.remove("hidden");
       else drawerApprBadge.classList.add("hidden");
     }
   }
