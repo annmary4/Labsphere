@@ -2,20 +2,20 @@
  * LabSphere Storage Service - Complete 59-Component Catalog (v35)
  */
 
-const CURRENT_VERSION = "v9820_shelf_contents_display_sync";
+const CURRENT_VERSION = "v9830_guaranteed_59_components_retrieved";
 
 const STORAGE_KEYS = {
-  VERSION: "labsphere_version_v9820",
-  COMPONENTS: "labsphere_components_v9820",
-  BOXES: "labsphere_boxes_v9820",
-  RACKS: "labsphere_racks_v9820",
-  TRANSACTIONS: "labsphere_transactions_v9820",
-  PROJECTS: "labsphere_projects_v9820",
-  REQUESTS: "labsphere_requests_v9820",
-  USERS: "labsphere_users_v9820",
-  SESSION: "labsphere_session_v9820",
-  SECURITY_LOGS: "labsphere_sec_logs_v9820",
-  NOTIFICATIONS: "labsphere_notifs_v9820"
+  VERSION: "labsphere_version_v9830",
+  COMPONENTS: "labsphere_components_v9830",
+  BOXES: "labsphere_boxes_v9830",
+  RACKS: "labsphere_racks_v9830",
+  TRANSACTIONS: "labsphere_transactions_v9830",
+  PROJECTS: "labsphere_projects_v9830",
+  REQUESTS: "labsphere_requests_v9830",
+  USERS: "labsphere_users_v9830",
+  SESSION: "labsphere_session_v9830",
+  SECURITY_LOGS: "labsphere_sec_logs_v9830",
+  NOTIFICATIONS: "labsphere_notifs_v9830"
 };
 
 function safeSetItem(key, value) {
@@ -92,15 +92,15 @@ class StorageService {
       localStorage.setItem(STORAGE_KEYS.VERSION, CURRENT_VERSION);
     }
 
-    // Always ensure components array is not empty
+    // Always ensure full 59 component catalog is loaded
     const comps = this.getComponents();
-    if (!comps || comps.length === 0) {
+    if (!comps || comps.length < 50) {
       if (typeof INITIAL_COMPONENTS !== "undefined" && INITIAL_COMPONENTS.length > 0) {
         localStorage.setItem(STORAGE_KEYS.COMPONENTS, JSON.stringify(INITIAL_COMPONENTS));
       }
     }
 
-    await this.pullCentralServerSync();
+    await this.pullCentralServerSync().catch(() => {});
   }
 
   static async pullCentralServerSync() {
@@ -1190,7 +1190,7 @@ class StorageService {
       const data = localStorage.getItem(STORAGE_KEYS.COMPONENTS);
       if (data) {
         const parsed = JSON.parse(data);
-        if (Array.isArray(parsed) && parsed.length > 0) {
+        if (Array.isArray(parsed) && parsed.length >= 10) {
           return parsed;
         }
       }
