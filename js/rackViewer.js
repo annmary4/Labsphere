@@ -6,8 +6,8 @@
 class RackViewer {
   // Static set to persist expanded racks state (Racks start closed by default on load)
   static expandedRackIds = new Set();
-  // Static set to persist expanded shelves state (Shelves start closed by default on load)
-  static expandedShelfKeys = new Set();
+  // Static set to persist expanded shelves state (Shelves & boxes open by default when rack is expanded)
+  static expandedShelfKeys = new Set(["1_1", "1_2", "1_3", "1_4", "1_5", "1_6", "2_1", "2_2", "2_3", "2_4", "2_5", "2_6"]);
 
   static render(options) {
     const {
@@ -34,11 +34,6 @@ class RackViewer {
     // Ensure selectedRackId is expanded if specified
     if (selectedRackId && !this.expandedRackIds.has(Number(selectedRackId))) {
       this.expandedRackIds.add(Number(selectedRackId));
-    }
-
-    // Ensure components under all shelves are hidden by default unless a shelf was selected
-    if (!selectedShelfId && (!highlightedBoxIds || highlightedBoxIds.length === 0)) {
-      RackViewer.expandedShelfKeys.clear();
     }
 
     // Ensure racks containing highlighted boxes (from search) are expanded
