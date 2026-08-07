@@ -19,7 +19,7 @@
     rel="stylesheet">
 
   <!-- CSS with cache buster -->
-  <link rel="stylesheet" href="css/styles.css?v=10000">
+  <link rel="stylesheet" href="css/styles.css?v=10010">
 
   <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -431,6 +431,9 @@
       </div>
     </section>
 
+    <!-- Components Dialog Backdrop for Desktop View -->
+    <div id="components-dialog-backdrop" class="components-dialog-backdrop hidden"></div>
+
     <!-- Main Content Area -->
     <main class="main-container" id="main-container">
 
@@ -447,6 +450,12 @@
           <div class="results-info">
             <h2 id="view-title">All Components</h2>
             <span id="results-count-badge" class="count-badge">0 items</span>
+          </div>
+
+          <div style="display:flex; align-items:center; gap:10px;">
+            <button id="btn-close-components-dialog" class="btn btn-secondary btn-icon btn-close-dialog hidden" title="Close Component Details Dialog Box">
+              <i data-lucide="x"></i>
+            </button>
           </div>
 
           <div class="sort-controls">
@@ -1628,13 +1637,13 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
   </div>
 
   <!-- JavaScript App Logic with Cache Busters -->
-  <script src="js/types.js?v=10000"></script>
-  <script src="js/initialData.js?v=10000"></script>
-  <script src="js/storage.js?v=10000"></script>
-  <script src="js/rackViewer.js?v=10000"></script>
-  <script src="js/componentsView.js?v=10000"></script>
-  <script src="js/modalManager.js?v=10000"></script>
-  <script src="js/app.js?v=10000"></script>
+  <script src="js/types.js?v=10010"></script>
+  <script src="js/initialData.js?v=10010"></script>
+  <script src="js/storage.js?v=10010"></script>
+  <script src="js/rackViewer.js?v=10010"></script>
+  <script src="js/componentsView.js?v=10010"></script>
+  <script src="js/modalManager.js?v=10010"></script>
+  <script src="js/app.js?v=10010"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       if (window.lucide) {

@@ -477,6 +477,14 @@ class App {
         ModalManager.openUndoTimelineModal();
       });
     }
+
+    // Component Details Dialog Box Close Listeners
+    const btnCloseCompDialog = document.getElementById("btn-close-components-dialog");
+    const compDialogBackdrop = document.getElementById("components-dialog-backdrop");
+    const closeDialogFn = () => this.setViewMode("split");
+
+    if (btnCloseCompDialog) btnCloseCompDialog.addEventListener("click", closeDialogFn);
+    if (compDialogBackdrop) compDialogBackdrop.addEventListener("click", closeDialogFn);
   }
 
   resetAllFilters() {
@@ -579,6 +587,20 @@ class App {
     document.body.setAttribute("data-view-mode", mode);
     const mainContainer = document.getElementById("main-container");
     if (mainContainer) mainContainer.className = `main-container view-${mode}`;
+
+    const componentsPanel = document.getElementById("components-panel");
+    const componentsBackdrop = document.getElementById("components-dialog-backdrop");
+    const btnCloseDialog = document.getElementById("btn-close-components-dialog");
+
+    if (mode === "components" && window.innerWidth > 1024) {
+      if (componentsPanel) componentsPanel.classList.add("is-dialog-mode");
+      if (componentsBackdrop) componentsBackdrop.classList.remove("hidden");
+      if (btnCloseDialog) btnCloseDialog.classList.remove("hidden");
+    } else {
+      if (componentsPanel) componentsPanel.classList.remove("is-dialog-mode");
+      if (componentsBackdrop) componentsBackdrop.classList.add("hidden");
+      if (btnCloseDialog) btnCloseDialog.classList.add("hidden");
+    }
 
     const btnSplit = document.getElementById("view-mode-split");
     const btnRacks = document.getElementById("view-mode-racks");
