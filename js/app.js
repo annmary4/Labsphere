@@ -323,10 +323,12 @@ class App {
     const btnSplit = document.getElementById("view-mode-split");
     const btnRacks = document.getElementById("view-mode-racks");
     const btnTable = document.getElementById("view-mode-table");
+    const btnComps = document.getElementById("view-mode-components");
 
     if (btnSplit) btnSplit.addEventListener("click", () => this.setViewMode("split"));
     if (btnRacks) btnRacks.addEventListener("click", () => this.setViewMode("racks"));
     if (btnTable) btnTable.addEventListener("click", () => this.setViewMode("table"));
+    if (btnComps) btnComps.addEventListener("click", () => this.setViewMode("components"));
 
     // Mobile Slide-Out Side Panel Drawer Event Listeners
     const btnMenu = document.getElementById("btn-mobile-menu");
@@ -348,7 +350,7 @@ class App {
     if (btnClose) btnClose.addEventListener("click", closeDrawer);
     if (backdrop) backdrop.addEventListener("click", closeDrawer);
 
-    ["drawer-view-split", "drawer-view-racks", "drawer-view-table"].forEach(id => {
+    ["drawer-view-split", "drawer-view-racks", "drawer-view-table", "drawer-view-components"].forEach(id => {
       const btn = document.getElementById(id);
       if (btn) {
         btn.addEventListener("click", () => {
@@ -580,21 +582,25 @@ class App {
     const btnSplit = document.getElementById("view-mode-split");
     const btnRacks = document.getElementById("view-mode-racks");
     const btnTable = document.getElementById("view-mode-table");
+    const btnComps = document.getElementById("view-mode-components");
 
-    [btnSplit, btnRacks, btnTable].forEach(btn => btn && btn.classList.remove("active"));
+    [btnSplit, btnRacks, btnTable, btnComps].forEach(btn => btn && btn.classList.remove("active"));
     if (mode === "split" && btnSplit) btnSplit.classList.add("active");
     if (mode === "racks" && btnRacks) btnRacks.classList.add("active");
     if (mode === "table" && btnTable) btnTable.classList.add("active");
+    if (mode === "components" && btnComps) btnComps.classList.add("active");
 
     // Sync Mobile Drawer View Mode Items
     const drawerSplit = document.getElementById("drawer-view-split");
     const drawerRacks = document.getElementById("drawer-view-racks");
     const drawerTable = document.getElementById("drawer-view-table");
+    const drawerComps = document.getElementById("drawer-view-components");
 
-    [drawerSplit, drawerRacks, drawerTable].forEach(btn => btn && btn.classList.remove("active"));
+    [drawerSplit, drawerRacks, drawerTable, drawerComps].forEach(btn => btn && btn.classList.remove("active"));
     if (mode === "split" && drawerSplit) drawerSplit.classList.add("active");
     if (mode === "racks" && drawerRacks) drawerRacks.classList.add("active");
     if (mode === "table" && drawerTable) drawerTable.classList.add("active");
+    if (mode === "components" && drawerComps) drawerComps.classList.add("active");
 
     this.renderComponents();
   }

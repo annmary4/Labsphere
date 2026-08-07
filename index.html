@@ -19,7 +19,7 @@
     rel="stylesheet">
 
   <!-- CSS with cache buster -->
-  <link rel="stylesheet" href="css/styles.css?v=9980">
+  <link rel="stylesheet" href="css/styles.css?v=9990">
 
   <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -349,6 +349,13 @@
             <small style="font-size:0.7rem; color:var(--text-muted);">Full Component Inventory Table</small>
           </div>
         </button>
+        <button class="drawer-menu-item" data-view="components" id="drawer-view-components">
+          <i data-lucide="package" style="font-size:1.2rem; color:var(--primary);"></i>
+          <div style="display:flex; flex-direction:column; text-align:left;">
+            <span style="font-weight:700;">Component Details</span>
+            <small style="font-size:0.7rem; color:var(--text-muted);">All Component Cards & Image Specs</small>
+          </div>
+        </button>
       </div>
     </aside>
 
@@ -416,6 +423,9 @@
           </button>
           <button id="view-mode-table" class="toggle-btn" title="Compact Table View">
             <i data-lucide="list"></i> List View
+          </button>
+          <button id="view-mode-components" class="toggle-btn" title="Component Cards View">
+            <i data-lucide="package"></i> Component Details
           </button>
         </div>
       </div>
@@ -1618,13 +1628,13 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
   </div>
 
   <!-- JavaScript App Logic with Cache Busters -->
-  <script src="js/types.js?v=9980"></script>
-  <script src="js/initialData.js?v=9980"></script>
-  <script src="js/storage.js?v=9980"></script>
-  <script src="js/rackViewer.js?v=9980"></script>
-  <script src="js/componentsView.js?v=9980"></script>
-  <script src="js/modalManager.js?v=9980"></script>
-  <script src="js/app.js?v=9980"></script>
+  <script src="js/types.js?v=9990"></script>
+  <script src="js/initialData.js?v=9990"></script>
+  <script src="js/storage.js?v=9990"></script>
+  <script src="js/rackViewer.js?v=9990"></script>
+  <script src="js/componentsView.js?v=9990"></script>
+  <script src="js/modalManager.js?v=9990"></script>
+  <script src="js/app.js?v=9990"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       if (window.lucide) {
