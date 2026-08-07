@@ -688,7 +688,7 @@ class App {
       if (viewTitle) {
         if (this.selectedBoxId) viewTitle.innerText = `Components in ${this.selectedBoxId}`;
         else if (this.selectedRackId && this.selectedShelfId) viewTitle.innerText = `Rack ${this.selectedRackId} › Shelf ${String.fromCharCode(64 + this.selectedShelfId)} Components`;
-        else viewTitle.innerText = "All Components";
+        else viewTitle.innerText = "Select a Rack or Shelf to View Components";
       }
 
       if (activeFiltersBar) {
@@ -734,6 +734,9 @@ class App {
         );
       } else if (this.selectedRackId && this.selectedShelfId) {
         components = components.filter(c => Number(c.rackId) === Number(this.selectedRackId) && Number(c.shelfId) === Number(this.selectedShelfId));
+      } else {
+        // Do NOT display all components by default when logged in
+        components = [];
       }
     }
 
