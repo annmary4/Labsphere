@@ -19,7 +19,7 @@
     rel="stylesheet">
 
   <!-- CSS with cache buster -->
-  <link rel="stylesheet" href="css/styles.css?v=10010">
+  <link rel="stylesheet" href="css/styles.css?v=10020">
 
   <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -355,6 +355,17 @@
             <span style="font-weight:700;">Component Details</span>
             <small style="font-size:0.7rem; color:var(--text-muted);">All Component Cards & Image Specs</small>
           </div>
+        </button>
+
+        <div style="height:1px; background:var(--border-color); margin:8px 0;"></div>
+
+        <button class="drawer-menu-item" id="drawer-btn-notif" style="position:relative;">
+          <i data-lucide="bell" style="font-size:1.2rem; color:var(--primary);"></i>
+          <div style="display:flex; flex-direction:column; text-align:left; flex-grow:1;">
+            <span style="font-weight:700;">Notifications</span>
+            <small style="font-size:0.7rem; color:var(--text-muted);">Real-Time Activity Alerts & Logs</small>
+          </div>
+          <span id="drawer-notif-badge" class="count-badge danger hidden" style="margin-left:auto;">0</span>
         </button>
       </div>
     </aside>
@@ -1637,13 +1648,13 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
   </div>
 
   <!-- JavaScript App Logic with Cache Busters -->
-  <script src="js/types.js?v=10010"></script>
-  <script src="js/initialData.js?v=10010"></script>
-  <script src="js/storage.js?v=10010"></script>
-  <script src="js/rackViewer.js?v=10010"></script>
-  <script src="js/componentsView.js?v=10010"></script>
-  <script src="js/modalManager.js?v=10010"></script>
-  <script src="js/app.js?v=10010"></script>
+  <script src="js/types.js?v=10020"></script>
+  <script src="js/initialData.js?v=10020"></script>
+  <script src="js/storage.js?v=10020"></script>
+  <script src="js/rackViewer.js?v=10020"></script>
+  <script src="js/componentsView.js?v=10020"></script>
+  <script src="js/modalManager.js?v=10020"></script>
+  <script src="js/app.js?v=10020"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       if (window.lucide) {

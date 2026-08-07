@@ -41,18 +41,25 @@ class ModalManager {
   }
 
   static bindEvents() {
-    // Notification Center Dropdown
+    // Notification Center Dropdown & Mobile Drawer Listener
     const btnNotif = document.getElementById("btn-nav-notif");
+    const drawerBtnNotif = document.getElementById("drawer-btn-notif");
     const notifDropdown = document.getElementById("notif-dropdown");
 
-    if (btnNotif && notifDropdown) {
-      btnNotif.addEventListener("click", (e) => {
-        e.stopPropagation();
-        this.renderNotificationCenter();
-        notifDropdown.classList.toggle("show");
-      });
-      document.addEventListener("click", () => notifDropdown.classList.remove("show"));
-    }
+    const toggleNotifCenter = (e) => {
+      if (e) e.stopPropagation();
+      const drawer = document.getElementById("mobile-view-drawer");
+      const drawerBackdrop = document.getElementById("mobile-drawer-backdrop");
+      if (drawer) drawer.classList.remove("is-open");
+      if (drawerBackdrop) drawerBackdrop.classList.remove("is-open");
+
+      this.renderNotificationCenter();
+      if (notifDropdown) notifDropdown.classList.toggle("show");
+    };
+
+    if (btnNotif) btnNotif.addEventListener("click", toggleNotifCenter);
+    if (drawerBtnNotif) drawerBtnNotif.addEventListener("click", toggleNotifCenter);
+    if (notifDropdown) document.addEventListener("click", () => notifDropdown.classList.remove("show"));
 
     const markReadBtn = document.getElementById("btn-mark-notif-read");
     if (markReadBtn) {
@@ -229,12 +236,18 @@ class ModalManager {
     const notifs = StorageService.getNotifications();
     const list = document.getElementById("notif-list");
     const badge = document.getElementById("notif-unread-count");
+    const drawerBadge = document.getElementById("drawer-notif-badge");
 
     const unreadCount = notifs.filter(n => !n.read).length;
     if (badge) {
       badge.innerText = unreadCount;
       if (unreadCount > 0) badge.classList.remove("hidden");
       else badge.classList.add("hidden");
+    }
+    if (drawerBadge) {
+      drawerBadge.innerText = unreadCount;
+      if (unreadCount > 0) drawerBadge.classList.remove("hidden");
+      else drawerBadge.classList.add("hidden");
     }
 
     if (list) {

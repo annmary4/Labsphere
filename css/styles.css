@@ -1831,6 +1831,10 @@ body.qr-scan-mode #direct-edit-dialog {
     width: 100% !important;
   }
 
+  .nav-actions #btn-nav-notif {
+    display: none !important;
+  }
+
   .nav-actions .btn,
   .btn {
     min-height: 38px !important;
