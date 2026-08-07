@@ -2,21 +2,53 @@
  * LabSphere Storage Service - Complete 59-Component Catalog (v35)
  */
 
-const CURRENT_VERSION = "v10150_notification_language_english";
+const CURRENT_VERSION = "v10160_runtime_mojibake_purger";
 
 const STORAGE_KEYS = {
-  VERSION: "labsphere_version_v10150",
-  COMPONENTS: "labsphere_components_v10150",
-  BOXES: "labsphere_boxes_v10150",
-  RACKS: "labsphere_racks_v10150",
-  TRANSACTIONS: "labsphere_transactions_v10150",
-  PROJECTS: "labsphere_projects_v10150",
-  REQUESTS: "labsphere_requests_v10150",
-  USERS: "labsphere_users_v10150",
-  SESSION: "labsphere_session_v10150",
-  SECURITY_LOGS: "labsphere_sec_logs_v10150",
-  NOTIFICATIONS: "labsphere_notifs_v10150"
+  VERSION: "labsphere_version_v10160",
+  COMPONENTS: "labsphere_components_v10160",
+  BOXES: "labsphere_boxes_v10160",
+  RACKS: "labsphere_racks_v10160",
+  TRANSACTIONS: "labsphere_transactions_v10160",
+  PROJECTS: "labsphere_projects_v10160",
+  REQUESTS: "labsphere_requests_v10160",
+  USERS: "labsphere_users_v10160",
+  SESSION: "labsphere_session_v10160",
+  SECURITY_LOGS: "labsphere_sec_logs_v10160",
+  NOTIFICATIONS: "labsphere_notifs_v10160"
 };
+
+function sanitizeMojibake(str) {
+  if (typeof str !== "string") return str;
+  return str
+    .replace(/Ãƒâ€šÃ‚Â°/g, '°')
+    .replace(/Ãƒâ€šÃ‚Â±/g, '±')
+    .replace(/Ãƒâ€šÃ‚Â/g, '')
+    .replace(/Ãƒâ€š/g, '')
+    .replace(/Ãƒ/g, '')
+    .replace(/â€™/g, "'")
+    .replace(/â€œ/g, '"')
+    .replace(/â€/g, '"')
+    .replace(/Â°/g, '°')
+    .replace(/Â±/g, '±')
+    .replace(/Â/g, '')
+    .replace(/ƒ/g, '')
+    .replace(/Æ/g, '');
+}
+
+function cleanMojibakeDeep(obj) {
+  if (obj === null || obj === undefined) return obj;
+  if (typeof obj === 'string') return sanitizeMojibake(obj);
+  if (Array.isArray(obj)) return obj.map(cleanMojibakeDeep);
+  if (typeof obj === 'object') {
+    const cleaned = {};
+    for (const key in obj) {
+      cleaned[key] = cleanMojibakeDeep(obj[key]);
+    }
+    return cleaned;
+  }
+  return obj;
+}
 
 function safeSetItem(key, value) {
   try {
@@ -1197,16 +1229,17 @@ class StorageService {
       if (data) {
         const parsed = JSON.parse(data);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed;
+          return cleanMojibakeDeep(parsed);
         }
       }
     } catch (e) {}
 
     if (typeof INITIAL_COMPONENTS !== "undefined" && Array.isArray(INITIAL_COMPONENTS) && INITIAL_COMPONENTS.length > 0) {
+      const cleanedInitial = cleanMojibakeDeep(INITIAL_COMPONENTS);
       try {
-        localStorage.setItem(STORAGE_KEYS.COMPONENTS, JSON.stringify(INITIAL_COMPONENTS));
+        localStorage.setItem(STORAGE_KEYS.COMPONENTS, JSON.stringify(cleanedInitial));
       } catch (e) {}
-      return INITIAL_COMPONENTS;
+      return cleanedInitial;
     }
     return [];
   }
