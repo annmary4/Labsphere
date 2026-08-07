@@ -19,7 +19,7 @@
     rel="stylesheet">
 
   <!-- CSS with cache buster -->
-  <link rel="stylesheet" href="css/styles.css?v=10020">
+  <link rel="stylesheet" href="css/styles.css?v=10030">
 
   <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -358,6 +358,67 @@
         </button>
 
         <div style="height:1px; background:var(--border-color); margin:8px 0;"></div>
+
+        <!-- Approvals & Requests -->
+        <button class="drawer-menu-item" id="drawer-btn-approvals" style="position:relative;">
+          <i data-lucide="check-square" style="font-size:1.2rem; color:#facc15;"></i>
+          <div style="display:flex; flex-direction:column; text-align:left; flex-grow:1;">
+            <span style="font-weight:700;">Approvals Queue</span>
+            <small style="font-size:0.7rem; color:var(--text-muted);">Review & Approve Requisitions</small>
+          </div>
+          <span id="drawer-approvals-badge" class="count-badge danger hidden" style="margin-left:auto;">0</span>
+        </button>
+
+        <button class="drawer-menu-item" id="drawer-btn-student-reqs">
+          <i data-lucide="clipboard-list" style="font-size:1.2rem; color:var(--primary);"></i>
+          <div style="display:flex; flex-direction:column; text-align:left;">
+            <span style="font-weight:700;">My Requests</span>
+            <small style="font-size:0.7rem; color:var(--text-muted);">Issued Items & History</small>
+          </div>
+        </button>
+
+        <button class="drawer-menu-item" id="drawer-btn-engineer-bom">
+          <i data-lucide="file-spreadsheet" style="font-size:1.2rem; color:var(--primary);"></i>
+          <div style="display:flex; flex-direction:column; text-align:left;">
+            <span style="font-weight:700;">Upload BOM</span>
+            <small style="font-size:0.7rem; color:var(--text-muted);">Bill of Materials CSV Import</small>
+          </div>
+        </button>
+
+        <div style="height:1px; background:var(--border-color); margin:8px 0;"></div>
+
+        <!-- Executive Reports & Inventory Sheet -->
+        <button class="drawer-menu-item" id="drawer-btn-mgmt-dashboard">
+          <i data-lucide="bar-chart-3" style="font-size:1.2rem; color:#38bdf8;"></i>
+          <div style="display:flex; flex-direction:column; text-align:left;">
+            <span style="font-weight:700;">Executive Report</span>
+            <small style="font-size:0.7rem; color:var(--text-muted);">Financial Valuation & Usage</small>
+          </div>
+        </button>
+
+        <button class="drawer-menu-item" id="drawer-btn-print-inventory-sheet">
+          <i data-lucide="printer" style="font-size:1.2rem; color:var(--primary);"></i>
+          <div style="display:flex; flex-direction:column; text-align:left;">
+            <span style="font-weight:700;">Inventory Sheet</span>
+            <small style="font-size:0.7rem; color:var(--text-muted);">Print Rates & Quantity Summary</small>
+          </div>
+        </button>
+
+        <button class="drawer-menu-item" id="drawer-btn-audit-log">
+          <i data-lucide="shield" style="font-size:1.2rem; color:var(--primary);"></i>
+          <div style="display:flex; flex-direction:column; text-align:left;">
+            <span style="font-weight:700;">Audit Logs</span>
+            <small style="font-size:0.7rem; color:var(--text-muted);">Security Trail & Change Log</small>
+          </div>
+        </button>
+
+        <button class="drawer-menu-item" id="drawer-btn-procurement-insights">
+          <i data-lucide="shopping-cart" style="font-size:1.2rem; color:var(--primary);"></i>
+          <div style="display:flex; flex-direction:column; text-align:left;">
+            <span style="font-weight:700;">Procurement List</span>
+            <small style="font-size:0.7rem; color:var(--text-muted);">Low Stock Restock Orders</small>
+          </div>
+        </button>
 
         <button class="drawer-menu-item" id="drawer-btn-notif" style="position:relative;">
           <i data-lucide="bell" style="font-size:1.2rem; color:var(--primary);"></i>
@@ -1648,13 +1709,13 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
   </div>
 
   <!-- JavaScript App Logic with Cache Busters -->
-  <script src="js/types.js?v=10020"></script>
-  <script src="js/initialData.js?v=10020"></script>
-  <script src="js/storage.js?v=10020"></script>
-  <script src="js/rackViewer.js?v=10020"></script>
-  <script src="js/componentsView.js?v=10020"></script>
-  <script src="js/modalManager.js?v=10020"></script>
-  <script src="js/app.js?v=10020"></script>
+  <script src="js/types.js?v=10030"></script>
+  <script src="js/initialData.js?v=10030"></script>
+  <script src="js/storage.js?v=10030"></script>
+  <script src="js/rackViewer.js?v=10030"></script>
+  <script src="js/componentsView.js?v=10030"></script>
+  <script src="js/modalManager.js?v=10030"></script>
+  <script src="js/app.js?v=10030"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       if (window.lucide) {

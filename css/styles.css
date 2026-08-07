@@ -1831,7 +1831,14 @@ body.qr-scan-mode #direct-edit-dialog {
     width: 100% !important;
   }
 
-  .nav-actions #btn-nav-notif {
+  .nav-actions #btn-nav-notif,
+  .nav-actions #btn-admin-approve,
+  .nav-actions #btn-mgmt-dashboard,
+  .nav-actions #btn-print-inventory-sheet,
+  .nav-actions #btn-audit-log,
+  .nav-actions #btn-procurement-insights,
+  .nav-actions #btn-student-reqs,
+  .nav-actions #btn-engineer-bom {
     display: none !important;
   }
 

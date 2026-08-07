@@ -361,6 +361,33 @@ class App {
       }
     });
 
+    // Mobile Drawer Action Button Triggers (Approvals, Executive Report, Inventory Sheet, Audit Logs, Procurement, BOM, My Requests)
+    const mapDrawerTrigger = (drawerId, targetId, directFn) => {
+      const btn = document.getElementById(drawerId);
+      if (btn) {
+        btn.addEventListener("click", (e) => {
+          e.preventDefault();
+          closeDrawer();
+          if (directFn) {
+            directFn();
+          } else if (targetId) {
+            const targetBtn = document.getElementById(targetId);
+            if (targetBtn) targetBtn.click();
+          }
+        });
+      }
+    };
+
+    mapDrawerTrigger("drawer-btn-approvals", "btn-admin-approve");
+    mapDrawerTrigger("drawer-btn-student-reqs", "btn-student-reqs");
+    mapDrawerTrigger("drawer-btn-engineer-bom", "btn-engineer-bom");
+    mapDrawerTrigger("drawer-btn-mgmt-dashboard", "btn-mgmt-dashboard");
+    mapDrawerTrigger("drawer-btn-print-inventory-sheet", null, () => {
+      if (typeof openPrintableInventorySheet === "function") openPrintableInventorySheet();
+    });
+    mapDrawerTrigger("drawer-btn-audit-log", "btn-audit-log");
+    mapDrawerTrigger("drawer-btn-procurement-insights", "btn-procurement-insights");
+
     // Add Component Button
     const btnAdd = document.getElementById("btn-add-component");
     if (btnAdd) {
@@ -567,10 +594,16 @@ class App {
 
     const pendingReqs = StorageService.getRequests().filter(r => r.status === "PENDING").length;
     const apprBadge = document.getElementById("admin-approval-count");
+    const drawerApprBadge = document.getElementById("drawer-approvals-badge");
     if (apprBadge) {
       apprBadge.innerText = pendingReqs;
       if (pendingReqs > 0) apprBadge.classList.remove("hidden");
       else apprBadge.classList.add("hidden");
+    }
+    if (drawerApprBadge) {
+      drawerApprBadge.innerText = pendingReqs;
+      if (pendingReqs > 0) drawerApprBadge.classList.remove("hidden");
+      else drawerApprBadge.classList.add("hidden");
     }
   }
 
