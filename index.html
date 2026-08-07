@@ -19,7 +19,7 @@
     rel="stylesheet">
 
   <!-- CSS with cache buster -->
-  <link rel="stylesheet" href="css/styles.css?v=9900">
+  <link rel="stylesheet" href="css/styles.css?v=9910">
 
   <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -173,23 +173,39 @@
         </div>
       </div>
 
-      <!-- User Session Profile & Role Badge -->
+      <!-- User Session Profile & Role Badge with Top-Right Popover -->
       <div class="nav-user-profile">
-        <div class="user-chip" id="user-chip-container">
-          <div class="user-avatar"><i data-lucide="user"></i></div>
-          <div class="user-details">
-            <span class="user-name" id="user-profile-name" title="Click to Edit Profile Name"
-              style="cursor:pointer; text-decoration:underline dotted #38bdf8;">Lab Administrator</span>
-            <button id="btn-rbac-switch" class="rbac-btn" title="Click to Cycle Active Role Session">
-              <span id="rbac-role-badge" class="role-badge role-admin">Admin (Full Control)</span>
-            </button>
+        <div class="user-profile-wrapper" id="user-profile-wrapper">
+          <button class="user-avatar-trigger" id="btn-user-profile-trigger" title="Click to view User Profile, Designation & Account Options">
+            <i data-lucide="user"></i>
+          </button>
+          
+          <div class="user-profile-popover hidden" id="user-profile-popover">
+            <div class="user-profile-popover-header">
+              <div class="popover-avatar-icon"><i data-lucide="user-check"></i></div>
+              <div class="popover-user-details">
+                <span class="user-name" id="user-profile-name" title="Click to Edit Profile Name" style="cursor:pointer; font-weight:800; color:var(--text-main); font-size:0.92rem; display:block;">Lab Administrator</span>
+                <span class="user-designation" id="user-profile-designation" style="font-size:0.75rem; color:var(--primary); font-weight:700; display:block; margin-top:2px;">Admin (Full Control)</span>
+              </div>
+            </div>
+            
+            <div class="user-profile-role-select" style="margin-top:10px; margin-bottom:10px;">
+              <button id="btn-rbac-switch" class="rbac-btn" title="Click to Cycle Active Role Session" style="width:100%; justify-content:center;">
+                <span id="rbac-role-badge" class="role-badge role-admin">Admin (Full Control)</span>
+              </button>
+            </div>
+
+            <div class="user-popover-divider" style="height:1px; background:var(--border-color); margin:10px 0;"></div>
+
+            <div class="user-popover-actions" style="display:flex; flex-direction:column; gap:6px;">
+              <button id="btn-nav-logout" class="btn btn-secondary btn-sm danger-btn" title="Log Out of Session" style="width:100%; display:flex; justify-content:center; align-items:center; gap:6px; color:#ef4444; border-color:rgba(239,68,68,0.4);">
+                <i data-lucide="log-out"></i> Log Out
+              </button>
+              <button id="btn-nav-login" class="btn btn-primary btn-sm hidden" title="Log In to Account" style="width:100%; display:flex; justify-content:center; align-items:center; gap:6px;">
+                <i data-lucide="log-in"></i> Sign In / Switch
+              </button>
+            </div>
           </div>
-          <button id="btn-nav-logout" class="btn btn-icon danger-icon" title="Log Out of Session">
-            <i data-lucide="log-out"></i>
-          </button>
-          <button id="btn-nav-login" class="btn btn-secondary btn-sm" title="Log In to Account">
-            <i data-lucide="log-in"></i> Login
-          </button>
         </div>
       </div>
 
@@ -1600,13 +1616,13 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
   </div>
 
   <!-- JavaScript App Logic with Cache Busters -->
-  <script src="js/types.js?v=9900"></script>
-  <script src="js/initialData.js?v=9900"></script>
-  <script src="js/storage.js?v=9900"></script>
-  <script src="js/rackViewer.js?v=9900"></script>
-  <script src="js/componentsView.js?v=9900"></script>
-  <script src="js/modalManager.js?v=9900"></script>
-  <script src="js/app.js?v=9900"></script>
+  <script src="js/types.js?v=9910"></script>
+  <script src="js/initialData.js?v=9910"></script>
+  <script src="js/storage.js?v=9910"></script>
+  <script src="js/rackViewer.js?v=9910"></script>
+  <script src="js/componentsView.js?v=9910"></script>
+  <script src="js/modalManager.js?v=9910"></script>
+  <script src="js/app.js?v=9910"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       if (window.lucide) {

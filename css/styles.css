@@ -151,6 +151,74 @@ body {
 .role-admin { background-color: rgba(192, 132, 252, 0.2); color: #c084fc; }
 .role-management { background-color: rgba(56, 189, 248, 0.2); color: #38bdf8; }
 
+/* User Profile Wrapper & Top-Right Popover */
+.user-profile-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.user-avatar-trigger {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--bg-dark);
+  border: 2px solid var(--primary);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
+  padding: 0;
+}
+
+.user-avatar-trigger:hover,
+.user-avatar-trigger:focus {
+  background: rgba(56, 189, 248, 0.15);
+  border-color: #7dd3fc;
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.4);
+  transform: scale(1.05);
+}
+
+.user-profile-popover {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  min-width: 260px;
+  max-width: 320px;
+  background: #1e293b;
+  border: 2px solid var(--primary);
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85);
+  z-index: 999999;
+  backdrop-filter: blur(16px);
+  animation: fadeInDown 0.2s ease;
+}
+
+.user-profile-popover-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 8px;
+}
+
+.popover-avatar-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(56, 189, 248, 0.15);
+  border: 1px solid var(--primary);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
 /* Notification Dropdown Styling (Fixed Viewport Bounds) */
 .notif-dropdown-menu {
   position: fixed !important;
@@ -1648,12 +1716,28 @@ body.qr-scan-mode #direct-edit-dialog {
   .main-container.view-table #components-grid { display: none !important; }
   .main-container.view-table #components-table-container { display: block !important; }
 
-  /* Header & Navbar on Mobile */
+  /* Header & Navbar on Mobile - Top-Right Human Avatar Logo Placement */
   .navbar {
     padding: 8px !important;
     flex-wrap: wrap !important;
     gap: 8px !important;
     border-radius: 0 0 10px 10px !important;
+    position: relative !important;
+  }
+
+  .nav-user-profile {
+    position: absolute !important;
+    top: 10px !important;
+    right: 10px !important;
+    margin: 0 !important;
+    z-index: 100 !important;
+  }
+
+  .user-profile-popover {
+    right: 0 !important;
+    left: auto !important;
+    top: 48px !important;
+    width: 270px !important;
   }
 
   .nav-brand h1 {

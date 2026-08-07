@@ -203,12 +203,30 @@ class App {
       });
     }
 
+    // Top-Right Human Avatar Logo Click Listener to Toggle Profile Popover Menu
+    const avatarBtn = document.getElementById("btn-user-profile-trigger");
+    const userPopover = document.getElementById("user-profile-popover");
+
+    if (avatarBtn && userPopover) {
+      avatarBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        userPopover.classList.toggle("hidden");
+      });
+
+      document.addEventListener("click", (e) => {
+        if (!userPopover.contains(e.target) && e.target !== avatarBtn && !avatarBtn.contains(e.target)) {
+          userPopover.classList.add("hidden");
+        }
+      });
+    }
+
     // Editable Signed-In User Name Click Listener
     const userNameEl = document.getElementById("user-profile-name");
     if (userNameEl) {
       userNameEl.style.cursor = "pointer";
       userNameEl.title = "Click to edit your display / signed-in name";
-      userNameEl.addEventListener("click", () => {
+      userNameEl.addEventListener("click", (e) => {
+        e.stopPropagation();
         const session = StorageService.getCurrentSession();
         const currentName = session ? session.fullName : userNameEl.innerText;
         const newName = prompt("Edit your User / Signed-In Display Name:", currentName);
@@ -501,10 +519,17 @@ class App {
     const roleKey = StorageService.getRole();
     const roleBadge = document.getElementById("rbac-role-badge");
     const userChip = document.getElementById("user-profile-name");
+    const userDesig = document.getElementById("user-profile-designation");
+
+    const roleTitle = USER_ROLES[roleKey] || roleKey;
 
     if (roleBadge) {
-      roleBadge.innerText = USER_ROLES[roleKey] || roleKey;
+      roleBadge.innerText = roleTitle;
       roleBadge.className = `role-badge role-${roleKey.toLowerCase()}`;
+    }
+
+    if (userDesig) {
+      userDesig.innerText = roleTitle;
     }
 
     if (userChip && session) {
