@@ -619,8 +619,8 @@ class App {
   }
 
   handleShelfSelect(rackId, shelfId) {
-    if (this.selectedRackId === rackId && this.selectedShelfId === shelfId && !this.selectedBoxId) {
-      this.selectedRackId = null;
+    if (shelfId === null) {
+      this.selectedRackId = rackId;
       this.selectedShelfId = null;
       this.selectedBoxId = null;
     } else {
@@ -629,6 +629,13 @@ class App {
       this.selectedBoxId = null;
     }
     this.refreshApp();
+
+    if (shelfId && window.innerWidth <= 768) {
+      const compPanel = document.getElementById("components-panel");
+      if (compPanel) {
+        compPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
   }
 
   handleBoxSelect(boxId, rackId, shelfId) {

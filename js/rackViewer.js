@@ -141,7 +141,22 @@ class RackViewer {
 
         const shelfLetter = String.fromCharCode(64 + shelfNum);
         const shelfNameLabel = `Shelf ${shelfLetter}`;
-        const totalItemsInShelf = activeComps.filter(c => Number(c.rackId) === rackIdNum && Number(c.shelfId) === shelfNum).length;
+        const shelfComps = activeComps.filter(c => Number(c.rackId) === rackIdNum && Number(c.shelfId) === shelfNum);
+        const totalItemsInShelf = shelfComps.length;
+
+        let shelfCompsHtml = "";
+        if (shelfComps.length > 0) {
+          shelfCompsHtml = `
+            <div class="shelf-inline-components-preview" style="width:100%; margin-top:8px; padding-top:6px; border-top:1px dashed var(--border-color); display:flex; flex-wrap:wrap; gap:4px;">
+              <span style="font-size:0.68rem; color:var(--primary); font-weight:700; width:100%; margin-bottom:2px;">📦 Shelf Components (${shelfComps.length}):</span>
+              ${shelfComps.map(c => `
+                <span class="shelf-comp-chip" style="font-size:0.72rem; padding:3px 8px; background:rgba(30,41,59,0.8); border:1px solid rgba(56,189,248,0.3); border-radius:6px; color:var(--text-main); font-weight:600; display:inline-flex; align-items:center; gap:4px;">
+                  🔹 ${c.name} <small style="color:var(--text-muted); font-size:0.65rem;">(${c.boxId})</small>
+                </span>
+              `).join('')}
+            </div>
+          `;
+        }
 
         shelvesHtml += `
           <div class="shelf-row nested-shelf-accordion ${isShelfExpanded ? 'is-expanded' : 'is-collapsed'} ${isShelfSelected ? 'selected' : ''}" data-rack-id="${rack.id}" data-shelf-id="${shelfNum}" data-shelf-key="${shelfKey}">
@@ -162,6 +177,7 @@ class RackViewer {
             </div>
             <div class="boxes-grid shelf-accordion-content" style="display:${isShelfExpanded ? 'flex' : 'none'}; flex-wrap:wrap; margin-top:8px;">
               ${boxesPillsHtml || '<span class="text-muted" style="font-size:0.75rem; font-style:italic; padding:4px 0;">No active components on this shelf.</span>'}
+              ${shelfCompsHtml}
             </div>
           </div>
         `;
