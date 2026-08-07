@@ -597,15 +597,14 @@ class App {
     }
 
     // ALWAYS DISPLAY ALL FEATURE BUTTONS ON SCREEN AT ALL TIMES
-    const btnAdd = document.getElementById("btn-add-component");
-    const btnBoxes = document.getElementById("btn-manage-boxes");
-    const btnUserMgr = document.getElementById("btn-user-manager");
-    const btnAdminApprove = document.getElementById("btn-admin-approve");
-
-    if (btnAdd) btnAdd.style.display = "inline-flex";
-    if (btnBoxes) btnBoxes.style.display = "inline-flex";
-    if (btnUserMgr) btnUserMgr.style.display = "inline-flex";
-    if (btnAdminApprove) btnAdminApprove.style.display = "inline-flex";
+    const popoverBtnUserManager = document.getElementById("popover-btn-user-manager");
+    if (popoverBtnUserManager) {
+      if (StorageService.isRole("ADMIN")) {
+        popoverBtnUserManager.style.display = "flex";
+      } else {
+        popoverBtnUserManager.style.display = "none";
+      }
+    }
 
     const pendingReqs = StorageService.getRequests().filter(r => r.status === "PENDING").length;
     const apprBadge = document.getElementById("admin-approval-count");

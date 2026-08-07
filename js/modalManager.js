@@ -310,6 +310,10 @@ class ModalManager {
 
   // --- ADMINISTRATOR USER MANAGEMENT MODAL ---
   static openUserManagerModal() {
+    if (!StorageService.isRole("ADMIN")) {
+      alert("Access Restricted: Registering new user accounts and user management are strictly reserved for Administrators. Please contact your Lab Administrator.");
+      return;
+    }
     const backdrop = document.getElementById("user-manager-modal");
     this.renderUsersTable();
     if (backdrop) backdrop.classList.remove("hidden");

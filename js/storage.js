@@ -714,6 +714,9 @@ class StorageService {
   }
 
   static createUser(username, email, password, role, fullName) {
+    if (!this.isRole("ADMIN")) {
+      throw new Error("Access Denied: Only Administrators are authorized to register new user accounts!");
+    }
     const users = this.getUsers();
     
     if (users.some(u => u.email.toLowerCase() === email.toLowerCase())) {
