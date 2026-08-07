@@ -275,6 +275,7 @@ class ModalManager {
           list.appendChild(item);
         });
       }
+      if (window.lucide) window.lucide.createIcons();
     }
   }
 

@@ -2,20 +2,20 @@
  * LabSphere Storage Service - Complete 59-Component Catalog (v35)
  */
 
-const CURRENT_VERSION = "v10100_no_default_noise_notifications";
+const CURRENT_VERSION = "v10110_zero_unidentified_notifications";
 
 const STORAGE_KEYS = {
-  VERSION: "labsphere_version_v10100",
-  COMPONENTS: "labsphere_components_v10100",
-  BOXES: "labsphere_boxes_v10100",
-  RACKS: "labsphere_racks_v10100",
-  TRANSACTIONS: "labsphere_transactions_v10100",
-  PROJECTS: "labsphere_projects_v10100",
-  REQUESTS: "labsphere_requests_v10100",
-  USERS: "labsphere_users_v10100",
-  SESSION: "labsphere_session_v10100",
-  SECURITY_LOGS: "labsphere_sec_logs_v10100",
-  NOTIFICATIONS: "labsphere_notifs_v10100"
+  VERSION: "labsphere_version_v10110",
+  COMPONENTS: "labsphere_components_v10110",
+  BOXES: "labsphere_boxes_v10110",
+  RACKS: "labsphere_racks_v10110",
+  TRANSACTIONS: "labsphere_transactions_v10110",
+  PROJECTS: "labsphere_projects_v10110",
+  REQUESTS: "labsphere_requests_v10110",
+  USERS: "labsphere_users_v10110",
+  SESSION: "labsphere_session_v10110",
+  SECURITY_LOGS: "labsphere_sec_logs_v10110",
+  NOTIFICATIONS: "labsphere_notifs_v10110"
 };
 
 function safeSetItem(key, value) {
@@ -281,7 +281,9 @@ class StorageService {
       const data = localStorage.getItem(STORAGE_KEYS.NOTIFICATIONS);
       if (data) {
         const parsed = JSON.parse(data);
-        if (Array.isArray(parsed)) return parsed;
+        if (Array.isArray(parsed)) {
+          return parsed.filter(n => n && typeof n === 'object' && n.title && n.message && n.type);
+        }
       }
     } catch (e) {
       console.warn("Error reading notifications:", e);
