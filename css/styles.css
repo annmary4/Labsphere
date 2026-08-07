@@ -1734,9 +1734,9 @@ body.qr-scan-mode #direct-edit-dialog {
   .main-container.view-table #components-grid { display: none !important; }
   .main-container.view-table #components-table-container { display: block !important; }
 
-  /* Header & Navbar on Mobile - Top-Right Human Avatar Logo Placement */
+  /* Header & Navbar on Mobile - Top-Left Brand Logo & Top-Right Human Avatar Placement */
   .navbar {
-    padding: 8px !important;
+    padding: 50px 8px 8px 8px !important;
     flex-wrap: wrap !important;
     gap: 8px !important;
     border-radius: 0 0 10px 10px !important;
@@ -1759,8 +1759,18 @@ body.qr-scan-mode #direct-edit-dialog {
     position: absolute !important;
   }
 
+  /* Mobile Top-Left Brand Logo Placement */
+  .nav-brand {
+    position: absolute !important;
+    top: 8px !important;
+    left: 8px !important;
+    margin: 0 !important;
+    z-index: 100 !important;
+  }
+
   .nav-brand h1 {
     font-size: 1.1rem !important;
+    line-height: 1.2 !important;
   }
 
   .nav-actions {
