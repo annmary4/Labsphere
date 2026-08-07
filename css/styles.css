@@ -1595,17 +1595,28 @@ body.qr-scan-mode #direct-edit-dialog {
   .navbar,
   .search-section,
   .main-container {
-    grid-template-columns: 1fr !important;
+    display: flex !important;
+    flex-direction: column !important;
     padding: 8px !important;
-    gap: 10px !important;
+    gap: 12px !important;
     width: 100% !important;
     max-width: 100% !important;
     margin: 0 !important;
     box-sizing: border-box !important;
   }
 
-  .components-panel,
+  /* Place Component Image Cards Panel FIRST on Mobile so users see all component cards with images & details immediately! */
+  .components-panel {
+    order: 1 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+  }
+
   .rack-panel {
+    order: 2 !important;
     width: 100% !important;
     max-width: 100% !important;
     margin: 0 !important;
