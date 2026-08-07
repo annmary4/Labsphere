@@ -118,13 +118,13 @@ class RackViewer {
           if (isHighlighted) pillClass += " search-highlight";
 
           const itemsListHtml = boxComponents.length > 0
-            ? boxComponents.map(c => `<div style="font-size:0.75rem; color:var(--text-main); font-weight:600; display:flex; align-items:center; gap:4px;">&bull; ${c.name}</div>`).join('')
+            ? boxComponents.map(c => `<div style="font-size:0.75rem; color:var(--text-main); font-weight:600; display:flex; align-items:center; gap:4px;">• ${c.name}</div>`).join('')
             : `<div style="font-size:0.7rem; color:var(--text-muted); font-style:italic;">Empty Box</div>`;
 
           boxesPillsHtml += `
             <div class="${pillClass}" data-box-id="${box.id}" data-rack-id="${rack.id}" data-shelf-id="${shelfNum}" title="${box.id}: ${compNames || 'Empty Box'}" style="cursor:pointer; display:inline-flex; flex-direction:column; background:var(--bg-dark); border:1px solid var(--border-color); padding:8px 12px; border-radius:8px; gap:4px; min-width:140px; margin-right:8px; margin-bottom:8px; transition:all 0.2s;">
               <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-color); padding-bottom:4px; margin-bottom:2px;">
-                <span style="font-weight:800; color:var(--primary); font-size:0.8rem;">📦 ${box.id}</span>
+                <span style="font-weight:800; color:var(--primary); font-size:0.8rem;">Box ${box.id}</span>
                 <span style="background:rgba(56,189,248,0.15); color:var(--primary); padding:1px 6px; border-radius:4px; font-size:0.65rem; font-weight:700;">${boxComponents.length} ${boxComponents.length === 1 ? 'Item' : 'Items'}</span>
               </div>
               <div style="display:flex; flex-direction:column; gap:3px;">
@@ -143,10 +143,10 @@ class RackViewer {
         if (shelfComps.length > 0) {
           shelfCompsHtml = `
             <div class="shelf-inline-components-preview" style="width:100%; margin-top:8px; padding-top:6px; border-top:1px dashed var(--border-color); display:flex; flex-wrap:wrap; gap:4px;">
-              <span style="font-size:0.68rem; color:var(--primary); font-weight:700; width:100%; margin-bottom:2px;">📦 Shelf Components (${shelfComps.length}):</span>
+              <span style="font-size:0.68rem; color:var(--primary); font-weight:700; width:100%; margin-bottom:2px;">Box Shelf Components (${shelfComps.length}):</span>
               ${shelfComps.map(c => `
                 <span class="shelf-comp-chip" style="font-size:0.72rem; padding:3px 8px; background:rgba(30,41,59,0.8); border:1px solid rgba(56,189,248,0.3); border-radius:6px; color:var(--text-main); font-weight:600; display:inline-flex; align-items:center; gap:4px;">
-                  🔹 ${c.name} <small style="color:var(--text-muted); font-size:0.65rem;">(${c.boxId})</small>
+                  - ${c.name} <small style="color:var(--text-muted); font-size:0.65rem;">(${c.boxId})</small>
                 </span>
               `).join('')}
             </div>
@@ -160,12 +160,12 @@ class RackViewer {
                 <span class="shelf-chevron" style="display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; border-radius:4px; background:rgba(56,189,248,0.12); color:var(--primary); font-size:0.75rem; transition:transform 0.2s ease; transform:${isShelfExpanded ? 'rotate(0deg)' : 'rotate(-90deg)'};">
                   <i data-lucide="${isShelfExpanded ? 'chevron-down' : 'chevron-right'}"></i>
                 </span>
-                <span class="shelf-letter font-bold" style="font-size:0.85rem; color:var(--text-main);">🏢 ${shelfNameLabel}</span>
+                <span class="shelf-letter font-bold" style="font-size:0.85rem; color:var(--text-main);">Rack ${shelfNameLabel}</span>
               </div>
               <div style="display:flex; align-items:center; gap:6px;">
-                <span class="shelf-count text-muted" style="font-size:0.7rem;">${shelfBoxes.length} Boxes &bull; ${totalItemsInShelf} Items</span>
+                <span class="shelf-count text-muted" style="font-size:0.7rem;">${shelfBoxes.length} Boxes • ${totalItemsInShelf} Items</span>
                 <button class="btn btn-secondary btn-sm btn-print-shelf-qr" data-rack="${rack.id}" data-shelf="${shelfNum}" style="padding:2px 8px; font-size:0.7rem;" title="Print QR Labels for all components on ${shelfNameLabel}">
-                  <i data-lucide="printer"></i> 🖨️ Print Shelf QR
+                  <i data-lucide="printer"></i> Print Print Shelf QR
                 </button>
                 ${isShelfSelected ? '<span class="active-dot" title="Active Selected Shelf"></span>' : ''}
               </div>
@@ -188,10 +188,10 @@ class RackViewer {
             </span>
             <div>
               <span style="font-size:1rem; font-weight:800; color:var(--text-main); display:flex; align-items:center; gap:8px;">
-                🗄️ ${rack.name.toUpperCase()}
+                Cabinet ${rack.name.toUpperCase()}
                 ${isRackActive ? '<span class="active-dot" title="Active Selected Rack"></span>' : ''}
               </span>
-              <small class="text-muted" style="font-size:0.75rem; display:block;">📍 ${roomLabel}</small>
+              <small class="text-muted" style="font-size:0.75rem; display:block;">Location ${roomLabel}</small>
             </div>
           </div>
           <div style="display:flex; align-items:center; gap:8px;">

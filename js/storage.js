@@ -2,20 +2,20 @@
  * LabSphere Storage Service - Complete 59-Component Catalog (v35)
  */
 
-const CURRENT_VERSION = "v10120_clean_utf8_encoding_fix";
+const CURRENT_VERSION = "v10130_pure_ascii_and_clean_icons";
 
 const STORAGE_KEYS = {
-  VERSION: "labsphere_version_v10120",
-  COMPONENTS: "labsphere_components_v10120",
-  BOXES: "labsphere_boxes_v10120",
-  RACKS: "labsphere_racks_v10120",
-  TRANSACTIONS: "labsphere_transactions_v10120",
-  PROJECTS: "labsphere_projects_v10120",
-  REQUESTS: "labsphere_requests_v10120",
-  USERS: "labsphere_users_v10120",
-  SESSION: "labsphere_session_v10120",
-  SECURITY_LOGS: "labsphere_sec_logs_v10120",
-  NOTIFICATIONS: "labsphere_notifs_v10120"
+  VERSION: "labsphere_version_v10130",
+  COMPONENTS: "labsphere_components_v10130",
+  BOXES: "labsphere_boxes_v10130",
+  RACKS: "labsphere_racks_v10130",
+  TRANSACTIONS: "labsphere_transactions_v10130",
+  PROJECTS: "labsphere_projects_v10130",
+  REQUESTS: "labsphere_requests_v10130",
+  USERS: "labsphere_users_v10130",
+  SESSION: "labsphere_session_v10130",
+  SECURITY_LOGS: "labsphere_sec_logs_v10130",
+  NOTIFICATIONS: "labsphere_notifs_v10130"
 };
 
 function safeSetItem(key, value) {
@@ -350,7 +350,7 @@ class StorageService {
         comp.inventoryState = "DAMAGED";
         this.addNotification(
           "RETURNED_ITEM",
-          `⚠️ Damaged Component Returned: ${comp.name}`,
+          `Alert: Damaged Component Returned: ${comp.name}`,
           `${req.requesterName} returned ${qtyToReturn} pcs of ${comp.name} in DAMAGED condition.`
         );
       } else {
@@ -358,7 +358,7 @@ class StorageService {
         comp.inventoryState = "AVAILABLE";
         this.addNotification(
           "RETURNED_ITEM",
-          `🔄 Component Returned: ${comp.name}`,
+          `Sync Component Returned: ${comp.name}`,
           `${req.requesterName} returned ${qtyToReturn} pcs of ${comp.name} (${condition} condition).`
         );
       }
@@ -427,7 +427,7 @@ class StorageService {
 
     this.addNotification(
       "REQUEST_STATUS",
-      `📦 Item Moved: ${comp.name}`,
+      `Box Item Moved: ${comp.name}`,
       `Relocated '${comp.name}' from ${prevBoxId} into ${targetBox.id}.`
     );
 
@@ -486,7 +486,7 @@ class StorageService {
 
       this.addNotification(
         "REQUEST_STATUS",
-        `🔄 Mutual Box Swap: ${prevBoxId} ↔ ${targetBoxId}`,
+        `Sync Mutual Box Swap: ${prevBoxId} ↔ ${targetBoxId}`,
         `Swapped Box IDs & Locations: ${prevBoxId} (${prevNames}) ↔ ${targetBoxId} (${targetNames}).`
       );
 
@@ -513,7 +513,7 @@ class StorageService {
 
       this.addNotification(
         "REQUEST_STATUS",
-        `📦 Material Moved: ${comp.name}`,
+        `Box Material Moved: ${comp.name}`,
         `Transferred '${comp.name}' from ${prevBoxId} to ${targetBoxId}.`
       );
 
@@ -567,7 +567,7 @@ class StorageService {
 
     this.addNotification(
       "REQUEST_STATUS",
-      `🏷️ Box Relocated / Renamed: ${cleanOldId} → ${newBoxId}`,
+      `Tag Box Relocated / Renamed: ${cleanOldId} → ${newBoxId}`,
       `Updated Box ID and location for physical box ${cleanOldId} to ${newBoxId} (Rack ${newRackId}, Shelf ${String.fromCharCode(64 + Number(newShelfId))}).`
     );
 
@@ -610,7 +610,7 @@ class StorageService {
 
     this.addNotification(
       "REQUEST_STATUS",
-      `🔄 Box Contents Swapped: ${boxId1} ↔ ${boxId2}`,
+      `Sync Box Contents Swapped: ${boxId1} ↔ ${boxId2}`,
       `Swapped all inventory contents between ${boxId1} (${box1Comps.length} items) and ${boxId2} (${box2Comps.length} items).`
     );
 
@@ -1016,7 +1016,7 @@ class StorageService {
 
     this.addNotification(
       "PENDING_APPROVAL",
-      "📋 New Checkout Request Submitted",
+      "List: New Checkout Request Submitted",
       `${newReq.requesterName} requested ${qtyRequested} pcs of ${comp.name}.`
     );
 
@@ -1454,7 +1454,7 @@ class StorageService {
     reader.onload = (e) => {
       try {
         StorageService.importJSON(e.target.result);
-        alert("🎉 Backup imported successfully! All your custom box moves and components are restored.");
+        alert("Success: Backup imported successfully! All your custom box moves and components are restored.");
         window.location.reload();
       } catch (err) {
         alert(err.message);

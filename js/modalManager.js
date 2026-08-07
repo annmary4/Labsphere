@@ -29,7 +29,7 @@ class ModalManager {
     const toast = document.createElement("div");
     toast.className = `toast-item toast-${type}`;
     toast.style.cssText = "background:#0f172a; color:#38bdf8; border:2px solid #38bdf8; padding:14px 20px; border-radius:10px; box-shadow:0 10px 30px rgba(0,0,0,0.6); font-weight:700; font-size:0.95rem; margin-bottom:12px; display:flex; align-items:center; gap:10px; position:fixed; top:20px; right:20px; z-index:9999;";
-    toast.innerHTML = `<span style="font-size:1.3rem;">🎉</span> <span>${message}</span>`;
+    toast.innerHTML = `<span style="font-size:1.3rem;">Success:</span> <span>${message}</span>`;
 
     container.appendChild(toast);
 
@@ -450,7 +450,7 @@ class ModalManager {
             <div class="audit-details">
               <strong>Requested ${r.qtyRequested} pcs of ${r.componentName}</strong>
               <p class="audit-notes">${r.notes}</p>
-              <span class="audit-meta">Status: ${r.status} &bull; ${r.requestedAt}</span>
+              <span class="audit-meta">Status: ${r.status} • ${r.requestedAt}</span>
             </div>
           </div>
         `;
@@ -551,13 +551,13 @@ class ModalManager {
     if (!backdrop || !container) return;
 
     const allNamesStr = components.map(c => c.name).join(" + ");
-    if (titleEl) titleEl.innerText = `📦 ${boxId}: ${allNamesStr} (${components.length} Items Inside)`;
+    if (titleEl) titleEl.innerText = `Box ${boxId}: ${allNamesStr} (${components.length} Items Inside)`;
 
     if (components.length > 0) {
       const c = components[0];
       const lab = c.labName || "Main Robotics & Embedded Systems Lab";
       const room = c.roomName || (c.rackId === 1 ? "Room 101 - Prototyping Hall" : "Room 102 - Storage Bay");
-      if (pathEl) pathEl.innerText = `📍 ${lab} › ${room} › Rack ${c.rackId} › Shelf ${String.fromCharCode(64 + Number(c.shelfId))} › ${boxId}`;
+      if (pathEl) pathEl.innerText = `Location ${lab} › ${room} › Rack ${c.rackId} › Shelf ${String.fromCharCode(64 + Number(c.shelfId))} › ${boxId}`;
     }
 
     if (descEl) descEl.innerText = `This physical box (${boxId}) contains ${components.length} component(s): [ ${allNamesStr} ]. All items inside are displayed side-by-side below:`;
@@ -585,7 +585,7 @@ class ModalManager {
           <div>
             <span class="shelf-level-tag" style="margin-bottom:4px; display:inline-block;">Item #${idx + 1} in ${c.boxId}</span>
             <h3 style="font-size:1.1rem; font-weight:800; color:var(--text-main); margin:0;">${c.name}</h3>
-            <span style="font-size:0.75rem; color:var(--text-muted); font-family:var(--font-mono);">PN: ${c.partNumber || 'N/A'} &bull; ${c.manufacturer || 'N/A'}</span>
+            <span style="font-size:0.75rem; color:var(--text-muted); font-family:var(--font-mono);">PN: ${c.partNumber || 'N/A'} • ${c.manufacturer || 'N/A'}</span>
           </div>
           <span class="stock-tag ${stockTagClass}">${stockTagText}</span>
         </div>
@@ -644,7 +644,7 @@ class ModalManager {
 
         try {
           StorageService.moveSingleComponentToBox(c.id, targetBoxStr.trim());
-          const msg = `🎉 Successfully moved '${c.name}' into ${targetBoxStr.trim().toUpperCase()}!`;
+          const msg = `Success: Successfully moved '${c.name}' into ${targetBoxStr.trim().toUpperCase()}!`;
           alert(msg);
           ModalManager.showToast(msg, "success");
 
@@ -747,7 +747,7 @@ class ModalManager {
       if (tabEdit) { tabEdit.style.background = "#0ea5e9"; tabEdit.style.color = "white"; }
 
       if (this.currentComponent) {
-        if (modalTitle) modalTitle.innerText = `✏️ Edit Details: ${this.currentComponent.name}`;
+        if (modalTitle) modalTitle.innerText = `Edit Edit Details: ${this.currentComponent.name}`;
         this.populateFormWithComponent(this.currentComponent);
       }
     } else {
@@ -760,7 +760,7 @@ class ModalManager {
       if (tabEdit) { tabEdit.style.background = "transparent"; tabEdit.style.color = "var(--text-muted)"; }
 
       if (this.currentComponent && modalTitle) {
-        modalTitle.innerText = `👁️ View Info: ${this.currentComponent.name}`;
+        modalTitle.innerText = `View View Info: ${this.currentComponent.name}`;
       }
     }
   }
@@ -778,7 +778,7 @@ class ModalManager {
     };
 
     setTxt("insp-name", c.name);
-    const mfg = c.manufacturer ? ` &bull; Manufacturer: ${c.manufacturer}` : "";
+    const mfg = c.manufacturer ? ` • Manufacturer: ${c.manufacturer}` : "";
     setHtml("insp-part-number", `PN: ${c.partNumber || 'N/A'}${mfg}`);
     setTxt("insp-category", c.category);
     setTxt("insp-box-id", c.boxId);
@@ -814,7 +814,7 @@ class ModalManager {
         }
       }
 
-      let switcherHtml = `<span class="text-muted" style="font-weight:600;">📦 ${c.boxId} Contains ${boxComps.length} Items:</span>`;
+      let switcherHtml = `<span class="text-muted" style="font-weight:600;">Box ${c.boxId} Contains ${boxComps.length} Items:</span>`;
       boxComps.forEach(item => {
         const activeStyle = item.id === c.id ? "background:var(--primary); color:#0f172a; font-weight:700;" : "background:var(--bg-card); color:var(--text-main);";
         switcherHtml += `<button class="btn btn-sm btn-switch-box-item" data-comp-id="${item.id}" style="padding:2px 8px; border-radius:4px; font-size:0.7rem; cursor:pointer; ${activeStyle}">${item.name}</button>`;
@@ -884,7 +884,7 @@ class ModalManager {
     const compatList = c.compatibleComponents || ["Arduino Uno", "ESP32", "Raspberry Pi", "Standard Breadboard"];
     let compatHtml = `<h4><i data-lucide="cpu"></i> Compatible Components & Systems</h4><div style="display:flex; flex-wrap:wrap; gap:6px;">`;
     compatList.forEach(item => {
-      compatHtml += `<span class="tag-item" style="background:rgba(56,189,248,0.15); color:var(--primary); border:1px solid rgba(56,189,248,0.3);">⚡ ${item}</span>`;
+      compatHtml += `<span class="tag-item" style="background:rgba(56,189,248,0.15); color:var(--primary); border:1px solid rgba(56,189,248,0.3);">Power ${item}</span>`;
     });
     compatHtml += `</div>`;
     compSection.innerHTML = compatHtml;
@@ -901,7 +901,7 @@ class ModalManager {
     const altList = c.alternatives || ["ESP8266 NodeMCU Module", "Raspberry Pi Pico W Board"];
     let altHtml = `<h4><i data-lucide="git-compare"></i> Suggested Drop-in Alternatives</h4><div style="background:var(--bg-dark); padding:10px; border-radius:8px; border:1px solid var(--border-color); font-size:0.85rem;">`;
     altList.forEach(alt => {
-      altHtml += `<p style="margin-bottom:4px;">🔄 <strong>${alt}</strong> <span class="text-muted" style="font-size:0.75rem;">(Alternative drop-in substitute)</span></p>`;
+      altHtml += `<p style="margin-bottom:4px;">Sync <strong>${alt}</strong> <span class="text-muted" style="font-size:0.75rem;">(Alternative drop-in substitute)</span></p>`;
     });
     altHtml += `</div>`;
     altSection.innerHTML = altHtml;
@@ -942,8 +942,8 @@ class ModalManager {
     suppSection.innerHTML = `
       <h4><i data-lucide="shopping-bag"></i> Supplier & Procurement Info</h4>
       <div style="background:var(--bg-dark); padding:12px; border-radius:8px; border:1px solid var(--border-color); font-size:0.85rem;">
-        <p><strong>Vendor:</strong> ${supp.vendorName} &bull; <strong>SKU:</strong> <span class="mono">${supp.vendorSku}</span></p>
-        <p><strong>Unit Price:</strong> <span class="primary-text font-bold">₹${supp.unitPrice || c.unitPrice || 450}</span> &bull; <strong>Reorder Lead Time:</strong> ${supp.leadTimeDays || 3} Days</p>
+        <p><strong>Vendor:</strong> ${supp.vendorName} • <strong>SKU:</strong> <span class="mono">${supp.vendorSku}</span></p>
+        <p><strong>Unit Price:</strong> <span class="primary-text font-bold">₹${supp.unitPrice || c.unitPrice || 450}</span> • <strong>Reorder Lead Time:</strong> ${supp.leadTimeDays || 3} Days</p>
         ${supp.vendorUrl ? `<p style="margin-top:4px;"><a href="${supp.vendorUrl}" target="_blank" class="link-btn">🛒 Direct Vendor Purchase Link</a></p>` : ''}
       </div>
     `;
@@ -960,11 +960,11 @@ class ModalManager {
 
     let kbHtml = `<h4><i data-lucide="book-open"></i> Component Specs & Knowledge Base</h4>`;
     kbHtml += `<div style="background:var(--bg-dark); padding:10px 12px; border-radius:8px; border:1px solid var(--border-color); font-size:0.85rem; margin-bottom:8px;">`;
-    kbHtml += `<p>🏷️ <strong>Barcode / ID:</strong> <span class="mono primary-text">${c.barcode || c.id}</span></p>`;
-    kbHtml += `<p>🏭 <strong>Manufacturer:</strong> ${c.manufacturer || 'Lab Catalog Vendor'}</p>`;
+    kbHtml += `<p>Tag <strong>Barcode / ID:</strong> <span class="mono primary-text">${c.barcode || c.id}</span></p>`;
+    kbHtml += `<p>Vendor <strong>Manufacturer:</strong> ${c.manufacturer || 'Lab Catalog Vendor'}</p>`;
     kbHtml += `<p>💵 <strong>Unit Price:</strong> ₹${(c.unitPrice || 450).toLocaleString('en-IN')}</p>`;
     if (c.tags && Array.isArray(c.tags) && c.tags.length > 0) {
-      kbHtml += `<p style="margin-top:4px;">🏷️ <strong>Tags:</strong> ${c.tags.map(t => `<span class="tag-item" style="background:rgba(56,189,248,0.1); color:var(--primary); padding:2px 6px; font-size:0.7rem; border-radius:4px; margin-right:4px;">#${t}</span>`).join('')}</p>`;
+      kbHtml += `<p style="margin-top:4px;">Tag <strong>Tags:</strong> ${c.tags.map(t => `<span class="tag-item" style="background:rgba(56,189,248,0.1); color:var(--primary); padding:2px 6px; font-size:0.7rem; border-radius:4px; margin-right:4px;">#${t}</span>`).join('')}</p>`;
     }
     kbHtml += `</div>`;
 
@@ -1231,7 +1231,7 @@ class ModalManager {
         );
 
         this.currentComponent = newComp;
-        const msg = `🎉 SUCCESS: Item '${name}' has been added successfully to ${boxId}!`;
+        const msg = `Success: SUCCESS: Item '${name}' has been added successfully to ${boxId}!`;
         alert(msg);
         ModalManager.showToast(msg, "success");
       }
@@ -1320,7 +1320,7 @@ class ModalManager {
 
     try {
       StorageService.moveSingleComponentToBox(comp.id, targetBoxStr.trim());
-      const msg = `🎉 Successfully moved '${comp.name}' into ${targetBoxStr.trim().toUpperCase()}!`;
+      const msg = `Success: Successfully moved '${comp.name}' into ${targetBoxStr.trim().toUpperCase()}!`;
       alert(msg);
       ModalManager.showToast(msg, "success");
       this.closeComponentModal();
@@ -1561,7 +1561,7 @@ class ModalManager {
             <div class="audit-details">
               <strong>${t.componentName}</strong>
               <p class="audit-notes">${t.notes}</p>
-              <span class="audit-meta">${t.userRole} &bull; ${t.timestamp}</span>
+              <span class="audit-meta">${t.userRole} • ${t.timestamp}</span>
             </div>
           </div>
         `;
@@ -1604,8 +1604,8 @@ class ModalManager {
             <strong>${r.componentName}</strong>
             <span class="stock-tag ${statusBadgeClass}">${r.status}</span>
           </div>
-          <p class="request-meta">Qty Requested: <strong>${r.qtyRequested} pcs</strong> &bull; Returned: <strong>${r.returnedQty || 0} pcs</strong> &bull; Remaining: <strong class="primary-text">${remainingQty} pcs</strong></p>
-          <p class="request-meta">Student: ${r.requesterName} &bull; Date: ${r.requestedAt} ${r.dueDate ? `&bull; Due: ${r.dueDate}` : ''}</p>
+          <p class="request-meta">Qty Requested: <strong>${r.qtyRequested} pcs</strong> • Returned: <strong>${r.returnedQty || 0} pcs</strong> • Remaining: <strong class="primary-text">${remainingQty} pcs</strong></p>
+          <p class="request-meta">Student: ${r.requesterName} • Date: ${r.requestedAt} ${r.dueDate ? `• Due: ${r.dueDate}` : ''}</p>
           <p class="request-notes">${r.notes}</p>
           ${(r.status === 'APPROVED' || r.status === 'PARTIAL_RETURN') ? `
             <div style="margin-top:8px; display:flex; gap:8px; align-items:center;">
@@ -1660,7 +1660,7 @@ class ModalManager {
     if (container) {
       container.innerHTML = "";
       if (requests.length === 0) {
-        container.innerHTML = `<p class="empty-hint">🎉 No pending checkout requests! All student requests are cleared.</p>`;
+        container.innerHTML = `<p class="empty-hint">Success: No pending checkout requests! All student requests are cleared.</p>`;
       } else {
         requests.forEach(r => {
           const card = document.createElement("div");
@@ -1670,7 +1670,7 @@ class ModalManager {
               <strong>${r.componentName}</strong>
               <span class="mono">Qty: ${r.qtyRequested} pcs</span>
             </div>
-            <p class="approval-meta">Requester: <strong>${r.requesterName}</strong> (${r.role}) &bull; Date: ${r.requestedAt}</p>
+            <p class="approval-meta">Requester: <strong>${r.requesterName}</strong> (${r.role}) • Date: ${r.requestedAt}</p>
             <p class="approval-notes">${r.notes}</p>
             <div class="approval-actions">
               <button class="btn btn-primary btn-approve" data-id="${r.id}"><i data-lucide="check"></i> Approve Checkout</button>
@@ -1737,7 +1737,7 @@ class ModalManager {
       const tr = document.createElement("tr");
       let statusTag = `<span class="stock-tag IN_STOCK">✅ Available in Lab (${res.availableQty} pcs)</span>`;
       if (res.status === "MATCH_SHORTAGE") {
-        statusTag = `<span class="stock-tag LOW_STOCK">⚠️ Stock Shortage (Have ${res.availableQty}, Need ${res.qtyRequired})</span>`;
+        statusTag = `<span class="stock-tag LOW_STOCK">Alert: Stock Shortage (Have ${res.availableQty}, Need ${res.qtyRequired})</span>`;
       } else if (res.status === "OUT_OF_STOCK") {
         statusTag = `<span class="stock-tag OUT_OF_STOCK">❌ Out of Stock (0 pcs in lab)</span>`;
       } else if (res.status === "NOT_IN_LAB") {
@@ -1933,7 +1933,7 @@ class ModalManager {
             <img src="${ComponentsView.getAccurateImageForComponent ? ComponentsView.getAccurateImageForComponent(c.name, c.category, c.imageUrl) : c.imageUrl}" alt="${c.name}" referrerpolicy="no-referrer" loading="lazy" style="width:36px; height:36px; object-fit:cover; border-radius:6px; border:1px solid var(--border-color); background:#0f172a;" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&q=80';" />
             <div>
               <div style="font-size:0.8rem; font-weight:700; color:var(--text-main);">${c.name}</div>
-              <div style="font-size:0.7rem; color:var(--text-muted);">PN: ${c.partNumber || 'N/A'} &bull; ${c.manufacturer || 'N/A'}</div>
+              <div style="font-size:0.7rem; color:var(--text-muted);">PN: ${c.partNumber || 'N/A'} • ${c.manufacturer || 'N/A'}</div>
             </div>
             <span style="font-size:0.75rem; font-weight:700; color:var(--primary); font-family:var(--font-mono); margin-left:auto; background:rgba(56,189,248,0.1); padding:2px 6px; border-radius:4px;">${c.quantity} ${c.unit || 'pcs'}</span>
           </div>
@@ -1945,8 +1945,8 @@ class ModalManager {
       card.innerHTML = `
         <div class="box-info" style="flex:1; margin-right:12px;">
           <div style="display:flex; align-items:center; gap:8px;">
-            <span class="box-badge mono" style="font-weight:800; color:var(--primary); font-size:0.95rem;">📦 ${box.id}</span>
-            <span class="box-path text-muted" style="font-size:0.8rem;">📍 Rack ${box.rackId} &rsaquo; Shelf ${String.fromCharCode(64 + Number(box.shelfId))}</span>
+            <span class="box-badge mono" style="font-weight:800; color:var(--primary); font-size:0.95rem;">Box ${box.id}</span>
+            <span class="box-path text-muted" style="font-size:0.8rem;">Location Rack ${box.rackId} > Shelf ${String.fromCharCode(64 + Number(box.shelfId))}</span>
             <span class="badge" style="background:var(--primary); color:#0f172a; font-weight:700; font-size:0.7rem; margin-left:auto;">${boxComponents.length} Stored Component${boxComponents.length === 1 ? '' : 's'}</span>
           </div>
           <div style="margin-top:6px; display:flex; flex-direction:column; gap:4px;">
@@ -2081,24 +2081,24 @@ class ModalManager {
     const qrTargetUrl = `${hostOrigin}${window.location.pathname}?comp=${encodeURIComponent(mainCompId)}&box=${encodeURIComponent(cleanBoxId)}`;
     const qrImgUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(qrTargetUrl)}`;
 
-    if (titleEl) titleEl.innerHTML = `📦 Physical Storage Footprint: <span class="mono" style="color:var(--primary); font-weight:800;">${cleanBoxId}</span>`;
+    if (titleEl) titleEl.innerHTML = `Box Physical Storage Footprint: <span class="mono" style="color:var(--primary); font-weight:800;">${cleanBoxId}</span>`;
 
     if (pathEl) {
       pathEl.innerHTML = `
         <div style="background:var(--bg-dark); padding:14px; border-radius:10px; border:1px solid var(--border-color); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
           <div>
             <div style="font-size:0.95rem; font-weight:700; color:var(--primary);">
-              📍 Rack ${rackId} &rsaquo; Shelf ${shelfChar} (Shelf ${shelfId}) &rsaquo; Box ${cleanBoxId}
+              Location Rack ${rackId} > Shelf ${shelfChar} (Shelf ${shelfId}) > Box ${cleanBoxId}
             </div>
             <div style="font-size:0.8rem; color:var(--text-muted); margin-top:2px;">
-              Main Robotics & Embedded Systems Lab &bull; Room 101 &bull; ${components.length} Item(s) Stored
+              Main Robotics & Embedded Systems Lab • Room 101 • ${components.length} Item(s) Stored
             </div>
           </div>
 
           <div style="display:flex; align-items:center; gap:12px; background:var(--bg-card); padding:8px 12px; border-radius:8px; border:1px solid var(--border-color);">
             <img src="${qrImgUrl}" alt="${cleanBoxId} QR Code" style="width:54px; height:54px; border-radius:4px; background:#fff; padding:2px;" />
             <div>
-              <div style="font-size:0.75rem; font-weight:700; color:var(--success);">📱 Scan with Phone Camera</div>
+              <div style="font-size:0.75rem; font-weight:700; color:var(--success);">Mobile Scan with Phone Camera</div>
               <button class="btn btn-secondary btn-sm" onclick="ModalManager.printBoxQrCode('${cleanBoxId}', '${encodeURIComponent(qrTargetUrl)}')" style="margin-top:4px; font-size:0.7rem; padding:2px 8px;">
                 <i data-lucide="printer"></i> Print QR Label
               </button>
@@ -2113,7 +2113,7 @@ class ModalManager {
       cardsContainer.style.cssText = "display:flex; flex-direction:column; gap:16px; width:100%; max-width:680px; margin:0 auto;";
 
       if (components.length === 0) {
-        cardsContainer.innerHTML = `<p class="empty-hint" style="grid-column: 1 / -1;">📦 Box ${boxId} is currently empty.</p>`;
+        cardsContainer.innerHTML = `<p class="empty-hint" style="grid-column: 1 / -1;">Box Box ${boxId} is currently empty.</p>`;
       } else {
         components.forEach((c, index) => {
           const card = document.createElement("div");
@@ -2141,7 +2141,7 @@ class ModalManager {
 
               <div style="flex:1; min-width:200px;">
                 <div style="font-size:1.15rem; font-weight:800; color:var(--text-main); line-height:1.3; margin-bottom:4px;">${c.name}</div>
-                <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:8px;">PN: <span class="mono" style="color:var(--primary); font-weight:700;">${c.partNumber || 'N/A'}</span> &bull; 🏭 ${c.manufacturer || 'Lab Vendor'} &bull; 🏷️ ${c.category}</div>
+                <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:8px;">PN: <span class="mono" style="color:var(--primary); font-weight:700;">${c.partNumber || 'N/A'}</span> • Vendor ${c.manufacturer || 'Lab Vendor'} • Tag ${c.category}</div>
                 <div style="font-size:0.82rem; color:var(--text-muted); line-height:1.4;">
                   <strong>Purpose:</strong> ${c.purpose || 'Standard electronic component stored inside ' + boxId}
                 </div>
@@ -2165,16 +2165,16 @@ class ModalManager {
 
             <div style="margin-top:auto; display:grid; grid-template-columns:1fr 1fr; gap:6px; padding-top:8px; border-top:1px solid var(--border-color);">
               <button class="btn btn-primary btn-sm btn-edit-comp-item" onclick="event.stopPropagation(); if (window.closeBoxInspectorModal) window.closeBoxInspectorModal(); window.openComponentEditDialog('${c.id}');" style="font-weight:700;" title="Edit Name, Quantity, Price, Location">
-                ✏️ Edit Details
+                Edit Edit Details
               </button>
               <button class="btn btn-secondary btn-sm btn-move-comp-item" onclick="event.stopPropagation(); if (window.openMoveBoxDialog) window.openMoveBoxDialog('${c.id}');" title="Move this component to another box">
-                📦 Move Item
+                Box Move Item
               </button>
               <button class="btn btn-secondary btn-sm btn-inspect-comp-item" title="View Full Technical Passport">
-                👁️ Passport Info
+                View Passport Info
               </button>
               <button class="btn btn-secondary btn-sm btn-delete-comp-item" style="border-color:var(--danger); color:var(--danger);" title="Delete this component entry permanently">
-                🗑️ Delete
+                Delete Delete
               </button>
             </div>
           `;
@@ -2205,7 +2205,7 @@ class ModalManager {
             if (confirm(`Are you sure you want to permanently delete '${c.name}' (${c.boxId}) from inventory?`)) {
               StorageService.setRole("ADMIN");
               StorageService.deleteComponent(c.id);
-              const msg = `🗑️ Successfully deleted '${c.name}'!`;
+              const msg = `Delete Successfully deleted '${c.name}'!`;
               alert(msg);
               ModalManager.showToast(msg, "success");
               ModalManager.closeBoxInspectorModal();
@@ -2247,7 +2247,7 @@ class ModalManager {
     const shelfId = box ? box.shelfId : (components[0] ? components[0].shelfId : 1);
     const shelfChar = String.fromCharCode(64 + Number(shelfId));
 
-    let compNamesHtml = components.map(c => `<div class="comp-title-line">&bull; ${c.name}</div>`).join("");
+    let compNamesHtml = components.map(c => `<div class="comp-title-line">• ${c.name}</div>`).join("");
     if (!compNamesHtml) compNamesHtml = `<div class="comp-title-line">Box ${cleanBoxId}</div>`;
 
     const printWin = window.open("", "_blank", "width=450,height=570");
@@ -2269,7 +2269,7 @@ class ModalManager {
             <div class="comp-name-container">
               ${compNamesHtml}
             </div>
-            <div class="box-tag">📦 ${cleanBoxId} &bull; Rack ${rackId} Shelf ${shelfChar}</div>
+            <div class="box-tag">Box ${cleanBoxId} • Rack ${rackId} Shelf ${shelfChar}</div>
             <img src="${qrImg}" alt="Box ${cleanBoxId} QR Code" />
           </div>
           <script>
@@ -2312,7 +2312,7 @@ class ModalManager {
         <body>
           <div class="label-box">
             <div class="comp-name">${c.name}</div>
-            <div class="box-tag">📦 ${c.boxId} &bull; Rack ${c.rackId} Shelf ${shelfChar}</div>
+            <div class="box-tag">Box ${c.boxId} • Rack ${c.rackId} Shelf ${shelfChar}</div>
             <img src="${qrImg}" alt="QR Code" />
           </div>
           <script>
@@ -2353,7 +2353,7 @@ class ModalManager {
       let cardsHtml = pageBoxes.map(box => {
         const cleanBoxId = (box.id || "").trim().toUpperCase();
         const boxComps = components.filter(c => (c.boxId || "").trim().toUpperCase() === cleanBoxId);
-        let compLinesHtml = boxComps.map(c => `<div class="comp-line">&bull; ${c.name}</div>`).join("");
+        let compLinesHtml = boxComps.map(c => `<div class="comp-line">• ${c.name}</div>`).join("");
         if (!compLinesHtml) compLinesHtml = `<div class="comp-line">Empty Box (${cleanBoxId})</div>`;
 
         const qrTargetUrl = `${hostOrigin}${window.location.pathname}?box=${encodeURIComponent(cleanBoxId)}`;
@@ -2364,7 +2364,7 @@ class ModalManager {
             <div class="comp-name-container">
               ${compLinesHtml}
             </div>
-            <div class="box-id-badge">📦 ${cleanBoxId}</div>
+            <div class="box-id-badge">Box ${cleanBoxId}</div>
             <img src="${qrImgUrl}" alt="${cleanBoxId} Box QR Code" />
           </div>
         `;
@@ -2467,7 +2467,7 @@ class ModalManager {
           </style>
         </head>
         <body>
-          <div class="header-banner">🏢 PRINTING ALL BOX STICKERS (${activeBoxes.length} OCCUPIED BOXES)</div>
+          <div class="header-banner">Rack PRINTING ALL BOX STICKERS (${activeBoxes.length} OCCUPIED BOXES)</div>
           ${pagesHtml}
           <script>
             window.onload = function() { window.print(); };
@@ -2525,7 +2525,7 @@ class ModalManager {
       let cardsHtml = pageBoxes.map(box => {
         const cleanBoxId = (box.id || "").trim().toUpperCase();
         const boxComps = allComponents.filter(c => (c.boxId || "").trim().toUpperCase() === cleanBoxId);
-        let compLinesHtml = boxComps.map(c => `<div class="comp-line">&bull; ${c.name}</div>`).join("");
+        let compLinesHtml = boxComps.map(c => `<div class="comp-line">• ${c.name}</div>`).join("");
         if (!compLinesHtml) compLinesHtml = `<div class="comp-line">Empty Box (${cleanBoxId})</div>`;
 
         const qrTargetUrl = `${hostOrigin}${window.location.pathname}?box=${encodeURIComponent(cleanBoxId)}`;
@@ -2536,7 +2536,7 @@ class ModalManager {
             <div class="comp-name-container">
               ${compLinesHtml}
             </div>
-            <div class="box-id-badge">📦 ${cleanBoxId} &bull; R${targetRack}S${shelfChar}</div>
+            <div class="box-id-badge">Box ${cleanBoxId} • R${targetRack}S${shelfChar}</div>
             <img src="${qrImgUrl}" alt="${cleanBoxId} Box QR Code" />
           </div>
         `;
@@ -2639,7 +2639,7 @@ class ModalManager {
           </style>
         </head>
         <body>
-          <div class="header-banner">🏢 PRINTING SHELF BOX STICKERS: RACK ${targetRack} - SHELF ${shelfChar} (${activeShelfBoxes.length} BOXES)</div>
+          <div class="header-banner">Rack PRINTING SHELF BOX STICKERS: RACK ${targetRack} - SHELF ${shelfChar} (${activeShelfBoxes.length} BOXES)</div>
           ${pagesHtml}
           <script>
             window.onload = function() { window.print(); };
@@ -2652,7 +2652,7 @@ class ModalManager {
 
   static openShelfQrSelectorPrompt() {
     const shelfStr = prompt(
-      "🏢 PRINT SHELF BOX QR STICKERS (16/Page):\n\n" +
+      "Rack PRINT SHELF BOX QR STICKERS (16/Page):\n\n" +
       "Enter Target Shelf Letter or Number:\n" +
       "• Type 'A', 'B', 'C', 'D', 'E', or 'F'\n" +
       "• Type 'ALL' to print all boxes across all shelves\n\n" +
@@ -2683,14 +2683,14 @@ class ModalManager {
         const card = document.createElement("div");
         card.className = "project-card";
 
-        let membersHtml = (p.members || ["Team Member"]).map(m => `<span class="tag-item">👤 ${m}</span>`).join(" ");
+        let membersHtml = (p.members || ["Team Member"]).map(m => `<span class="tag-item">User ${m}</span>`).join(" ");
 
         let bomHtml = (p.bom || []).map(b => `<li>• <strong>${b.name}</strong> (${b.qtyNeeded} needed)</li>`).join("");
         if (!bomHtml) bomHtml = `<li class="text-muted">No BOM items added.</li>`;
 
-        let consumablesHtml = (p.consumables || []).map(c => `<li>⚡ ${c.name} (${c.qty}) - ₹${c.costRupees}</li>`).join("");
+        let consumablesHtml = (p.consumables || []).map(c => `<li>Power ${c.name} (${c.qty}) - ₹${c.costRupees}</li>`).join("");
 
-        let reusableHtml = (p.reusableAssets || []).map(r => `<li>🔧 ${r.name} (${r.qty} pcs) - ₹${r.costRupees}</li>`).join("");
+        let reusableHtml = (p.reusableAssets || []).map(r => `<li>Tool ${r.name} (${r.qty} pcs) - ₹${r.costRupees}</li>`).join("");
 
         card.innerHTML = `
           <div class="project-header">
@@ -2701,17 +2701,17 @@ class ModalManager {
           <p class="project-desc">${p.description}</p>
 
           <div style="margin-top:10px;">
-            <h4 style="font-size:0.8rem; color:var(--primary);">👥 Team Members Workspace</h4>
+            <h4 style="font-size:0.8rem; color:var(--primary);">Members Team Members Workspace</h4>
             <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:4px;">${membersHtml}</div>
           </div>
 
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;">
             <div class="project-items-box">
-              <h4>📋 Project BOM List</h4>
+              <h4>List: Project BOM List</h4>
               <ul>${bomHtml}</ul>
             </div>
             <div class="project-items-box">
-              <h4>🧪 Consumables & Reusable Assets</h4>
+              <h4>Assets Consumables & Reusable Assets</h4>
               <ul style="font-size:0.75rem;">${consumablesHtml} ${reusableHtml}</ul>
             </div>
           </div>
@@ -2824,7 +2824,7 @@ class ModalManager {
         card.innerHTML = `
           <div style="flex:1;">
             <div style="font-weight:700; color:var(--primary); font-size:0.85rem; font-family:var(--font-mono);">${s.key}</div>
-            <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">${s.count} stored items &bull; Type: ${s.type}</div>
+            <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">${s.count} stored items • Type: ${s.type}</div>
             <div style="font-size:0.7rem; color:var(--text-main); margin-top:4px; font-style:italic;">Sample: ${s.sample}</div>
           </div>
           <button class="btn btn-primary btn-sm btn-restore-this-snap" data-key="${s.key}">
@@ -2835,7 +2835,7 @@ class ModalManager {
         card.querySelector(".btn-restore-this-snap").addEventListener("click", () => {
           try {
             StorageService.restoreSpecificSnapshot(s.key);
-            alert(`🎉 Successfully restored snapshot '${s.key}' into active lab memory!`);
+            alert(`Success: Successfully restored snapshot '${s.key}' into active lab memory!`);
             this.closeStorageSnapshotsModal();
             window.location.reload();
           } catch (err) {
@@ -2917,11 +2917,11 @@ class ModalManager {
           </div>
           <p style="margin:6px 0 0 0; font-size:0.8rem; color:var(--text-muted);">${s.desc}</p>
           <div style="margin-top:6px; font-size:0.75rem; color:var(--primary); font-weight:700;">
-            📦 ${s.compCount} Components &bull; 🗄️ ${s.boxCount} Boxes
+            Box ${s.compCount} Components • Cabinet ${s.boxCount} Boxes
           </div>
         </div>
         <button class="btn btn-primary btn-sm btn-rollback-step" data-step="${s.step}" style="font-weight:700; white-space:nowrap; padding:8px 16px;">
-          ⏪ Rollback to Step ${s.step}
+          Step Rollback to Step ${s.step}
         </button>
       </div>
     `).join('');
@@ -2930,7 +2930,7 @@ class ModalManager {
       <div class="modal-container" style="max-width:720px;">
         <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-color); padding-bottom:12px; margin-bottom:16px;">
           <h2 style="margin:0; color:var(--primary); font-size:1.2rem; display:flex; align-items:center; gap:8px;">
-            ⏪ Interactive Timeline & Step-by-Step Undo
+            Step Interactive Timeline & Step-by-Step Undo
           </h2>
           <button class="btn-close-modal" style="background:none; border:none; color:var(--text-muted); font-size:1.5rem; cursor:pointer;">&times;</button>
         </div>
@@ -3034,7 +3034,7 @@ window.openComponentEditDialog = function (compId) {
   content.innerHTML = `
     <div style="padding: 14px 20px; border-bottom: 1px solid #1e293b; display: flex; justify-content: space-between; align-items: center; background: #1e293b;">
       <h3 style="margin: 0; font-size: 1.15rem; color: #38bdf8; font-weight: 800; display: flex; align-items: center; gap: 8px;">
-        ✏️ Edit Details & Location: <span style="color: white;">${c.name}</span>
+        Edit Edit Details & Location: <span style="color: white;">${c.name}</span>
       </h3>
       <button id="close-edit-dialog" style="background: none; border: none; color: #94a3b8; font-size: 1.6rem; cursor: pointer; line-height: 1;">&times;</button>
     </div>
@@ -3071,7 +3071,7 @@ window.openComponentEditDialog = function (compId) {
       <!-- Row 3: Move Box & Location (Rack #, Shelf #, Stack Layer) -->
       <div style="display: flex; gap: 12px; flex-wrap: wrap; background: #1e293b; padding: 12px; border-radius: 8px; border: 1px solid #334155;">
         <div style="flex: 1; min-width: 140px;">
-          <label style="display: block; font-size: 0.78rem; font-weight: 700; color: #38bdf8; margin-bottom: 4px;">📦 Relocate Box ID *</label>
+          <label style="display: block; font-size: 0.78rem; font-weight: 700; color: #38bdf8; margin-bottom: 4px;">Box Relocate Box ID *</label>
           <input type="text" id="dedit-box" value="${c.boxId}" required style="width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid #38bdf8; background: #0f172a; color: #38bdf8; font-weight: 800; font-size: 0.9rem; box-sizing: border-box; outline: none;" />
         </div>
         <div style="width: 85px;">
@@ -3117,12 +3117,12 @@ window.openComponentEditDialog = function (compId) {
       <!-- Footer Buttons -->
       <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 10px; padding-top: 12px; border-top: 1px solid #1e293b;">
         <button type="button" id="delete-edit-dialog" style="padding: 10px 18px; background: rgba(248, 113, 113, 0.2); color: #f87171; border: 1px solid #f87171; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 0.85rem; display: flex; align-items: center; gap: 6px;">
-          🗑️ Delete Component
+          Delete Delete Component
         </button>
         <div style="display: flex; gap: 10px;">
           <button type="button" id="cancel-edit-dialog" style="padding: 10px 18px; background: #334155; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 0.85rem;">Cancel</button>
           <button type="submit" style="padding: 10px 24px; background: #0ea5e9; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 800; font-size: 0.9rem; box-shadow: 0 4px 12px rgba(14,165,233,0.4);">
-            ✔ Save All Component Details
+            Save Save All Component Details
           </button>
         </div>
       </div>
@@ -3150,7 +3150,7 @@ window.openComponentEditDialog = function (compId) {
         StorageService.saveComponents(allComps);
         StorageService.logTransaction(c.id, c.name, "DELETE", -c.quantity, c.quantity, 0, `Deleted component entry from ${c.boxId}.`);
         backdrop.remove();
-        alert(`🗑️ Component '${c.name}' has been deleted.`);
+        alert(`Delete Component '${c.name}' has been deleted.`);
         if (window.app && window.app.refreshApp) window.app.refreshApp();
       }
     });
@@ -3195,7 +3195,7 @@ window.openComponentEditDialog = function (compId) {
         StorageService.logTransaction(target.id, target.name, "EDIT_DETAILS", target.quantity - prevQty, prevQty, target.quantity, "Updated details, stock qty, rate, and box location.");
 
         backdrop.remove();
-        alert(`🎉 Successfully updated '${target.name}'!\n\nNew Box: ${target.boxId} (Rack ${target.rackId}, Shelf ${target.shelfId})\nStock Qty: ${target.quantity}\nUnit Rate: ₹${target.unitPrice}`);
+        alert(`Success: Successfully updated '${target.name}'!\n\nNew Box: ${target.boxId} (Rack ${target.rackId}, Shelf ${target.shelfId})\nStock Qty: ${target.quantity}\nUnit Rate: ₹${target.unitPrice}`);
 
         if (window.app && window.app.refreshApp) window.app.refreshApp();
       }
@@ -3225,7 +3225,7 @@ window.openMoveBoxDialog = function (compId) {
   }
 
   const targetBox = prompt(
-    `📦 RELOCATE COMPONENT '${c.name}'\n\n` +
+    `Box RELOCATE COMPONENT '${c.name}'\n\n` +
     `Current Box Location: ${c.boxId} (Rack ${c.rackId}, Shelf ${c.shelfId})\n\n` +
     `Enter target Box ID to move '${c.name}' into (e.g. BOX A-006, BOX B-012, BOX C-001):`,
     c.boxId
@@ -3243,7 +3243,7 @@ window.openMoveBoxDialog = function (compId) {
     if (window.closeBoxInspectorModal) window.closeBoxInspectorModal();
     if (window.closeComponentModal) window.closeComponentModal();
 
-    alert(`🎉 Successfully moved '${c.name}' to Box ${newBoxId}!`);
+    alert(`Success: Successfully moved '${c.name}' to Box ${newBoxId}!`);
 
     if (window.app && window.app.refreshApp) {
       window.app.refreshApp();
@@ -3318,7 +3318,7 @@ ModalManager.openPrintableInventorySheet = function() {
               <i data-lucide="download" style="width:18px; height:18px;"></i> Export CSV
             </button>
             <button class="btn btn-secondary" onclick="document.getElementById('printable-sheet-modal').remove()" style="padding:10px 16px; border-radius:8px; cursor:pointer; background:rgba(255,255,255,0.08); color:#94a3b8; border:1px solid rgba(255,255,255,0.15);">
-              ✕ Close
+              X Close
             </button>
           </div>
         </div>

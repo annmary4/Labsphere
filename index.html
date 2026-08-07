@@ -19,7 +19,7 @@
     rel="stylesheet">
 
   <!-- CSS with cache buster -->
-  <link rel="stylesheet" href="css/styles.css?v=10120">
+  <link rel="stylesheet" href="css/styles.css?v=10130">
 
   <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -622,7 +622,7 @@
             <div class="inspector-top-banner">
               <div class="inspector-location-badge">
                 <i data-lucide="map-pin"></i>
-                <span id="insp-location-path">Rack 1 &rsaquo; Shelf A &rsaquo; BOX A-001</span>
+                <span id="insp-location-path">Rack 1 > Shelf A > BOX A-001</span>
               </div>
               <div class="inspector-stock-badge" id="insp-stock-badge">
                 <i data-lucide="check-circle-2"></i> <span id="insp-stock-text">In Stock</span>
@@ -685,7 +685,7 @@
 
             <div
               style="background:var(--bg-dark); padding:10px; border-radius:8px; border:1px solid var(--border-color); margin-bottom:12px;">
-              <h4 style="font-size:0.8rem; color:var(--primary); margin-bottom:8px;">🏢 6-Tier Storage Hierarchy
+              <h4 style="font-size:0.8rem; color:var(--primary); margin-bottom:8px;">Rack 6-Tier Storage Hierarchy
                 Location Path</h4>
               <div class="form-row">
                 <div class="form-group col-6">
@@ -808,7 +808,7 @@
             </div>
 
             <div style="border-top: 1px dashed var(--border-color); padding-top: 10px; margin-top: 10px;">
-              <h4 style="font-size:0.8rem; color:var(--primary); margin-bottom:8px;">🏭 Supplier & Procurement
+              <h4 style="font-size:0.8rem; color:var(--primary); margin-bottom:8px;">Vendor Supplier & Procurement
                 Information</h4>
               <div class="form-row">
                 <div class="form-group col-4">
@@ -979,7 +979,7 @@
 
           <div class="demo-login-box"
             style="margin-top: 20px; border-top: 1px solid var(--border-color); padding-top: 14px;">
-            <h4 style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px;">⚡ 1-Click Demo Accounts:</h4>
+            <h4 style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px;">Power 1-Click Demo Accounts:</h4>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
               <button class="btn btn-secondary btn-sm" id="demo-login-admin">👑 Admin</button>
               <button class="btn btn-secondary btn-sm" id="demo-login-engineer">⚙️ Engineer</button>
@@ -1297,7 +1297,7 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
         <div class="modal-footer" style="display:flex; justify-content:space-between; align-items:center;">
           <button id="btn-batch-print-boxes" class="btn btn-secondary" onclick="ModalManager.printBatchBoxQrSheet()"
             style="border-color:var(--success); color:var(--success);">
-            <i data-lucide="printer"></i> 🖨️ Batch Print All Box QR Labels (16 Per Page)
+            <i data-lucide="printer"></i> Print Batch Print All Box QR Labels (16 Per Page)
           </button>
           <button class="btn btn-primary" id="btn-close-box-mgr">Close</button>
         </div>
@@ -1315,11 +1315,11 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
           <div style="display:flex; gap:8px; margin-left:auto; margin-right:16px;">
             <button id="modal-tab-view" class="btn btn-sm btn-secondary" onclick="ModalManager.toggleEditMode(false)"
               style="padding:4px 12px; font-size:0.8rem; font-weight:700;">
-              👁️ View Info
+              View View Info
             </button>
             <button id="modal-tab-edit" class="btn btn-sm btn-primary" onclick="ModalManager.toggleEditMode(true)"
               style="padding:4px 12px; font-size:0.8rem; font-weight:700; background:#0ea5e9; color:white; border:none;">
-              ✏️ Edit Details Form
+              Edit Edit Details Form
             </button>
           </div>
           <button class="modal-close" onclick="ModalManager.closeComponentModal()"
@@ -1698,13 +1698,13 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
   </div>
 
   <!-- JavaScript App Logic with Cache Busters -->
-  <script src="js/types.js?v=10120"></script>
-  <script src="js/initialData.js?v=10120"></script>
-  <script src="js/storage.js?v=10120"></script>
-  <script src="js/rackViewer.js?v=10120"></script>
-  <script src="js/componentsView.js?v=10120"></script>
-  <script src="js/modalManager.js?v=10120"></script>
-  <script src="js/app.js?v=10120"></script>
+  <script src="js/types.js?v=10130"></script>
+  <script src="js/initialData.js?v=10130"></script>
+  <script src="js/storage.js?v=10130"></script>
+  <script src="js/rackViewer.js?v=10130"></script>
+  <script src="js/componentsView.js?v=10130"></script>
+  <script src="js/modalManager.js?v=10130"></script>
+  <script src="js/app.js?v=10130"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       if (window.lucide) {
@@ -1788,14 +1788,14 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
           const bid = (box.id || '').trim().toUpperCase();
           const boxComps = allComponents.filter(c => (c.boxId || '').trim().toUpperCase() === bid);
           const compLinesHtml = boxComps.length
-            ? boxComps.map(c => `<div class="comp-line">&bull; ${c.name}</div>`).join('')
+            ? boxComps.map(c => `<div class="comp-line">• ${c.name}</div>`).join('')
             : `<div class="comp-line">Empty (${bid})</div>`;
           const qrUrl = `${hostOrigin}${window.location.pathname}?box=${encodeURIComponent(bid)}`;
           const qrImg = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrUrl)}`;
           return `
             <div class="sticker-card">
               <div class="comp-name-container">${compLinesHtml}</div>
-              <div class="box-id-badge">📦 ${bid} &bull; R${targetRack}S${shelfChar}</div>
+              <div class="box-id-badge">Box ${bid} • R${targetRack}S${shelfChar}</div>
               <img src="${qrImg}" alt="${bid} QR" />
             </div>`;
         }).join('');
@@ -1819,7 +1819,7 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
           img { width:34mm; height:34mm; border:1px solid #cbd5e1; border-radius:4px; padding:2px; background:#fff; }
         </style>
       </head><body>
-        <div class="header-banner">RACK ${targetRack} - SHELF ${shelfChar} &bull; ${activeBoxes.length} BOXES &bull; QR STICKERS</div>
+        <div class="header-banner">RACK ${targetRack} - SHELF ${shelfChar} • ${activeBoxes.length} BOXES • QR STICKERS</div>
         ${pagesHtml}
         <script>window.onload = function(){ window.print(); };<\/script>
       </body></html>`);
@@ -1896,7 +1896,7 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
       const alertBox = document.getElementById('login-alert-box');
       if (alertBox) {
         alertBox.className = `login-alert-banner ${type}`;
-        alertBox.innerHTML = `<span>${type === 'success' ? '✅' : '⚠️'} ${message}</span>`;
+        alertBox.innerHTML = `<span>${type === 'success' ? '✅' : 'Alert:'} ${message}</span>`;
         alertBox.classList.remove('hidden');
       }
       if (window.ModalManager && window.ModalManager.showToast) {
@@ -1940,7 +1940,7 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
         const newUser = StorageService.createUser(username, email, password, role, fullName);
         
         // Show prominent creation success message
-        showLoginAlert(`🎉 Account created successfully! Please sign in with your username/email and password.`, 'success');
+        showLoginAlert(`Success: Account created successfully! Please sign in with your username/email and password.`, 'success');
 
         // Reset registration fields
         document.getElementById('reg-username').value = '';

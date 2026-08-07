@@ -76,7 +76,7 @@ class App {
 
       if (compParam) {
         const cleanQuery = decodeURIComponent(compParam).trim().toUpperCase();
-        console.log("📱 QR Scan Searching Component:", cleanQuery);
+        console.log("Mobile QR Scan Searching Component:", cleanQuery);
 
         const comp = allComponents.find(c => 
           (c.name || "").trim().toUpperCase().includes(cleanQuery) ||
@@ -107,7 +107,7 @@ class App {
 
       if (boxParam) {
         const cleanBoxId = decodeURIComponent(boxParam).trim().toUpperCase();
-        console.log("📱 QR Scan Detected Box Parameter:", cleanBoxId);
+        console.log("Mobile QR Scan Detected Box Parameter:", cleanBoxId);
 
         let targetBoxId = cleanBoxId;
 
@@ -455,7 +455,7 @@ class App {
 
     const triggerRestoreFull = () => {
       StorageService.restoreFullLabCatalog();
-      alert("🎉 Successfully restored all 59 laboratory components and physical box layouts (including Arduino Nano & ESP32 in BOX A-003)!");
+      alert("Success: Successfully restored all 59 laboratory components and physical box layouts (including Arduino Nano & ESP32 in BOX A-003)!");
       window.location.reload();
     };
 

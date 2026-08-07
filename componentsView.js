@@ -185,7 +185,7 @@ class ComponentsView {
         <div class="card-top">
           <div class="card-title-group">
             <h3>${c.name}</h3>
-            <span class="card-part-no">PN: ${c.partNumber || 'N/A'} &bull; <small style="color:var(--primary);">${manufacturer}</small></span>
+            <span class="card-part-no">PN: ${c.partNumber || 'N/A'} • <small style="color:var(--primary);">${manufacturer}</small></span>
           </div>
           <span class="card-box-badge">${boxBadgeText}</span>
         </div>
@@ -193,7 +193,7 @@ class ComponentsView {
         <p class="card-desc">${c.purpose || 'No purpose description available.'}</p>
 
         <div class="card-meta-tags" style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">
-          📍 Rack ${c.rackId} &rsaquo; Shelf ${String.fromCharCode(64 + Number(c.shelfId))} ${c.subLocation || c.stackLayer ? `&rsaquo; ${c.subLocation || c.stackLayer}` : ''}
+          Location Rack ${c.rackId} > Shelf ${String.fromCharCode(64 + Number(c.shelfId))} ${c.subLocation || c.stackLayer ? `> ${c.subLocation || c.stackLayer}` : ''}
         </div>
 
         <div class="card-footer" style="display:flex; align-items:center; justify-content:space-between; gap:6px; flex-wrap:wrap; margin-top:10px;">
@@ -201,10 +201,10 @@ class ComponentsView {
           <span class="card-qty">${c.quantity} <small>${c.unit || 'pcs'}</small></span>
           
           <button class="btn btn-primary btn-sm btn-edit-direct" data-id="${c.id}" onclick="event.stopPropagation(); window.openComponentEditDialog('${c.id}');" title="Edit details, quantity, rate, and box location for ${c.name}" style="padding:6px 14px; font-size:0.8rem; font-weight:800; background:#0ea5e9; color:white; border:none; border-radius:6px; cursor:pointer; box-shadow:0 2px 8px rgba(14,165,233,0.5);">
-            ✏️ Edit Details
+            Edit Edit Details
           </button>
           <button class="btn btn-secondary btn-sm btn-inspect-direct" data-id="${c.id}" onclick="event.stopPropagation(); window.openViewModal('${c.id}');" title="View info for ${c.name}" style="padding:4px 8px; font-size:0.7rem; cursor:pointer;">
-            👁️ View Info
+            View View Info
           </button>
           <button class="btn btn-secondary btn-sm btn-print-qr-direct" data-id="${c.id}" onclick="event.stopPropagation(); if (window.ModalManager && window.ModalManager.printBoxQrCode) window.ModalManager.printBoxQrCode('${c.boxId}');" title="Print Box QR Code Label for ${c.boxId}" style="padding:4px 8px; font-size:0.7rem; cursor:pointer;">
             <i data-lucide="printer"></i> Box QR
@@ -253,7 +253,7 @@ class ComponentsView {
           </div>
 
           <div style="margin-top:10px; display:flex; gap:6px;">
-            <button id="save-img-btn-${c.id}" style="flex:1; padding:8px; background:#0ea5e9; color:white; border:none; border-radius:6px; font-weight:700; cursor:pointer; font-size:0.82rem;">✔ Save Image</button>
+            <button id="save-img-btn-${c.id}" style="flex:1; padding:8px; background:#0ea5e9; color:white; border:none; border-radius:6px; font-weight:700; cursor:pointer; font-size:0.82rem;">Save Save Image</button>
             <button id="clear-img-btn-${c.id}" style="padding:8px 12px; background:#334155; color:#94a3b8; border:none; border-radius:6px; cursor:pointer; font-size:0.82rem;" title="Reset to auto-detected image">↺ Reset</button>
           </div>
 
@@ -426,12 +426,12 @@ class ComponentsView {
             <img src="${imgSrc}" style="width:36px; height:36px; border-radius:6px; object-fit:cover;" onerror="this.src='https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&q=80'">
             <div>
               <strong>${c.name}</strong><br>
-              <span class="text-muted" style="font-size:0.75rem;">🏭 ${manufacturer} &bull; 🏷️ ${c.barcode || c.id}</span>
+              <span class="text-muted" style="font-size:0.75rem;">Vendor ${manufacturer} • Tag ${c.barcode || c.id}</span>
             </div>
           </div>
         </td>
         <td class="mono">${c.partNumber || 'N/A'}</td>
-        <td class="mono">Rack ${c.rackId} &rsaquo; Shelf ${String.fromCharCode(64 + Number(c.shelfId))} &rsaquo; ${c.boxId}</td>
+        <td class="mono">Rack ${c.rackId} > Shelf ${String.fromCharCode(64 + Number(c.shelfId))} > ${c.boxId}</td>
         <td>${c.category}</td>
         <td><span class="stock-tag ${stockTagClass}">${stockLabel}</span></td>
         <td class="mono"><strong>${c.quantity}</strong> ${c.unit || 'pcs'}</td>
@@ -445,7 +445,7 @@ class ComponentsView {
               <i data-lucide="trash-2"></i> Delete
             </button>
             <button class="btn btn-primary btn-sm btn-inspect-row" style="background:#0ea5e9; color:white; border:none; font-weight:700;">
-              ✏️ Edit Details
+              Edit Edit Details
             </button>
           </div>
         </td>
@@ -468,7 +468,7 @@ class ComponentsView {
           if (confirm(`Are you sure you want to delete '${c.name}' (${c.boxId})?`)) {
             StorageService.setRole("ADMIN");
             StorageService.deleteComponent(c.id);
-            alert(`🗑️ Deleted '${c.name}' from inventory.`);
+            alert(`Delete Deleted '${c.name}' from inventory.`);
             if (window.App && window.App.refreshApp) window.App.refreshApp();
           }
         });
