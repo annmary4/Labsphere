@@ -1831,14 +1831,14 @@ body.qr-scan-mode #direct-edit-dialog {
     width: 100% !important;
   }
 
+  /* Standalone Header Actions - Living inside View Navigation Drawer Box */
   .nav-actions #btn-user-manager,
   .nav-actions #btn-print-inventory-sheet,
   .nav-actions #btn-student-reqs,
-  .nav-actions #btn-engineer-bom {
-    display: none !important;
-  }
-
-  #btn-user-manager {
+  .nav-actions #btn-engineer-bom,
+  .nav-actions #btn-projects-mgr,
+  .nav-actions #btn-audit-log,
+  .nav-actions #btn-procurement-insights {
     display: none !important;
   }
 
