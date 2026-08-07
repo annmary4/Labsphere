@@ -717,6 +717,12 @@ class StorageService {
     if (!this.isRole("ADMIN")) {
       throw new Error("Access Denied: Only Administrators are authorized to register new user accounts!");
     }
+
+    // Lock Administrator account creation to authorized master admin user only
+    if (role === "ADMIN" && email.toLowerCase() !== "admin@labsphere.io" && username.toLowerCase() !== "admin") {
+      throw new Error("Security Lock: Creation of additional Lab Administrator accounts is locked. The Lab Administrator role is strictly reserved for the authorized Master Administrator (admin@labsphere.io).");
+    }
+
     const users = this.getUsers();
     
     if (users.some(u => u.email.toLowerCase() === email.toLowerCase())) {
@@ -789,6 +795,10 @@ class StorageService {
     const users = this.getUsers();
     const user = users.find(u => u.id === userId);
     if (!user) return false;
+
+    if (newRole === "ADMIN" && user.email.toLowerCase() !== "admin@labsphere.io" && user.username.toLowerCase() !== "admin") {
+      throw new Error("Security Lock: Role elevation to Lab Administrator is locked. The Admin role is strictly reserved for the authorized Master Administrator (admin@labsphere.io).");
+    }
 
     const prevRole = user.role;
     user.role = newRole;

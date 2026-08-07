@@ -19,7 +19,7 @@
     rel="stylesheet">
 
   <!-- CSS with cache buster -->
-  <link rel="stylesheet" href="css/styles.css?v=10220">
+  <link rel="stylesheet" href="css/styles.css?v=10230">
 
   <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -1644,10 +1644,10 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
             <div class="form-row" style="margin-top: 8px;">
               <input type="password" id="new-user-password" placeholder="Password" class="col-4" />
               <select id="new-user-role" class="col-4">
-                <option value="ADMIN">Administrator (Full Control)</option>
-                <option value="ENGINEER">Systems Engineer (BOM & Design)</option>
+                <option value="ENGINEER" selected>Systems Engineer (BOM & Design)</option>
                 <option value="STUDENT">Student / Intern (View & Request)</option>
                 <option value="MANAGEMENT">Operations Management (Executive)</option>
+                <option value="ADMIN" disabled>🔒 Administrator (Locked to Master Admin)</option>
               </select>
               <button id="btn-create-user-submit" class="btn btn-primary col-4"
                 onclick="ModalManager.handleCreateUserSubmit()">
@@ -1709,13 +1709,13 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
   </div>
 
   <!-- JavaScript App Logic with Cache Busters -->
-  <script src="js/types.js?v=10220"></script>
-  <script src="js/initialData.js?v=10220"></script>
-  <script src="js/storage.js?v=10220"></script>
-  <script src="js/rackViewer.js?v=10220"></script>
-  <script src="js/componentsView.js?v=10220"></script>
-  <script src="js/modalManager.js?v=10220"></script>
-  <script src="js/app.js?v=10220"></script>
+  <script src="js/types.js?v=10230"></script>
+  <script src="js/initialData.js?v=10230"></script>
+  <script src="js/storage.js?v=10230"></script>
+  <script src="js/rackViewer.js?v=10230"></script>
+  <script src="js/componentsView.js?v=10230"></script>
+  <script src="js/modalManager.js?v=10230"></script>
+  <script src="js/app.js?v=10230"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       if (window.lucide) {
