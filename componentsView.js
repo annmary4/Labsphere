@@ -140,10 +140,10 @@ class ComponentsView {
     if (!components || components.length === 0) {
       container.innerHTML = `
         <div style="grid-column: 1 / -1; padding:36px 16px; text-align:center; background:rgba(15,23,42,0.6); border:1px dashed var(--border-color); border-radius:12px; margin-top:8px;">
-          <i data-lucide="compass" style="font-size:2.2rem; color:var(--primary); margin-bottom:8px; opacity:0.8;"></i>
-          <h3 style="color:var(--text-main); font-weight:700; margin-bottom:4px; font-size:1rem;">Select a Shelf to View Components</h3>
+          <i data-lucide="package-x" style="font-size:2.2rem; color:var(--primary); margin-bottom:8px; opacity:0.8;"></i>
+          <h3 style="color:var(--text-main); font-weight:700; margin-bottom:4px; font-size:1rem;">No Components Found</h3>
           <p style="color:var(--text-muted); font-size:0.8rem; max-width:320px; margin:0 auto;">
-            Click a <strong>Rack</strong> &rsaquo; <strong>Shelf</strong> in the explorer or type in the search bar above.
+            No components match your current filter or search criteria.
           </p>
         </div>
       `;
