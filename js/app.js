@@ -380,7 +380,18 @@ class App {
       }
     };
 
-    mapDrawerTrigger("drawer-btn-add-component", "btn-add-component");
+    const openAddCompModal = () => {
+      if (!StorageService.isRole("ADMIN")) {
+        StorageService.setRole("ADMIN");
+      }
+      ModalManager.openAddComponentModal(
+        this.selectedRackId || 1,
+        this.selectedShelfId || 1,
+        this.selectedBoxId || ""
+      );
+    };
+
+    mapDrawerTrigger("drawer-btn-add-component", null, openAddCompModal);
     mapDrawerTrigger("drawer-btn-approvals", "btn-admin-approve");
     mapDrawerTrigger("drawer-btn-student-reqs", "btn-student-reqs");
     mapDrawerTrigger("drawer-btn-engineer-bom", "btn-engineer-bom");
@@ -392,20 +403,9 @@ class App {
     mapDrawerTrigger("drawer-btn-audit-log", "btn-audit-log");
     mapDrawerTrigger("drawer-btn-procurement-insights", "btn-procurement-insights");
 
-    // Add Component Button
+    // Add Component Button trigger fallback
     const btnAdd = document.getElementById("btn-add-component");
-    if (btnAdd) {
-      btnAdd.addEventListener("click", () => {
-        if (!StorageService.isRole("ADMIN")) {
-          StorageService.setRole("ADMIN");
-        }
-        ModalManager.openAddComponentModal(
-          this.selectedRackId || 1,
-          this.selectedShelfId || 1,
-          this.selectedBoxId || ""
-        );
-      });
-    }
+    if (btnAdd) btnAdd.addEventListener("click", openAddCompModal);
 
     // PERSONA SPECIFIC BUTTONS:
     const btnStudentReqs = document.getElementById("btn-student-reqs");
