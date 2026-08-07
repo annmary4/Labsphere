@@ -2,20 +2,20 @@
  * LabSphere Storage Service - Complete 59-Component Catalog (v35)
  */
 
-const CURRENT_VERSION = "v10160_runtime_mojibake_purger";
+const CURRENT_VERSION = "v10170_wiped_db_json_noise_notifications";
 
 const STORAGE_KEYS = {
-  VERSION: "labsphere_version_v10160",
-  COMPONENTS: "labsphere_components_v10160",
-  BOXES: "labsphere_boxes_v10160",
-  RACKS: "labsphere_racks_v10160",
-  TRANSACTIONS: "labsphere_transactions_v10160",
-  PROJECTS: "labsphere_projects_v10160",
-  REQUESTS: "labsphere_requests_v10160",
-  USERS: "labsphere_users_v10160",
-  SESSION: "labsphere_session_v10160",
-  SECURITY_LOGS: "labsphere_sec_logs_v10160",
-  NOTIFICATIONS: "labsphere_notifs_v10160"
+  VERSION: "labsphere_version_v10170",
+  COMPONENTS: "labsphere_components_v10170",
+  BOXES: "labsphere_boxes_v10170",
+  RACKS: "labsphere_racks_v10170",
+  TRANSACTIONS: "labsphere_transactions_v10170",
+  PROJECTS: "labsphere_projects_v10170",
+  REQUESTS: "labsphere_requests_v10170",
+  USERS: "labsphere_users_v10170",
+  SESSION: "labsphere_session_v10170",
+  SECURITY_LOGS: "labsphere_sec_logs_v10170",
+  NOTIFICATIONS: "labsphere_notifs_v10170"
 };
 
 function sanitizeMojibake(str) {
@@ -227,7 +227,6 @@ class StorageService {
             });
             this.saveUsers(currentUsers);
           }
-          if (data.notifications && Array.isArray(data.notifications)) localStorage.setItem(STORAGE_KEYS.NOTIFICATIONS, JSON.stringify(data.notifications));
           if (data.securityLogs && Array.isArray(data.securityLogs)) localStorage.setItem(STORAGE_KEYS.SECURITY_LOGS, JSON.stringify(data.securityLogs));
         }
       }
