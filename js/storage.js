@@ -2,20 +2,20 @@
  * LabSphere Storage Service - Complete 59-Component Catalog (v35)
  */
 
-const CURRENT_VERSION = "v10090_clean_accurate_notifications_and_empty_state";
+const CURRENT_VERSION = "v10100_no_default_noise_notifications";
 
 const STORAGE_KEYS = {
-  VERSION: "labsphere_version_v10090",
-  COMPONENTS: "labsphere_components_v10090",
-  BOXES: "labsphere_boxes_v10090",
-  RACKS: "labsphere_racks_v10090",
-  TRANSACTIONS: "labsphere_transactions_v10090",
-  PROJECTS: "labsphere_projects_v10090",
-  REQUESTS: "labsphere_requests_v10090",
-  USERS: "labsphere_users_v10090",
-  SESSION: "labsphere_session_v10090",
-  SECURITY_LOGS: "labsphere_sec_logs_v10090",
-  NOTIFICATIONS: "labsphere_notifs_v10090"
+  VERSION: "labsphere_version_v10100",
+  COMPONENTS: "labsphere_components_v10100",
+  BOXES: "labsphere_boxes_v10100",
+  RACKS: "labsphere_racks_v10100",
+  TRANSACTIONS: "labsphere_transactions_v10100",
+  PROJECTS: "labsphere_projects_v10100",
+  REQUESTS: "labsphere_requests_v10100",
+  USERS: "labsphere_users_v10100",
+  SESSION: "labsphere_session_v10100",
+  SECURITY_LOGS: "labsphere_sec_logs_v10100",
+  NOTIFICATIONS: "labsphere_notifs_v10100"
 };
 
 function safeSetItem(key, value) {
@@ -281,46 +281,12 @@ class StorageService {
       const data = localStorage.getItem(STORAGE_KEYS.NOTIFICATIONS);
       if (data) {
         const parsed = JSON.parse(data);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        if (Array.isArray(parsed)) return parsed;
       }
     } catch (e) {
       console.warn("Error reading notifications:", e);
     }
-    return this.generateSystemNotifications();
-  }
-
-  static generateSystemNotifications() {
-    const notifs = [];
-    const components = this.getComponents();
-    const requests = this.getRequests();
-
-    // 1. Check for actual low stock components in inventory
-    const lowStockComps = components.filter(c => c.quantity <= (c.minQuantity || 2));
-    lowStockComps.slice(0, 3).forEach(c => {
-      notifs.push({
-        id: "NOTIF-LOW-" + c.id,
-        type: "LOW_STOCK",
-        title: `⚠️ Low Stock Alert: ${c.name}`,
-        message: `Current quantity: ${c.quantity} ${c.unit || 'pcs'} (Min threshold: ${c.minQuantity || 2}). Location: Rack ${c.rackId || 1}, Shelf ${c.shelfId || 1}, ${c.boxId || 'Box A-001'}.`,
-        timestamp: c.lastUpdated || "Just now",
-        read: false
-      });
-    });
-
-    // 2. Check for pending student requisitions
-    const pendingReqs = requests.filter(r => r.status === "PENDING");
-    pendingReqs.forEach(r => {
-      notifs.push({
-        id: "NOTIF-REQ-" + r.id,
-        type: "PENDING_APPROVAL",
-        title: `📋 Requisition Approval Pending`,
-        message: `${r.requesterName} requested ${r.qtyRequested} pcs of ${r.componentName}.`,
-        timestamp: r.requestedAt || "Just now",
-        read: false
-      });
-    });
-
-    return notifs;
+    return [];
   }
 
   static saveNotifications(notifs) {
