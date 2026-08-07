@@ -151,12 +151,12 @@ body {
 .role-admin { background-color: rgba(192, 132, 252, 0.2); color: #c084fc; }
 .role-management { background-color: rgba(56, 189, 248, 0.2); color: #38bdf8; }
 
-/* Fixed Top-Right Screen Pin for User Profile Logo (Fixed on vertical scroll) */
+/* Top-Right Navbar Placement for User Profile Logo (Scrolls naturally with site header) */
 .nav-user-profile {
-  position: fixed !important;
+  position: absolute !important;
   top: 14px !important;
   right: 20px !important;
-  z-index: 9999999 !important;
+  z-index: 100 !important;
 }
 
 .user-profile-wrapper {
@@ -1744,11 +1744,11 @@ body.qr-scan-mode #direct-edit-dialog {
   }
 
   .nav-user-profile {
-    position: fixed !important;
+    position: absolute !important;
     top: 10px !important;
     right: 10px !important;
     margin: 0 !important;
-    z-index: 9999999 !important;
+    z-index: 100 !important;
   }
 
   .user-profile-popover {
