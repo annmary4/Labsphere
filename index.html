@@ -19,7 +19,7 @@
     rel="stylesheet">
 
   <!-- CSS with cache buster -->
-  <link rel="stylesheet" href="css/styles.css?v=9770">
+  <link rel="stylesheet" href="css/styles.css?v=9780">
 
   <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -297,9 +297,49 @@
       </div>
     </header>
 
+    <!-- Mobile View Drawer Overlay & Backdrop -->
+    <div id="mobile-drawer-backdrop" class="mobile-drawer-backdrop"></div>
+    <aside id="mobile-view-drawer" class="mobile-view-drawer">
+      <div class="drawer-header">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <i data-lucide="menu" style="color:var(--primary);"></i>
+          <h3 style="margin:0; font-size:1.1rem; color:var(--text-main); font-weight:800;">View Navigation</h3>
+        </div>
+        <button id="btn-close-mobile-drawer" class="btn-close-drawer" title="Close Menu">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      <div class="drawer-menu-list">
+        <button class="drawer-menu-item active" data-view="split" id="drawer-view-split">
+          <i data-lucide="layout-grid" style="font-size:1.2rem; color:var(--primary);"></i>
+          <div style="display:flex; flex-direction:column; text-align:left;">
+            <span style="font-weight:700;">Split View</span>
+            <small style="font-size:0.7rem; color:var(--text-muted);">Racks Explorer + Component Cards</small>
+          </div>
+        </button>
+        <button class="drawer-menu-item" data-view="racks" id="drawer-view-racks">
+          <i data-lucide="columns" style="font-size:1.2rem; color:var(--primary);"></i>
+          <div style="display:flex; flex-direction:column; text-align:left;">
+            <span style="font-weight:700;">Racks Map</span>
+            <small style="font-size:0.7rem; color:var(--text-muted);">Physical Storage Cabinets View</small>
+          </div>
+        </button>
+        <button class="drawer-menu-item" data-view="table" id="drawer-view-table">
+          <i data-lucide="list" style="font-size:1.2rem; color:var(--primary);"></i>
+          <div style="display:flex; flex-direction:column; text-align:left;">
+            <span style="font-weight:700;">List View</span>
+            <small style="font-size:0.7rem; color:var(--text-muted);">Full Component Inventory Table</small>
+          </div>
+        </button>
+      </div>
+    </aside>
+
     <!-- Controls Bar -->
     <section class="controls-bar">
-      <div class="search-box" style="display:flex; gap:8px;">
+      <div class="search-box" style="display:flex; gap:8px; align-items:center;">
+        <button id="btn-mobile-menu" class="btn mobile-menu-trigger" title="Open View Mode Navigation Side Panel">
+          <i data-lucide="menu"></i>
+        </button>
         <div style="position:relative; flex:1;">
           <i data-lucide="search" class="search-icon"></i>
           <input type="text" id="search-input"
@@ -1560,13 +1600,13 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
   </div>
 
   <!-- JavaScript App Logic with Cache Busters -->
-  <script src="js/types.js?v=9770"></script>
-  <script src="js/initialData.js?v=9770"></script>
-  <script src="js/storage.js?v=9770"></script>
-  <script src="js/rackViewer.js?v=9770"></script>
-  <script src="js/componentsView.js?v=9770"></script>
-  <script src="js/modalManager.js?v=9770"></script>
-  <script src="js/app.js?v=9770"></script>
+  <script src="js/types.js?v=9780"></script>
+  <script src="js/initialData.js?v=9780"></script>
+  <script src="js/storage.js?v=9780"></script>
+  <script src="js/rackViewer.js?v=9780"></script>
+  <script src="js/componentsView.js?v=9780"></script>
+  <script src="js/modalManager.js?v=9780"></script>
+  <script src="js/app.js?v=9780"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       if (window.lucide) {

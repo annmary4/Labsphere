@@ -295,7 +295,7 @@ class App {
       });
     }
 
-    // View Mode Toggles
+    // View Mode Toggles (Desktop & Mobile Drawer)
     const btnSplit = document.getElementById("view-mode-split");
     const btnRacks = document.getElementById("view-mode-racks");
     const btnTable = document.getElementById("view-mode-table");
@@ -303,6 +303,37 @@ class App {
     if (btnSplit) btnSplit.addEventListener("click", () => this.setViewMode("split"));
     if (btnRacks) btnRacks.addEventListener("click", () => this.setViewMode("racks"));
     if (btnTable) btnTable.addEventListener("click", () => this.setViewMode("table"));
+
+    // Mobile Slide-Out Side Panel Drawer Event Listeners
+    const btnMenu = document.getElementById("btn-mobile-menu");
+    const drawer = document.getElementById("mobile-view-drawer");
+    const backdrop = document.getElementById("mobile-drawer-backdrop");
+    const btnClose = document.getElementById("btn-close-mobile-drawer");
+
+    const openDrawer = () => {
+      if (drawer) drawer.classList.add("is-open");
+      if (backdrop) backdrop.classList.add("is-open");
+    };
+
+    const closeDrawer = () => {
+      if (drawer) drawer.classList.remove("is-open");
+      if (backdrop) backdrop.classList.remove("is-open");
+    };
+
+    if (btnMenu) btnMenu.addEventListener("click", openDrawer);
+    if (btnClose) btnClose.addEventListener("click", closeDrawer);
+    if (backdrop) backdrop.addEventListener("click", closeDrawer);
+
+    ["drawer-view-split", "drawer-view-racks", "drawer-view-table"].forEach(id => {
+      const btn = document.getElementById(id);
+      if (btn) {
+        btn.addEventListener("click", () => {
+          const mode = btn.getAttribute("data-view");
+          if (mode) this.setViewMode(mode);
+          closeDrawer();
+        });
+      }
+    });
 
     // Add Component Button
     const btnAdd = document.getElementById("btn-add-component");
@@ -513,7 +544,7 @@ class App {
   setViewMode(mode) {
     this.currentViewMode = mode;
     const mainContainer = document.getElementById("main-container");
-    mainContainer.className = `main-container view-${mode}`;
+    if (mainContainer) mainContainer.className = `main-container view-${mode}`;
 
     const btnSplit = document.getElementById("view-mode-split");
     const btnRacks = document.getElementById("view-mode-racks");
@@ -523,6 +554,16 @@ class App {
     if (mode === "split" && btnSplit) btnSplit.classList.add("active");
     if (mode === "racks" && btnRacks) btnRacks.classList.add("active");
     if (mode === "table" && btnTable) btnTable.classList.add("active");
+
+    // Sync Mobile Drawer View Mode Items
+    const drawerSplit = document.getElementById("drawer-view-split");
+    const drawerRacks = document.getElementById("drawer-view-racks");
+    const drawerTable = document.getElementById("drawer-view-table");
+
+    [drawerSplit, drawerRacks, drawerTable].forEach(btn => btn && btn.classList.remove("active"));
+    if (mode === "split" && drawerSplit) drawerSplit.classList.add("active");
+    if (mode === "racks" && drawerRacks) drawerRacks.classList.add("active");
+    if (mode === "table" && drawerTable) drawerTable.classList.add("active");
 
     this.renderComponents();
   }
