@@ -151,11 +151,11 @@ body {
 .role-admin { background-color: rgba(192, 132, 252, 0.2); color: #c084fc; }
 .role-management { background-color: rgba(56, 189, 248, 0.2); color: #38bdf8; }
 
-/* Fixed Top-Right Screen Pin for User Profile Logo */
+/* Fixed Top-Right Screen Pin for User Profile Logo (Fixed on vertical scroll) */
 .nav-user-profile {
   position: fixed !important;
-  top: 12px !important;
-  right: 14px !important;
+  top: 14px !important;
+  right: 20px !important;
   z-index: 9999999 !important;
 }
 
@@ -303,7 +303,7 @@ body {
 .notif-msg { color: var(--text-muted); font-size: 0.8rem; margin-top: 4px; word-break: break-word; white-space: normal !important; }
 .notif-time { font-size: 0.7rem; color: var(--primary); font-family: var(--font-mono); margin-top: 4px; display: block; }
 
-/* Nav Metrics Bar */
+/* Nav Metrics Bar - Shifted 20px left relative to top-right user logo */
 .nav-metrics {
   display: flex;
   align-items: center;
@@ -312,6 +312,7 @@ body {
   padding: 6px 16px;
   border-radius: var(--radius-md);
   border: 1px solid var(--border-color);
+  margin-right: 20px !important;
 }
 
 .metric-item {
@@ -1773,6 +1774,7 @@ body.qr-scan-mode #direct-edit-dialog {
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 6px !important;
     margin-top: 4px !important;
+    margin-right: 0 !important;
   }
 
   .metric-item {
