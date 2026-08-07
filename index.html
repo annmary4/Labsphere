@@ -19,7 +19,7 @@
     rel="stylesheet">
 
   <!-- CSS with cache buster -->
-  <link rel="stylesheet" href="css/styles.css?v=10030">
+  <link rel="stylesheet" href="css/styles.css?v=10040">
 
   <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -253,29 +253,7 @@
         <button id="btn-procurement-insights" class="btn btn-icon" title="Procurement Restock List">
           <i data-lucide="shopping-cart"></i>
         </button>
-        <div class="dropdown">
-          <button class="btn btn-icon" id="btn-more-options" title="Data & Settings"
-            onclick="event.stopPropagation(); document.getElementById('options-dropdown').classList.toggle('show');"
-            style="min-width:38px; min-height:38px;">
-            <i data-lucide="more-vertical"></i>
-          </button>
-          <div class="dropdown-menu" id="options-dropdown">
-            <button id="btn-restore-full-catalog" class="dropdown-item"
-              onclick="StorageService.restoreFullLabCatalog(); alert('🎉 Successfully restored all 59 laboratory components and physical box layouts!'); location.reload();"
-              style="color:var(--primary); font-weight:700;">
-              <i data-lucide="archive"></i> Restore All 59 Component Box Layouts
-            </button>
-            <button id="btn-restore-custom-setup" class="dropdown-item"
-              onclick="ModalManager.openStorageSnapshotsModal()">
-              <i data-lucide="rotate-ccw"></i> Recover Browser LocalStorage
-            </button>
-            <div class="dropdown-divider"></div>
-            <button id="btn-reset-data" class="dropdown-item danger-item"
-              onclick="if(confirm('Are you sure you want to reset all data back to defaults?')) { StorageService.resetToDefaults(); location.reload(); }">
-              <i data-lucide="rotate-ccw"></i> Reset to Sample Data
-            </button>
-          </div>
-        </div>
+
 
         <!-- User Session Profile & Role Badge with Top-Right Popover -->
         <div class="nav-user-profile">
@@ -1709,13 +1687,13 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
   </div>
 
   <!-- JavaScript App Logic with Cache Busters -->
-  <script src="js/types.js?v=10030"></script>
-  <script src="js/initialData.js?v=10030"></script>
-  <script src="js/storage.js?v=10030"></script>
-  <script src="js/rackViewer.js?v=10030"></script>
-  <script src="js/componentsView.js?v=10030"></script>
-  <script src="js/modalManager.js?v=10030"></script>
-  <script src="js/app.js?v=10030"></script>
+  <script src="js/types.js?v=10040"></script>
+  <script src="js/initialData.js?v=10040"></script>
+  <script src="js/storage.js?v=10040"></script>
+  <script src="js/rackViewer.js?v=10040"></script>
+  <script src="js/componentsView.js?v=10040"></script>
+  <script src="js/modalManager.js?v=10040"></script>
+  <script src="js/app.js?v=10040"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       if (window.lucide) {
