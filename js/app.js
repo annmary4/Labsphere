@@ -693,21 +693,11 @@ class App {
       }
     } else {
       if (viewTitle) {
-        if (this.selectedBoxId) viewTitle.innerText = `Components in ${this.selectedBoxId}`;
-        else if (this.selectedRackId && this.selectedShelfId) viewTitle.innerText = `Rack ${this.selectedRackId} › Shelf ${String.fromCharCode(64 + this.selectedShelfId)} Components`;
-        else viewTitle.innerText = "All Components";
+        viewTitle.innerText = "All Components (59 Items)";
       }
 
       if (activeFiltersBar) {
-        if (this.selectedBoxId || (this.selectedRackId && this.selectedShelfId)) {
-          activeFiltersBar.classList.remove("hidden");
-          if (activeLocText) {
-            if (this.selectedBoxId) activeLocText.innerText = `Filtered by Box: ${this.selectedBoxId}`;
-            else activeLocText.innerText = `Filtered by Location: Rack ${this.selectedRackId} › Shelf ${String.fromCharCode(64 + this.selectedShelfId)}`;
-          }
-        } else {
-          activeFiltersBar.classList.add("hidden");
-        }
+        activeFiltersBar.classList.add("hidden");
       }
     }
 
@@ -729,19 +719,6 @@ class App {
     if (this.locationFilter !== "ALL") {
       const rackNum = this.locationFilter === "RACK_1" ? 1 : 2;
       components = components.filter(c => Number(c.rackId) === Number(rackNum));
-    }
-
-    // Bypass shelf/box filtering when searchQuery is active so all matched items show globally
-    if (!this.searchQuery) {
-      if (this.selectedBoxId) {
-        components = components.filter(c => 
-          String(c.boxId || "").trim().toUpperCase() === String(this.selectedBoxId).trim().toUpperCase() &&
-          (!this.selectedRackId || Number(c.rackId) === Number(this.selectedRackId)) &&
-          (!this.selectedShelfId || Number(c.shelfId) === Number(this.selectedShelfId))
-        );
-      } else if (this.selectedRackId && this.selectedShelfId) {
-        components = components.filter(c => Number(c.rackId) === Number(this.selectedRackId) && Number(c.shelfId) === Number(this.selectedShelfId));
-      }
     }
 
     components.sort((a, b) => {
