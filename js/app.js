@@ -20,6 +20,12 @@ class App {
 
     await StorageService.init();
 
+    // Ensure all 59 components are guaranteed loaded and retrieved
+    let comps = StorageService.getComponents();
+    if (!comps || comps.length < 50) {
+      StorageService.restoreFullLabCatalog();
+    }
+
     ModalManager.init({
       onInventoryChanged: () => this.refreshApp()
     });
