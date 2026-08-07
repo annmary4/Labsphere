@@ -537,18 +537,28 @@ body {
   max-width: 100%;
 }
 
+/* Universal Hidden Utility Class */
+.hidden {
+  display: none !important;
+}
+
 .main-container.view-split {
   grid-template-columns: minmax(0, 520px) minmax(0, 1fr);
 }
 .main-container.view-split .rack-panel { display: flex !important; }
 .main-container.view-split .components-panel { display: flex !important; }
+.main-container.view-split #components-grid { display: grid !important; }
+.main-container.view-split #components-table-container { display: none !important; }
 
 .main-container.view-racks { grid-template-columns: 1fr; }
 .main-container.view-racks .rack-panel { display: flex !important; }
 .main-container.view-racks .components-panel { display: none !important; }
+
+.main-container.view-table { grid-template-columns: 1fr; }
 .main-container.view-table .rack-panel { display: none !important; }
 .main-container.view-table .components-panel { display: flex !important; }
-.main-container.view-table { grid-template-columns: 1fr; }
+.main-container.view-table #components-grid { display: none !important; }
+.main-container.view-table #components-table-container { display: block !important; }
 
 @media (max-width: 1100px) {
   .main-container,
@@ -1627,12 +1637,16 @@ body.qr-scan-mode #direct-edit-dialog {
   /* Mobile View Mode Window Isolation */
   .main-container.view-split .rack-panel { display: flex !important; }
   .main-container.view-split .components-panel { display: flex !important; }
+  .main-container.view-split #components-grid { display: grid !important; }
+  .main-container.view-split #components-table-container { display: none !important; }
 
   .main-container.view-racks .rack-panel { display: flex !important; }
   .main-container.view-racks .components-panel { display: none !important; }
 
   .main-container.view-table .rack-panel { display: none !important; }
   .main-container.view-table .components-panel { display: flex !important; }
+  .main-container.view-table #components-grid { display: none !important; }
+  .main-container.view-table #components-table-container { display: block !important; }
 
   /* Header & Navbar on Mobile */
   .navbar {
