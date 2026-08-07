@@ -615,7 +615,12 @@ class App {
 
     adminElements.forEach(el => {
       if (el) {
-        el.style.display = isAdmin ? (el.tagName === "BUTTON" && el.classList.contains("btn-secondary") ? "inline-flex" : "flex") : "none";
+        if (isAdmin) {
+          const displayVal = el.tagName === "BUTTON" && !el.classList.contains("drawer-menu-item") ? "inline-flex" : "flex";
+          el.style.setProperty("display", displayVal, "important");
+        } else {
+          el.style.setProperty("display", "none", "important");
+        }
       }
     });
 

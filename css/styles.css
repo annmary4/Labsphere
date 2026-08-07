@@ -1832,15 +1832,9 @@ body.qr-scan-mode #direct-edit-dialog {
   }
 
   .nav-actions #btn-user-manager,
-  .nav-actions #btn-nav-notif,
-  .nav-actions #btn-admin-approve,
-  .nav-actions #btn-mgmt-dashboard,
   .nav-actions #btn-print-inventory-sheet,
-  .nav-actions #btn-audit-log,
-  .nav-actions #btn-procurement-insights,
   .nav-actions #btn-student-reqs,
-  .nav-actions #btn-engineer-bom,
-  .nav-actions #btn-projects-mgr {
+  .nav-actions #btn-engineer-bom {
     display: none !important;
   }
 
