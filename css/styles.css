@@ -2313,19 +2313,18 @@ body.drawer-open {
   position: fixed;
   top: 0;
   left: -320px;
-  width: 290px;
+  width: 295px;
   height: 100vh;
+  height: 100dvh;
   background: #0f172a;
   border-right: 2px solid var(--primary);
   box-shadow: 10px 0 30px rgba(0, 0, 0, 0.85);
   z-index: 9999;
   display: flex;
   flex-direction: column;
-  padding: 18px;
+  padding: 16px 10px 16px 16px;
   box-sizing: border-box;
-  overflow-y: auto !important;
-  -webkit-overflow-scrolling: touch !important;
-  overscroll-behavior: contain !important;
+  overflow: hidden !important;
   transition: left 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -2337,9 +2336,10 @@ body.drawer-open {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-bottom: 14px;
-  margin-bottom: 18px;
+  padding-bottom: 12px;
+  margin-bottom: 12px;
   border-bottom: 1px solid var(--border-color);
+  flex-shrink: 0;
 }
 
 .btn-close-drawer {
@@ -2359,7 +2359,13 @@ body.drawer-open {
 .drawer-menu-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
+  overflow-y: auto !important;
+  flex-grow: 1;
+  padding-right: 6px;
+  padding-bottom: 80px !important;
+  -webkit-overflow-scrolling: touch !important;
+  overscroll-behavior: contain !important;
 }
 
 .drawer-menu-item {
