@@ -1799,7 +1799,12 @@ body.qr-scan-mode #direct-edit-dialog {
     border-radius: 6px !important;
   }
 
+  /* Mobile Nav Metrics - Hidden by default, shown ONLY when Component Details is clicked in the hamburger drawer menu */
   .nav-metrics {
+    display: none !important;
+  }
+
+  body[data-view-mode="components"] .nav-metrics {
     width: 100% !important;
     display: grid !important;
     grid-template-columns: repeat(2, 1fr) !important;

@@ -576,6 +576,7 @@ class App {
 
   setViewMode(mode) {
     this.currentViewMode = mode;
+    document.body.setAttribute("data-view-mode", mode);
     const mainContainer = document.getElementById("main-container");
     if (mainContainer) mainContainer.className = `main-container view-${mode}`;
 
