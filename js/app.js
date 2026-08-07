@@ -339,11 +339,13 @@ class App {
     const openDrawer = () => {
       if (drawer) drawer.classList.add("is-open");
       if (backdrop) backdrop.classList.add("is-open");
+      document.body.classList.add("drawer-open");
     };
 
     const closeDrawer = () => {
       if (drawer) drawer.classList.remove("is-open");
       if (backdrop) backdrop.classList.remove("is-open");
+      document.body.classList.remove("drawer-open");
     };
 
     if (btnMenu) btnMenu.addEventListener("click", openDrawer);

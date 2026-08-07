@@ -2280,6 +2280,12 @@ body.qr-scan-mode #direct-edit-dialog {
 }
 
 /* ===== MOBILE SLIDE-OUT SIDE PANEL DRAWER SYSTEM ===== */
+/* Lock background page scrolling when View Navigation Side Drawer is open */
+body.drawer-open {
+  overflow: hidden !important;
+  touch-action: none !important;
+}
+
 .mobile-menu-trigger {
   display: none;
 }
@@ -2317,6 +2323,9 @@ body.qr-scan-mode #direct-edit-dialog {
   flex-direction: column;
   padding: 18px;
   box-sizing: border-box;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  overscroll-behavior: contain !important;
   transition: left 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
