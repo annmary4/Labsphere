@@ -1831,6 +1831,7 @@ body.qr-scan-mode #direct-edit-dialog {
     width: 100% !important;
   }
 
+  .nav-actions #btn-user-manager,
   .nav-actions #btn-nav-notif,
   .nav-actions #btn-admin-approve,
   .nav-actions #btn-mgmt-dashboard,
@@ -1840,6 +1841,10 @@ body.qr-scan-mode #direct-edit-dialog {
   .nav-actions #btn-student-reqs,
   .nav-actions #btn-engineer-bom,
   .nav-actions #btn-projects-mgr {
+    display: none !important;
+  }
+
+  #btn-user-manager {
     display: none !important;
   }
 

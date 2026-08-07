@@ -19,7 +19,7 @@
     rel="stylesheet">
 
   <!-- CSS with cache buster -->
-  <link rel="stylesheet" href="css/styles.css?v=10170">
+  <link rel="stylesheet" href="css/styles.css?v=10180">
 
   <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -280,6 +280,9 @@
               <div class="user-popover-divider" style="height:1px; background:var(--border-color); margin:10px 0;"></div>
 
               <div class="user-popover-actions" style="display:flex; flex-direction:column; gap:6px;">
+                <button id="popover-btn-user-manager" class="btn btn-secondary btn-sm" title="Administrator User Management & Accounts" style="width:100%; display:flex; justify-content:center; align-items:center; gap:6px;">
+                  <i data-lucide="users"></i> Manage User Accounts
+                </button>
                 <button id="btn-nav-logout" class="btn btn-secondary btn-sm danger-btn" title="Log Out of Session" style="width:100%; display:flex; justify-content:center; align-items:center; gap:6px; color:#ef4444; border-color:rgba(239,68,68,0.4);">
                   <i data-lucide="log-out"></i> Log Out
                 </button>
@@ -368,6 +371,14 @@
           <div style="display:flex; flex-direction:column; text-align:left;">
             <span style="font-weight:700;">Projects Workspace</span>
             <small style="font-size:0.7rem; color:var(--text-muted);">Project Workspaces & Allocation</small>
+          </div>
+        </button>
+
+        <button class="drawer-menu-item" id="drawer-btn-user-manager">
+          <i data-lucide="users" style="font-size:1.2rem; color:var(--primary);"></i>
+          <div style="display:flex; flex-direction:column; text-align:left;">
+            <span style="font-weight:700;">User Management</span>
+            <small style="font-size:0.7rem; color:var(--text-muted);">User Accounts & Permissions</small>
           </div>
         </button>
 
@@ -1698,13 +1709,13 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
   </div>
 
   <!-- JavaScript App Logic with Cache Busters -->
-  <script src="js/types.js?v=10170"></script>
-  <script src="js/initialData.js?v=10170"></script>
-  <script src="js/storage.js?v=10170"></script>
-  <script src="js/rackViewer.js?v=10170"></script>
-  <script src="js/componentsView.js?v=10170"></script>
-  <script src="js/modalManager.js?v=10170"></script>
-  <script src="js/app.js?v=10170"></script>
+  <script src="js/types.js?v=10180"></script>
+  <script src="js/initialData.js?v=10180"></script>
+  <script src="js/storage.js?v=10180"></script>
+  <script src="js/rackViewer.js?v=10180"></script>
+  <script src="js/componentsView.js?v=10180"></script>
+  <script src="js/modalManager.js?v=10180"></script>
+  <script src="js/app.js?v=10180"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       if (window.lucide) {

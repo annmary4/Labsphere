@@ -384,6 +384,7 @@ class App {
     mapDrawerTrigger("drawer-btn-student-reqs", "btn-student-reqs");
     mapDrawerTrigger("drawer-btn-engineer-bom", "btn-engineer-bom");
     mapDrawerTrigger("drawer-btn-projects-mgr", "btn-projects-mgr");
+    mapDrawerTrigger("drawer-btn-user-manager", "btn-user-manager");
     mapDrawerTrigger("drawer-btn-mgmt-dashboard", "btn-mgmt-dashboard");
     mapDrawerTrigger("drawer-btn-print-inventory-sheet", null, () => {
       if (typeof openPrintableInventorySheet === "function") openPrintableInventorySheet();
@@ -423,6 +424,17 @@ class App {
     const btnProcurement = document.getElementById("btn-procurement-insights");
     const btnBoxes = document.getElementById("btn-manage-boxes");
     const btnRbac = document.getElementById("btn-rbac-switch");
+    const btnUserManager = document.getElementById("btn-user-manager");
+    const popoverBtnUserManager = document.getElementById("popover-btn-user-manager");
+
+    const openUserManager = () => {
+      const popover = document.getElementById("user-profile-popover");
+      if (popover) popover.classList.remove("show");
+      ModalManager.openUserManagerModal();
+    };
+
+    if (btnUserManager) btnUserManager.addEventListener("click", openUserManager);
+    if (popoverBtnUserManager) popoverBtnUserManager.addEventListener("click", openUserManager);
 
     if (btnAudit) btnAudit.addEventListener("click", () => ModalManager.openAuditModal());
     if (btnProjects) btnProjects.addEventListener("click", () => ModalManager.openProjectModal());
