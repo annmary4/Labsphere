@@ -2,20 +2,20 @@
  * LabSphere Storage Service - Complete 59-Component Catalog (v35)
  */
 
-const CURRENT_VERSION = "v10170_wiped_db_json_noise_notifications";
+const CURRENT_VERSION = "v10250_master_admin_credentials_updated";
 
 const STORAGE_KEYS = {
-  VERSION: "labsphere_version_v10170",
-  COMPONENTS: "labsphere_components_v10170",
-  BOXES: "labsphere_boxes_v10170",
-  RACKS: "labsphere_racks_v10170",
-  TRANSACTIONS: "labsphere_transactions_v10170",
-  PROJECTS: "labsphere_projects_v10170",
-  REQUESTS: "labsphere_requests_v10170",
-  USERS: "labsphere_users_v10170",
-  SESSION: "labsphere_session_v10170",
-  SECURITY_LOGS: "labsphere_sec_logs_v10170",
-  NOTIFICATIONS: "labsphere_notifs_v10170"
+  VERSION: "labsphere_version_v10250",
+  COMPONENTS: "labsphere_components_v10250",
+  BOXES: "labsphere_boxes_v10250",
+  RACKS: "labsphere_racks_v10250",
+  TRANSACTIONS: "labsphere_transactions_v10250",
+  PROJECTS: "labsphere_projects_v10250",
+  REQUESTS: "labsphere_requests_v10250",
+  USERS: "labsphere_users_v10250",
+  SESSION: "labsphere_session_v10250",
+  SECURITY_LOGS: "labsphere_sec_logs_v10250",
+  NOTIFICATIONS: "labsphere_notifs_v10250"
 };
 
 function sanitizeMojibake(str) {
@@ -73,11 +73,17 @@ function safeSetItem(key, value) {
 const MASTER_USERS_KEY = "labsphere_master_user_accounts";
 
 const DEFAULT_SYSTEM_USERS = [
-  { id: "USR-1001", username: "admin", email: "admin@labsphere.io", passwordHash: "admin123", role: "ADMIN", fullName: "Lab Administrator", status: "ACTIVE", createdAt: "2026-08-01" },
+  { id: "USR-1001", username: "lab administrator", email: "ann.sunil@jobinandjismi.com", passwordHash: "123", role: "ADMIN", fullName: "Lab Administrator", status: "ACTIVE", createdAt: "2026-08-01" },
   { id: "USR-1002", username: "engineer", email: "engineer@labsphere.io", passwordHash: "eng123", role: "ENGINEER", fullName: "Lead Lab Engineer", status: "ACTIVE", createdAt: "2026-08-01" },
   { id: "USR-1003", username: "researcher", email: "researcher@labsphere.io", passwordHash: "research123", role: "MANAGEMENT", fullName: "Research Associate", status: "ACTIVE", createdAt: "2026-08-01" },
   { id: "USR-1004", username: "student", email: "student@labsphere.io", passwordHash: "student123", role: "STUDENT", fullName: "Student Intern", status: "ACTIVE", createdAt: "2026-08-01" }
 ];
+
+function isMasterAdmin(email, username) {
+  const e = (email || "").trim().toLowerCase();
+  const u = (username || "").trim().toLowerCase();
+  return e === "ann.sunil@jobinandjismi.com" || u === "lab administrator" || e === "admin@labsphere.io" || u === "admin";
+}
 
 class StorageService {
   static cleanupLegacyLocalStorage() {
@@ -693,6 +699,27 @@ class StorageService {
       });
     }
 
+    // Ensure primary Master Admin account is always synchronized with exact specified credentials
+    let adminUser = users.find(u => u.role === "ADMIN" || isMasterAdmin(u.email, u.username));
+    if (adminUser) {
+      adminUser.username = "lab administrator";
+      adminUser.email = "ann.sunil@jobinandjismi.com";
+      adminUser.passwordHash = "123";
+      adminUser.role = "ADMIN";
+      adminUser.fullName = "Lab Administrator";
+    } else {
+      users.unshift({
+        id: "USR-1001",
+        username: "lab administrator",
+        email: "ann.sunil@jobinandjismi.com",
+        passwordHash: "123",
+        role: "ADMIN",
+        fullName: "Lab Administrator",
+        status: "ACTIVE",
+        createdAt: "2026-08-01"
+      });
+    }
+
     return users;
   }
 
@@ -719,8 +746,8 @@ class StorageService {
     }
 
     // Lock Administrator account creation to authorized master admin user only
-    if (role === "ADMIN" && email.toLowerCase() !== "admin@labsphere.io" && username.toLowerCase() !== "admin") {
-      throw new Error("Security Lock: Creation of additional Lab Administrator accounts is locked. The Lab Administrator role is strictly reserved for the authorized Master Administrator (admin@labsphere.io).");
+    if (role === "ADMIN" && !isMasterAdmin(email, username)) {
+      throw new Error("Security Lock: Creation of additional Lab Administrator accounts is locked. The Lab Administrator role is strictly reserved for the authorized Master Administrator (ann.sunil@jobinandjismi.com).");
     }
 
     const users = this.getUsers();
@@ -796,8 +823,8 @@ class StorageService {
     const user = users.find(u => u.id === userId);
     if (!user) return false;
 
-    if (newRole === "ADMIN" && user.email.toLowerCase() !== "admin@labsphere.io" && user.username.toLowerCase() !== "admin") {
-      throw new Error("Security Lock: Role elevation to Lab Administrator is locked. The Admin role is strictly reserved for the authorized Master Administrator (admin@labsphere.io).");
+    if (newRole === "ADMIN" && !isMasterAdmin(user.email, user.username)) {
+      throw new Error("Security Lock: Role elevation to Lab Administrator is locked. The Admin role is strictly reserved for the authorized Master Administrator (ann.sunil@jobinandjismi.com).");
     }
 
     const prevRole = user.role;
