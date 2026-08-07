@@ -1163,7 +1163,7 @@ const INITIAL_COMPONENTS = [
     "stackLayer": "Layer 2 (Middle Tray #C)",
     "category": "Sensors & Modules",
     "purpose": "Digital temperature and humidity sensor.",
-    "specifications": "3.3V-5V DC, 20-90% RH, 0-50Ãƒâ€šÃ‚Â°C",
+    "specifications": "3.3V-5V DC, 20-90% RH, 0-50°C",
     "compatibleComponents": [
       "ESP8266"
     ],
@@ -1655,8 +1655,8 @@ const INITIAL_COMPONENTS = [
     "boxId": "BOX C-006",
     "stackLayer": "Heavy Drive Bin #6",
     "category": "Hardware & Tools",
-    "purpose": "1.8Ãƒâ€šÃ‚Â° Bipolar 4-wire NEMA 17 stepper motor.",
-    "specifications": "1.8Ãƒâ€šÃ‚Â° step angle, 1.5A phase current",
+    "purpose": "1.8° Bipolar 4-wire NEMA 17 stepper motor.",
+    "specifications": "1.8° step angle, 1.5A phase current",
     "compatibleComponents": [
       "A4988 Driver"
     ],
@@ -2341,7 +2341,7 @@ const INITIAL_COMPONENTS = [
     "stackLayer": "Wire Spool Compartment #1",
     "category": "Connectors & Cabling",
     "purpose": "20 AWG white high-temperature silicone wire.",
-    "specifications": "200Ãƒâ€šÃ‚Â°C temperature rating, tinned copper",
+    "specifications": "200°C temperature rating, tinned copper",
     "compatibleComponents": [
       "Johnson DC Motor"
     ],
@@ -2405,7 +2405,7 @@ const INITIAL_COMPONENTS = [
     "stackLayer": "Passive Component Tray #1",
     "category": "Passive Components",
     "purpose": "100 Ohm 5% 0.25W carbon film resistors.",
-    "specifications": "100 Ohms, 0.25W (1/4W), Ãƒâ€šÃ‚Â±5% tolerance",
+    "specifications": "100 Ohms, 0.25W (1/4W), ±5% tolerance",
     "compatibleComponents": [
       "LEDs",
       "Breadboard"
