@@ -19,7 +19,7 @@
     rel="stylesheet">
 
   <!-- CSS with cache buster -->
-  <link rel="stylesheet" href="css/styles.css?v=10190">
+  <link rel="stylesheet" href="css/styles.css?v=10200">
 
   <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -309,6 +309,17 @@
         </button>
       </div>
       <div class="drawer-menu-list">
+        <!-- FIRST ITEM: Add Item Blue Box -->
+        <button class="drawer-menu-item drawer-btn-blue-primary" id="drawer-btn-add-component">
+          <i data-lucide="plus" style="font-size:1.3rem; color:#ffffff;"></i>
+          <div style="display:flex; flex-direction:column; text-align:left;">
+            <span style="font-weight:800; font-size:0.98rem; color:#ffffff;">Add Item</span>
+            <small style="font-size:0.72rem; color:rgba(255,255,255,0.85);">Register New Component or Material</small>
+          </div>
+        </button>
+
+        <div style="height:1px; background:var(--border-color); margin:2px 0 6px 0;"></div>
+
         <button class="drawer-menu-item active" data-view="split" id="drawer-view-split">
           <i data-lucide="layout-grid" style="font-size:1.2rem; color:var(--primary);"></i>
           <div style="display:flex; flex-direction:column; text-align:left;">
@@ -1701,13 +1712,13 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
   </div>
 
   <!-- JavaScript App Logic with Cache Busters -->
-  <script src="js/types.js?v=10190"></script>
-  <script src="js/initialData.js?v=10190"></script>
-  <script src="js/storage.js?v=10190"></script>
-  <script src="js/rackViewer.js?v=10190"></script>
-  <script src="js/componentsView.js?v=10190"></script>
-  <script src="js/modalManager.js?v=10190"></script>
-  <script src="js/app.js?v=10190"></script>
+  <script src="js/types.js?v=10200"></script>
+  <script src="js/initialData.js?v=10200"></script>
+  <script src="js/storage.js?v=10200"></script>
+  <script src="js/rackViewer.js?v=10200"></script>
+  <script src="js/componentsView.js?v=10200"></script>
+  <script src="js/modalManager.js?v=10200"></script>
+  <script src="js/app.js?v=10200"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       if (window.lucide) {
