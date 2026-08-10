@@ -600,7 +600,7 @@ class App {
     const isAdmin = StorageService.isRole("ADMIN");
     const isMobile = window.innerWidth <= 768;
 
-    // Header buttons (shown on Desktop only for Admin)
+    // Header buttons (shown on Desktop only for Admin, and hidden for Admin when they should be drawer-only)
     const headerAdminButtons = [
       document.getElementById("btn-admin-approve"),
       document.getElementById("btn-mgmt-dashboard"),
@@ -617,6 +617,16 @@ class App {
         }
       }
     });
+
+    // "My Requests" header button: only for non-Admin roles; Admin uses hamburger drawer
+    const btnStudentReqsHeader = document.getElementById("btn-student-reqs");
+    if (btnStudentReqsHeader) {
+      if (isAdmin) {
+        btnStudentReqsHeader.style.setProperty("display", "none", "important");
+      } else if (!isMobile) {
+        btnStudentReqsHeader.style.setProperty("display", "inline-flex", "important");
+      }
+    }
 
     // Drawer items (shown inside hamburger menu for Admin)
     const drawerAdminElements = [
