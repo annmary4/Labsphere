@@ -24,6 +24,17 @@
   <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
 
+  <!-- PWA Manifest & Install Support -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0f172a">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="LabSphere">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+
 
 </head>
 
@@ -2023,6 +2034,17 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
       } catch (e) {
         showLoginAlert(e.message || 'Registration failed.', 'error');
       }
+    }
+  </script>
+
+  <!-- PWA Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/Labsphere/sw.js', { scope: '/Labsphere/' })
+          .then(reg => console.log('[LabSphere PWA] Service Worker registered:', reg.scope))
+          .catch(err => console.warn('[LabSphere PWA] Service Worker registration failed:', err));
+      });
     }
   </script>
 </body>
