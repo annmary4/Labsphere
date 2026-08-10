@@ -200,11 +200,14 @@ class ComponentsView {
           <span class="stock-tag ${stockTagClass}">${stockLabel}</span>
           <span class="card-qty">${c.quantity} <small>${c.unit || 'pcs'}</small></span>
           
+          <button class="btn btn-warning btn-sm btn-req-checkout-card" data-id="${c.id}" onclick="event.stopPropagation(); window.requestComponentCheckout('${c.id}');" title="Submit Checkout Requisition for ${c.name}" style="padding:6px 12px; font-size:0.8rem; font-weight:800; background:#f59e0b; color:#0f172a; border:none; border-radius:6px; cursor:pointer; box-shadow:0 2px 8px rgba(245,158,11,0.4);">
+            <i data-lucide="shopping-bag"></i> Request Checkout
+          </button>
           <button class="btn btn-primary btn-sm btn-edit-direct" data-id="${c.id}" onclick="event.stopPropagation(); window.openComponentEditDialog('${c.id}');" title="Edit details, quantity, rate, and box location for ${c.name}" style="padding:6px 14px; font-size:0.8rem; font-weight:800; background:#0ea5e9; color:white; border:none; border-radius:6px; cursor:pointer; box-shadow:0 2px 8px rgba(14,165,233,0.5);">
-            Edit Edit Details
+            Edit Details
           </button>
           <button class="btn btn-secondary btn-sm btn-inspect-direct" data-id="${c.id}" onclick="event.stopPropagation(); window.openViewModal('${c.id}');" title="View info for ${c.name}" style="padding:4px 8px; font-size:0.7rem; cursor:pointer;">
-            View View Info
+            View Info
           </button>
           <button class="btn btn-secondary btn-sm btn-print-qr-direct" data-id="${c.id}" onclick="event.stopPropagation(); if (window.ModalManager && window.ModalManager.printBoxQrCode) window.ModalManager.printBoxQrCode('${c.boxId}');" title="Print Box QR Code Label for ${c.boxId}" style="padding:4px 8px; font-size:0.7rem; cursor:pointer;">
             <i data-lucide="printer"></i> Box QR
@@ -437,6 +440,9 @@ class ComponentsView {
         <td class="mono"><strong>${c.quantity}</strong> ${c.unit || 'pcs'}</td>
         <td>
           <div style="display:flex; gap:6px;">
+            <button class="btn btn-warning btn-sm btn-req-checkout-row" onclick="event.stopPropagation(); window.requestComponentCheckout('${c.id}');" title="Request Checkout for ${c.name}" style="background:#f59e0b; color:#0f172a; font-weight:800; border:none;">
+              <i data-lucide="shopping-bag"></i> Request
+            </button>
             ${c.datasheetUrl ? `<a href="${c.datasheetUrl}" target="_blank" class="btn btn-secondary btn-sm" title="View PDF Datasheet"><i data-lucide="file-text"></i> PDF</a>` : ''}
             <button class="btn btn-secondary btn-sm btn-print-table-qr" title="Print Box QR Label for ${c.boxId}">
               <i data-lucide="printer"></i> Box QR
@@ -445,7 +451,7 @@ class ComponentsView {
               <i data-lucide="trash-2"></i> Delete
             </button>
             <button class="btn btn-primary btn-sm btn-inspect-row" style="background:#0ea5e9; color:white; border:none; font-weight:700;">
-              Edit Edit Details
+              Edit Details
             </button>
           </div>
         </td>
@@ -487,3 +493,43 @@ class ComponentsView {
     });
   }
 }
+
+// Global helper for Students/Interns & all users to request checkout for any component
+window.requestComponentCheckout = function(componentId) {
+  const components = StorageService.getComponents();
+  const c = components.find(item => item.id === componentId);
+  if (!c) {
+    alert("Component not found in catalog!");
+    return;
+  }
+
+  const qtyStr = prompt(`Request Material Checkout for '${c.name}':\n\nEnter quantity required (Available stock: ${c.quantity} ${c.unit || 'pcs'}):`, "1");
+  if (!qtyStr) return;
+  const qty = parseInt(qtyStr);
+  if (isNaN(qty) || qty <= 0) {
+    alert("Please enter a valid positive quantity number.");
+    return;
+  }
+
+  const session = StorageService.getCurrentSession();
+  const defaultName = session ? session.fullName : "Student Intern";
+  const requesterName = prompt("Enter Student / Requester Name:", defaultName);
+  if (!requesterName) return;
+
+  const notes = prompt("Enter Requisition Purpose / Note (optional):", "Student Lab Project / Prototyping Checkout") || "";
+
+  try {
+    StorageService.submitComponentRequest(c.id, qty, requesterName, notes);
+    const msg = `Success: Requisition request for ${qty} ${c.unit || 'pcs'} of '${c.name}' submitted! Pending Team Lead & Admin approval.`;
+    alert(msg);
+    if (window.ModalManager && window.ModalManager.showToast) {
+      window.ModalManager.showToast(`Checkout Request submitted for ${c.name} (${qty} pcs)`, "success");
+    }
+    if (window.App && window.App.refreshApp) {
+      window.App.refreshApp();
+    }
+  } catch (err) {
+    alert(err.message);
+  }
+};
+

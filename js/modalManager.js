@@ -751,7 +751,7 @@ class ModalManager {
       if (tabEdit) { tabEdit.style.background = "#0ea5e9"; tabEdit.style.color = "white"; }
 
       if (this.currentComponent) {
-        if (modalTitle) modalTitle.innerText = `Edit Edit Details: ${this.currentComponent.name}`;
+        if (modalTitle) modalTitle.innerText = `Edit Details: ${this.currentComponent.name}`;
         this.populateFormWithComponent(this.currentComponent);
       }
     } else {
@@ -764,7 +764,7 @@ class ModalManager {
       if (tabEdit) { tabEdit.style.background = "transparent"; tabEdit.style.color = "var(--text-muted)"; }
 
       if (this.currentComponent && modalTitle) {
-        modalTitle.innerText = `View View Info: ${this.currentComponent.name}`;
+        modalTitle.innerText = `View Info: ${this.currentComponent.name}`;
       }
     }
   }
@@ -2329,7 +2329,7 @@ class ModalManager {
 
             <div style="margin-top:auto; display:grid; grid-template-columns:1fr 1fr; gap:6px; padding-top:8px; border-top:1px solid var(--border-color);">
               <button class="btn btn-primary btn-sm btn-edit-comp-item" onclick="event.stopPropagation(); if (window.closeBoxInspectorModal) window.closeBoxInspectorModal(); window.openComponentEditDialog('${c.id}');" style="font-weight:700;" title="Edit Name, Quantity, Price, Location">
-                Edit Edit Details
+                Edit Details
               </button>
               <button class="btn btn-secondary btn-sm btn-move-comp-item" onclick="event.stopPropagation(); if (window.openMoveBoxDialog) window.openMoveBoxDialog('${c.id}');" title="Move this component to another box">
                 Box Move Item
@@ -3198,7 +3198,7 @@ window.openComponentEditDialog = function (compId) {
   content.innerHTML = `
     <div style="padding: 14px 20px; border-bottom: 1px solid #1e293b; display: flex; justify-content: space-between; align-items: center; background: #1e293b;">
       <h3 style="margin: 0; font-size: 1.15rem; color: #38bdf8; font-weight: 800; display: flex; align-items: center; gap: 8px;">
-        Edit Edit Details & Location: <span style="color: white;">${c.name}</span>
+        Edit Details & Location: <span style="color: white;">${c.name}</span>
       </h3>
       <button id="close-edit-dialog" style="background: none; border: none; color: #94a3b8; font-size: 1.6rem; cursor: pointer; line-height: 1;">&times;</button>
     </div>
