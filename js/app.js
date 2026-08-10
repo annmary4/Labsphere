@@ -638,6 +638,16 @@ class App {
       }
     });
 
+    // "My Requests" is a Student-only drawer item - hide for Admin
+    const drawerStudentReqs = document.getElementById("drawer-btn-student-reqs");
+    if (drawerStudentReqs) {
+      if (isAdmin) {
+        drawerStudentReqs.style.setProperty("display", "none", "important");
+      } else {
+        drawerStudentReqs.style.setProperty("display", "flex", "important");
+      }
+    }
+
     // Notification bell is hidden from navbar header on ALL screens (desktop & mobile)
     // It lives exclusively inside the hamburger View Navigation drawer
     const btnNavNotif = document.getElementById("btn-nav-notif");
