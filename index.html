@@ -19,7 +19,7 @@
     rel="stylesheet">
 
   <!-- CSS with cache buster -->
-  <link rel="stylesheet" href="css/styles.css?v=10340">
+  <link rel="stylesheet" href="css/styles.css?v=10350">
 
   <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -28,6 +28,41 @@
 </head>
 
 <body>
+  <!-- LabSphere Splash Screen Animation -->
+  <div id="labsphere-splash" class="labsphere-splash">
+    <div class="splash-bg-orb splash-orb-1"></div>
+    <div class="splash-bg-orb splash-orb-2"></div>
+    <div class="splash-grid-pattern"></div>
+
+    <div class="splash-content">
+      <!-- Animated Logo Icon -->
+      <div class="splash-logo-ring">
+        <div class="splash-logo-icon">
+          <svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="44" height="44" rx="12" fill="url(#splashGrad)"/>
+            <path d="M10 22 L22 10 L34 22 L22 34 Z" stroke="white" stroke-width="2.5" fill="none" stroke-linejoin="round"/>
+            <circle cx="22" cy="22" r="4" fill="white"/>
+            <defs>
+              <linearGradient id="splashGrad" x1="0" y1="0" x2="44" y2="44">
+                <stop offset="0%" stop-color="#0284c7"/>
+                <stop offset="100%" stop-color="#c084fc"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Brand Name -->
+      <h1 class="splash-brand-name">LabSphere</h1>
+      <p class="splash-brand-tagline">Enterprise Laboratory Suite</p>
+
+      <!-- Loading bar -->
+      <div class="splash-loader-track">
+        <div class="splash-loader-bar"></div>
+      </div>
+    </div>
+  </div>
+
   <!-- LabSphere Enterprise Authentication & Login Screen Overlay -->
   <div id="login-screen" class="login-screen-overlay" style="display:flex;">
     <div class="login-grid-pattern"></div>
@@ -1717,17 +1752,28 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
   </div>
 
   <!-- JavaScript App Logic with Cache Busters -->
-  <script src="js/types.js?v=10340"></script>
-  <script src="js/initialData.js?v=10340"></script>
-  <script src="js/storage.js?v=10340"></script>
-  <script src="js/rackViewer.js?v=10340"></script>
-  <script src="js/componentsView.js?v=10340"></script>
-  <script src="js/modalManager.js?v=10340"></script>
-  <script src="js/app.js?v=10340"></script>
+  <script src="js/types.js?v=10350"></script>
+  <script src="js/initialData.js?v=10350"></script>
+  <script src="js/storage.js?v=10350"></script>
+  <script src="js/rackViewer.js?v=10350"></script>
+  <script src="js/componentsView.js?v=10350"></script>
+  <script src="js/modalManager.js?v=10350"></script>
+  <script src="js/app.js?v=10350"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       if (window.lucide) {
         window.lucide.createIcons();
+      }
+
+      // ---- Splash Screen Dismiss ----
+      // Show the splash for 2.3 seconds then fade it out and remove it
+      const splash = document.getElementById('labsphere-splash');
+      if (splash) {
+        setTimeout(() => {
+          splash.classList.add('splash-hidden');
+          // Remove from DOM after fade-out transition completes (0.7s)
+          setTimeout(() => splash.remove(), 750);
+        }, 2300);
       }
 
       // Automatically bypass login screen if user is already logged in (e.g. switching to Desktop Site mode or refreshing)
