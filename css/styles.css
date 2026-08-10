@@ -323,6 +323,14 @@ body {
     margin: 0 !important;
     z-index: 10 !important;
   }
+
+  /* On Desktop: hide Upload BOM, Inventory Sheet, Users, Projects from header - drawer only */
+  .nav-actions #btn-engineer-bom,
+  .nav-actions #btn-print-inventory-sheet,
+  .nav-actions #btn-user-manager,
+  .nav-actions #btn-projects-mgr {
+    display: none !important;
+  }
 }
 
 .metric-item {
