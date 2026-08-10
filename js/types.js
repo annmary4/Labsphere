@@ -87,13 +87,19 @@ const USER_ROLES = {
  * @property {string} [projectId]
  * @property {string} [projectName]
  * @property {number} qtyRequested
+ * @property {number} [qtyApproved] - Approved quantity (may be modified by Team Lead)
  * @property {number} returnedQty - Quantity returned so far (Partial return support)
+ * @property {number} [damagedQty] - Quantity reported as damaged
  * @property {string} [dueDate] - Optional return due date
  * @property {string} [condition] - Item Condition: GOOD | FAIR | DAMAGED
- * @property {string} status - PENDING | APPROVED | REJECTED | RETURNED | PARTIAL_RETURN
+ * @property {string} status - SUBMITTED | LEAD_APPROVED | LEAD_MODIFIED | ISSUED | REJECTED | PARTIAL_RETURN | RETURNED | DAMAGED
  * @property {string} requestedAt
- * @property {string} [approvedAt]
+ * @property {string} [leadName] - Name of Team Lead who reviewed request
+ * @property {string} [leadApprovedAt] - Timestamp of Lead Approval
+ * @property {string} [issuedBy] - Name of Inventory Administrator who issued materials
+ * @property {string} [issuedAt] - Timestamp of Material Issuance
  * @property {string} [returnedAt]
+ * @property {string} [damageReport] - Damage description & report details
  * @property {string} notes
  */
 

@@ -354,7 +354,7 @@ class StorageService {
   }
 
   // --- PARTIAL RETURN & BORROW WORKFLOW METHODS ---
-  static handlePartialReturn(requestId, returnQty, condition = "GOOD") {
+  static handlePartialReturn(requestId, returnQty, condition = "GOOD", notes = "") {
     const requests = this.getRequests();
     const components = this.getComponents();
     const req = requests.find(r => r.id === requestId);
@@ -362,57 +362,121 @@ class StorageService {
     if (!req) throw new Error("Request record not found!");
 
     const comp = components.find(c => c.id === req.componentId);
-    const qtyToReturn = Math.min(returnQty, req.qtyRequested - (req.returnedQty || 0));
+    const targetIssuedQty = req.qtyApproved || req.qtyRequested;
+    const remainingToReturn = targetIssuedQty - (req.returnedQty || 0);
+    const qtyToReturn = Math.min(returnQty, remainingToReturn);
 
     if (qtyToReturn <= 0) {
-      throw new Error("Invalid return quantity.");
+      throw new Error("Invalid return quantity or all items already returned.");
     }
 
     req.returnedQty = (req.returnedQty || 0) + qtyToReturn;
     req.condition = condition;
 
-    if (req.returnedQty >= req.qtyRequested) {
-      req.status = "RETURNED";
+    if (condition === "DAMAGED") {
+      req.damagedQty = (req.damagedQty || 0) + qtyToReturn;
+      req.damageReport = notes || `Reported ${qtyToReturn} pcs damaged on return`;
+    }
+
+    if (req.returnedQty >= targetIssuedQty) {
+      req.status = condition === "DAMAGED" ? "DAMAGED" : "RETURNED";
       req.returnedAt = new Date().toLocaleString();
     } else {
       req.status = "PARTIAL_RETURN";
     }
 
-    req.notes += ` [Returned ${qtyToReturn} pcs in ${condition} condition on ${new Date().toLocaleDateString()}]`;
+    req.notes += ` [Returned ${qtyToReturn} pcs in ${condition} condition on ${new Date().toLocaleDateString()}${notes ? ': ' + notes : ''}]`;
     this.saveRequests(requests);
 
     if (comp) {
       const prevQty = comp.quantity;
       if (condition === "DAMAGED") {
         comp.inventoryState = "DAMAGED";
+        this.saveComponents(components);
+
         this.addNotification(
           "RETURNED_ITEM",
           `Alert: Damaged Component Returned: ${comp.name}`,
-          `${req.requesterName} returned ${qtyToReturn} pcs of ${comp.name} in DAMAGED condition.`
+          `${req.requesterName} returned ${qtyToReturn} pcs of ${comp.name} in DAMAGED condition. ${notes}`
+        );
+
+        this.logTransaction(
+          comp.id,
+          comp.name,
+          "ITEM_DAMAGED",
+          0,
+          prevQty,
+          comp.quantity,
+          `Damaged asset reported: ${qtyToReturn} unit(s) of ${comp.name} returned in DAMAGED condition by ${req.requesterName}. Note: ${notes || 'N/A'}`
         );
       } else {
         comp.quantity += qtyToReturn;
         comp.inventoryState = "AVAILABLE";
+        this.saveComponents(components);
+
         this.addNotification(
           "RETURNED_ITEM",
           `Sync Component Returned: ${comp.name}`,
           `${req.requesterName} returned ${qtyToReturn} pcs of ${comp.name} (${condition} condition).`
         );
-      }
-      this.saveComponents(components);
 
-      this.logTransaction(
-        comp.id,
-        comp.name,
-        "ITEM_RETURNED",
-        qtyToReturn,
-        prevQty,
-        comp.quantity,
-        `Returned ${qtyToReturn} unit(s) of ${comp.name} (Condition: ${condition}).`
-      );
+        this.logTransaction(
+          comp.id,
+          comp.name,
+          "ITEM_RETURNED",
+          qtyToReturn,
+          prevQty,
+          comp.quantity,
+          `Returned ${qtyToReturn} unit(s) of ${comp.name} (Condition: ${condition}). Stock restored to ${comp.quantity}.`
+        );
+      }
     }
 
     return req;
+  }
+
+  // --- DAMAGED ITEM INDEPENDENT REPORTING WORKFLOW ---
+  static reportDamagedAsset(requestId, componentId, damagedQty, damageReport = "") {
+    const requests = this.getRequests();
+    const components = this.getComponents();
+    const req = requests.find(r => r.id === requestId);
+    const comp = components.find(c => c.id === (componentId || (req ? req.componentId : null)));
+
+    if (!comp && !req) throw new Error("Component or request record not found!");
+
+    const numDamaged = parseInt(damagedQty) || 1;
+    const compName = comp ? comp.name : (req ? req.componentName : "Unknown Component");
+    const compId = comp ? comp.id : (req ? req.componentId : "COMP-000");
+
+    if (req) {
+      req.damagedQty = (req.damagedQty || 0) + numDamaged;
+      req.damageReport = damageReport || "Damaged item reported";
+      req.notes += ` [Damaged reported: ${numDamaged} pcs - ${damageReport}]`;
+      this.saveRequests(requests);
+    }
+
+    if (comp) {
+      comp.inventoryState = "DAMAGED";
+      this.saveComponents(components);
+    }
+
+    this.addNotification(
+      "RETURNED_ITEM",
+      `Alert: Damaged Material Reported (${compName})`,
+      `${numDamaged} unit(s) of ${compName} reported DAMAGED. Description: ${damageReport || 'No description provided'}.`
+    );
+
+    this.logTransaction(
+      compId,
+      compName,
+      "ITEM_DAMAGED",
+      0,
+      comp ? comp.quantity : 0,
+      comp ? comp.quantity : 0,
+      `Damaged asset reported: ${numDamaged} pcs of ${compName}. Description: ${damageReport || 'N/A'}`
+    );
+
+    return true;
   }
 
   // --- BOX TRANSFER & CONTENTS SWAP METHODS ---
@@ -1061,25 +1125,30 @@ class StorageService {
     localStorage.setItem(STORAGE_KEYS.REQUESTS, JSON.stringify(requests));
   }
 
-  static submitComponentRequest(componentId, qtyRequested, requesterName, notes = "") {
+  static submitComponentRequest(componentId, qtyRequested, requesterName, notes = "", projectId = null) {
     const components = this.getComponents();
     const comp = components.find(c => c.id === componentId);
     if (!comp) throw new Error("Component not found!");
 
     const requests = this.getRequests();
     const session = this.getCurrentSession();
+    const currentRole = this.getRole();
+    const isLeadOrAdmin = currentRole === "ADMIN" || currentRole === "ENGINEER";
 
     const newReq = {
       id: "REQ-" + Date.now().toString().slice(-4),
       componentId: comp.id,
       componentName: comp.name,
-      requesterName: requesterName || (session ? session.fullName : "Student"),
-      role: USER_ROLES[this.getRole()] || "Student",
-      qtyRequested,
+      requesterName: requesterName || (session ? session.fullName : "Project Member"),
+      role: USER_ROLES[currentRole] || "Project Member",
+      projectId: projectId || null,
+      qtyRequested: parseInt(qtyRequested) || 1,
+      qtyApproved: parseInt(qtyRequested) || 1,
       returnedQty: 0,
-      status: "PENDING",
+      damagedQty: 0,
+      status: "SUBMITTED",
       requestedAt: new Date().toLocaleString(),
-      notes: notes || `Requested ${qtyRequested} ${comp.unit} of ${comp.name}`
+      notes: notes || `Submitted request for ${qtyRequested} ${comp.unit} of ${comp.name}`
     };
 
     requests.unshift(newReq);
@@ -1087,80 +1156,161 @@ class StorageService {
 
     this.addNotification(
       "PENDING_APPROVAL",
-      "New Checkout Request Submitted",
-      `${newReq.requesterName} requested ${qtyRequested} pcs of ${comp.name}.`
+      "New Material Requisition Submitted",
+      `${newReq.requesterName} submitted request #${newReq.id} for ${qtyRequested} pcs of ${comp.name}.`
     );
 
     this.logTransaction(
       comp.id,
       comp.name,
-      "CHECK_OUT",
+      "REQUEST_SUBMITTED",
       0,
       comp.quantity,
       comp.quantity,
-      `Checkout request submitted by ${requesterName} for ${qtyRequested} unit(s). Pending Admin approval.`
+      `Material request #${newReq.id} submitted by ${newReq.requesterName} (${qtyRequested} ${comp.unit}). Pending Team Lead review.`
     );
 
     return newReq;
   }
 
-  static approveRequest(requestId) {
+  // --- STAGE 2: TEAM LEAD REVIEW & MODIFY WORKFLOW ---
+  static reviewLeadRequest(requestId, qtyApproved, leadName, decision = "APPROVE", reason = "") {
+    const requests = this.getRequests();
+    const req = requests.find(r => r.id === requestId);
+    if (!req) throw new Error("Request record not found!");
+
+    const session = this.getCurrentSession();
+    const reviewerName = leadName || (session ? session.fullName : "Team Lead");
+    const numApprovedQty = Math.max(0, parseInt(qtyApproved) || 0);
+
+    if (decision === "REJECT") {
+      req.status = "REJECTED";
+      req.leadName = reviewerName;
+      req.leadApprovedAt = new Date().toLocaleString();
+      req.notes += ` [Rejected by Team Lead (${reviewerName}): ${reason || 'No reason specified'}]`;
+      this.saveRequests(requests);
+
+      this.addNotification(
+        "REQUEST_STATUS",
+        "Request Rejected by Team Lead",
+        `Material request #${req.id} for ${req.componentName} was REJECTED by ${reviewerName}.`
+      );
+
+      this.logTransaction(
+        req.componentId,
+        req.componentName,
+        "REQUEST_REJECTED",
+        0,
+        0,
+        0,
+        `Request #${req.id} rejected by Team Lead ${reviewerName}. Reason: ${reason || 'N/A'}.`
+      );
+      return req;
+    }
+
+    if (numApprovedQty <= 0) {
+      throw new Error("Approved quantity must be greater than zero.");
+    }
+
+    const wasModified = numApprovedQty !== req.qtyRequested;
+    req.qtyApproved = numApprovedQty;
+    req.status = wasModified ? "LEAD_MODIFIED" : "LEAD_APPROVED";
+    req.leadName = reviewerName;
+    req.leadApprovedAt = new Date().toLocaleString();
+    if (wasModified) {
+      req.notes += ` [Modified by Team Lead (${reviewerName}): Requested ${req.qtyRequested}, Approved ${numApprovedQty}]`;
+    } else {
+      req.notes += ` [Approved by Team Lead (${reviewerName})]`;
+    }
+
+    this.saveRequests(requests);
+
+    this.addNotification(
+      "PENDING_APPROVAL",
+      "Material Request Approved by Lead",
+      `Request #${req.id} for ${req.componentName} (${numApprovedQty} pcs) was APPROVED by Team Lead ${reviewerName}. Pending Inventory Admin Issuance.`
+    );
+
+    this.logTransaction(
+      req.componentId,
+      req.componentName,
+      wasModified ? "LEAD_MODIFIED" : "LEAD_APPROVED",
+      0,
+      0,
+      0,
+      `Team Lead ${reviewerName} ${wasModified ? 'modified & approved' : 'approved'} request #${req.id} (${numApprovedQty} pcs).`
+    );
+
+    return req;
+  }
+
+  // --- STAGE 3: INVENTORY ADMIN ISSUANCE WORKFLOW ---
+  static issueMaterials(requestId, adminName = null) {
     const requests = this.getRequests();
     const components = this.getComponents();
     const req = requests.find(r => r.id === requestId);
 
-    if (!req || req.status !== "PENDING") return false;
-
-    const comp = components.find(c => c.id === req.componentId);
-    if (!comp) throw new Error("Component not found!");
-    if (comp.quantity < req.qtyRequested) {
-      throw new Error(`Insufficient inventory to approve! Requested: ${req.qtyRequested}, Available: ${comp.quantity}`);
+    if (!req) throw new Error("Request record not found!");
+    if (req.status === "ISSUED" || req.status === "RETURNED") {
+      throw new Error(`Request #${req.id} is already in state ${req.status}!`);
     }
 
+    const comp = components.find(c => c.id === req.componentId);
+    if (!comp) throw new Error("Component not found in catalog!");
+
+    const issueQty = req.qtyApproved || req.qtyRequested;
+    if (comp.quantity < issueQty) {
+      throw new Error(`Insufficient lab inventory! Need ${issueQty} pcs of ${comp.name}, but only ${comp.quantity} pcs are available in stock.`);
+    }
+
+    const session = this.getCurrentSession();
+    const issuer = adminName || (session ? session.fullName : "Inventory Administrator");
+
     const prevQty = comp.quantity;
-    comp.quantity -= req.qtyRequested;
-    comp.inventoryState = "BORROWED";
-    req.status = "APPROVED";
-    req.approvedAt = new Date().toLocaleString();
+    comp.quantity -= issueQty;
+    comp.inventoryState = comp.quantity === 0 ? "BORROWED" : "AVAILABLE";
+
+    req.status = "ISSUED";
+    req.issuedBy = issuer;
+    req.issuedAt = new Date().toLocaleString();
+    req.notes += ` [Issued by Inventory Admin (${issuer}) on ${new Date().toLocaleDateString()}]`;
 
     this.saveComponents(components);
     this.saveRequests(requests);
 
     this.addNotification(
       "REQUEST_STATUS",
-      "Request Approved by Administrator",
-      `Checkout request #${req.id} for ${req.componentName} (${req.qtyRequested} pcs) was APPROVED.`
+      "Materials Issued from Inventory",
+      `Materials for request #${req.id} (${req.componentName} x ${issueQty}) have been ISSUED by Inventory Admin ${issuer}.`
     );
 
     this.logTransaction(
       comp.id,
       comp.name,
-      "REQUEST_APPROVED",
-      -req.qtyRequested,
+      "MATERIALS_ISSUED",
+      -issueQty,
       prevQty,
       comp.quantity,
-      `Approved checkout request #${req.id} for ${req.requesterName} (${req.qtyRequested} ${comp.unit}).`
+      `Issued ${issueQty} ${comp.unit} of ${comp.name} for request #${req.id} to ${req.requesterName} (Issued by: ${issuer}).`
     );
 
-    return true;
+    return req;
   }
 
-  static rejectRequest(requestId, reason = "") {
+  static approveRequest(requestId) {
     const requests = this.getRequests();
     const req = requests.find(r => r.id === requestId);
     if (!req) return false;
 
-    req.status = "REJECTED";
-    req.notes += ` [Rejected by Admin: ${reason || 'No reason provided'}]`;
-    this.saveRequests(requests);
+    // If still in SUBMITTED state, auto-lead-approve first then issue
+    if (req.status === "SUBMITTED" || req.status === "PENDING") {
+      this.reviewLeadRequest(requestId, req.qtyRequested, "Lab Lead", "APPROVE");
+    }
+    return this.issueMaterials(requestId);
+  }
 
-    this.addNotification(
-      "REQUEST_STATUS",
-      "Request Rejected by Administrator",
-      `Checkout request #${req.id} for ${req.componentName} was REJECTED: ${reason || 'No reason specified'}.`
-    );
-
-    return true;
+  static rejectRequest(requestId, reason = "") {
+    return this.reviewLeadRequest(requestId, 0, "Administrator", "REJECT", reason);
   }
 
   static parseAndMatchBOM(csvText) {

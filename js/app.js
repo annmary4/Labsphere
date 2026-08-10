@@ -667,17 +667,19 @@ class App {
       btnNavNotif.style.setProperty("display", "none", "important");
     }
 
-    const pendingReqs = StorageService.getRequests().filter(r => r.status === "PENDING").length;
+    const pendingReqs = StorageService.getRequests().filter(r => r.status === "SUBMITTED" || r.status === "PENDING" || r.status === "LEAD_APPROVED" || r.status === "LEAD_MODIFIED").length;
     const apprBadge = document.getElementById("admin-approval-count");
     const drawerApprBadge = document.getElementById("drawer-approvals-badge");
+    const isLeadOrAdmin = StorageService.isRole("ADMIN") || StorageService.isRole("ENGINEER");
+
     if (apprBadge) {
       apprBadge.innerText = pendingReqs;
-      if (pendingReqs > 0 && isAdmin) apprBadge.classList.remove("hidden");
+      if (pendingReqs > 0 && isLeadOrAdmin) apprBadge.classList.remove("hidden");
       else apprBadge.classList.add("hidden");
     }
     if (drawerApprBadge) {
       drawerApprBadge.innerText = pendingReqs;
-      if (pendingReqs > 0 && isAdmin) drawerApprBadge.classList.remove("hidden");
+      if (pendingReqs > 0 && isLeadOrAdmin) drawerApprBadge.classList.remove("hidden");
       else drawerApprBadge.classList.add("hidden");
     }
   }

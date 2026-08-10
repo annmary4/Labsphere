@@ -1587,7 +1587,7 @@ class ModalManager {
     if (backdrop) backdrop.classList.add("hidden");
   }
 
-  // --- PARTIAL RETURN MODAL HANDLER ---
+  // --- MULTI-STAGE REQUISITION & RETURNABLE ASSET TRACKING MODAL ---
   static openStudentRequestsModal() {
     const backdrop = document.getElementById("student-req-modal");
     const container = document.getElementById("student-requests-container");
@@ -1595,60 +1595,125 @@ class ModalManager {
 
     if (container) {
       container.innerHTML = "";
-      requests.forEach(r => {
-        const card = document.createElement("div");
-        card.className = "request-card";
+      if (requests.length === 0) {
+        container.innerHTML = `<p class="empty-hint">No material requests submitted yet.</p>`;
+      } else {
+        requests.forEach(r => {
+          const card = document.createElement("div");
+          card.className = "request-card";
 
-        let statusBadgeClass = "warning";
-        if (r.status === "APPROVED") statusBadgeClass = "success";
-        else if (r.status === "REJECTED") statusBadgeClass = "danger";
-        else if (r.status === "RETURNED") statusBadgeClass = "info";
-        else if (r.status === "PARTIAL_RETURN") statusBadgeClass = "warning";
+          let statusBadgeClass = "warning";
+          let statusLabel = r.status || "SUBMITTED";
 
-        const remainingQty = r.qtyRequested - (r.returnedQty || 0);
+          if (r.status === "SUBMITTED") {
+            statusBadgeClass = "warning";
+            statusLabel = "⏳ Pending Lead Review";
+          } else if (r.status === "LEAD_APPROVED" || r.status === "LEAD_MODIFIED") {
+            statusBadgeClass = "info";
+            statusLabel = r.status === "LEAD_MODIFIED" ? "✏️ Lead Modified & Approved" : "✅ Lead Approved (Pending Issue)";
+          } else if (r.status === "ISSUED" || r.status === "APPROVED") {
+            statusBadgeClass = "success";
+            statusLabel = "📦 Issued (Borrowed)";
+          } else if (r.status === "REJECTED") {
+            statusBadgeClass = "danger";
+            statusLabel = "❌ Rejected";
+          } else if (r.status === "RETURNED") {
+            statusBadgeClass = "primary";
+            statusLabel = "🔄 Fully Returned";
+          } else if (r.status === "PARTIAL_RETURN") {
+            statusBadgeClass = "warning";
+            statusLabel = "🌗 Partial Return";
+          } else if (r.status === "DAMAGED") {
+            statusBadgeClass = "danger";
+            statusLabel = "⚠️ Damaged Reported";
+          }
 
-        card.innerHTML = `
-          <div class="request-header">
-            <strong>${r.componentName}</strong>
-            <span class="stock-tag ${statusBadgeClass}">${r.status}</span>
-          </div>
-          <p class="request-meta">Qty Requested: <strong>${r.qtyRequested} pcs</strong> • Returned: <strong>${r.returnedQty || 0} pcs</strong> • Remaining: <strong class="primary-text">${remainingQty} pcs</strong></p>
-          <p class="request-meta">Student: ${r.requesterName} • Date: ${r.requestedAt} ${r.dueDate ? `• Due: ${r.dueDate}` : ''}</p>
-          <p class="request-notes">${r.notes}</p>
-          ${(r.status === 'APPROVED' || r.status === 'PARTIAL_RETURN') ? `
-            <div style="margin-top:8px; display:flex; gap:8px; align-items:center;">
-              <button class="btn btn-secondary btn-sm btn-partial-return-item" data-req-id="${r.id}">
-                <i data-lucide="rotate-ccw"></i> Return Item (Full or Partial)
-              </button>
+          const targetQty = r.qtyApproved || r.qtyRequested;
+          const returnedCount = r.returnedQty || 0;
+          const remainingQty = Math.max(0, targetQty - returnedCount);
+
+          card.innerHTML = `
+            <div class="request-header" style="display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <strong style="font-size:1.05rem;">${r.componentName}</strong>
+                <span class="mono text-muted" style="font-size:0.8rem; margin-left:8px;">#${r.id}</span>
+              </div>
+              <span class="stock-tag ${statusBadgeClass}">${statusLabel}</span>
             </div>
-          ` : ''}
-        `;
+            <p class="request-meta" style="margin-top:6px;">
+              Qty Requested: <strong>${r.qtyRequested} pcs</strong>
+              ${r.qtyApproved && r.qtyApproved !== r.qtyRequested ? ` • Approved: <strong style="color:var(--primary);">${r.qtyApproved} pcs</strong>` : ''}
+              • Returned: <strong>${returnedCount} pcs</strong>
+              ${r.status === 'ISSUED' || r.status === 'PARTIAL_RETURN' ? ` • Outstanding: <strong class="primary-text" style="color:var(--accent-yellow);">${remainingQty} pcs</strong>` : ''}
+            </p>
+            <p class="request-meta">Requester: <strong>${r.requesterName}</strong> (${r.role}) • Date: ${r.requestedAt} ${r.dueDate ? `• Due: ${r.dueDate}` : ''}</p>
+            ${r.leadName ? `<p class="request-meta" style="font-size:0.75rem; color:var(--primary);">Team Lead: ${r.leadName} (${r.leadApprovedAt || 'Approved'})</p>` : ''}
+            ${r.issuedBy ? `<p class="request-meta" style="font-size:0.75rem; color:var(--accent-green);">Issued By Admin: ${r.issuedBy} (${r.issuedAt || 'Issued'})</p>` : ''}
+            <p class="request-notes" style="background:var(--bg-dark); padding:8px; border-radius:6px; margin-top:6px; font-size:0.82rem;">${r.notes}</p>
+            
+            ${(r.status === 'ISSUED' || r.status === 'APPROVED' || r.status === 'PARTIAL_RETURN') && remainingQty > 0 ? `
+              <div style="margin-top:10px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                <button class="btn btn-secondary btn-sm btn-partial-return-item" data-req-id="${r.id}" style="border-color:var(--primary); color:var(--primary);">
+                  <i data-lucide="rotate-ccw"></i> Return Item (Full or Partial)
+                </button>
+                <button class="btn btn-danger btn-sm btn-report-damage" data-req-id="${r.id}">
+                  <i data-lucide="alert-triangle"></i> Report Damaged Asset
+                </button>
+              </div>
+            ` : ''}
+          `;
 
-        const returnBtn = card.querySelector(".btn-partial-return-item");
-        if (returnBtn) {
-          returnBtn.addEventListener("click", () => {
-            const retQtyStr = prompt(`Return '${r.componentName}':\nEnter quantity returning now (Remaining borrowed: ${remainingQty} pcs):`, `${remainingQty}`);
-            if (!retQtyStr) return;
-            const retQty = parseInt(retQtyStr);
-            if (isNaN(retQty) || retQty <= 0) {
-              alert("Please enter a valid positive number.");
-              return;
-            }
+          const returnBtn = card.querySelector(".btn-partial-return-item");
+          if (returnBtn) {
+            returnBtn.addEventListener("click", () => {
+              const retQtyStr = prompt(`Return '${r.componentName}':\nEnter quantity returning now (Remaining borrowed: ${remainingQty} pcs):`, `${remainingQty}`);
+              if (!retQtyStr) return;
+              const retQty = parseInt(retQtyStr);
+              if (isNaN(retQty) || retQty <= 0) {
+                alert("Please enter a valid positive number.");
+                return;
+              }
 
-            const cond = prompt("Select Item Condition (GOOD / FAIR / DAMAGED):", "GOOD") || "GOOD";
-            try {
-              StorageService.handlePartialReturn(r.id, retQty, cond.toUpperCase());
-              alert(`Successfully logged return of ${retQty} pcs (${cond.toUpperCase()} condition)!`);
-              this.openStudentRequestsModal();
-              if (this.callbacks.onInventoryChanged) this.callbacks.onInventoryChanged();
-            } catch (err) {
-              alert(err.message);
-            }
-          });
-        }
+              const cond = prompt("Select Item Condition (GOOD / FAIR / DAMAGED):", "GOOD") || "GOOD";
+              const notes = cond.toUpperCase() === "DAMAGED" ? prompt("Describe damage or issue:", "Minor cosmetic/pin damage") : "";
 
-        container.appendChild(card);
-      });
+              try {
+                StorageService.handlePartialReturn(r.id, retQty, cond.toUpperCase(), notes || "");
+                alert(`Successfully logged return of ${retQty} pcs (${cond.toUpperCase()} condition)!`);
+                this.openStudentRequestsModal();
+                if (this.callbacks.onInventoryChanged) this.callbacks.onInventoryChanged();
+              } catch (err) {
+                alert(err.message);
+              }
+            });
+          }
+
+          const damageBtn = card.querySelector(".btn-report-damage");
+          if (damageBtn) {
+            damageBtn.addEventListener("click", () => {
+              const damQtyStr = prompt(`Report Damaged Asset '${r.componentName}':\nEnter quantity damaged:`, `1`);
+              if (!damQtyStr) return;
+              const damQty = parseInt(damQtyStr);
+              if (isNaN(damQty) || damQty <= 0) {
+                alert("Please enter a valid positive number.");
+                return;
+              }
+
+              const reportDetails = prompt("Describe damage / defect:", "Component non-functional / burned IC pin");
+              try {
+                StorageService.reportDamagedAsset(r.id, r.componentId, damQty, reportDetails || "");
+                alert(`Reported ${damQty} pcs of '${r.componentName}' as DAMAGED. Inventory Admin notified.`);
+                this.openStudentRequestsModal();
+                if (this.callbacks.onInventoryChanged) this.callbacks.onInventoryChanged();
+              } catch (err) {
+                alert(err.message);
+              }
+            });
+          }
+
+          container.appendChild(card);
+        });
+      }
     }
 
     if (window.lucide) window.lucide.createIcons();
@@ -1660,53 +1725,136 @@ class ModalManager {
     if (backdrop) backdrop.classList.add("hidden");
   }
 
+  // --- MULTI-TIER APPROVAL & ISSUANCE QUEUE MODAL ---
   static openAdminApprovalModal() {
-    if (!StorageService.isRole("ADMIN")) {
-      alert("Access Restricted: Checkout Requests Queue & Approvals are strictly reserved for the Lab Administrator.");
+    const isLeadOrAdmin = StorageService.isRole("ADMIN") || StorageService.isRole("ENGINEER");
+    if (!isLeadOrAdmin) {
+      alert("Access Restricted: Requisition Approval & Material Issuance are strictly reserved for Team Leads and Inventory Administrators.");
       return;
     }
+
     const backdrop = document.getElementById("admin-appr-modal");
     const container = document.getElementById("admin-approval-container");
-    const requests = StorageService.getRequests().filter(r => r.status === "PENDING");
+    const requests = StorageService.getRequests().filter(r => r.status === "SUBMITTED" || r.status === "PENDING" || r.status === "LEAD_APPROVED" || r.status === "LEAD_MODIFIED");
 
     if (container) {
       container.innerHTML = "";
       if (requests.length === 0) {
-        container.innerHTML = `<p class="empty-hint">Success: No pending checkout requests! All student requests are cleared.</p>`;
+        container.innerHTML = `<p class="empty-hint" style="text-align:center; padding:20px; color:var(--accent-green); font-weight:700;">✅ Success: All requisition queues are clear! No pending lead reviews or material issuances.</p>`;
       } else {
         requests.forEach(r => {
           const card = document.createElement("div");
           card.className = "approval-card";
+          card.style.cssText = "background:var(--bg-dark); border:1px solid var(--border-color); border-radius:12px; padding:16px; margin-bottom:14px;";
+
+          const isSubmittedState = r.status === "SUBMITTED" || r.status === "PENDING";
+          const isLeadApprovedState = r.status === "LEAD_APPROVED" || r.status === "LEAD_MODIFIED";
+
           card.innerHTML = `
-            <div class="approval-header">
-              <strong>${r.componentName}</strong>
-              <span class="mono">Qty: ${r.qtyRequested} pcs</span>
+            <div class="approval-header" style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-color); padding-bottom:8px; margin-bottom:10px;">
+              <div>
+                <strong style="font-size:1.1rem; color:var(--text-main);">${r.componentName}</strong>
+                <span class="mono text-muted" style="font-size:0.8rem; margin-left:8px;">#${r.id}</span>
+              </div>
+              <span class="stock-tag ${isSubmittedState ? 'warning' : 'info'}">${isSubmittedState ? '⏳ Stage 1: Pending Lead Review' : '✅ Stage 2: Ready for Admin Issue'}</span>
             </div>
-            <p class="approval-meta">Requester: <strong>${r.requesterName}</strong> (${r.role}) • Date: ${r.requestedAt}</p>
-            <p class="approval-notes">${r.notes}</p>
-            <div class="approval-actions">
-              <button class="btn btn-primary btn-approve" data-id="${r.id}"><i data-lucide="check"></i> Approve Checkout</button>
-              <button class="btn btn-danger btn-reject" data-id="${r.id}"><i data-lucide="x"></i> Reject</button>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; font-size:0.85rem; margin-bottom:10px;">
+              <div>
+                <span class="text-muted">Requester:</span> <strong>${r.requesterName}</strong> (${r.role})
+              </div>
+              <div>
+                <span class="text-muted">Requested Date:</span> <strong>${r.requestedAt}</strong>
+              </div>
+              <div>
+                <span class="text-muted">Qty Requested:</span> <strong>${r.qtyRequested} pcs</strong>
+              </div>
+              <div>
+                <span class="text-muted">Approved Qty:</span> 
+                ${isSubmittedState ? `
+                  <input type="number" class="approved-qty-input" data-id="${r.id}" value="${r.qtyApproved || r.qtyRequested}" min="1" style="width:70px; padding:2px 6px; background:var(--bg-card); border:1px solid var(--primary); color:white; border-radius:4px; font-weight:700;" />
+                ` : `<strong style="color:var(--primary);">${r.qtyApproved || r.qtyRequested} pcs</strong>`}
+              </div>
+            </div>
+
+            ${r.leadName ? `<p style="font-size:0.8rem; color:var(--primary); margin-bottom:6px;">👨‍💻 Team Lead Reviewer: <strong>${r.leadName}</strong> (${r.leadApprovedAt || 'Approved'})</p>` : ''}
+            <p class="approval-notes" style="font-size:0.82rem; background:rgba(255,255,255,0.04); padding:8px; border-radius:6px;">${r.notes}</p>
+
+            <div class="approval-actions" style="display:flex; gap:10px; margin-top:12px; justify-flex-end;">
+              ${isSubmittedState ? `
+                <button class="btn btn-primary btn-lead-approve" data-id="${r.id}" style="background:var(--primary); color:#0f172a; font-weight:800;">
+                  <i data-lucide="check-circle"></i> Team Lead Approve / Modify
+                </button>
+                <button class="btn btn-danger btn-lead-reject" data-id="${r.id}">
+                  <i data-lucide="x-circle"></i> Reject
+                </button>
+              ` : ''}
+
+              ${isLeadApprovedState ? `
+                <button class="btn btn-success btn-admin-issue" data-id="${r.id}" style="background:var(--accent-green); color:#0f172a; font-weight:800;">
+                  <i data-lucide="package-check"></i> Issue Materials from Stock
+                </button>
+              ` : ''}
             </div>
           `;
 
-          card.querySelector(".btn-approve").addEventListener("click", () => {
-            try {
-              StorageService.approveRequest(r.id);
-              alert(`Approved checkout request #${r.id} for ${r.requesterName}!`);
-              this.openAdminApprovalModal();
-              if (this.callbacks.onInventoryChanged) this.callbacks.onInventoryChanged();
-            } catch (err) {
-              alert(err.message);
-            }
-          });
+          // Team Lead Approve/Modify Listener
+          const btnLeadApprove = card.querySelector(".btn-lead-approve");
+          if (btnLeadApprove) {
+            btnLeadApprove.addEventListener("click", () => {
+              const qtyInput = card.querySelector(".approved-qty-input");
+              const numQty = parseInt(qtyInput ? qtyInput.value : r.qtyRequested) || r.qtyRequested;
 
-          card.querySelector(".btn-reject").addEventListener("click", () => {
-            const reason = prompt("Enter reason for rejection:", "Item reserved for active lab project");
-            StorageService.rejectRequest(r.id, reason || "");
-            this.openAdminApprovalModal();
-            if (this.callbacks.onInventoryChanged) this.callbacks.onInventoryChanged();
-          });
+              const session = StorageService.getCurrentSession();
+              const reviewer = session ? session.fullName : "Team Lead";
+
+              try {
+                StorageService.reviewLeadRequest(r.id, numQty, reviewer, "APPROVE");
+                alert(`Team Lead Approved request #${r.id} (${numQty} pcs)! Advanced to Inventory Admin Issuance Queue.`);
+                this.openAdminApprovalModal();
+                if (this.callbacks.onInventoryChanged) this.callbacks.onInventoryChanged();
+              } catch (err) {
+                alert(err.message);
+              }
+            });
+          }
+
+          // Team Lead Reject Listener
+          const btnLeadReject = card.querySelector(".btn-lead-reject");
+          if (btnLeadReject) {
+            btnLeadReject.addEventListener("click", () => {
+              const reason = prompt("Enter rejection reason:", "Insufficient project justification / reserved stock");
+              const session = StorageService.getCurrentSession();
+              const reviewer = session ? session.fullName : "Team Lead";
+
+              try {
+                StorageService.reviewLeadRequest(r.id, 0, reviewer, "REJECT", reason || "");
+                alert(`Request #${r.id} rejected.`);
+                this.openAdminApprovalModal();
+                if (this.callbacks.onInventoryChanged) this.callbacks.onInventoryChanged();
+              } catch (err) {
+                alert(err.message);
+              }
+            });
+          }
+
+          // Inventory Admin Material Issuance Listener
+          const btnAdminIssue = card.querySelector(".btn-admin-issue");
+          if (btnAdminIssue) {
+            btnAdminIssue.addEventListener("click", () => {
+              const session = StorageService.getCurrentSession();
+              const issuer = session ? session.fullName : "Inventory Administrator";
+
+              try {
+                StorageService.issueMaterials(r.id, issuer);
+                alert(`Materials for request #${r.id} successfully ISSUED from inventory! Physical stock updated.`);
+                this.openAdminApprovalModal();
+                if (this.callbacks.onInventoryChanged) this.callbacks.onInventoryChanged();
+              } catch (err) {
+                alert(err.message);
+              }
+            });
+          }
 
           container.appendChild(card);
         });
