@@ -638,17 +638,13 @@ class App {
       }
     });
 
-    // On mobile phone screen, hide top bell dropdown from navbar so Notifications lives cleanly inside hamburger menu
+    // Notification bell is hidden from navbar header on ALL screens (desktop & mobile)
+    // It lives exclusively inside the hamburger View Navigation drawer
     const btnNavNotif = document.getElementById("btn-nav-notif");
     if (btnNavNotif) {
       const notifParent = btnNavNotif.closest(".dropdown");
-      if (isMobile) {
-        if (notifParent) notifParent.style.setProperty("display", "none", "important");
-        btnNavNotif.style.setProperty("display", "none", "important");
-      } else {
-        if (notifParent) notifParent.style.setProperty("display", "inline-block", "important");
-        btnNavNotif.style.setProperty("display", "inline-flex", "important");
-      }
+      if (notifParent) notifParent.style.setProperty("display", "none", "important");
+      btnNavNotif.style.setProperty("display", "none", "important");
     }
 
     const pendingReqs = StorageService.getRequests().filter(r => r.status === "PENDING").length;
