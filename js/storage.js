@@ -1116,9 +1116,17 @@ class StorageService {
   static getRequests() {
     try {
       const data = localStorage.getItem(STORAGE_KEYS.REQUESTS);
-      return data ? JSON.parse(data) : INITIAL_REQUESTS;
+      if (data) {
+        const parsed = JSON.parse(data);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+      if (typeof INITIAL_REQUESTS !== "undefined" && Array.isArray(INITIAL_REQUESTS) && INITIAL_REQUESTS.length > 0) {
+        this.saveRequests(INITIAL_REQUESTS);
+        return INITIAL_REQUESTS;
+      }
+      return [];
     } catch (e) {
-      return INITIAL_REQUESTS;
+      return (typeof INITIAL_REQUESTS !== "undefined") ? INITIAL_REQUESTS : [];
     }
   }
 

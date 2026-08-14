@@ -4874,5 +4874,57 @@ const INITIAL_PROJECTS = [
     bom: ["Arduino Uno R3", "Servo Motor SG90", "LDR Light Sensors"],
     createdAt: "2026-08-10"
   }
+const INITIAL_REQUESTS = [
+  {
+    id: "REQ-8012-1",
+    batchId: "REQ-BATCH-8012",
+    componentId: "COMP-002",
+    componentName: "Arduino Uno R3",
+    requesterName: "Student Intern",
+    role: "Student / Intern",
+    projectId: "PROJ-101",
+    projectName: "IoT Weather Station & Environmental Monitor",
+    qtyRequested: 2,
+    qtyApproved: 2,
+    returnedQty: 0,
+    damagedQty: 0,
+    status: "SUBMITTED",
+    requestedAt: new Date(Date.now() - 3600000 * 2).toLocaleString(),
+    notes: "[Batch REQ-BATCH-8012] Project: 'IoT Weather Station'. Required for sensor array micro-controller setup."
+  },
+  {
+    id: "REQ-8012-2",
+    batchId: "REQ-BATCH-8012",
+    componentId: "COMP-015",
+    componentName: "HC-SR04 Ultrasonic Distance Sensor",
+    requesterName: "Student Intern",
+    role: "Student / Intern",
+    projectId: "PROJ-101",
+    projectName: "IoT Weather Station & Environmental Monitor",
+    qtyRequested: 1,
+    qtyApproved: 1,
+    returnedQty: 0,
+    damagedQty: 0,
+    status: "SUBMITTED",
+    requestedAt: new Date(Date.now() - 3600000 * 2).toLocaleString(),
+    notes: "[Batch REQ-BATCH-8012] Project: 'IoT Weather Station'. Prototyping distance measurement."
+  },
+  {
+    id: "REQ-9045-1",
+    batchId: "REQ-BATCH-9045",
+    componentId: "COMP-034",
+    componentName: "Servo Motor SG90 (Micro Servo 9g)",
+    requesterName: "Dr. Sarah Jenkins",
+    role: "Lab Engineer",
+    projectId: "PROJ-102",
+    projectName: "Autonomous Mobile Robot (AMR) Navigation",
+    qtyRequested: 3,
+    qtyApproved: 3,
+    returnedQty: 0,
+    damagedQty: 0,
+    status: "SUBMITTED",
+    requestedAt: new Date(Date.now() - 3600000 * 5).toLocaleString(),
+    notes: "Robotics arm steering actuator testing."
+  }
 ];
 

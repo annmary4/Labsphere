@@ -1744,12 +1744,17 @@ class ModalManager {
 
     if (container) {
       container.innerHTML = `
-        <div style="background:rgba(56,189,248,0.1); border:1px solid rgba(56,189,248,0.3); border-radius:10px; padding:12px 16px; margin-bottom:16px; font-size:0.85rem; color:#38bdf8; display:flex; align-items:center; gap:10px;">
-          <i data-lucide="shield-check" style="font-size:1.4rem; flex-shrink:0;"></i>
-          <div>
-            <strong>Administrator Material Approval & Stock Issuance Center</strong><br>
-            Review component requests submitted by Students, Interns, and Engineers. Click <strong>'Direct Approve & Issue Stock'</strong> or <strong>'Issue Materials from Stock'</strong> to authorize material pickup and update physical inventory levels.
+        <div style="background:rgba(56,189,248,0.1); border:1px solid rgba(56,189,248,0.3); border-radius:10px; padding:12px 16px; margin-bottom:16px; font-size:0.85rem; color:#38bdf8; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <i data-lucide="shield-check" style="font-size:1.4rem; flex-shrink:0;"></i>
+            <div>
+              <strong>Administrator Material Approval & Stock Issuance Center</strong><br>
+              Review component requests submitted by Students, Interns, and Engineers. Click <strong>'Direct Approve & Issue Stock'</strong> or <strong>'Issue Materials from Stock'</strong> to authorize material pickup and update physical inventory levels.
+            </div>
           </div>
+          <button class="btn btn-secondary btn-sm" onclick="ModalManager.addDemoStudentRequest()" style="background:#0284c7; color:white; border:none; font-weight:700; white-space:nowrap; padding:6px 12px; cursor:pointer;" title="Simulate a new student checkout request for testing">
+            <i data-lucide="plus-circle"></i> + Add Test Student Request
+          </button>
         </div>
       `;
       if (requests.length === 0) {
@@ -1900,6 +1905,32 @@ class ModalManager {
 
     if (window.lucide) window.lucide.createIcons();
     if (backdrop) backdrop.classList.remove("hidden");
+  }
+
+  static addDemoStudentRequest() {
+    const components = StorageService.getComponents();
+    if (!components || !components.length) {
+      alert("No components in catalog!");
+      return;
+    }
+    const comp = components[Math.floor(Math.random() * Math.min(12, components.length))];
+    const reqNames = ["Alex Chen (Student Intern)", "Maya Lin (Research Student)", "James Wilson (Intern)", "Priya Sharma (Student)"];
+    const randomName = reqNames[Math.floor(Math.random() * reqNames.length)];
+    const randomQty = Math.floor(Math.random() * 3) + 1;
+
+    try {
+      StorageService.submitComponentRequest(
+        comp.id,
+        randomQty,
+        randomName,
+        `[Test Request] Student prototyping checkout for '${comp.name}'.`
+      );
+      if (this.showToast) this.showToast(`Test student request added for ${comp.name} (${randomQty} pcs)`, "success");
+      this.openAdminApprovalModal();
+      if (this.callbacks.onInventoryChanged) this.callbacks.onInventoryChanged();
+    } catch (err) {
+      alert("Error generating test request: " + err.message);
+    }
   }
 
   static closeAdminApprovalModal() {
