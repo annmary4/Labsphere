@@ -19,7 +19,7 @@
     rel="stylesheet">
 
   <!-- CSS with cache buster -->
-  <link rel="stylesheet" href="css/styles.css?v=10380">
+  <link rel="stylesheet" href="css/styles.css?v=10415_fresh">
 
   <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -1920,13 +1920,13 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
   </div>
 
   <!-- JavaScript App Logic with Cache Busters -->
-  <script src="js/types.js?v=10380"></script>
-  <script src="js/initialData.js?v=10380"></script>
-  <script src="js/storage.js?v=10380"></script>
-  <script src="js/rackViewer.js?v=10380"></script>
-  <script src="js/componentsView.js?v=10380"></script>
-  <script src="js/modalManager.js?v=10380"></script>
-  <script src="js/app.js?v=10380"></script>
+  <script src="js/types.js?v=10415_fresh"></script>
+  <script src="js/initialData.js?v=10415_fresh"></script>
+  <script src="js/storage.js?v=10415_fresh"></script>
+  <script src="js/rackViewer.js?v=10415_fresh"></script>
+  <script src="js/componentsView.js?v=10415_fresh"></script>
+  <script src="js/modalManager.js?v=10415_fresh"></script>
+  <script src="js/app.js?v=10415_fresh"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       if (window.lucide) {
@@ -2194,12 +2194,15 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
     }
   </script>
 
-  <!-- PWA Service Worker Registration -->
+  <!-- PWA Service Worker Registration & Cache Purging -->
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/Labsphere/sw.js', { scope: '/Labsphere/' })
-          .then(reg => console.log('[LabSphere PWA] Service Worker registered:', reg.scope))
+        navigator.serviceWorker.register('/Labsphere/sw.js?v=10415_fresh', { scope: '/Labsphere/' })
+          .then(reg => {
+            console.log('[LabSphere PWA] Service Worker registered:', reg.scope);
+            if (reg.update) reg.update();
+          })
           .catch(err => console.warn('[LabSphere PWA] Service Worker registration failed:', err));
       });
     }
