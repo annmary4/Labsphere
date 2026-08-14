@@ -2,18 +2,18 @@
    LabSphere Service Worker - Offline Cache & PWA Support
    ============================================================ */
 
-const CACHE_NAME = 'labsphere-v11000_student_streamlined_multi_req';
+const CACHE_NAME = 'labsphere-v11100_admin_6_approval_actions';
 const ASSETS_TO_CACHE = [
   '/Labsphere/',
   '/Labsphere/index.html',
-  '/Labsphere/css/styles.css?v=11000_student_streamlined_multi_req',
-  '/Labsphere/js/app.js?v=11000_student_streamlined_multi_req',
-  '/Labsphere/js/types.js?v=11000_student_streamlined_multi_req',
-  '/Labsphere/js/initialData.js?v=11000_student_streamlined_multi_req',
-  '/Labsphere/js/storage.js?v=11000_student_streamlined_multi_req',
-  '/Labsphere/js/rackViewer.js?v=11000_student_streamlined_multi_req',
-  '/Labsphere/js/componentsView.js?v=11000_student_streamlined_multi_req',
-  '/Labsphere/js/modalManager.js?v=11000_student_streamlined_multi_req',
+  '/Labsphere/css/styles.css?v=11100_admin_6_approval_actions',
+  '/Labsphere/js/app.js?v=11100_admin_6_approval_actions',
+  '/Labsphere/js/types.js?v=11100_admin_6_approval_actions',
+  '/Labsphere/js/initialData.js?v=11100_admin_6_approval_actions',
+  '/Labsphere/js/storage.js?v=11100_admin_6_approval_actions',
+  '/Labsphere/js/rackViewer.js?v=11100_admin_6_approval_actions',
+  '/Labsphere/js/componentsView.js?v=11100_admin_6_approval_actions',
+  '/Labsphere/js/modalManager.js?v=11100_admin_6_approval_actions',
   '/Labsphere/icons/icon-192.png',
   '/Labsphere/icons/icon-512.png',
   '/Labsphere/manifest.json'

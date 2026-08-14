@@ -1479,6 +1479,35 @@ class StorageService {
     return this.reviewLeadRequest(requestId, 0, "Administrator", "REJECT", reason);
   }
 
+  static suggestAlternativeComponent(requestId, altComponentId, customNote = "") {
+    const requests = this.getRequests();
+    const components = this.getComponents();
+    const req = requests.find(r => r.id === requestId);
+    if (!req) throw new Error("Request not found!");
+
+    const altComp = components.find(c => c.id === altComponentId);
+    if (!altComp) throw new Error("Alternative component not found!");
+
+    const session = this.getCurrentSession();
+    const adminName = session ? session.fullName : "Lab Administrator";
+
+    const noteMsg = `💡 Administrator Suggestion (${adminName}): Compatible alternative '${altComp.name}' is available in stock (${altComp.quantity} ${altComp.unit || 'pcs'} in Box ${altComp.boxId || 'A1'}). ${customNote}`.trim();
+
+    req.notes += ` [${noteMsg}]`;
+    req.suggestedAltComponentId = altComp.id;
+    req.suggestedAltComponentName = altComp.name;
+
+    this.saveRequests(requests);
+
+    this.addNotification(
+      "REQUEST_STATUS",
+      "Alternative Component Suggested by Admin",
+      `Admin ${adminName} suggested alternative '${altComp.name}' for request #${req.id}.`
+    );
+
+    return req;
+  }
+
   static parseAndMatchBOM(csvText) {
     const lines = csvText.split("\n").map(l => l.trim()).filter(l => l.length > 0);
     const components = this.getComponents();

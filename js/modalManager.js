@@ -1782,18 +1782,39 @@ class ModalManager {
           </p>
         `;
       } else {
+        const components = StorageService.getComponents();
+
         displayRequests.forEach(r => {
           const card = document.createElement("div");
           card.className = "approval-card";
-          card.style.cssText = "background:var(--bg-dark); border:1px solid var(--border-color); border-radius:12px; padding:16px; margin-bottom:14px;";
+          card.style.cssText = "background:var(--bg-dark); border:1px solid var(--border-color); border-radius:12px; padding:16px; margin-bottom:14px; box-shadow:0 4px 12px rgba(0,0,0,0.2);";
 
           const isPending = r.status === "SUBMITTED" || r.status === "PENDING" || r.status === "LEAD_APPROVED" || r.status === "LEAD_MODIFIED";
           const isIssued = r.status === "ISSUED" || r.status === "APPROVED";
           const isRejected = r.status === "REJECTED";
 
-          let statusBadgeHtml = '<span class="stock-tag warning">⏳ Pending Approval</span>';
-          if (isIssued) statusBadgeHtml = `<span class="stock-tag success">📦 Issued by ${r.issuedBy || 'Admin'}</span>`;
-          else if (isRejected) statusBadgeHtml = '<span class="stock-tag danger">❌ Rejected</span>';
+          let statusBadgeHtml = '<span class="stock-tag warning" style="font-weight:800; font-size:0.8rem;">⏳ Pending Approval</span>';
+          if (isIssued) statusBadgeHtml = `<span class="stock-tag success" style="font-weight:800; font-size:0.8rem;">📦 Issued by ${r.issuedBy || 'Admin'}</span>`;
+          else if (isRejected) statusBadgeHtml = '<span class="stock-tag danger" style="font-weight:800; font-size:0.8rem;">❌ Rejected</span>';
+
+          // Look up component for physical inventory verification
+          const comp = components.find(c => c.id === r.componentId);
+          const availStock = comp ? comp.quantity : 0;
+          const reqQty = r.qtyRequested || 1;
+          const isSufficient = comp && comp.quantity >= reqQty;
+
+          const verifyBadgeHtml = comp ? `
+            <div style="background:#0f172a; border:1px solid ${isSufficient ? 'rgba(16,185,129,0.3)' : 'rgba(239,68,68,0.3)'}; border-radius:8px; padding:10px; margin-bottom:12px; font-size:0.83rem;">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                  🔍 <strong>Inventory Verification:</strong> Box <strong>${comp.boxId || 'A1'}</strong> • Location: <strong>Rack ${comp.rackId || '1'}, Shelf ${comp.shelfId || '1'}</strong>
+                </div>
+                <span class="badge" style="background:${isSufficient ? 'rgba(16,185,129,0.15)' : 'rgba(239,68,68,0.15)'}; color:${isSufficient ? '#10b981' : '#ef4444'}; border:1px solid ${isSufficient ? 'rgba(16,185,129,0.3)' : 'rgba(239,68,68,0.3)'}; font-weight:800; font-size:0.78rem;">
+                  ${isSufficient ? `✅ Verified: Stock Sufficient (${availStock} pcs in stock >= ${reqQty} pcs requested)` : `⚠️ Insufficient Stock (${availStock} pcs in stock < ${reqQty} pcs requested)`}
+                </span>
+              </div>
+            </div>
+          ` : '';
 
           card.innerHTML = `
             <div class="approval-header" style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-color); padding-bottom:8px; margin-bottom:10px;">
@@ -1803,6 +1824,8 @@ class ModalManager {
               </div>
               ${statusBadgeHtml}
             </div>
+
+            ${verifyBadgeHtml}
 
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; font-size:0.85rem; margin-bottom:10px;">
               <div>
@@ -1815,29 +1838,42 @@ class ModalManager {
                 <span class="text-muted">Requested Date:</span> <strong>${r.requestedAt}</strong>
               </div>
               <div>
-                <span class="text-muted">Qty Requested:</span> <strong>${r.qtyRequested} pcs</strong>
+                <span class="text-muted">Requested Qty:</span> <strong>${r.qtyRequested} pcs</strong>
               </div>
               <div>
-                <span class="text-muted">Approved Qty:</span> 
+                <span class="text-muted">Issuance Approved Qty:</span> 
                 ${isPending ? `
-                  <input type="number" class="approved-qty-input" data-id="${r.id}" value="${r.qtyApproved || r.qtyRequested}" min="1" style="width:70px; padding:2px 6px; background:var(--bg-card); border:1px solid var(--primary); color:white; border-radius:4px; font-weight:700;" />
+                  <input type="number" class="approved-qty-input" data-id="${r.id}" value="${r.qtyApproved || r.qtyRequested}" min="1" max="${availStock || 999}" style="width:75px; padding:4px 8px; background:#0f172a; border:1px solid var(--primary); color:white; border-radius:6px; font-weight:700;" />
                 ` : `<strong style="color:var(--primary);">${r.qtyApproved || r.qtyRequested} pcs</strong>`}
               </div>
             </div>
 
-            <p class="approval-notes" style="font-size:0.82rem; background:rgba(255,255,255,0.04); padding:8px; border-radius:6px; margin-bottom:12px;">${r.notes}</p>
+            <p class="approval-notes" style="font-size:0.82rem; background:rgba(255,255,255,0.04); padding:8px 12px; border-radius:6px; margin-bottom:12px; color:var(--text-muted);">
+              📝 Notes / Purpose: <span style="color:var(--text-main);">${r.notes}</span>
+            </p>
 
             ${isPending ? `
-              <div class="approval-actions" style="display:flex; gap:10px; justify-content:flex-end;">
-                <button class="btn btn-success btn-admin-direct-issue" data-id="${r.id}" style="background:var(--accent-green); color:#0f172a; font-weight:800;" title="Approve & Issue materials directly from stock">
-                  <i data-lucide="check-circle"></i> Approve & Issue Stock
+              <div class="approval-actions" style="display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap;">
+                <button class="btn btn-secondary btn-suggest-alt" data-id="${r.id}" style="font-weight:700; color:#38bdf8; border-color:rgba(56,189,248,0.4);" title="Suggest compatible alternative component from stock">
+                  💡 Suggest Alternative
                 </button>
-                <button class="btn btn-danger btn-lead-reject" data-id="${r.id}">
-                  <i data-lucide="x-circle"></i> Reject
+                <button class="btn btn-danger btn-lead-reject" data-id="${r.id}" style="font-weight:700;" title="Reject request if stock unavailable">
+                  ❌ Reject (Stock Unavailable)
+                </button>
+                <button class="btn btn-success btn-admin-direct-issue" data-id="${r.id}" style="background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:white; font-weight:800; border:none; box-shadow:0 2px 8px rgba(16,185,129,0.3);" title="Approve & Issue materials directly, update inventory stock">
+                  ✅ Approve & Issue Materials
                 </button>
               </div>
             ` : ''}
           `;
+
+          // Suggest Alternative Listener
+          const btnSuggestAlt = card.querySelector(".btn-suggest-alt");
+          if (btnSuggestAlt) {
+            btnSuggestAlt.addEventListener("click", () => {
+              ModalManager.openSuggestAlternativeModal(r.id);
+            });
+          }
 
           // Team Lead Approve/Modify Listener
           const btnLeadApprove = card.querySelector(".btn-lead-approve");
@@ -1925,6 +1961,53 @@ class ModalManager {
 
     if (window.lucide) window.lucide.createIcons();
     if (backdrop) backdrop.classList.remove("hidden");
+  }
+
+  static openSuggestAlternativeModal(requestId) {
+    const requests = StorageService.getRequests();
+    const components = StorageService.getComponents();
+    const req = requests.find(r => r.id === requestId);
+    if (!req) return;
+
+    const reqComp = components.find(c => c.id === req.componentId);
+    const reqCat = reqComp ? reqComp.category : null;
+
+    // Find compatible components in stock
+    let alternatives = components.filter(c => c.id !== req.componentId && c.quantity > 0);
+    if (reqCat) {
+      const sameCat = alternatives.filter(c => c.category === reqCat);
+      if (sameCat.length > 0) alternatives = sameCat;
+    }
+
+    if (alternatives.length === 0) {
+      alert("No compatible in-stock alternative components found in the catalog right now.");
+      return;
+    }
+
+    const optionsText = alternatives.slice(0, 10).map((c, idx) => 
+      `${idx + 1}. ${c.name} (Stock Available: ${c.quantity} ${c.unit || 'pcs'} in Box ${c.boxId || 'A1'})`
+    ).join("\n");
+
+    const choiceStr = prompt(`💡 Suggest Compatible Alternative Component for Request #${req.id} (${req.componentName}):\n\nEnter number (1-${Math.min(10, alternatives.length)}) to select alternative:\n\n${optionsText}`, "1");
+    if (!choiceStr) return;
+
+    const choiceIdx = parseInt(choiceStr) - 1;
+    if (isNaN(choiceIdx) || choiceIdx < 0 || choiceIdx >= Math.min(10, alternatives.length)) {
+      alert("Invalid choice selection.");
+      return;
+    }
+
+    const selectedAlt = alternatives[choiceIdx];
+    const customNote = prompt(`Optional recommendation note for requester (${req.requesterName}):`, "Recommended due to stock availability and functional compatibility.");
+
+    try {
+      StorageService.suggestAlternativeComponent(requestId, selectedAlt.id, customNote !== null ? customNote : "");
+      alert(`Success: Suggested compatible alternative '${selectedAlt.name}' for request #${req.id}! Requester notified.`);
+      this.openAdminApprovalModal();
+      if (this.callbacks.onInventoryChanged) this.callbacks.onInventoryChanged();
+    } catch (err) {
+      alert(err.message);
+    }
   }
 
   static closeAdminApprovalModal() {
