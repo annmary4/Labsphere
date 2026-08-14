@@ -1778,7 +1778,7 @@ class ModalManager {
       if (displayRequests.length === 0) {
         container.innerHTML += `
           <p class="empty-hint" style="text-align:center; padding:24px; color:var(--text-muted); font-weight:600; background:rgba(255,255,255,0.02); border-radius:8px;">
-            ${activeTab === 'pending' ? '✅ No pending material requests awaiting approval right now.' : 'No requests found under this filter.'}
+            ${activeTab === 'pending' ? '✅ No pending material requisitions submitted by registered users awaiting approval right now.' : 'No requisitions found under this filter.'}
           </p>
         `;
       } else {

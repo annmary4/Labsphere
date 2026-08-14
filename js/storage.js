@@ -1117,16 +1117,20 @@ class StorageService {
     try {
       const data = localStorage.getItem(STORAGE_KEYS.REQUESTS);
       if (data) {
-        const parsed = JSON.parse(data);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-      }
-      if (typeof INITIAL_REQUESTS !== "undefined" && Array.isArray(INITIAL_REQUESTS) && INITIAL_REQUESTS.length > 0) {
-        this.saveRequests(INITIAL_REQUESTS);
-        return INITIAL_REQUESTS;
+        let parsed = JSON.parse(data);
+        if (Array.isArray(parsed)) {
+          // Remove external sample/test dummy names
+          const dummyNames = ["Dr. Sarah Jenkins", "Alex Chen (Student Intern)", "Maya Lin (Research Student)", "James Wilson (Intern)", "Priya Sharma (Student)"];
+          const cleaned = parsed.filter(r => !dummyNames.includes(r.requesterName));
+          if (cleaned.length !== parsed.length) {
+            this.saveRequests(cleaned);
+          }
+          return cleaned;
+        }
       }
       return [];
     } catch (e) {
-      return (typeof INITIAL_REQUESTS !== "undefined") ? INITIAL_REQUESTS : [];
+      return [];
     }
   }
 
