@@ -392,6 +392,7 @@ class App {
     };
 
     mapDrawerTrigger("drawer-btn-add-component", null, openAddCompModal);
+    mapDrawerTrigger("drawer-btn-multi-item-req", "btn-multi-item-req");
     mapDrawerTrigger("drawer-btn-notif", "btn-nav-notif");
     mapDrawerTrigger("drawer-btn-approvals", "btn-admin-approve");
     mapDrawerTrigger("drawer-btn-student-reqs", "btn-student-reqs");
@@ -409,11 +410,13 @@ class App {
     if (btnAdd) btnAdd.addEventListener("click", openAddCompModal);
 
     // PERSONA SPECIFIC BUTTONS:
+    const btnMultiItemReq = document.getElementById("btn-multi-item-req");
     const btnStudentReqs = document.getElementById("btn-student-reqs");
     const btnAdminApprove = document.getElementById("btn-admin-approve");
     const btnEngineerBom = document.getElementById("btn-engineer-bom");
     const btnMgmtDashboard = document.getElementById("btn-mgmt-dashboard");
 
+    if (btnMultiItemReq) btnMultiItemReq.addEventListener("click", () => ModalManager.openMultiItemRequestModal());
     if (btnStudentReqs) btnStudentReqs.addEventListener("click", () => ModalManager.openStudentRequestsModal());
     if (btnAdminApprove) btnAdminApprove.addEventListener("click", () => ModalManager.openAdminApprovalModal());
     if (btnEngineerBom) btnEngineerBom.addEventListener("click", () => ModalManager.openBomModal());
@@ -618,8 +621,14 @@ class App {
       }
     });
 
-    // "My Requests" header button: only for non-Admin roles; Admin uses hamburger drawer
+    // "Multi-Item Request" & "My Requests" header buttons for non-Admin / Student roles
+    const btnMultiItemReqHeader = document.getElementById("btn-multi-item-req");
     const btnStudentReqsHeader = document.getElementById("btn-student-reqs");
+    if (btnMultiItemReqHeader) {
+      if (!isMobile) {
+        btnMultiItemReqHeader.style.setProperty("display", "inline-flex", "important");
+      }
+    }
     if (btnStudentReqsHeader) {
       if (isAdmin) {
         btnStudentReqsHeader.style.setProperty("display", "none", "important");
@@ -648,8 +657,12 @@ class App {
       }
     });
 
-    // "My Requests" is a Student-only drawer item - hide for Admin
+    // Student & Non-Admin drawer items
     const drawerStudentReqs = document.getElementById("drawer-btn-student-reqs");
+    const drawerMultiItemReq = document.getElementById("drawer-btn-multi-item-req");
+    if (drawerMultiItemReq) {
+      drawerMultiItemReq.style.setProperty("display", "flex", "important");
+    }
     if (drawerStudentReqs) {
       if (isAdmin) {
         drawerStudentReqs.style.setProperty("display", "none", "important");

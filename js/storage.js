@@ -15,7 +15,8 @@ const STORAGE_KEYS = {
   USERS: "labsphere_users_v10250",
   SESSION: "labsphere_session_v10250",
   SECURITY_LOGS: "labsphere_sec_logs_v10250",
-  NOTIFICATIONS: "labsphere_notifs_v10250"
+  NOTIFICATIONS: "labsphere_notifs_v10250",
+  REQUISITION_DRAFTS: "labsphere_req_drafts_v10250"
 };
 
 function sanitizeMojibake(str) {
@@ -1171,6 +1172,119 @@ class StorageService {
     );
 
     return newReq;
+  }
+
+  // --- MULTI-ITEM REQUISITION & DRAFT MANAGEMENT ---
+  static getRequisitionDrafts() {
+    try {
+      const data = localStorage.getItem(STORAGE_KEYS.REQUISITION_DRAFTS);
+      return data ? JSON.parse(data) : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  static saveRequisitionDrafts(drafts) {
+    localStorage.setItem(STORAGE_KEYS.REQUISITION_DRAFTS, JSON.stringify(drafts));
+  }
+
+  static saveRequisitionDraft(draftData) {
+    const drafts = this.getRequisitionDrafts();
+    const draftId = draftData.id || "DRAFT-" + Date.now();
+    const existingIndex = drafts.findIndex(d => d.id === draftId);
+    const now = new Date().toLocaleString();
+    const updatedDraft = {
+      id: draftId,
+      projectId: draftData.projectId || null,
+      projectName: draftData.projectName || "General / Unassigned",
+      notes: draftData.notes || "",
+      items: draftData.items || [],
+      updatedAt: now,
+      requesterName: draftData.requesterName || (this.getCurrentSession() ? this.getCurrentSession().fullName : "User")
+    };
+
+    if (existingIndex >= 0) {
+      drafts[existingIndex] = updatedDraft;
+    } else {
+      drafts.unshift(updatedDraft);
+    }
+    this.saveRequisitionDrafts(drafts);
+    return updatedDraft;
+  }
+
+  static deleteRequisitionDraft(draftId) {
+    let drafts = this.getRequisitionDrafts();
+    drafts = drafts.filter(d => d.id !== draftId);
+    this.saveRequisitionDrafts(drafts);
+  }
+
+  static submitMultiItemRequisition({ projectId, projectName, notes, items, requesterName, draftId }) {
+    if (!items || !items.length) {
+      throw new Error("No items selected for requisition!");
+    }
+    const components = this.getComponents();
+    const requests = this.getRequests();
+    const session = this.getCurrentSession();
+    const currentRole = this.getRole();
+    const batchId = "REQ-BATCH-" + Date.now().toString().slice(-4);
+    const name = requesterName || (session ? session.fullName : "Project Member");
+    const timestamp = new Date().toLocaleString();
+
+    const createdRequests = [];
+
+    items.forEach((item, idx) => {
+      const comp = components.find(c => c.id === item.componentId);
+      if (!comp) return;
+
+      const qty = parseInt(item.quantity) || 1;
+      const itemNotes = item.itemNotes ? ` [Note: ${item.itemNotes}]` : "";
+      const fullNotes = `[Batch ${batchId}] Project: '${projectName || "General"}'. ${notes || ''}${itemNotes}`.trim();
+
+      const newReq = {
+        id: `REQ-${Date.now().toString().slice(-4)}-${idx + 1}`,
+        batchId: batchId,
+        componentId: comp.id,
+        componentName: comp.name,
+        requesterName: name,
+        role: USER_ROLES[currentRole] || "Project Member",
+        projectId: projectId || null,
+        projectName: projectName || "General",
+        qtyRequested: qty,
+        qtyApproved: qty,
+        returnedQty: 0,
+        damagedQty: 0,
+        status: "SUBMITTED",
+        requestedAt: timestamp,
+        notes: fullNotes
+      };
+
+      requests.unshift(newReq);
+      createdRequests.push(newReq);
+
+      this.logTransaction(
+        comp.id,
+        comp.name,
+        "REQUEST_SUBMITTED",
+        0,
+        comp.quantity,
+        comp.quantity,
+        `Multi-Item Requisition #${batchId} (${idx + 1}/${items.length}) requested by ${name} (${qty} ${comp.unit || 'pcs'}).`
+      );
+    });
+
+    this.saveRequests(requests);
+
+    if (draftId) {
+      this.deleteRequisitionDraft(draftId);
+    }
+
+    this.addNotification(
+      "PENDING_APPROVAL",
+      `Multi-Item Requisition #${batchId} Submitted`,
+      `${name} submitted requisition batch #${batchId} with ${createdRequests.length} items for '${projectName || "General"}'.`
+    );
+
+    return { batchId, createdRequests };
   }
 
   // --- STAGE 2: TEAM LEAD REVIEW & MODIFY WORKFLOW ---

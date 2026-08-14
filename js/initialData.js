@@ -4845,3 +4845,34 @@ const INITIAL_USERS = [
   { id: "USR-1003", username: "researcher", email: "researcher@labsphere.io", passwordHash: "research123", role: "MANAGEMENT", fullName: "Research Associate", status: "ACTIVE", createdAt: "2026-08-01" },
   { id: "USR-1004", username: "student", email: "student@labsphere.io", passwordHash: "student123", role: "STUDENT", fullName: "Student Intern", status: "ACTIVE", createdAt: "2026-08-01" }
 ];
+
+const INITIAL_PROJECTS = [
+  {
+    id: "PROJ-101",
+    projectName: "IoT Weather Station & Environmental Monitor",
+    leaderName: "Lead Lab Engineer",
+    description: "Multi-sensor weather telemetry box with solar power management and LoRaWAN transmission.",
+    members: ["Lead Lab Engineer", "Student Intern", "Dr. Alex Mercer"],
+    bom: ["ESP32-WROOM-32", "DHT22 Temperature & Humidity Sensor", "0.96 inch OLED Display", "Solar Charge Controller Module"],
+    createdAt: "2026-08-05"
+  },
+  {
+    id: "PROJ-102",
+    projectName: "Autonomous Mobile Robot (AMR) Navigation",
+    leaderName: "Student Intern",
+    description: "ROS2-powered differential drive obstacle avoidance robot with LiDAR scanning & IMU telemetry.",
+    members: ["Student Intern", "Lead Lab Engineer"],
+    bom: ["Raspberry Pi 4 Model B", "L298N Motor Driver", "HC-SR04 Ultrasonic Sensor"],
+    createdAt: "2026-08-08"
+  },
+  {
+    id: "PROJ-103",
+    projectName: "Smart Microgrid Solar Power Tracker",
+    leaderName: "Research Associate",
+    description: "Dual-axis solar tracking array with automated MPPT battery charging efficiency monitoring.",
+    members: ["Research Associate", "Lab Administrator"],
+    bom: ["Arduino Uno R3", "Servo Motor SG90", "LDR Light Sensors"],
+    createdAt: "2026-08-10"
+  }
+];
+

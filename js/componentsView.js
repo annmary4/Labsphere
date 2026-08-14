@@ -496,40 +496,51 @@ class ComponentsView {
 
 // Global helper for Students/Interns & all users to request checkout for any component
 window.requestComponentCheckout = function(componentId) {
-  const components = StorageService.getComponents();
-  const c = components.find(item => item.id === componentId);
-  if (!c) {
-    alert("Component not found in catalog!");
-    return;
-  }
-
-  const qtyStr = prompt(`Request Material Checkout for '${c.name}':\n\nEnter quantity required (Available stock: ${c.quantity} ${c.unit || 'pcs'}):`, "1");
-  if (!qtyStr) return;
-  const qty = parseInt(qtyStr);
-  if (isNaN(qty) || qty <= 0) {
-    alert("Please enter a valid positive quantity number.");
-    return;
-  }
-
-  const session = StorageService.getCurrentSession();
-  const defaultName = session ? session.fullName : "Student Intern";
-  const requesterName = prompt("Enter Student / Requester Name:", defaultName);
-  if (!requesterName) return;
-
-  const notes = prompt("Enter Requisition Purpose / Note (optional):", "Student Lab Project / Prototyping Checkout") || "";
-
-  try {
-    StorageService.submitComponentRequest(c.id, qty, requesterName, notes);
-    const msg = `Success: Requisition request for ${qty} ${c.unit || 'pcs'} of '${c.name}' submitted! Pending Team Lead & Admin approval.`;
-    alert(msg);
-    if (window.ModalManager && window.ModalManager.showToast) {
-      window.ModalManager.showToast(`Checkout Request submitted for ${c.name} (${qty} pcs)`, "success");
+  if (window.ModalManager && window.ModalManager.openMultiItemRequestModal) {
+    window.ModalManager.openMultiItemRequestModal(componentId);
+  } else {
+    const components = StorageService.getComponents();
+    const c = components.find(item => item.id === componentId);
+    if (!c) {
+      alert("Component not found in catalog!");
+      return;
     }
-    if (window.App && window.App.refreshApp) {
-      window.App.refreshApp();
+
+    const qtyStr = prompt(`Request Material Checkout for '${c.name}':\n\nEnter quantity required (Available stock: ${c.quantity} ${c.unit || 'pcs'}):`, "1");
+    if (!qtyStr) return;
+    const qty = parseInt(qtyStr);
+    if (isNaN(qty) || qty <= 0) {
+      alert("Please enter a valid positive quantity number.");
+      return;
     }
-  } catch (err) {
-    alert(err.message);
+
+    const session = StorageService.getCurrentSession();
+    const defaultName = session ? session.fullName : "Student Intern";
+    const requesterName = prompt("Enter Student / Requester Name:", defaultName);
+    if (!requesterName) return;
+
+    const notes = prompt("Enter Requisition Purpose / Note (optional):", "Student Lab Project / Prototyping Checkout") || "";
+
+    try {
+      StorageService.submitComponentRequest(c.id, qty, requesterName, notes);
+      const msg = `Success: Requisition request for ${qty} ${c.unit || 'pcs'} of '${c.name}' submitted! Pending Team Lead & Admin approval.`;
+      alert(msg);
+      if (window.ModalManager && window.ModalManager.showToast) {
+        window.ModalManager.showToast(`Checkout Request submitted for ${c.name} (${qty} pcs)`, "success");
+      }
+      if (window.App && window.App.refreshApp) {
+        window.App.refreshApp();
+      }
+    } catch (err) {
+      alert(err.message);
+    }
+  }
+};
+
+window.addToRequisitionCart = function(componentId) {
+  if (window.ModalManager && window.ModalManager.addItemToRequisitionCart) {
+    window.ModalManager.addItemToRequisitionCart(componentId);
+    window.ModalManager.openMultiItemRequestModal();
   }
 };
 

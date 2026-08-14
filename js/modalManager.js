@@ -3598,5 +3598,486 @@ document.addEventListener("keydown", (e) => {
     if (sheetModal) sheetModal.remove();
     const directEdit = document.getElementById("direct-edit-dialog");
     if (directEdit) directEdit.remove();
+    if (ModalManager.closeMultiItemRequestModal) ModalManager.closeMultiItemRequestModal();
+    if (ModalManager.closeSavedDraftsPicker) ModalManager.closeSavedDraftsPicker();
   }
 });
+
+// --- MULTI-ITEM MATERIAL REQUISITION WORKBENCH ---
+ModalManager._requisitionState = {
+  currentDraftId: null,
+  projectId: null,
+  projectName: "General / Unassigned",
+  notes: "",
+  items: [],
+  lastSavedAt: null
+};
+
+ModalManager.openMultiItemRequestModal = function(initialComponentId = null) {
+  const backdrop = document.getElementById("multi-item-request-modal");
+  if (!backdrop) return;
+
+  this.populateReqProjectsDropdown();
+  this.populateReqCategoriesDropdown();
+
+  if (initialComponentId) {
+    this.addItemToRequisitionCart(initialComponentId);
+  }
+
+  this.handleReqInventorySearch("");
+  this.renderRequisitionCart();
+  this.updateReqDraftStatusPill();
+  this.updateSavedDraftsCountBadge();
+
+  if (window.lucide) window.lucide.createIcons();
+  backdrop.classList.remove("hidden");
+};
+
+ModalManager.closeMultiItemRequestModal = function() {
+  const backdrop = document.getElementById("multi-item-request-modal");
+  if (backdrop) backdrop.classList.add("hidden");
+};
+
+ModalManager.populateReqProjectsDropdown = function() {
+  const select = document.getElementById("req-project-select");
+  if (!select) return;
+
+  const projects = StorageService.getProjects();
+  select.innerHTML = `<option value="">-- General / Unassigned Requisition --</option>`;
+
+  projects.forEach(p => {
+    const opt = document.createElement("option");
+    opt.value = p.id;
+    opt.textContent = `${p.projectName} (${p.leaderName})`;
+    if (this._requisitionState.projectId === p.id) {
+      opt.selected = true;
+    }
+    select.appendChild(opt);
+  });
+
+  this.handleReqProjectChange();
+};
+
+ModalManager.populateReqCategoriesDropdown = function() {
+  const select = document.getElementById("req-inventory-category-filter");
+  if (!select) return;
+
+  const components = StorageService.getComponents();
+  const categories = Array.from(new Set(components.map(c => c.category).filter(Boolean))).sort();
+
+  select.innerHTML = `<option value="ALL">All Categories (${components.length} items)</option>`;
+  categories.forEach(cat => {
+    const opt = document.createElement("option");
+    opt.value = cat;
+    opt.textContent = cat;
+    select.appendChild(opt);
+  });
+};
+
+ModalManager.handleReqProjectChange = function() {
+  const select = document.getElementById("req-project-select");
+  const leaderBadge = document.getElementById("req-project-leader-name");
+  if (!select) return;
+
+  const projects = StorageService.getProjects();
+  const selectedProjId = select.value;
+  this._requisitionState.projectId = selectedProjId || null;
+
+  if (selectedProjId) {
+    const proj = projects.find(p => p.id === selectedProjId);
+    if (proj) {
+      this._requisitionState.projectName = proj.projectName;
+      if (leaderBadge) leaderBadge.innerText = proj.leaderName || "Team Lead";
+    }
+  } else {
+    this._requisitionState.projectName = "General / Unassigned";
+    if (leaderBadge) leaderBadge.innerText = "Unassigned";
+  }
+};
+
+ModalManager.handleReqInventorySearch = function(query = "") {
+  const catFilter = document.getElementById("req-inventory-category-filter");
+  const selectedCat = catFilter ? catFilter.value : "ALL";
+  const components = StorageService.getComponents();
+
+  const cleanQuery = (query || "").trim().toLowerCase();
+
+  const filtered = components.filter(c => {
+    const matchesCat = selectedCat === "ALL" || c.category === selectedCat;
+    if (!matchesCat) return false;
+
+    if (!cleanQuery) return true;
+
+    const nameMatch = (c.name || "").toLowerCase().includes(cleanQuery);
+    const partMatch = (c.partNumber || "").toLowerCase().includes(cleanQuery);
+    const skuMatch = (c.barcode || c.id || "").toLowerCase().includes(cleanQuery);
+    const boxMatch = (c.boxId || "").toLowerCase().includes(cleanQuery);
+    const tagMatch = (c.tags || []).some(t => String(t).toLowerCase().includes(cleanQuery));
+
+    return nameMatch || partMatch || skuMatch || boxMatch || tagMatch;
+  });
+
+  const matchesBadge = document.getElementById("req-search-matches-badge");
+  if (matchesBadge) {
+    matchesBadge.innerText = `${filtered.length} items found`;
+  }
+
+  this.renderReqSearchResults(filtered.slice(0, 35));
+};
+
+ModalManager.handleReqInventoryCategoryFilter = function(category) {
+  const searchInput = document.getElementById("req-inventory-search-input");
+  this.handleReqInventorySearch(searchInput ? searchInput.value : "");
+};
+
+ModalManager.renderReqSearchResults = function(results) {
+  const container = document.getElementById("req-search-results-container");
+  if (!container) return;
+
+  if (results.length === 0) {
+    container.innerHTML = `<div style="grid-column: 1 / -1; text-align:center; padding:20px; color:var(--text-muted); font-size:0.85rem;">No inventory components match search query.</div>`;
+    return;
+  }
+
+  container.innerHTML = results.map(c => {
+    const isAdded = this._requisitionState.items.some(i => i.componentId === c.id);
+    const stockClass = c.quantity <= 0 ? 'color:#ef4444;' : (c.quantity <= (c.minQuantity || 1) ? 'color:#f59e0b;' : 'color:#10b981;');
+
+    return `
+      <div style="background:#1e293b; border:1px solid var(--border-color); border-radius:8px; padding:10px; display:flex; justify-content:space-between; align-items:center; gap:8px;">
+        <div style="min-width:0;">
+          <h4 style="margin:0; font-size:0.85rem; color:var(--text-main); font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${c.name}</h4>
+          <span style="font-size:0.73rem; color:var(--text-muted); display:block;">${c.boxId ? `${c.boxId}` : 'No Box'} • Rate: ₹${c.unitPrice || 450}</span>
+          <span style="font-size:0.73rem; font-weight:700; ${stockClass}">Stock: ${c.quantity} ${c.unit || 'pcs'}</span>
+        </div>
+        <button class="btn btn-sm" onclick="ModalManager.addItemToRequisitionCart('${c.id}')" style="font-size:0.75rem; padding:6px 10px; ${isAdded ? 'background:#10b981; color:white; border:none;' : 'background:#0ea5e9; color:white; border:none;'} font-weight:800; border-radius:6px; cursor:pointer; flex-shrink:0;">
+          ${isAdded ? '✓ Added' : '+ Add'}
+        </button>
+      </div>
+    `;
+  }).join("");
+
+  if (window.lucide) window.lucide.createIcons();
+};
+
+ModalManager.addItemToRequisitionCart = function(componentId) {
+  const components = StorageService.getComponents();
+  const comp = components.find(c => c.id === componentId);
+  if (!comp) return;
+
+  const existing = this._requisitionState.items.find(i => i.componentId === componentId);
+  if (existing) {
+    existing.quantity = Math.min(comp.quantity || 999, existing.quantity + 1);
+  } else {
+    this._requisitionState.items.push({
+      componentId: comp.id,
+      componentName: comp.name,
+      partNumber: comp.partNumber || comp.id,
+      boxId: comp.boxId || "Unassigned",
+      availableStock: comp.quantity || 0,
+      unit: comp.unit || "pcs",
+      unitPrice: comp.unitPrice || 450,
+      quantity: 1,
+      itemNotes: ""
+    });
+  }
+
+  this.renderRequisitionCart();
+  const searchInput = document.getElementById("req-inventory-search-input");
+  this.handleReqInventorySearch(searchInput ? searchInput.value : "");
+  this.updateReqNavbarCartBadge();
+};
+
+ModalManager.removeItemFromRequisitionCart = function(componentId) {
+  this._requisitionState.items = this._requisitionState.items.filter(i => i.componentId !== componentId);
+  this.renderRequisitionCart();
+  const searchInput = document.getElementById("req-inventory-search-input");
+  this.handleReqInventorySearch(searchInput ? searchInput.value : "");
+  this.updateReqNavbarCartBadge();
+};
+
+ModalManager.updateRequisitionItemQty = function(componentId, qty) {
+  const item = this._requisitionState.items.find(i => i.componentId === componentId);
+  if (item) {
+    const val = parseInt(qty);
+    item.quantity = isNaN(val) ? 1 : Math.max(1, val);
+  }
+  this.renderRequisitionCart();
+};
+
+ModalManager.updateRequisitionItemNote = function(componentId, note) {
+  const item = this._requisitionState.items.find(i => i.componentId === componentId);
+  if (item) {
+    item.itemNotes = note || "";
+  }
+};
+
+ModalManager.handleReqNotesChange = function() {
+  const notesInput = document.getElementById("req-general-notes-input");
+  if (notesInput) {
+    this._requisitionState.notes = notesInput.value;
+  }
+};
+
+ModalManager.clearRequisitionCart = function() {
+  this._requisitionState.items = [];
+  this.renderRequisitionCart();
+  const searchInput = document.getElementById("req-inventory-search-input");
+  this.handleReqInventorySearch(searchInput ? searchInput.value : "");
+  this.updateReqNavbarCartBadge();
+};
+
+ModalManager.renderRequisitionCart = function() {
+  const tbody = document.getElementById("req-cart-table-body");
+  const countBadge = document.getElementById("req-cart-item-count");
+  const totalValBadge = document.getElementById("req-cart-total-value");
+  const notesInput = document.getElementById("req-general-notes-input");
+
+  if (notesInput && notesInput.value !== this._requisitionState.notes) {
+    notesInput.value = this._requisitionState.notes || "";
+  }
+
+  const items = this._requisitionState.items;
+  if (countBadge) countBadge.innerText = items.length;
+
+  let totalVal = 0;
+  items.forEach(i => {
+    totalVal += (i.quantity * (i.unitPrice || 450));
+  });
+
+  if (totalValBadge) {
+    totalValBadge.innerText = `₹${totalVal.toLocaleString('en-IN')}`;
+  }
+
+  if (!tbody) return;
+
+  if (items.length === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="6" style="text-align:center; padding:24px; color:var(--text-muted); font-size:0.88rem;">
+          <i data-lucide="shopping-cart" style="font-size:1.8rem; color:var(--text-muted); margin-bottom:6px; display:block; margin:0 auto 8px auto;"></i>
+          Requisition basket is currently empty. Use the search bar above to select components.
+        </td>
+      </tr>
+    `;
+    if (window.lucide) window.lucide.createIcons();
+    return;
+  }
+
+  tbody.innerHTML = items.map(item => {
+    const isExceeded = item.quantity > item.availableStock;
+    const stockWarn = isExceeded ? `<span style="color:#ef4444; font-size:0.72rem; font-weight:700; display:block;">⚠️ Exceeds Stock (${item.availableStock})</span>` : '';
+
+    return `
+      <tr style="border-bottom:1px solid rgba(255,255,255,0.05); background:#1e293b;">
+        <td style="padding:10px;">
+          <strong style="color:var(--text-main); font-size:0.85rem;">${item.componentName}</strong><br>
+          <span style="font-size:0.75rem; color:var(--text-muted);" class="mono">PN: ${item.partNumber}</span>
+        </td>
+        <td style="padding:10px;" class="mono text-muted">${item.boxId}</td>
+        <td style="padding:10px;">
+          <span style="font-size:0.82rem; font-weight:700; color:${item.availableStock > 0 ? '#10b981' : '#ef4444'};">
+            ${item.availableStock} ${item.unit}
+          </span>
+          ${stockWarn}
+        </td>
+        <td style="padding:10px;">
+          <input type="number" min="1" value="${item.quantity}" style="width:90px; padding:6px 8px; background:#0f172a; border:1px solid ${isExceeded ? '#ef4444' : 'var(--border-color)'}; border-radius:6px; color:white; font-weight:700; font-size:0.88rem;" onchange="ModalManager.updateRequisitionItemQty('${item.componentId}', this.value)" oninput="ModalManager.updateRequisitionItemQty('${item.componentId}', this.value)">
+        </td>
+        <td style="padding:10px;">
+          <input type="text" value="${item.itemNotes || ''}" placeholder="Item note (optional)..." style="width:100%; padding:6px 8px; background:#0f172a; border:1px solid var(--border-color); border-radius:6px; color:var(--text-main); font-size:0.8rem;" oninput="ModalManager.updateRequisitionItemNote('${item.componentId}', this.value)">
+        </td>
+        <td style="padding:10px; text-align:center;">
+          <button class="btn btn-secondary btn-sm" onclick="ModalManager.removeItemFromRequisitionCart('${item.componentId}')" style="padding:4px 8px; color:#ef4444; border-color:rgba(239,68,68,0.4);" title="Remove item from basket">
+            <i data-lucide="trash-2"></i>
+          </button>
+        </td>
+      </tr>
+    `;
+  }).join("");
+
+  if (window.lucide) window.lucide.createIcons();
+};
+
+ModalManager.handleSaveRequisitionDraft = function() {
+  this.handleReqNotesChange();
+  if (!this._requisitionState.items || this._requisitionState.items.length === 0) {
+    this.showToast("Cannot save draft: basket is empty. Please select components first.", "warning");
+    return;
+  }
+
+  try {
+    const saved = StorageService.saveRequisitionDraft({
+      id: this._requisitionState.currentDraftId,
+      projectId: this._requisitionState.projectId,
+      projectName: this._requisitionState.projectName,
+      notes: this._requisitionState.notes,
+      items: this._requisitionState.items
+    });
+
+    this._requisitionState.currentDraftId = saved.id;
+    this._requisitionState.lastSavedAt = saved.updatedAt;
+
+    this.updateReqDraftStatusPill();
+    this.updateSavedDraftsCountBadge();
+    this.showToast(`Requisition Draft saved successfully (${saved.items.length} items)`, "success");
+  } catch (err) {
+    this.showToast("Error saving draft: " + err.message, "error");
+  }
+};
+
+ModalManager.updateReqDraftStatusPill = function() {
+  const pill = document.getElementById("req-draft-status-pill");
+  const timeText = document.getElementById("req-draft-timestamp-text");
+  if (!pill) return;
+
+  if (this._requisitionState.currentDraftId) {
+    pill.innerText = `Draft Saved (${this._requisitionState.currentDraftId})`;
+    pill.style.background = "rgba(16,185,129,0.15)";
+    pill.style.color = "#10b981";
+    pill.style.borderColor = "rgba(16,185,129,0.3)";
+    if (timeText) timeText.innerText = `Last saved: ${this._requisitionState.lastSavedAt || 'Just now'}`;
+  } else {
+    pill.innerText = "New Requisition";
+    pill.style.background = "rgba(56,189,248,0.15)";
+    pill.style.color = "#38bdf8";
+    pill.style.borderColor = "rgba(56,189,248,0.3)";
+    if (timeText) timeText.innerText = "Draft unsaved";
+  }
+};
+
+ModalManager.updateSavedDraftsCountBadge = function() {
+  const countSpan = document.getElementById("req-saved-drafts-count");
+  if (!countSpan) return;
+  const drafts = StorageService.getRequisitionDrafts();
+  countSpan.innerText = drafts.length;
+};
+
+ModalManager.openSavedDraftsPicker = function() {
+  const backdrop = document.getElementById("saved-drafts-picker-modal");
+  const container = document.getElementById("saved-drafts-list-container");
+  if (!backdrop || !container) return;
+
+  const drafts = StorageService.getRequisitionDrafts();
+
+  if (drafts.length === 0) {
+    container.innerHTML = `<p class="text-muted" style="text-align:center; padding:20px;">No saved requisition drafts found in storage.</p>`;
+  } else {
+    container.innerHTML = drafts.map(d => `
+      <div style="background:#1e293b; border:1px solid var(--border-color); border-radius:8px; padding:12px; display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <strong style="color:var(--text-main); font-size:0.9rem;">${d.projectName}</strong>
+          <span style="font-size:0.75rem; color:var(--text-muted); display:block;">Draft ID: ${d.id} • ${d.items ? d.items.length : 0} items • Saved: ${d.updatedAt}</span>
+          ${d.notes ? `<small style="color:var(--primary); font-size:0.73rem;">Note: ${d.notes}</small>` : ''}
+        </div>
+        <div style="display:flex; gap:8px;">
+          <button class="btn btn-primary btn-sm" onclick="ModalManager.handleLoadSavedDraft('${d.id}')" style="background:#0ea5e9; border:none; font-weight:700; padding:6px 12px;">
+            Load Draft
+          </button>
+          <button class="btn btn-secondary btn-sm" onclick="ModalManager.handleDeleteSavedDraft('${d.id}', event)" style="color:#ef4444; border-color:rgba(239,68,68,0.4); padding:6px 10px;">
+            <i data-lucide="trash-2"></i>
+          </button>
+        </div>
+      </div>
+    `).join("");
+  }
+
+  if (window.lucide) window.lucide.createIcons();
+  backdrop.classList.remove("hidden");
+};
+
+ModalManager.closeSavedDraftsPicker = function() {
+  const backdrop = document.getElementById("saved-drafts-picker-modal");
+  if (backdrop) backdrop.classList.add("hidden");
+};
+
+ModalManager.handleLoadSavedDraft = function(draftId) {
+  const drafts = StorageService.getRequisitionDrafts();
+  const draft = drafts.find(d => d.id === draftId);
+  if (!draft) return;
+
+  this._requisitionState = {
+    currentDraftId: draft.id,
+    projectId: draft.projectId,
+    projectName: draft.projectName,
+    notes: draft.notes || "",
+    items: draft.items || [],
+    lastSavedAt: draft.updatedAt
+  };
+
+  this.closeSavedDraftsPicker();
+  this.populateReqProjectsDropdown();
+  this.renderRequisitionCart();
+  this.updateReqDraftStatusPill();
+  this.updateReqNavbarCartBadge();
+  this.showToast(`Loaded draft requisition '${draft.id}'`, "info");
+};
+
+ModalManager.handleDeleteSavedDraft = function(draftId, event) {
+  if (event) event.stopPropagation();
+  if (confirm(`Delete saved draft requisition '${draftId}'?`)) {
+    StorageService.deleteRequisitionDraft(draftId);
+    if (this._requisitionState.currentDraftId === draftId) {
+      this._requisitionState.currentDraftId = null;
+      this._requisitionState.lastSavedAt = null;
+      this.updateReqDraftStatusPill();
+    }
+    this.openSavedDraftsPicker();
+    this.updateSavedDraftsCountBadge();
+    this.showToast("Draft deleted", "info");
+  }
+};
+
+ModalManager.handleSubmitMultiItemRequisition = function() {
+  this.handleReqNotesChange();
+  if (!this._requisitionState.items || this._requisitionState.items.length === 0) {
+    alert("Please select at least one component item before submitting requisition!");
+    return;
+  }
+
+  const session = StorageService.getCurrentSession();
+  const requesterName = session ? session.fullName : "Project Member";
+
+  try {
+    const result = StorageService.submitMultiItemRequisition({
+      projectId: this._requisitionState.projectId,
+      projectName: this._requisitionState.projectName,
+      notes: this._requisitionState.notes,
+      items: this._requisitionState.items,
+      requesterName: requesterName,
+      draftId: this._requisitionState.currentDraftId
+    });
+
+    this.showToast(`Success: Requisition Batch #${result.batchId} submitted! (${result.createdRequests.length} items)`, "success");
+    alert(`Success: Requisition Batch #${result.batchId} submitted with ${result.createdRequests.length} component items!\n\nPending Team Lead & Admin approval.`);
+
+    this._requisitionState = {
+      currentDraftId: null,
+      projectId: null,
+      projectName: "General / Unassigned",
+      notes: "",
+      items: [],
+      lastSavedAt: null
+    };
+
+    this.closeMultiItemRequestModal();
+    this.updateReqNavbarCartBadge();
+    if (window.App && window.App.refreshApp) {
+      window.App.refreshApp();
+    }
+  } catch (err) {
+    alert("Requisition submission failed: " + err.message);
+  }
+};
+
+ModalManager.updateReqNavbarCartBadge = function() {
+  const badge = document.getElementById("req-cart-count-badge");
+  if (!badge) return;
+  const count = this._requisitionState ? this._requisitionState.items.length : 0;
+  badge.innerText = count;
+  if (count > 0) {
+    badge.classList.remove("hidden");
+  } else {
+    badge.classList.add("hidden");
+  }
+};

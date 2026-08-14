@@ -260,7 +260,10 @@
           </div>
         </div>
 
-        <!-- Student Actions -->
+        <!-- Student & General Actions -->
+        <button id="btn-multi-item-req" class="btn btn-primary" title="Create Multi-Item Component Requisition" style="background:linear-gradient(135deg, #0284c7 0%, #2563eb 100%); font-weight:700;">
+          <i data-lucide="shopping-bag"></i> Multi-Item Request <span id="req-cart-count-badge" class="count-badge hidden" style="background:#f59e0b; color:#0f172a; margin-left:4px;">0</span>
+        </button>
         <button id="btn-student-reqs" class="btn btn-secondary" title="My Component Requests & Issued Items">
           <i data-lucide="clipboard-list"></i> My Requests
         </button>
@@ -402,6 +405,14 @@
             <small style="font-size:0.7rem; color:var(--text-muted);">Review & Approve Requisitions</small>
           </div>
           <span id="drawer-approvals-badge" class="count-badge danger hidden" style="margin-left:auto;">0</span>
+        </button>
+
+        <button class="drawer-menu-item" id="drawer-btn-multi-item-req" style="background:rgba(2,132,199,0.15); border:1px solid rgba(2,132,199,0.3);">
+          <i data-lucide="shopping-bag" style="font-size:1.2rem; color:#38bdf8;"></i>
+          <div style="display:flex; flex-direction:column; text-align:left;">
+            <span style="font-weight:700; color:#38bdf8;">Multi-Item Requisition</span>
+            <small style="font-size:0.7rem; color:var(--text-muted);">Request Multiple Components</small>
+          </div>
         </button>
 
         <button class="drawer-menu-item" id="drawer-btn-student-reqs">
@@ -1087,8 +1098,12 @@
           <button class="modal-close" id="btn-close-student-req-modal"><i data-lucide="x"></i></button>
         </div>
         <div class="modal-body">
-          <p class="modal-desc">Track status of submitted checkout requests and return borrowed items back to laboratory
-            stock.</p>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
+            <p class="modal-desc" style="margin:0;">Track status of submitted checkout requests and return borrowed items back to laboratory stock.</p>
+            <button class="btn btn-primary btn-sm" onclick="ModalManager.closeStudentRequestsModal(); ModalManager.openMultiItemRequestModal();" style="background:linear-gradient(135deg, #0284c7 0%, #2563eb 100%); font-weight:800; padding:8px 14px; border:none; border-radius:6px; cursor:pointer;">
+              <i data-lucide="shopping-bag"></i> + New Multi-Item Requisition
+            </button>
+          </div>
           <div class="student-requests-container" id="student-requests-container">
             <!-- Request cards -->
           </div>
@@ -1746,6 +1761,156 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
         </div>
         <div class="modal-footer">
           <button class="btn btn-secondary" onclick="ModalManager.closeStorageSnapshotsModal()">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Multi-Item Material Requisition Workbench Modal -->
+    <div class="modal-backdrop hidden" id="multi-item-request-modal">
+      <div class="modal-content modal-xl" style="max-width:1100px;">
+        <div class="modal-header" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border-bottom:1px solid var(--border-color);">
+          <div class="modal-title-group">
+            <i data-lucide="shopping-bag" style="color:var(--primary); font-size:1.6rem;"></i>
+            <div>
+              <h2 style="margin:0; font-size:1.3rem; color:var(--text-main);">Multi-Item Material Requisition</h2>
+              <span style="font-size:0.8rem; color:var(--text-muted);">Select Project Workspace, Search Inventory, Request Multiple Components, Add Notes & Submit</span>
+            </div>
+          </div>
+          <div style="display:flex; align-items:center; gap:12px; margin-left:auto; margin-right:12px;">
+            <span id="req-draft-status-pill" class="badge" style="background:rgba(56,189,248,0.15); color:#38bdf8; border:1px solid rgba(56,189,248,0.3); font-size:0.75rem; padding:4px 10px; border-radius:20px; font-weight:600;">New Requisition</span>
+            <button class="btn btn-secondary btn-sm" id="btn-open-drafts-picker" onclick="ModalManager.openSavedDraftsPicker()" title="View Saved Draft Requisitions">
+              <i data-lucide="folder-open"></i> Saved Drafts (<span id="req-saved-drafts-count">0</span>)
+            </button>
+          </div>
+          <button class="modal-close" onclick="ModalManager.closeMultiItemRequestModal()" style="cursor:pointer; background:none; border:none; color:white; font-size:1.6rem; font-weight:800; padding:4px 12px; line-height:1;" title="Close Window">&times;</button>
+        </div>
+
+        <div class="modal-body" style="padding:20px; display:flex; flex-direction:column; gap:20px;">
+          
+          <!-- SECTION 1: SELECT PROJECT WORKSPACE -->
+          <div class="req-section-card" style="background:var(--bg-dark); border:1px solid var(--border-color); border-radius:12px; padding:16px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+              <h3 style="margin:0; font-size:1rem; color:var(--primary); display:flex; align-items:center; gap:8px;">
+                <i data-lucide="folder-kanban"></i> 1. Select Project Workspace *
+              </h3>
+              <small class="text-muted">Link material checkout with an active project workspace</small>
+            </div>
+            <div style="display:grid; grid-template-columns: 2fr 1fr; gap:12px; align-items:center;">
+              <div>
+                <select id="req-project-select" class="form-control" style="background:#0f172a; color:var(--text-main); font-weight:600; padding:10px 14px; border-radius:8px; border:1px solid var(--border-color); width:100%;" onchange="ModalManager.handleReqProjectChange()">
+                  <!-- Dynamically populated -->
+                </select>
+              </div>
+              <div id="req-project-info-badge" style="background:#1e293b; padding:8px 12px; border-radius:8px; border:1px solid rgba(255,255,255,0.08); font-size:0.82rem;">
+                <span style="color:var(--text-muted);">Leader: </span><strong id="req-project-leader-name" style="color:var(--text-main);">Unassigned</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- SECTION 2: SEARCH INVENTORY & SELECT COMPONENTS -->
+          <div class="req-section-card" style="background:var(--bg-dark); border:1px solid var(--border-color); border-radius:12px; padding:16px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+              <h3 style="margin:0; font-size:1rem; color:var(--primary); display:flex; align-items:center; gap:8px;">
+                <i data-lucide="search"></i> 2. Search & Select Inventory Components
+              </h3>
+              <span id="req-search-matches-badge" class="badge" style="background:var(--bg-card); color:var(--text-muted); border:1px solid var(--border-color);">Search catalog...</span>
+            </div>
+            
+            <div style="display:grid; grid-template-columns: 3fr 1.5fr; gap:12px; margin-bottom:14px;">
+              <div class="search-input-wrapper" style="position:relative;">
+                <i data-lucide="search" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--text-muted); font-size:1.1rem;"></i>
+                <input type="text" id="req-inventory-search-input" placeholder="Search catalog by name, part #, SKU, category, tag or location..." style="width:100%; padding:10px 12px 10px 38px; background:#0f172a; border:1px solid var(--border-color); border-radius:8px; color:var(--text-main); font-size:0.9rem;" oninput="ModalManager.handleReqInventorySearch(this.value)">
+              </div>
+              <div>
+                <select id="req-inventory-category-filter" style="width:100%; padding:10px 12px; background:#0f172a; border:1px solid var(--border-color); border-radius:8px; color:var(--text-main); font-size:0.85rem;" onchange="ModalManager.handleReqInventoryCategoryFilter(this.value)">
+                  <option value="ALL">All Categories</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Quick Search Results Grid -->
+            <div id="req-search-results-container" style="max-height:220px; overflow-y:auto; display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:10px; background:#0f172a; padding:10px; border-radius:8px; border:1px dashed var(--border-color);">
+              <!-- Rendered search result component items -->
+            </div>
+          </div>
+
+          <!-- SECTION 3: REQUEST MULTIPLE ITEMS & ENTER REQUIRED QUANTITY -->
+          <div class="req-section-card" style="background:var(--bg-dark); border:1px solid var(--border-color); border-radius:12px; padding:16px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+              <h3 style="margin:0; font-size:1rem; color:var(--primary); display:flex; align-items:center; gap:8px;">
+                <i data-lucide="layers"></i> 3. Requisition Items Basket (<span id="req-cart-item-count">0</span> items)
+              </h3>
+              <div style="display:flex; gap:10px; align-items:center;">
+                <span class="text-muted" style="font-size:0.82rem;">Est. Requisition Valuation: <strong id="req-cart-total-value" style="color:var(--success);">₹0</strong></span>
+                <button class="btn btn-secondary btn-sm" onclick="ModalManager.clearRequisitionCart()" style="font-size:0.75rem; color:#ef4444; border-color:rgba(239,68,68,0.3);">
+                  <i data-lucide="trash-2"></i> Clear Basket
+                </button>
+              </div>
+            </div>
+
+            <div class="procurement-table-wrapper" style="max-height:260px; overflow-y:auto;">
+              <table class="component-table" style="width:100%; border-collapse:collapse;">
+                <thead>
+                  <tr style="background:#0f172a; text-align:left; font-size:0.8rem; color:var(--text-muted);">
+                    <th style="padding:10px;">Item & SKU</th>
+                    <th style="padding:10px;">Location Box</th>
+                    <th style="padding:10px;">Available Stock</th>
+                    <th style="padding:10px; width:140px;">Required Qty *</th>
+                    <th style="padding:10px;">Item Note</th>
+                    <th style="padding:10px; text-align:center; width:60px;">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="req-cart-table-body">
+                  <!-- Dynamic cart rows -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- SECTION 4: ADD REQUEST NOTES -->
+          <div class="req-section-card" style="background:var(--bg-dark); border:1px solid var(--border-color); border-radius:12px; padding:16px;">
+            <h3 style="margin:0 0 10px 0; font-size:1rem; color:var(--primary); display:flex; align-items:center; gap:8px;">
+              <i data-lucide="message-square"></i> 4. Add Requisition Purpose & Notes
+            </h3>
+            <textarea id="req-general-notes-input" rows="2" placeholder="Describe overall purpose of this requisition, lab assignment, experiment milestone, or project justification..." style="width:100%; padding:10px; background:#0f172a; border:1px solid var(--border-color); border-radius:8px; color:var(--text-main); font-size:0.88rem; font-family:inherit;" oninput="ModalManager.handleReqNotesChange()"></textarea>
+          </div>
+
+        </div>
+
+        <div class="modal-footer" style="display:flex; justify-content:space-between; align-items:center; background:#0f172a; padding:14px 20px; border-top:1px solid var(--border-color);">
+          <div style="display:flex; gap:10px; align-items:center;">
+            <button id="btn-req-save-draft" class="btn btn-secondary" onclick="ModalManager.handleSaveRequisitionDraft()" style="background:#1e293b; color:#38bdf8; border:1px solid #0284c7; font-weight:700; padding:10px 18px;">
+              <i data-lucide="save"></i> Save Draft
+            </button>
+            <small id="req-draft-timestamp-text" class="text-muted" style="font-size:0.78rem;">Draft unsaved</small>
+          </div>
+          <div style="display:flex; gap:10px; align-items:center;">
+            <button class="btn btn-secondary" onclick="ModalManager.closeMultiItemRequestModal()">Cancel</button>
+            <button id="btn-req-submit-final" class="btn btn-primary" onclick="ModalManager.handleSubmitMultiItemRequisition()" style="background:linear-gradient(135deg, #0284c7 0%, #2563eb 100%); font-weight:800; padding:10px 24px;">
+              <i data-lucide="send"></i> Submit Requisition
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Saved Drafts Picker Modal -->
+    <div class="modal-backdrop hidden" id="saved-drafts-picker-modal" style="z-index:1100;">
+      <div class="modal-card" style="max-width:600px; background:#0f172a; border:1px solid var(--border-color); border-radius:12px; padding:20px;">
+        <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+          <h2 style="margin:0; font-size:1.1rem; color:var(--text-main); display:flex; align-items:center; gap:8px;">
+            <i data-lucide="folder-open" style="color:var(--primary);"></i> Saved Draft Requisitions
+          </h2>
+          <button class="btn-close" onclick="ModalManager.closeSavedDraftsPicker()" style="background:none; border:none; color:white; font-size:1.4rem; cursor:pointer;">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p class="text-muted" style="font-size:0.85rem; margin-bottom:12px;">Select a previously saved draft to resume editing or submit:</p>
+          <div id="saved-drafts-list-container" style="display:flex; flex-direction:column; gap:10px; max-height:350px; overflow-y:auto;">
+            <!-- Dynamically rendered drafts -->
+          </div>
+        </div>
+        <div class="modal-footer" style="margin-top:16px; text-align:right;">
+          <button class="btn btn-secondary" onclick="ModalManager.closeSavedDraftsPicker()">Close</button>
         </div>
       </div>
     </div>
