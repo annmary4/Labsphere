@@ -2,18 +2,18 @@
    LabSphere Service Worker - Offline Cache & PWA Support
    ============================================================ */
 
-const CACHE_NAME = 'labsphere-v10430_demo_requests';
+const CACHE_NAME = 'labsphere-v10450_clean_approvals';
 const ASSETS_TO_CACHE = [
   '/Labsphere/',
   '/Labsphere/index.html',
-  '/Labsphere/css/styles.css?v=10430_demo_requests',
-  '/Labsphere/js/app.js?v=10430_demo_requests',
-  '/Labsphere/js/types.js?v=10430_demo_requests',
-  '/Labsphere/js/initialData.js?v=10430_demo_requests',
-  '/Labsphere/js/storage.js?v=10430_demo_requests',
-  '/Labsphere/js/rackViewer.js?v=10430_demo_requests',
-  '/Labsphere/js/componentsView.js?v=10430_demo_requests',
-  '/Labsphere/js/modalManager.js?v=10430_demo_requests',
+  '/Labsphere/css/styles.css?v=10450_clean_approvals',
+  '/Labsphere/js/app.js?v=10450_clean_approvals',
+  '/Labsphere/js/types.js?v=10450_clean_approvals',
+  '/Labsphere/js/initialData.js?v=10450_clean_approvals',
+  '/Labsphere/js/storage.js?v=10450_clean_approvals',
+  '/Labsphere/js/rackViewer.js?v=10450_clean_approvals',
+  '/Labsphere/js/componentsView.js?v=10450_clean_approvals',
+  '/Labsphere/js/modalManager.js?v=10450_clean_approvals',
   '/Labsphere/icons/icon-192.png',
   '/Labsphere/icons/icon-512.png',
   '/Labsphere/manifest.json'

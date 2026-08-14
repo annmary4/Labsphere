@@ -1744,17 +1744,12 @@ class ModalManager {
 
     if (container) {
       container.innerHTML = `
-        <div style="background:rgba(56,189,248,0.1); border:1px solid rgba(56,189,248,0.3); border-radius:10px; padding:12px 16px; margin-bottom:16px; font-size:0.85rem; color:#38bdf8; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-          <div style="display:flex; align-items:center; gap:10px;">
-            <i data-lucide="shield-check" style="font-size:1.4rem; flex-shrink:0;"></i>
-            <div>
-              <strong>Administrator Material Approval & Stock Issuance Center</strong><br>
-              Review component requests submitted by Students, Interns, and Engineers. Click <strong>'Direct Approve & Issue Stock'</strong> or <strong>'Issue Materials from Stock'</strong> to authorize material pickup and update physical inventory levels.
-            </div>
+        <div style="background:rgba(56,189,248,0.1); border:1px solid rgba(56,189,248,0.3); border-radius:10px; padding:12px 16px; margin-bottom:16px; font-size:0.85rem; color:#38bdf8; display:flex; align-items:center; gap:10px;">
+          <i data-lucide="shield-check" style="font-size:1.4rem; flex-shrink:0;"></i>
+          <div>
+            <strong>Administrator Material Approval Center</strong><br>
+            Review materials requested by students and researchers. Click <strong>'Approve & Issue Stock'</strong> to authorize material checkout or <strong>'Reject'</strong> to decline.
           </div>
-          <button class="btn btn-secondary btn-sm" onclick="ModalManager.addDemoStudentRequest()" style="background:#0284c7; color:white; border:none; font-weight:700; white-space:nowrap; padding:6px 12px; cursor:pointer;" title="Simulate a new student checkout request for testing">
-            <i data-lucide="plus-circle"></i> + Add Test Student Request
-          </button>
         </div>
       `;
       if (requests.length === 0) {
@@ -1765,16 +1760,13 @@ class ModalManager {
           card.className = "approval-card";
           card.style.cssText = "background:var(--bg-dark); border:1px solid var(--border-color); border-radius:12px; padding:16px; margin-bottom:14px;";
 
-          const isSubmittedState = r.status === "SUBMITTED" || r.status === "PENDING";
-          const isLeadApprovedState = r.status === "LEAD_APPROVED" || r.status === "LEAD_MODIFIED";
-
           card.innerHTML = `
             <div class="approval-header" style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-color); padding-bottom:8px; margin-bottom:10px;">
               <div>
                 <strong style="font-size:1.1rem; color:var(--text-main);">${r.componentName}</strong>
                 <span class="mono text-muted" style="font-size:0.8rem; margin-left:8px;">#${r.id}</span>
               </div>
-              <span class="stock-tag ${isSubmittedState ? 'warning' : 'info'}">${isSubmittedState ? '⏳ Stage 1: Pending Lead Review' : '✅ Stage 2: Ready for Admin Issue'}</span>
+              <span class="stock-tag warning">⏳ Pending Approval</span>
             </div>
 
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; font-size:0.85rem; margin-bottom:10px;">
@@ -1789,33 +1781,19 @@ class ModalManager {
               </div>
               <div>
                 <span class="text-muted">Approved Qty:</span> 
-                ${isSubmittedState ? `
-                  <input type="number" class="approved-qty-input" data-id="${r.id}" value="${r.qtyApproved || r.qtyRequested}" min="1" style="width:70px; padding:2px 6px; background:var(--bg-card); border:1px solid var(--primary); color:white; border-radius:4px; font-weight:700;" />
-                ` : `<strong style="color:var(--primary);">${r.qtyApproved || r.qtyRequested} pcs</strong>`}
+                <input type="number" class="approved-qty-input" data-id="${r.id}" value="${r.qtyApproved || r.qtyRequested}" min="1" style="width:70px; padding:2px 6px; background:var(--bg-card); border:1px solid var(--primary); color:white; border-radius:4px; font-weight:700;" />
               </div>
             </div>
 
-            ${r.leadName ? `<p style="font-size:0.8rem; color:var(--primary); margin-bottom:6px;">👨‍💻 Team Lead Reviewer: <strong>${r.leadName}</strong> (${r.leadApprovedAt || 'Approved'})</p>` : ''}
-            <p class="approval-notes" style="font-size:0.82rem; background:rgba(255,255,255,0.04); padding:8px; border-radius:6px;">${r.notes}</p>
+            <p class="approval-notes" style="font-size:0.82rem; background:rgba(255,255,255,0.04); padding:8px; border-radius:6px; margin-bottom:12px;">${r.notes}</p>
 
-            <div class="approval-actions" style="display:flex; gap:10px; margin-top:12px; justify-content:flex-end; flex-wrap:wrap;">
-              ${isSubmittedState ? `
-                <button class="btn btn-primary btn-lead-approve" data-id="${r.id}" style="background:var(--primary); color:#0f172a; font-weight:800;">
-                  <i data-lucide="check-circle"></i> Lead Approve / Modify
-                </button>
-                <button class="btn btn-success btn-admin-direct-issue" data-id="${r.id}" style="background:var(--accent-green); color:#0f172a; font-weight:800;" title="Approve & Issue materials directly from stock">
-                  <i data-lucide="package-check"></i> Direct Approve & Issue Stock
-                </button>
-                <button class="btn btn-danger btn-lead-reject" data-id="${r.id}">
-                  <i data-lucide="x-circle"></i> Reject
-                </button>
-              ` : ''}
-
-              ${isLeadApprovedState ? `
-                <button class="btn btn-success btn-admin-issue" data-id="${r.id}" style="background:var(--accent-green); color:#0f172a; font-weight:800;">
-                  <i data-lucide="package-check"></i> Issue Materials from Stock
-                </button>
-              ` : ''}
+            <div class="approval-actions" style="display:flex; gap:10px; justify-content:flex-end;">
+              <button class="btn btn-success btn-admin-direct-issue" data-id="${r.id}" style="background:var(--accent-green); color:#0f172a; font-weight:800;" title="Approve & Issue materials directly from stock">
+                <i data-lucide="check-circle"></i> Approve & Issue Stock
+              </button>
+              <button class="btn btn-danger btn-lead-reject" data-id="${r.id}">
+                <i data-lucide="x-circle"></i> Reject
+              </button>
             </div>
           `;
 
@@ -1905,32 +1883,6 @@ class ModalManager {
 
     if (window.lucide) window.lucide.createIcons();
     if (backdrop) backdrop.classList.remove("hidden");
-  }
-
-  static addDemoStudentRequest() {
-    const components = StorageService.getComponents();
-    if (!components || !components.length) {
-      alert("No components in catalog!");
-      return;
-    }
-    const comp = components[Math.floor(Math.random() * Math.min(12, components.length))];
-    const reqNames = ["Alex Chen (Student Intern)", "Maya Lin (Research Student)", "James Wilson (Intern)", "Priya Sharma (Student)"];
-    const randomName = reqNames[Math.floor(Math.random() * reqNames.length)];
-    const randomQty = Math.floor(Math.random() * 3) + 1;
-
-    try {
-      StorageService.submitComponentRequest(
-        comp.id,
-        randomQty,
-        randomName,
-        `[Test Request] Student prototyping checkout for '${comp.name}'.`
-      );
-      if (this.showToast) this.showToast(`Test student request added for ${comp.name} (${randomQty} pcs)`, "success");
-      this.openAdminApprovalModal();
-      if (this.callbacks.onInventoryChanged) this.callbacks.onInventoryChanged();
-    } catch (err) {
-      alert("Error generating test request: " + err.message);
-    }
   }
 
   static closeAdminApprovalModal() {
