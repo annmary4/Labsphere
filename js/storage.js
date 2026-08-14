@@ -2,7 +2,7 @@
  * LabSphere Storage Service - Complete 59-Component Catalog (v35)
  */
 
-const CURRENT_VERSION = "v10520_registered_users_requisition_sync";
+const CURRENT_VERSION = "v10600_registered_users_strict_filter";
 
 const STORAGE_KEYS = {
   VERSION: "labsphere_version_v10250",
@@ -1119,9 +1119,21 @@ class StorageService {
       if (data) {
         let parsed = JSON.parse(data);
         if (Array.isArray(parsed)) {
-          // Remove external sample/test dummy names
-          const dummyNames = ["Dr. Sarah Jenkins", "Alex Chen (Student Intern)", "Maya Lin (Research Student)", "James Wilson (Intern)", "Priya Sharma (Student)"];
-          const cleaned = parsed.filter(r => !dummyNames.includes(r.requesterName));
+          // Strictly allow only requisitions submitted by real registered users in the database
+          const users = this.getUsers();
+          const validUserNames = users.map(u => (u.fullName || u.username || "").toLowerCase().trim()).filter(Boolean);
+
+          const cleaned = parsed.filter(r => {
+            if (!r || !r.requesterName) return false;
+            const reqNameLower = r.requesterName.toLowerCase().trim();
+            // Reject any legacy dummy test names
+            if (reqNameLower.includes("sarah") || reqNameLower.includes("jenkins") || reqNameLower.includes("alex chen") || reqNameLower.includes("maya lin")) {
+              return false;
+            }
+            // Check if requester matches a registered account or registered student/intern session
+            return validUserNames.some(uName => reqNameLower.includes(uName) || uName.includes(reqNameLower));
+          });
+
           if (cleaned.length !== parsed.length) {
             this.saveRequests(cleaned);
           }

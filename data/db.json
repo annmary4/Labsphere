@@ -4667,25 +4667,7 @@
       "createdAt": "2026-07-25"
     }
   ],
-  "requests": [
-    {
-      "id": "REQ-5001",
-      "componentId": "COMP-001",
-      "componentName": "Arduino Nano",
-      "requesterName": "Sarah Jenkins (Intern)",
-      "role": "Student / Intern",
-      "projectId": "PROJ-001",
-      "projectName": "Autonomous Line Follower & Maze Solver Robot",
-      "qtyRequested": 2,
-      "returnedQty": 1,
-      "dueDate": "2026-08-05",
-      "condition": "GOOD",
-      "status": "PARTIAL_RETURN",
-      "requestedAt": "2026-07-27 09:15:00",
-      "approvedAt": "2026-07-27 09:30:00",
-      "notes": "Partial return: 1 unit returned in GOOD working condition."
-    }
-  ],
+  "requests": [],
   "transactions": [
     {
       "id": "TXN-1785914695219",
