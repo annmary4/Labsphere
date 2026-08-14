@@ -200,9 +200,11 @@ class ComponentsView {
           <span class="stock-tag ${stockTagClass}">${stockLabel}</span>
           <span class="card-qty">${c.quantity} <small>${c.unit || 'pcs'}</small></span>
           
-          <button class="btn btn-warning btn-sm btn-req-checkout-card" data-id="${c.id}" onclick="event.stopPropagation(); window.requestComponentCheckout('${c.id}');" title="Submit Checkout Requisition for ${c.name}" style="padding:6px 12px; font-size:0.8rem; font-weight:800; background:#f59e0b; color:#0f172a; border:none; border-radius:6px; cursor:pointer; box-shadow:0 2px 8px rgba(245,158,11,0.4);">
-            <i data-lucide="shopping-bag"></i> Request Checkout
-          </button>
+          ${!StorageService.isRole("ADMIN") ? `
+            <button class="btn btn-warning btn-sm btn-req-checkout-card" data-id="${c.id}" onclick="event.stopPropagation(); window.requestComponentCheckout('${c.id}');" title="Submit Checkout Requisition for ${c.name}" style="padding:6px 12px; font-size:0.8rem; font-weight:800; background:#f59e0b; color:#0f172a; border:none; border-radius:6px; cursor:pointer; box-shadow:0 2px 8px rgba(245,158,11,0.4);">
+              <i data-lucide="shopping-bag"></i> Request Checkout
+            </button>
+          ` : ''}
           <button class="btn btn-primary btn-sm btn-edit-direct" data-id="${c.id}" onclick="event.stopPropagation(); window.openComponentEditDialog('${c.id}');" title="Edit details, quantity, rate, and box location for ${c.name}" style="padding:6px 14px; font-size:0.8rem; font-weight:800; background:#0ea5e9; color:white; border:none; border-radius:6px; cursor:pointer; box-shadow:0 2px 8px rgba(14,165,233,0.5);">
             Edit Details
           </button>
@@ -440,9 +442,11 @@ class ComponentsView {
         <td class="mono"><strong>${c.quantity}</strong> ${c.unit || 'pcs'}</td>
         <td>
           <div style="display:flex; gap:6px;">
-            <button class="btn btn-warning btn-sm btn-req-checkout-row" onclick="event.stopPropagation(); window.requestComponentCheckout('${c.id}');" title="Request Checkout for ${c.name}" style="background:#f59e0b; color:#0f172a; font-weight:800; border:none;">
-              <i data-lucide="shopping-bag"></i> Request
-            </button>
+            ${!StorageService.isRole("ADMIN") ? `
+              <button class="btn btn-warning btn-sm btn-req-checkout-row" onclick="event.stopPropagation(); window.requestComponentCheckout('${c.id}');" title="Request Checkout for ${c.name}" style="background:#f59e0b; color:#0f172a; font-weight:800; border:none;">
+                <i data-lucide="shopping-bag"></i> Request
+              </button>
+            ` : ''}
             ${c.datasheetUrl ? `<a href="${c.datasheetUrl}" target="_blank" class="btn btn-secondary btn-sm" title="View PDF Datasheet"><i data-lucide="file-text"></i> PDF</a>` : ''}
             <button class="btn btn-secondary btn-sm btn-print-table-qr" title="Print Box QR Label for ${c.boxId}">
               <i data-lucide="printer"></i> Box QR
