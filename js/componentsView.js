@@ -496,6 +496,16 @@ class ComponentsView {
 
 // Global helper for Students/Interns & all users to request checkout for any component
 window.requestComponentCheckout = function(componentId) {
+  if (StorageService.isRole("ADMIN")) {
+    if (window.ModalManager && window.ModalManager.showToast) {
+      window.ModalManager.showToast("As Lab Administrator, your role is to review & approve material requests. Opening Approvals Queue.", "info");
+    }
+    if (window.ModalManager && window.ModalManager.openAdminApprovalModal) {
+      window.ModalManager.openAdminApprovalModal();
+    }
+    return;
+  }
+
   if (window.ModalManager && window.ModalManager.openMultiItemRequestModal) {
     window.ModalManager.openMultiItemRequestModal(componentId);
   } else {
@@ -538,6 +548,12 @@ window.requestComponentCheckout = function(componentId) {
 };
 
 window.addToRequisitionCart = function(componentId) {
+  if (StorageService.isRole("ADMIN")) {
+    if (window.ModalManager && window.ModalManager.openAdminApprovalModal) {
+      window.ModalManager.openAdminApprovalModal();
+    }
+    return;
+  }
   if (window.ModalManager && window.ModalManager.addItemToRequisitionCart) {
     window.ModalManager.addItemToRequisitionCart(componentId);
     window.ModalManager.openMultiItemRequestModal();

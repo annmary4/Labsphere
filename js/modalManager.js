@@ -1780,10 +1780,13 @@ class ModalManager {
             ${r.leadName ? `<p style="font-size:0.8rem; color:var(--primary); margin-bottom:6px;">👨‍💻 Team Lead Reviewer: <strong>${r.leadName}</strong> (${r.leadApprovedAt || 'Approved'})</p>` : ''}
             <p class="approval-notes" style="font-size:0.82rem; background:rgba(255,255,255,0.04); padding:8px; border-radius:6px;">${r.notes}</p>
 
-            <div class="approval-actions" style="display:flex; gap:10px; margin-top:12px; justify-flex-end;">
+            <div class="approval-actions" style="display:flex; gap:10px; margin-top:12px; justify-content:flex-end; flex-wrap:wrap;">
               ${isSubmittedState ? `
                 <button class="btn btn-primary btn-lead-approve" data-id="${r.id}" style="background:var(--primary); color:#0f172a; font-weight:800;">
-                  <i data-lucide="check-circle"></i> Team Lead Approve / Modify
+                  <i data-lucide="check-circle"></i> Lead Approve / Modify
+                </button>
+                <button class="btn btn-success btn-admin-direct-issue" data-id="${r.id}" style="background:var(--accent-green); color:#0f172a; font-weight:800;" title="Approve & Issue materials directly from stock">
+                  <i data-lucide="package-check"></i> Direct Approve & Issue Stock
                 </button>
                 <button class="btn btn-danger btn-lead-reject" data-id="${r.id}">
                   <i data-lucide="x-circle"></i> Reject
@@ -1830,6 +1833,27 @@ class ModalManager {
               try {
                 StorageService.reviewLeadRequest(r.id, 0, reviewer, "REJECT", reason || "");
                 alert(`Request #${r.id} rejected.`);
+                this.openAdminApprovalModal();
+                if (this.callbacks.onInventoryChanged) this.callbacks.onInventoryChanged();
+              } catch (err) {
+                alert(err.message);
+              }
+            });
+          }
+
+          // Admin Direct Approve & Issue Listener
+          const btnAdminDirectIssue = card.querySelector(".btn-admin-direct-issue");
+          if (btnAdminDirectIssue) {
+            btnAdminDirectIssue.addEventListener("click", () => {
+              const qtyInput = card.querySelector(".approved-qty-input");
+              const numQty = parseInt(qtyInput ? qtyInput.value : r.qtyRequested) || r.qtyRequested;
+              const session = StorageService.getCurrentSession();
+              const reviewer = session ? session.fullName : "Lab Administrator";
+
+              try {
+                StorageService.reviewLeadRequest(r.id, numQty, reviewer, "APPROVE");
+                StorageService.issueMaterials(r.id, reviewer);
+                alert(`Success: Approved & ISSUED ${numQty} pcs of '${r.componentName}' for request #${r.id}! Physical inventory stock updated.`);
                 this.openAdminApprovalModal();
                 if (this.callbacks.onInventoryChanged) this.callbacks.onInventoryChanged();
               } catch (err) {

@@ -621,11 +621,13 @@ class App {
       }
     });
 
-    // "Multi-Item Request" & "My Requests" header buttons for non-Admin / Student roles
+    // "Multi-Item Request" & "My Requests" header buttons: ONLY for non-Admin / Student / Requisition Requester roles
     const btnMultiItemReqHeader = document.getElementById("btn-multi-item-req");
     const btnStudentReqsHeader = document.getElementById("btn-student-reqs");
     if (btnMultiItemReqHeader) {
-      if (!isMobile) {
+      if (isAdmin) {
+        btnMultiItemReqHeader.style.setProperty("display", "none", "important");
+      } else if (!isMobile) {
         btnMultiItemReqHeader.style.setProperty("display", "inline-flex", "important");
       }
     }
@@ -657,11 +659,15 @@ class App {
       }
     });
 
-    // Student & Non-Admin drawer items
+    // Student & Non-Admin requisition requester drawer items - HIDE for Admin
     const drawerStudentReqs = document.getElementById("drawer-btn-student-reqs");
     const drawerMultiItemReq = document.getElementById("drawer-btn-multi-item-req");
     if (drawerMultiItemReq) {
-      drawerMultiItemReq.style.setProperty("display", "flex", "important");
+      if (isAdmin) {
+        drawerMultiItemReq.style.setProperty("display", "none", "important");
+      } else {
+        drawerMultiItemReq.style.setProperty("display", "flex", "important");
+      }
     }
     if (drawerStudentReqs) {
       if (isAdmin) {
