@@ -1605,15 +1605,15 @@ class ModalManager {
           let statusBadgeClass = "warning";
           let statusLabel = r.status || "SUBMITTED";
 
-          if (r.status === "SUBMITTED") {
+          if (r.status === "SUBMITTED" || r.status === "PENDING") {
             statusBadgeClass = "warning";
-            statusLabel = "⏳ Pending Lead Review";
+            statusLabel = "⏳ Pending Admin Approval & Stock Issue";
           } else if (r.status === "LEAD_APPROVED" || r.status === "LEAD_MODIFIED") {
             statusBadgeClass = "info";
-            statusLabel = r.status === "LEAD_MODIFIED" ? "✏️ Lead Modified & Approved" : "✅ Lead Approved (Pending Issue)";
+            statusLabel = r.status === "LEAD_MODIFIED" ? "✏️ Modified (Pending Admin Issue)" : "✅ Lead Approved (Pending Admin Issue)";
           } else if (r.status === "ISSUED" || r.status === "APPROVED") {
             statusBadgeClass = "success";
-            statusLabel = "📦 Issued (Borrowed)";
+            statusLabel = "📦 Approved & Issued by Admin";
           } else if (r.status === "REJECTED") {
             statusBadgeClass = "danger";
             statusLabel = "❌ Rejected";
@@ -1738,9 +1738,17 @@ class ModalManager {
     const requests = StorageService.getRequests().filter(r => r.status === "SUBMITTED" || r.status === "PENDING" || r.status === "LEAD_APPROVED" || r.status === "LEAD_MODIFIED");
 
     if (container) {
-      container.innerHTML = "";
+      container.innerHTML = `
+        <div style="background:rgba(56,189,248,0.1); border:1px solid rgba(56,189,248,0.3); border-radius:10px; padding:12px 16px; margin-bottom:16px; font-size:0.85rem; color:#38bdf8; display:flex; align-items:center; gap:10px;">
+          <i data-lucide="shield-check" style="font-size:1.4rem; flex-shrink:0;"></i>
+          <div>
+            <strong>Administrator Material Approval & Stock Issuance Center</strong><br>
+            Review component requests submitted by Students, Interns, and Engineers. Click <strong>'Direct Approve & Issue Stock'</strong> or <strong>'Issue Materials from Stock'</strong> to authorize material pickup and update physical inventory levels.
+          </div>
+        </div>
+      `;
       if (requests.length === 0) {
-        container.innerHTML = `<p class="empty-hint" style="text-align:center; padding:20px; color:var(--accent-green); font-weight:700;">✅ Success: All requisition queues are clear! No pending lead reviews or material issuances.</p>`;
+        container.innerHTML += `<p class="empty-hint" style="text-align:center; padding:20px; color:var(--accent-green); font-weight:700;">✅ All requisition queues clear! No pending material requests awaiting approval.</p>`;
       } else {
         requests.forEach(r => {
           const card = document.createElement("div");
