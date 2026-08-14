@@ -801,6 +801,11 @@ class ModalManager {
     setTxt("insp-specs", c.specifications || "No technical specs available.");
     setTxt("insp-updated", c.lastUpdated || "2026-07-29");
 
+    const reqBtn = document.getElementById("btn-request-component");
+    if (reqBtn) {
+      reqBtn.style.display = StorageService.isRole("ADMIN") ? "none" : "inline-flex";
+    }
+
     // Multi-item Box Switcher Bar
     const boxComps = StorageService.getComponents().filter(item => item.boxId === c.boxId);
     let boxSwitcher = document.getElementById("insp-box-switcher");
@@ -3646,6 +3651,12 @@ ModalManager._requisitionState = {
 };
 
 ModalManager.openMultiItemRequestModal = function(initialComponentId = null) {
+  if (StorageService.isRole("ADMIN")) {
+    if (this.showToast) this.showToast("Lab Administrators manage approvals & material issuance. Redirecting to Approvals Queue.", "info");
+    this.openAdminApprovalModal();
+    return;
+  }
+
   const backdrop = document.getElementById("multi-item-request-modal");
   if (!backdrop) return;
 
