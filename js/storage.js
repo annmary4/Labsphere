@@ -223,7 +223,16 @@ class StorageService {
           if (data.boxes && Array.isArray(data.boxes)) localStorage.setItem(STORAGE_KEYS.BOXES, JSON.stringify(data.boxes));
           if (data.racks && Array.isArray(data.racks)) localStorage.setItem(STORAGE_KEYS.RACKS, JSON.stringify(data.racks));
           if (data.projects && Array.isArray(data.projects)) localStorage.setItem(STORAGE_KEYS.PROJECTS, JSON.stringify(data.projects));
-          if (data.requests && Array.isArray(data.requests)) localStorage.setItem(STORAGE_KEYS.REQUESTS, JSON.stringify(data.requests));
+          if (data.requests && Array.isArray(data.requests) && data.requests.length > 0) {
+            const localRequests = this.getRequests();
+            const mergedRequests = [...localRequests];
+            data.requests.forEach(sr => {
+              if (sr && sr.id && !mergedRequests.some(lr => lr.id === sr.id)) {
+                mergedRequests.push(sr);
+              }
+            });
+            localStorage.setItem(STORAGE_KEYS.REQUESTS, JSON.stringify(mergedRequests));
+          }
           if (data.transactions && Array.isArray(data.transactions)) localStorage.setItem(STORAGE_KEYS.TRANSACTIONS, JSON.stringify(data.transactions));
           if (data.users && Array.isArray(data.users)) {
             const currentUsers = this.getUsers();
