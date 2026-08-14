@@ -2,7 +2,7 @@
  * LabSphere Storage Service - Complete 59-Component Catalog (v35)
  */
 
-const CURRENT_VERSION = "v10250_master_admin_credentials_updated";
+const CURRENT_VERSION = "v10520_registered_users_requisition_sync";
 
 const STORAGE_KEYS = {
   VERSION: "labsphere_version_v10250",

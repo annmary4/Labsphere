@@ -2,18 +2,18 @@
    LabSphere Service Worker - Offline Cache & PWA Support
    ============================================================ */
 
-const CACHE_NAME = 'labsphere-v10500_registered_users_only';
+const CACHE_NAME = 'labsphere-v10520_force_cache_purge';
 const ASSETS_TO_CACHE = [
   '/Labsphere/',
   '/Labsphere/index.html',
-  '/Labsphere/css/styles.css?v=10500_registered_users_only',
-  '/Labsphere/js/app.js?v=10500_registered_users_only',
-  '/Labsphere/js/types.js?v=10500_registered_users_only',
-  '/Labsphere/js/initialData.js?v=10500_registered_users_only',
-  '/Labsphere/js/storage.js?v=10500_registered_users_only',
-  '/Labsphere/js/rackViewer.js?v=10500_registered_users_only',
-  '/Labsphere/js/componentsView.js?v=10500_registered_users_only',
-  '/Labsphere/js/modalManager.js?v=10500_registered_users_only',
+  '/Labsphere/css/styles.css?v=10520_force_cache_purge',
+  '/Labsphere/js/app.js?v=10520_force_cache_purge',
+  '/Labsphere/js/types.js?v=10520_force_cache_purge',
+  '/Labsphere/js/initialData.js?v=10520_force_cache_purge',
+  '/Labsphere/js/storage.js?v=10520_force_cache_purge',
+  '/Labsphere/js/rackViewer.js?v=10520_force_cache_purge',
+  '/Labsphere/js/componentsView.js?v=10520_force_cache_purge',
+  '/Labsphere/js/modalManager.js?v=10520_force_cache_purge',
   '/Labsphere/icons/icon-192.png',
   '/Labsphere/icons/icon-512.png',
   '/Labsphere/manifest.json'
