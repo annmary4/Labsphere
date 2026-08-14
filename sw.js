@@ -2,18 +2,18 @@
    LabSphere Service Worker - Offline Cache & PWA Support
    ============================================================ */
 
-const CACHE_NAME = 'labsphere-v10450_clean_approvals';
+const CACHE_NAME = 'labsphere-v10470_all_student_requests_tabs';
 const ASSETS_TO_CACHE = [
   '/Labsphere/',
   '/Labsphere/index.html',
-  '/Labsphere/css/styles.css?v=10450_clean_approvals',
-  '/Labsphere/js/app.js?v=10450_clean_approvals',
-  '/Labsphere/js/types.js?v=10450_clean_approvals',
-  '/Labsphere/js/initialData.js?v=10450_clean_approvals',
-  '/Labsphere/js/storage.js?v=10450_clean_approvals',
-  '/Labsphere/js/rackViewer.js?v=10450_clean_approvals',
-  '/Labsphere/js/componentsView.js?v=10450_clean_approvals',
-  '/Labsphere/js/modalManager.js?v=10450_clean_approvals',
+  '/Labsphere/css/styles.css?v=10470_all_student_requests_tabs',
+  '/Labsphere/js/app.js?v=10470_all_student_requests_tabs',
+  '/Labsphere/js/types.js?v=10470_all_student_requests_tabs',
+  '/Labsphere/js/initialData.js?v=10470_all_student_requests_tabs',
+  '/Labsphere/js/storage.js?v=10470_all_student_requests_tabs',
+  '/Labsphere/js/rackViewer.js?v=10470_all_student_requests_tabs',
+  '/Labsphere/js/componentsView.js?v=10470_all_student_requests_tabs',
+  '/Labsphere/js/modalManager.js?v=10470_all_student_requests_tabs',
   '/Labsphere/icons/icon-192.png',
   '/Labsphere/icons/icon-512.png',
   '/Labsphere/manifest.json'

@@ -1731,7 +1731,7 @@ class ModalManager {
   }
 
   // --- MULTI-TIER APPROVAL & ISSUANCE QUEUE MODAL ---
-  static openAdminApprovalModal() {
+  static openAdminApprovalModal(activeTab = "pending") {
     const isLeadOrAdmin = StorageService.isRole("ADMIN") || StorageService.isRole("ENGINEER");
     if (!isLeadOrAdmin) {
       alert("Access Restricted: Requisition Approval & Material Issuance are strictly reserved for Team Leads and Inventory Administrators.");
@@ -1740,25 +1740,60 @@ class ModalManager {
 
     const backdrop = document.getElementById("admin-appr-modal");
     const container = document.getElementById("admin-approval-container");
-    const requests = StorageService.getRequests().filter(r => r.status === "SUBMITTED" || r.status === "PENDING" || r.status === "LEAD_APPROVED" || r.status === "LEAD_MODIFIED");
+    const allRequests = StorageService.getRequests();
+
+    const pendingRequests = allRequests.filter(r => r.status === "SUBMITTED" || r.status === "PENDING" || r.status === "LEAD_APPROVED" || r.status === "LEAD_MODIFIED");
+    const issuedRequests = allRequests.filter(r => r.status === "ISSUED" || r.status === "APPROVED");
+    const rejectedRequests = allRequests.filter(r => r.status === "REJECTED");
+
+    let displayRequests = pendingRequests;
+    if (activeTab === "issued") displayRequests = issuedRequests;
+    else if (activeTab === "all") displayRequests = allRequests;
+    else if (activeTab === "rejected") displayRequests = rejectedRequests;
 
     if (container) {
       container.innerHTML = `
-        <div style="background:rgba(56,189,248,0.1); border:1px solid rgba(56,189,248,0.3); border-radius:10px; padding:12px 16px; margin-bottom:16px; font-size:0.85rem; color:#38bdf8; display:flex; align-items:center; gap:10px;">
+        <div style="background:rgba(56,189,248,0.1); border:1px solid rgba(56,189,248,0.3); border-radius:10px; padding:12px 16px; margin-bottom:14px; font-size:0.85rem; color:#38bdf8; display:flex; align-items:center; gap:10px;">
           <i data-lucide="shield-check" style="font-size:1.4rem; flex-shrink:0;"></i>
           <div>
             <strong>Administrator Material Approval Center</strong><br>
-            Review materials requested by students and researchers. Click <strong>'Approve & Issue Stock'</strong> to authorize material checkout or <strong>'Reject'</strong> to decline.
+            Review component checkout requests submitted by students and engineers. Approve requests to issue stock or view complete requisition history.
           </div>
         </div>
+
+        <!-- Filter Tabs -->
+        <div class="approval-tabs" style="display:flex; gap:8px; margin-bottom:16px; border-bottom:1px solid var(--border-color); padding-bottom:10px; flex-wrap:wrap;">
+          <button class="btn btn-sm ${activeTab === 'pending' ? 'btn-primary' : 'btn-secondary'}" onclick="ModalManager.openAdminApprovalModal('pending')" style="font-weight:700;">
+            ⏳ Pending Approvals (${pendingRequests.length})
+          </button>
+          <button class="btn btn-sm ${activeTab === 'issued' ? 'btn-primary' : 'btn-secondary'}" onclick="ModalManager.openAdminApprovalModal('issued')" style="font-weight:700;">
+            📦 Issued Stock (${issuedRequests.length})
+          </button>
+          <button class="btn btn-sm ${activeTab === 'all' ? 'btn-primary' : 'btn-secondary'}" onclick="ModalManager.openAdminApprovalModal('all')" style="font-weight:700;">
+            📋 All Requests (${allRequests.length})
+          </button>
+        </div>
       `;
-      if (requests.length === 0) {
-        container.innerHTML += `<p class="empty-hint" style="text-align:center; padding:20px; color:var(--accent-green); font-weight:700;">✅ All requisition queues clear! No pending material requests awaiting approval.</p>`;
+
+      if (displayRequests.length === 0) {
+        container.innerHTML += `
+          <p class="empty-hint" style="text-align:center; padding:24px; color:var(--text-muted); font-weight:600; background:rgba(255,255,255,0.02); border-radius:8px;">
+            ${activeTab === 'pending' ? '✅ No pending material requests awaiting approval right now.' : 'No requests found under this filter.'}
+          </p>
+        `;
       } else {
-        requests.forEach(r => {
+        displayRequests.forEach(r => {
           const card = document.createElement("div");
           card.className = "approval-card";
           card.style.cssText = "background:var(--bg-dark); border:1px solid var(--border-color); border-radius:12px; padding:16px; margin-bottom:14px;";
+
+          const isPending = r.status === "SUBMITTED" || r.status === "PENDING" || r.status === "LEAD_APPROVED" || r.status === "LEAD_MODIFIED";
+          const isIssued = r.status === "ISSUED" || r.status === "APPROVED";
+          const isRejected = r.status === "REJECTED";
+
+          let statusBadgeHtml = '<span class="stock-tag warning">⏳ Pending Approval</span>';
+          if (isIssued) statusBadgeHtml = `<span class="stock-tag success">📦 Issued by ${r.issuedBy || 'Admin'}</span>`;
+          else if (isRejected) statusBadgeHtml = '<span class="stock-tag danger">❌ Rejected</span>';
 
           card.innerHTML = `
             <div class="approval-header" style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-color); padding-bottom:8px; margin-bottom:10px;">
@@ -1766,12 +1801,15 @@ class ModalManager {
                 <strong style="font-size:1.1rem; color:var(--text-main);">${r.componentName}</strong>
                 <span class="mono text-muted" style="font-size:0.8rem; margin-left:8px;">#${r.id}</span>
               </div>
-              <span class="stock-tag warning">⏳ Pending Approval</span>
+              ${statusBadgeHtml}
             </div>
 
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; font-size:0.85rem; margin-bottom:10px;">
               <div>
                 <span class="text-muted">Requester:</span> <strong>${r.requesterName}</strong> (${r.role})
+              </div>
+              <div>
+                <span class="text-muted">Project:</span> <strong>${r.projectName || 'General / Unassigned'}</strong>
               </div>
               <div>
                 <span class="text-muted">Requested Date:</span> <strong>${r.requestedAt}</strong>
@@ -1781,20 +1819,24 @@ class ModalManager {
               </div>
               <div>
                 <span class="text-muted">Approved Qty:</span> 
-                <input type="number" class="approved-qty-input" data-id="${r.id}" value="${r.qtyApproved || r.qtyRequested}" min="1" style="width:70px; padding:2px 6px; background:var(--bg-card); border:1px solid var(--primary); color:white; border-radius:4px; font-weight:700;" />
+                ${isPending ? `
+                  <input type="number" class="approved-qty-input" data-id="${r.id}" value="${r.qtyApproved || r.qtyRequested}" min="1" style="width:70px; padding:2px 6px; background:var(--bg-card); border:1px solid var(--primary); color:white; border-radius:4px; font-weight:700;" />
+                ` : `<strong style="color:var(--primary);">${r.qtyApproved || r.qtyRequested} pcs</strong>`}
               </div>
             </div>
 
             <p class="approval-notes" style="font-size:0.82rem; background:rgba(255,255,255,0.04); padding:8px; border-radius:6px; margin-bottom:12px;">${r.notes}</p>
 
-            <div class="approval-actions" style="display:flex; gap:10px; justify-content:flex-end;">
-              <button class="btn btn-success btn-admin-direct-issue" data-id="${r.id}" style="background:var(--accent-green); color:#0f172a; font-weight:800;" title="Approve & Issue materials directly from stock">
-                <i data-lucide="check-circle"></i> Approve & Issue Stock
-              </button>
-              <button class="btn btn-danger btn-lead-reject" data-id="${r.id}">
-                <i data-lucide="x-circle"></i> Reject
-              </button>
-            </div>
+            ${isPending ? `
+              <div class="approval-actions" style="display:flex; gap:10px; justify-content:flex-end;">
+                <button class="btn btn-success btn-admin-direct-issue" data-id="${r.id}" style="background:var(--accent-green); color:#0f172a; font-weight:800;" title="Approve & Issue materials directly from stock">
+                  <i data-lucide="check-circle"></i> Approve & Issue Stock
+                </button>
+                <button class="btn btn-danger btn-lead-reject" data-id="${r.id}">
+                  <i data-lucide="x-circle"></i> Reject
+                </button>
+              </div>
+            ` : ''}
           `;
 
           // Team Lead Approve/Modify Listener
