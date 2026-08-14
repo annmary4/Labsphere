@@ -1765,26 +1765,131 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
       </div>
     </div>
 
-    <!-- Modal: Projects Workspace & Requisition Launcher Modal -->
+    <!-- Modal: Project Workspace Requisition Wizard Modal -->
     <div class="modal-backdrop hidden" id="projects-modal">
-      <div class="modal-content modal-lg" style="max-width:960px;">
+      <div class="modal-content modal-xl" style="max-width:1050px;">
         <div class="modal-header" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border-bottom:1px solid var(--border-color);">
           <div class="modal-title-group">
             <i data-lucide="folder-kanban" style="color:var(--primary); font-size:1.6rem;"></i>
             <div>
-              <h2 style="margin:0; font-size:1.3rem; color:var(--text-main);">Lab Projects & Requisition Workspaces</h2>
-              <span style="font-size:0.8rem; color:var(--text-muted);">Select Project Workspace to Search Inventory, Request Multiple Items, Add Notes & Submit</span>
+              <h2 style="margin:0; font-size:1.3rem; color:var(--text-main);" id="proj-wizard-modal-title">Project Workspace Requisition</h2>
+              <span style="font-size:0.8rem; color:var(--text-muted);">Step 1: Enter Project Details ➔ Step 2: Search Inventory & Request Components</span>
             </div>
           </div>
           <button class="modal-close" onclick="ModalManager.closeProjectModal()" style="cursor:pointer; background:none; border:none; color:white; font-size:1.6rem; font-weight:800; padding:4px 12px; line-height:1;" title="Close Window">&times;</button>
         </div>
-        <div class="modal-body" style="padding:20px;">
-          <div id="projects-list-container">
-            <!-- Dynamically rendered projects -->
+        <div class="modal-body" style="padding:24px;">
+          
+          <!-- STEP 1: ENTER PROJECT NAME & DETAILS -->
+          <div id="proj-wizard-step1">
+            <div style="background:rgba(56,189,248,0.1); border:1px solid rgba(56,189,248,0.3); border-radius:10px; padding:14px 18px; margin-bottom:20px; font-size:0.9rem; color:#38bdf8; display:flex; align-items:center; gap:12px;">
+              <i data-lucide="folder-plus" style="font-size:1.6rem; flex-shrink:0;"></i>
+              <div>
+                <strong>Step 1 of 2: Specify Project Name</strong><br>
+                Type your project name below (or pick from existing lab projects) to start adding material components.
+              </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom:18px;">
+              <label style="font-weight:700; color:var(--text-main); margin-bottom:6px; display:block; font-size:0.92rem;">
+                📁 Type Project Name *
+              </label>
+              <input type="text" id="proj-wizard-name-input" class="form-control" placeholder="e.g. Smart IoT Weather Station / Robotics Arm Prototype" style="background:#0f172a; color:var(--text-main); border:1px solid var(--border-color); padding:12px 16px; border-radius:8px; width:100%; font-weight:700; font-size:1.05rem;" />
+              
+              <div style="margin-top:14px; background:rgba(255,255,255,0.02); padding:12px; border-radius:8px; border:1px solid rgba(255,255,255,0.05);">
+                <small style="color:var(--text-muted); font-size:0.82rem; font-weight:600; display:block; margin-bottom:6px;">Or select from active lab projects:</small>
+                <select id="proj-wizard-existing-select" class="form-control" style="background:#0f172a; color:var(--text-main); border:1px solid var(--border-color); padding:10px 14px; border-radius:6px; width:100%; font-size:0.9rem;" onchange="ModalManager.handleSelectExistingWizardProject(this.value)">
+                  <option value="">-- Choose Existing Project Workspace (Optional) --</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom:24px;">
+              <label style="font-weight:700; color:var(--text-main); margin-bottom:6px; display:block; font-size:0.92rem;">
+                📝 Project Description / Scope Notes (Optional)
+              </label>
+              <textarea id="proj-wizard-desc-input" class="form-control" rows="3" placeholder="Briefly describe project goals, target milestones, or team lead..." style="background:#0f172a; color:var(--text-main); border:1px solid var(--border-color); padding:12px; border-radius:8px; width:100%; font-size:0.88rem;"></textarea>
+            </div>
+
+            <div style="display:flex; justify-content:flex-end; border-top:1px solid var(--border-color); padding-top:18px;">
+              <button class="btn btn-primary btn-lg" onclick="ModalManager.goToProjectWizardStep2()" style="font-weight:800; padding:12px 28px; background:linear-gradient(135deg, #0284c7 0%, #2563eb 100%); font-size:1rem; border:none; box-shadow:0 4px 14px rgba(2,132,199,0.4);">
+                Next: Select Components ➔
+              </button>
+            </div>
           </div>
-        </div>
-        <div class="modal-footer" style="padding:12px 20px; border-top:1px solid var(--border-color); text-align:right;">
-          <button class="btn btn-secondary" onclick="ModalManager.closeProjectModal()">Close</button>
+
+          <!-- STEP 2: SEARCH INVENTORY, SELECT COMPONENTS, QUANTITY, NOTES & SUBMIT/DRAFT -->
+          <div id="proj-wizard-step2" class="hidden">
+            <div style="background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.3); border-radius:10px; padding:12px 18px; margin-bottom:18px; font-size:0.9rem; color:#10b981; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+              <div>
+                <strong>Step 2 of 2: Search Components & Enter Quantities</strong><br>
+                Active Project: <span id="proj-wizard-active-name-display" style="font-weight:800; color:white; font-size:0.95rem;">-</span>
+              </div>
+              <button class="btn btn-sm btn-secondary" onclick="ModalManager.goToProjectWizardStep1()" style="font-weight:600;">
+                ✏ Edit Project Name
+              </button>
+            </div>
+
+            <!-- Search & Quick Add Components -->
+            <div style="background:var(--bg-dark); border:1px solid var(--border-color); border-radius:12px; padding:16px; margin-bottom:18px;">
+              <label style="font-weight:700; color:var(--primary); margin-bottom:8px; display:flex; align-items:center; gap:8px; font-size:0.95rem;">
+                <i data-lucide="search"></i> Search Inventory Catalog & Add Components
+              </label>
+              <div style="display:flex; gap:10px; margin-bottom:12px;">
+                <input type="text" id="proj-wizard-search-input" class="form-control" placeholder="Type component name, part number, SKU, box ID..." style="background:#0f172a; color:white; border:1px solid var(--border-color); padding:10px 14px; border-radius:8px; flex:1; font-weight:600;" oninput="ModalManager.handleProjectWizardSearch(this.value)" />
+              </div>
+              <div id="proj-wizard-search-results" style="max-height:220px; overflow-y:auto; display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:10px; padding:4px;">
+                <!-- Live search component cards -->
+              </div>
+            </div>
+
+            <!-- Selected Components List Table with Quantity & Item Notes -->
+            <div style="background:var(--bg-dark); border:1px solid var(--border-color); border-radius:12px; padding:16px; margin-bottom:18px;">
+              <h4 style="margin:0 0 12px 0; color:var(--text-main); font-size:0.95rem; display:flex; align-items:center; justify-content:space-between;">
+                <span>📦 Selected Components for Project (<span id="proj-wizard-cart-count" style="color:var(--primary); font-weight:800;">0</span> items)</span>
+              </h4>
+              <div style="overflow-x:auto;">
+                <table class="table" style="width:100%; border-collapse:collapse;">
+                  <thead>
+                    <tr style="border-bottom:1px solid var(--border-color); color:var(--text-muted); font-size:0.8rem; text-align:left;">
+                      <th style="padding:10px;">Component Name</th>
+                      <th style="padding:10px;">Available Stock</th>
+                      <th style="padding:10px; width:120px;">Quantity</th>
+                      <th style="padding:10px;">Item Note</th>
+                      <th style="padding:10px; text-align:center; width:60px;">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="proj-wizard-cart-tbody">
+                    <!-- Dynamically populated components -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- General Request Notes Box -->
+            <div style="background:var(--bg-dark); border:1px solid var(--border-color); border-radius:12px; padding:16px; margin-bottom:20px;">
+              <label style="font-weight:700; color:var(--text-main); margin-bottom:6px; display:block; font-size:0.9rem;">
+                📝 Request Notes for Lab Administrator *
+              </label>
+              <textarea id="proj-wizard-request-notes" class="form-control" rows="2" placeholder="Add specific notes for administrator regarding project goals, checkout urgency, or testing timeframe..." style="background:#0f172a; color:white; border:1px solid var(--border-color); padding:10px 14px; border-radius:8px; width:100%; font-size:0.88rem;"></textarea>
+            </div>
+
+            <!-- Action Buttons: Save Draft or Submit Request -->
+            <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border-color); padding-top:18px;">
+              <button class="btn btn-secondary" onclick="ModalManager.goToProjectWizardStep1()" style="font-weight:700;">
+                ⬅ Back to Step 1
+              </button>
+              <div style="display:flex; gap:12px;">
+                <button class="btn btn-secondary" onclick="ModalManager.handleSaveProjectWizardDraft()" style="font-weight:700; background:rgba(255,255,255,0.06); padding:10px 20px;">
+                  💾 Save as Draft
+                </button>
+                <button class="btn btn-primary btn-lg" onclick="ModalManager.handleSubmitProjectWizardRequest()" style="font-weight:800; padding:10px 24px; background:linear-gradient(135deg, #10b981 0%, #059669 100%); border:none; box-shadow:0 4px 14px rgba(16,185,129,0.4);">
+                  🚀 Submit Request to Administrator
+                </button>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>

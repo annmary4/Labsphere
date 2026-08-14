@@ -3675,59 +3675,44 @@ ModalManager._requisitionState = {
   lastSavedAt: null
 };
 
-ModalManager.openProjectModal = function() {
-  const projects = StorageService.getProjects();
-  const backdrop = document.getElementById("projects-modal");
-  const container = document.getElementById("projects-list-container");
+ModalManager._projectWizardState = {
+  projectName: "",
+  description: "",
+  projectId: null,
+  items: [],
+  requestNotes: "",
+  draftId: null
+};
 
-  if (!backdrop || !container) {
-    this.openMultiItemRequestModal();
-    return;
+ModalManager.openProjectModal = function() {
+  const backdrop = document.getElementById("projects-modal");
+  if (!backdrop) return;
+
+  this._projectWizardState = {
+    projectName: "",
+    description: "",
+    projectId: null,
+    items: [],
+    requestNotes: "",
+    draftId: null
+  };
+
+  const nameInput = document.getElementById("proj-wizard-name-input");
+  const descInput = document.getElementById("proj-wizard-desc-input");
+  const selectExist = document.getElementById("proj-wizard-existing-select");
+  const reqNotes = document.getElementById("proj-wizard-request-notes");
+
+  if (nameInput) nameInput.value = "";
+  if (descInput) descInput.value = "";
+  if (reqNotes) reqNotes.value = "";
+
+  if (selectExist) {
+    const projects = StorageService.getProjects();
+    selectExist.innerHTML = `<option value="">-- Choose Existing Project Workspace (Optional) --</option>` +
+      projects.map(p => `<option value="${p.id}">${p.projectName} (${p.leaderName})</option>`).join("");
   }
 
-  const isAdmin = StorageService.isRole("ADMIN");
-
-  container.innerHTML = `
-    <div style="background:rgba(56,189,248,0.1); border:1px solid rgba(56,189,248,0.3); border-radius:10px; padding:12px 16px; margin-bottom:16px; font-size:0.85rem; color:#38bdf8; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-      <div>
-        <strong>Lab Project Workspaces & Requisition Hub</strong><br>
-        Select a project workspace to search inventory, request multiple items, add notes, save drafts & submit.
-      </div>
-      ${!isAdmin ? `
-        <button class="btn btn-primary btn-sm" onclick="ModalManager.closeProjectModal(); ModalManager.openMultiItemRequestModal();" style="font-weight:700; background:linear-gradient(135deg, #0284c7 0%, #2563eb 100%);">
-          <i data-lucide="shopping-bag"></i> Launch Multi-Item Request Workbench
-        </button>
-      ` : ''}
-    </div>
-
-    <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap:16px;">
-      ${projects.map(p => `
-        <div style="background:var(--bg-dark); border:1px solid var(--border-color); border-radius:12px; padding:16px; display:flex; flex-direction:column; justify-content:space-between; box-shadow:0 4px 12px rgba(0,0,0,0.2);">
-          <div>
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
-              <strong style="color:var(--text-main); font-size:1.05rem;">${p.projectName}</strong>
-              <span class="mono text-muted" style="font-size:0.75rem;">${p.id}</span>
-            </div>
-            <p style="font-size:0.83rem; color:var(--text-muted); margin-bottom:12px; line-height:1.4;">${p.description || 'No project description provided.'}</p>
-            <div style="font-size:0.8rem; margin-bottom:12px; background:rgba(255,255,255,0.02); padding:10px; border-radius:8px;">
-              👨‍💻 Project Lead: <strong style="color:var(--primary);">${p.leaderName}</strong><br>
-              👥 Members: <span class="text-muted">${Array.isArray(p.members) ? p.members.join(', ') : 'Lab Team'}</span>
-            </div>
-          </div>
-          <div style="border-top:1px solid var(--border-color); padding-top:12px; margin-top:8px; display:flex; justify-content:space-between; align-items:center;">
-            <span class="badge" style="background:rgba(56,189,248,0.15); color:#38bdf8; font-weight:700; font-size:0.78rem;">
-              📦 ${Array.isArray(p.bom) ? p.bom.length : 0} BOM Components
-            </span>
-            ${!isAdmin ? `
-              <button class="btn btn-primary btn-sm" onclick="ModalManager.closeProjectModal(); ModalManager.openMultiItemRequestModal(null, '${p.id}');" style="font-weight:800; background:linear-gradient(135deg, #10b981 0%, #059669 100%); border:none; box-shadow:0 2px 8px rgba(16,185,129,0.3);">
-                <i data-lucide="shopping-bag"></i> Request Materials for Project
-              </button>
-            ` : ''}
-          </div>
-        </div>
-      `).join("")}
-    </div>
-  `;
+  this.goToProjectWizardStep1();
 
   if (window.lucide) window.lucide.createIcons();
   backdrop.classList.remove("hidden");
@@ -3736,6 +3721,241 @@ ModalManager.openProjectModal = function() {
 ModalManager.closeProjectModal = function() {
   const backdrop = document.getElementById("projects-modal");
   if (backdrop) backdrop.classList.add("hidden");
+};
+
+ModalManager.goToProjectWizardStep1 = function() {
+  const step1 = document.getElementById("proj-wizard-step1");
+  const step2 = document.getElementById("proj-wizard-step2");
+  if (step1) step1.classList.remove("hidden");
+  if (step2) step2.classList.add("hidden");
+};
+
+ModalManager.handleSelectExistingWizardProject = function(projectId) {
+  if (!projectId) return;
+  const projects = StorageService.getProjects();
+  const proj = projects.find(p => p.id === projectId);
+  if (proj) {
+    const nameInput = document.getElementById("proj-wizard-name-input");
+    const descInput = document.getElementById("proj-wizard-desc-input");
+    if (nameInput) nameInput.value = proj.projectName;
+    if (descInput) descInput.value = proj.description || "";
+    this._projectWizardState.projectId = proj.id;
+  }
+};
+
+ModalManager.goToProjectWizardStep2 = function() {
+  const nameInput = document.getElementById("proj-wizard-name-input");
+  const descInput = document.getElementById("proj-wizard-desc-input");
+
+  const projName = nameInput ? nameInput.value.trim() : "";
+  if (!projName) {
+    alert("Please type a Project Name to proceed!");
+    if (nameInput) nameInput.focus();
+    return;
+  }
+
+  this._projectWizardState.projectName = projName;
+  this._projectWizardState.description = descInput ? descInput.value.trim() : "";
+
+  const nameDisplay = document.getElementById("proj-wizard-active-name-display");
+  if (nameDisplay) nameDisplay.innerText = projName;
+
+  const step1 = document.getElementById("proj-wizard-step1");
+  const step2 = document.getElementById("proj-wizard-step2");
+  if (step1) step1.classList.add("hidden");
+  if (step2) step2.classList.remove("hidden");
+
+  this.handleProjectWizardSearch("");
+  this.renderProjectWizardCart();
+};
+
+ModalManager.handleProjectWizardSearch = function(query) {
+  const container = document.getElementById("proj-wizard-search-results");
+  if (!container) return;
+
+  const components = StorageService.getComponents();
+  const q = (query || "").toLowerCase().trim();
+
+  const filtered = components.filter(c => 
+    !q || 
+    c.name.toLowerCase().includes(q) || 
+    (c.partNumber && c.partNumber.toLowerCase().includes(q)) || 
+    (c.boxId && c.boxId.toLowerCase().includes(q)) ||
+    (c.category && c.category.toLowerCase().includes(q))
+  ).slice(0, 12);
+
+  if (filtered.length === 0) {
+    container.innerHTML = `<p style="grid-column: 1 / -1; color:var(--text-muted); font-size:0.85rem; text-align:center; padding:12px;">No matching components found in stock.</p>`;
+    return;
+  }
+
+  container.innerHTML = filtered.map(c => {
+    const isAdded = this._projectWizardState.items.some(i => i.componentId === c.id);
+    const inStock = c.quantity > 0;
+
+    return `
+      <div style="background:#0f172a; border:1px solid var(--border-color); border-radius:8px; padding:10px; display:flex; flex-direction:column; justify-content:space-between; gap:6px;">
+        <div>
+          <strong style="color:var(--text-main); font-size:0.85rem; display:block;">${c.name}</strong>
+          <span style="font-size:0.75rem; color:var(--text-muted);" class="mono">Box ${c.boxId || 'A1'} • Stock: <strong style="color:${inStock ? '#10b981' : '#ef4444'};">${c.quantity} ${c.unit || 'pcs'}</strong></span>
+        </div>
+        <button class="btn btn-sm ${isAdded ? 'btn-secondary' : 'btn-primary'}" ${!inStock ? 'disabled' : ''} onclick="ModalManager.addProjectWizardComponent('${c.id}')" style="font-size:0.78rem; font-weight:700; width:100%; padding:4px 8px;">
+          ${isAdded ? '✓ Added to Project' : '+ Add Component'}
+        </button>
+      </div>
+    `;
+  }).join("");
+};
+
+ModalManager.addProjectWizardComponent = function(componentId) {
+  const components = StorageService.getComponents();
+  const comp = components.find(c => c.id === componentId);
+  if (!comp) return;
+
+  const existing = this._projectWizardState.items.find(i => i.componentId === componentId);
+  if (existing) {
+    existing.quantity += 1;
+  } else {
+    this._projectWizardState.items.push({
+      componentId: comp.id,
+      componentName: comp.name,
+      partNumber: comp.partNumber || comp.id,
+      boxId: comp.boxId || "Unassigned",
+      availableStock: comp.quantity,
+      unit: comp.unit || "pcs",
+      quantity: 1,
+      itemNotes: ""
+    });
+  }
+
+  this.handleProjectWizardSearch(document.getElementById("proj-wizard-search-input") ? document.getElementById("proj-wizard-search-input").value : "");
+  this.renderProjectWizardCart();
+};
+
+ModalManager.renderProjectWizardCart = function() {
+  const tbody = document.getElementById("proj-wizard-cart-tbody");
+  const countSpan = document.getElementById("proj-wizard-cart-count");
+
+  const items = this._projectWizardState.items;
+  if (countSpan) countSpan.innerText = items.length;
+
+  if (!tbody) return;
+
+  if (items.length === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="5" style="text-align:center; padding:20px; color:var(--text-muted); font-size:0.85rem;">
+          No components added yet. Use the inventory search bar above to search and add components for this project.
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  tbody.innerHTML = items.map(item => `
+    <tr style="border-bottom:1px solid rgba(255,255,255,0.05); background:#1e293b;">
+      <td style="padding:10px;">
+        <strong style="color:var(--text-main); font-size:0.85rem;">${item.componentName}</strong><br>
+        <span style="font-size:0.75rem; color:var(--text-muted);" class="mono">Box: ${item.boxId}</span>
+      </td>
+      <td style="padding:10px;">
+        <span style="font-size:0.82rem; font-weight:700; color:${item.availableStock > 0 ? '#10b981' : '#ef4444'};">
+          ${item.availableStock} ${item.unit}
+        </span>
+      </td>
+      <td style="padding:10px;">
+        <input type="number" min="1" value="${item.quantity}" style="width:90px; padding:6px 8px; background:#0f172a; border:1px solid var(--border-color); border-radius:6px; color:white; font-weight:700; font-size:0.88rem;" onchange="ModalManager.updateProjectWizardItemQty('${item.componentId}', this.value)" oninput="ModalManager.updateProjectWizardItemQty('${item.componentId}', this.value)">
+      </td>
+      <td style="padding:10px;">
+        <input type="text" value="${item.itemNotes || ''}" placeholder="Item note (optional)..." style="width:100%; padding:6px 8px; background:#0f172a; border:1px solid var(--border-color); border-radius:6px; color:var(--text-main); font-size:0.8rem;" oninput="ModalManager.updateProjectWizardItemNote('${item.componentId}', this.value)">
+      </td>
+      <td style="padding:10px; text-align:center;">
+        <button class="btn btn-secondary btn-sm" onclick="ModalManager.removeProjectWizardItem('${item.componentId}')" style="padding:4px 8px; color:#ef4444; border-color:rgba(239,68,68,0.4);" title="Remove item">
+          &times;
+        </button>
+      </td>
+    </tr>
+  `).join("");
+};
+
+ModalManager.updateProjectWizardItemQty = function(componentId, val) {
+  const item = this._projectWizardState.items.find(i => i.componentId === componentId);
+  if (item) {
+    const parsed = parseInt(val);
+    item.quantity = isNaN(parsed) || parsed < 1 ? 1 : parsed;
+  }
+};
+
+ModalManager.updateProjectWizardItemNote = function(componentId, text) {
+  const item = this._projectWizardState.items.find(i => i.componentId === componentId);
+  if (item) item.itemNotes = text;
+};
+
+ModalManager.removeProjectWizardItem = function(componentId) {
+  this._projectWizardState.items = this._projectWizardState.items.filter(i => i.componentId !== componentId);
+  this.handleProjectWizardSearch(document.getElementById("proj-wizard-search-input") ? document.getElementById("proj-wizard-search-input").value : "");
+  this.renderProjectWizardCart();
+};
+
+ModalManager.handleSaveProjectWizardDraft = function() {
+  if (this._projectWizardState.items.length === 0) {
+    alert("Cannot save draft: please select at least one component!");
+    return;
+  }
+
+  const reqNotesArea = document.getElementById("proj-wizard-request-notes");
+  const notes = reqNotesArea ? reqNotesArea.value.trim() : "";
+
+  try {
+    const saved = StorageService.saveRequisitionDraft({
+      id: this._projectWizardState.draftId,
+      projectId: this._projectWizardState.projectId,
+      projectName: this._projectWizardState.projectName,
+      notes: notes,
+      items: this._projectWizardState.items
+    });
+
+    this._projectWizardState.draftId = saved.id;
+    this.showToast(`Draft requisition saved (${saved.items.length} items)`, "success");
+    alert(`Success: Project draft requisition '${saved.id}' saved as draft successfully!`);
+  } catch (err) {
+    alert("Error saving draft: " + err.message);
+  }
+};
+
+ModalManager.handleSubmitProjectWizardRequest = function() {
+  if (this._projectWizardState.items.length === 0) {
+    alert("Please search and add at least one component for the project before submitting!");
+    return;
+  }
+
+  const reqNotesArea = document.getElementById("proj-wizard-request-notes");
+  const notes = reqNotesArea ? reqNotesArea.value.trim() : "";
+
+  const session = StorageService.getCurrentSession();
+  const requesterName = session ? session.fullName : "Project Member";
+
+  try {
+    const result = StorageService.submitMultiItemRequisition({
+      projectId: this._projectWizardState.projectId,
+      projectName: this._projectWizardState.projectName,
+      notes: notes,
+      items: this._projectWizardState.items,
+      requesterName: requesterName,
+      draftId: this._projectWizardState.draftId
+    });
+
+    this.showToast(`Success: Requisition Batch #${result.batchId} submitted! (${result.createdRequests.length} items)`, "success");
+    alert(`Success: Requisition Batch #${result.batchId} submitted for project '${this._projectWizardState.projectName}' with ${result.createdRequests.length} component items!\n\nSent directly to Lab Administrator for approval.`);
+
+    this.closeProjectModal();
+
+    if (window.App && window.App.refreshApp) {
+      window.App.refreshApp();
+    }
+  } catch (err) {
+    alert("Requisition submission failed: " + err.message);
+  }
 };
 
 ModalManager.openMultiItemRequestModal = function(initialComponentId = null, targetProjectId = null) {
