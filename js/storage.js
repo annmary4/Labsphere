@@ -1119,24 +1119,12 @@ class StorageService {
       if (data) {
         let parsed = JSON.parse(data);
         if (Array.isArray(parsed)) {
-          // Strictly allow only requisitions submitted by real registered users in the database
-          const users = this.getUsers();
-          const validUserNames = users.map(u => (u.fullName || u.username || "").toLowerCase().trim()).filter(Boolean);
-
+          // Filter out only legacy sample data string 'sarah jenkins'
           const cleaned = parsed.filter(r => {
             if (!r || !r.requesterName) return false;
-            const reqNameLower = r.requesterName.toLowerCase().trim();
-            // Reject any legacy dummy test names
-            if (reqNameLower.includes("sarah") || reqNameLower.includes("jenkins") || reqNameLower.includes("alex chen") || reqNameLower.includes("maya lin")) {
-              return false;
-            }
-            // Check if requester matches a registered account or registered student/intern session
-            return validUserNames.some(uName => reqNameLower.includes(uName) || uName.includes(reqNameLower));
+            const name = r.requesterName.toLowerCase();
+            return !name.includes("sarah jenkins") && !name.includes("dr. sarah");
           });
-
-          if (cleaned.length !== parsed.length) {
-            this.saveRequests(cleaned);
-          }
           return cleaned;
         }
       }

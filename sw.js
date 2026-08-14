@@ -2,18 +2,18 @@
    LabSphere Service Worker - Offline Cache & PWA Support
    ============================================================ */
 
-const CACHE_NAME = 'labsphere-v10600_sarah_purged_registered_only';
+const CACHE_NAME = 'labsphere-v10650_student_request_fix';
 const ASSETS_TO_CACHE = [
   '/Labsphere/',
   '/Labsphere/index.html',
-  '/Labsphere/css/styles.css?v=10600_sarah_purged_registered_only',
-  '/Labsphere/js/app.js?v=10600_sarah_purged_registered_only',
-  '/Labsphere/js/types.js?v=10600_sarah_purged_registered_only',
-  '/Labsphere/js/initialData.js?v=10600_sarah_purged_registered_only',
-  '/Labsphere/js/storage.js?v=10600_sarah_purged_registered_only',
-  '/Labsphere/js/rackViewer.js?v=10600_sarah_purged_registered_only',
-  '/Labsphere/js/componentsView.js?v=10600_sarah_purged_registered_only',
-  '/Labsphere/js/modalManager.js?v=10600_sarah_purged_registered_only',
+  '/Labsphere/css/styles.css?v=10650_student_request_fix',
+  '/Labsphere/js/app.js?v=10650_student_request_fix',
+  '/Labsphere/js/types.js?v=10650_student_request_fix',
+  '/Labsphere/js/initialData.js?v=10650_student_request_fix',
+  '/Labsphere/js/storage.js?v=10650_student_request_fix',
+  '/Labsphere/js/rackViewer.js?v=10650_student_request_fix',
+  '/Labsphere/js/componentsView.js?v=10650_student_request_fix',
+  '/Labsphere/js/modalManager.js?v=10650_student_request_fix',
   '/Labsphere/icons/icon-192.png',
   '/Labsphere/icons/icon-512.png',
   '/Labsphere/manifest.json'
