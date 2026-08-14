@@ -19,7 +19,7 @@
     rel="stylesheet">
 
   <!-- CSS with cache buster -->
-  <link rel="stylesheet" href="css/styles.css?v=10800_student_project_requisition_flow">
+  <link rel="stylesheet" href="css/styles.css?v=11000_student_streamlined_multi_req">
 
   <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -1897,128 +1897,119 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
     <!-- Modal: Multi-Item Material Requisition Workbench Modal -->
     <div class="modal-backdrop hidden" id="multi-item-request-modal">
       <div class="modal-content modal-xl" style="max-width:1100px;">
-        <div class="modal-header" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border-bottom:1px solid var(--border-color);">
+        <div class="modal-header" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
           <div class="modal-title-group">
             <i data-lucide="shopping-bag" style="color:var(--primary); font-size:1.6rem;"></i>
             <div>
               <h2 style="margin:0; font-size:1.3rem; color:var(--text-main);">Multi-Item Material Requisition</h2>
-              <span style="font-size:0.8rem; color:var(--text-muted);">Select Project Workspace, Search Inventory, Request Multiple Components, Add Notes & Submit</span>
+              <span style="font-size:0.8rem; color:var(--text-muted);">Search Catalog, Add Components, Enter Purpose, View Status, Edit & Cancel Requests</span>
             </div>
-          </div>
-          <div style="display:flex; align-items:center; gap:12px; margin-left:auto; margin-right:12px;">
-            <span id="req-draft-status-pill" class="badge" style="background:rgba(56,189,248,0.15); color:#38bdf8; border:1px solid rgba(56,189,248,0.3); font-size:0.75rem; padding:4px 10px; border-radius:20px; font-weight:600;">New Requisition</span>
-            <button class="btn btn-secondary btn-sm" id="btn-open-drafts-picker" onclick="ModalManager.openSavedDraftsPicker()" title="View Saved Draft Requisitions">
-              <i data-lucide="folder-open"></i> Saved Drafts (<span id="req-saved-drafts-count">0</span>)
-            </button>
           </div>
           <button class="modal-close" onclick="ModalManager.closeMultiItemRequestModal()" style="cursor:pointer; background:none; border:none; color:white; font-size:1.6rem; font-weight:800; padding:4px 12px; line-height:1;" title="Close Window">&times;</button>
         </div>
 
-        <div class="modal-body" style="padding:20px; display:flex; flex-direction:column; gap:20px;">
+        <div class="modal-body" style="padding:20px; display:flex; flex-direction:column; gap:16px;">
           
-          <!-- SECTION 1: SELECT PROJECT WORKSPACE -->
-          <div class="req-section-card" style="background:var(--bg-dark); border:1px solid var(--border-color); border-radius:12px; padding:16px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-              <h3 style="margin:0; font-size:1rem; color:var(--primary); display:flex; align-items:center; gap:8px;">
-                <i data-lucide="folder-kanban"></i> 1. Select Project Workspace *
-              </h3>
-              <small class="text-muted">Link material checkout with an active project workspace</small>
-            </div>
-            <div style="display:grid; grid-template-columns: 2fr 1fr; gap:12px; align-items:center;">
-              <div>
-                <select id="req-project-select" class="form-control" style="background:#0f172a; color:var(--text-main); font-weight:600; padding:10px 14px; border-radius:8px; border:1px solid var(--border-color); width:100%;" onchange="ModalManager.handleReqProjectChange()">
-                  <!-- Dynamically populated -->
-                </select>
-              </div>
-              <div id="req-project-info-badge" style="background:#1e293b; padding:8px 12px; border-radius:8px; border:1px solid rgba(255,255,255,0.08); font-size:0.82rem;">
-                <span style="color:var(--text-muted);">Leader: </span><strong id="req-project-leader-name" style="color:var(--text-main);">Unassigned</strong>
-              </div>
-            </div>
+          <!-- Student Multi-Item Request Navigation Tabs -->
+          <div class="student-multi-req-tabs" style="display:flex; gap:10px; border-bottom:1px solid var(--border-color); padding-bottom:10px;">
+            <button id="tab-btn-req-components" class="btn btn-primary btn-sm" onclick="ModalManager.switchStudentReqTab('create')" style="font-weight:800; padding:8px 16px;">
+              ➕ Search & Add Components
+            </button>
+            <button id="tab-btn-my-req-status" class="btn btn-secondary btn-sm" onclick="ModalManager.switchStudentReqTab('status')" style="font-weight:800; padding:8px 16px;">
+              📋 View Request Status, Edit & Cancel (<span id="student-my-req-count">0</span>)
+            </button>
           </div>
 
-          <!-- SECTION 2: SEARCH INVENTORY & SELECT COMPONENTS -->
-          <div class="req-section-card" style="background:var(--bg-dark); border:1px solid var(--border-color); border-radius:12px; padding:16px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-              <h3 style="margin:0; font-size:1rem; color:var(--primary); display:flex; align-items:center; gap:8px;">
-                <i data-lucide="search"></i> 2. Search & Select Inventory Components
-              </h3>
-              <span id="req-search-matches-badge" class="badge" style="background:var(--bg-card); color:var(--text-muted); border:1px solid var(--border-color);">Search catalog...</span>
-            </div>
-            
-            <div style="display:grid; grid-template-columns: 3fr 1.5fr; gap:12px; margin-bottom:14px;">
-              <div class="search-input-wrapper" style="position:relative;">
-                <i data-lucide="search" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--text-muted); font-size:1.1rem;"></i>
-                <input type="text" id="req-inventory-search-input" placeholder="Search catalog by name, part #, SKU, category, tag or location..." style="width:100%; padding:10px 12px 10px 38px; background:#0f172a; border:1px solid var(--border-color); border-radius:8px; color:var(--text-main); font-size:0.9rem;" oninput="ModalManager.handleReqInventorySearch(this.value)">
+          <!-- TAB 1 CONTENT: SEARCH COMPONENTS, ADD QUANTITY & PURPOSE -->
+          <div id="student-tab-create-req" class="student-req-tab-content">
+            <!-- SECTION 1: SEARCH INVENTORY & SELECT COMPONENTS -->
+            <div class="req-section-card" style="background:var(--bg-dark); border:1px solid var(--border-color); border-radius:12px; padding:16px; margin-bottom:16px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                <h3 style="margin:0; font-size:1rem; color:var(--primary); display:flex; align-items:center; gap:8px;">
+                  <i data-lucide="search"></i> 1. Search & Add Components
+                </h3>
+                <span id="req-search-matches-badge" class="badge" style="background:var(--bg-card); color:var(--text-muted); border:1px solid var(--border-color);">Search catalog...</span>
               </div>
-              <div>
-                <select id="req-inventory-category-filter" style="width:100%; padding:10px 12px; background:#0f172a; border:1px solid var(--border-color); border-radius:8px; color:var(--text-main); font-size:0.85rem;" onchange="ModalManager.handleReqInventoryCategoryFilter(this.value)">
-                  <option value="ALL">All Categories</option>
-                </select>
+              
+              <div style="display:grid; grid-template-columns: 3fr 1.5fr; gap:12px; margin-bottom:14px;">
+                <div class="search-input-wrapper" style="position:relative;">
+                  <i data-lucide="search" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--text-muted); font-size:1.1rem;"></i>
+                  <input type="text" id="req-inventory-search-input" placeholder="Search catalog by component name, part #, SKU, category..." style="width:100%; padding:10px 12px 10px 38px; background:#0f172a; border:1px solid var(--border-color); border-radius:8px; color:var(--text-main); font-size:0.9rem;" oninput="ModalManager.handleReqInventorySearch(this.value)">
+                </div>
+                <div>
+                  <select id="req-inventory-category-filter" style="width:100%; padding:10px 12px; background:#0f172a; border:1px solid var(--border-color); border-radius:8px; color:var(--text-main); font-size:0.85rem;" onchange="ModalManager.handleReqInventoryCategoryFilter(this.value)">
+                    <option value="ALL">All Categories</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Quick Search Results Grid -->
+              <div id="req-search-results-container" style="max-height:220px; overflow-y:auto; display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:10px; background:#0f172a; padding:10px; border-radius:8px; border:1px dashed var(--border-color);">
+                <!-- Rendered search result component items -->
               </div>
             </div>
 
-            <!-- Quick Search Results Grid -->
-            <div id="req-search-results-container" style="max-height:220px; overflow-y:auto; display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:10px; background:#0f172a; padding:10px; border-radius:8px; border:1px dashed var(--border-color);">
-              <!-- Rendered search result component items -->
-            </div>
-          </div>
-
-          <!-- SECTION 3: REQUEST MULTIPLE ITEMS & ENTER REQUIRED QUANTITY -->
-          <div class="req-section-card" style="background:var(--bg-dark); border:1px solid var(--border-color); border-radius:12px; padding:16px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-              <h3 style="margin:0; font-size:1rem; color:var(--primary); display:flex; align-items:center; gap:8px;">
-                <i data-lucide="layers"></i> 3. Requisition Items Basket (<span id="req-cart-item-count">0</span> items)
-              </h3>
-              <div style="display:flex; gap:10px; align-items:center;">
-                <span class="text-muted" style="font-size:0.82rem;">Est. Requisition Valuation: <strong id="req-cart-total-value" style="color:var(--success);">₹0</strong></span>
+            <!-- SECTION 2: REQUESTED ITEMS BASKET & QUANTITIES -->
+            <div class="req-section-card" style="background:var(--bg-dark); border:1px solid var(--border-color); border-radius:12px; padding:16px; margin-bottom:16px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                <h3 style="margin:0; font-size:1rem; color:var(--primary); display:flex; align-items:center; gap:8px;">
+                  <i data-lucide="layers"></i> 2. Selected Components (<span id="req-cart-item-count">0</span> items)
+                </h3>
                 <button class="btn btn-secondary btn-sm" onclick="ModalManager.clearRequisitionCart()" style="font-size:0.75rem; color:#ef4444; border-color:rgba(239,68,68,0.3);">
-                  <i data-lucide="trash-2"></i> Clear Basket
+                  <i data-lucide="trash-2"></i> Clear Items
                 </button>
               </div>
+
+              <div class="procurement-table-wrapper" style="max-height:240px; overflow-y:auto;">
+                <table class="component-table" style="width:100%; border-collapse:collapse;">
+                  <thead>
+                    <tr style="background:#0f172a; text-align:left; font-size:0.8rem; color:var(--text-muted);">
+                      <th style="padding:10px;">Item & SKU</th>
+                      <th style="padding:10px;">Location Box</th>
+                      <th style="padding:10px;">Available Stock</th>
+                      <th style="padding:10px; width:140px;">Required Qty *</th>
+                      <th style="padding:10px;">Item Note</th>
+                      <th style="padding:10px; text-align:center; width:60px;">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="req-cart-table-body">
+                    <!-- Dynamic cart rows -->
+                  </tbody>
+                </table>
+              </div>
             </div>
 
-            <div class="procurement-table-wrapper" style="max-height:260px; overflow-y:auto;">
-              <table class="component-table" style="width:100%; border-collapse:collapse;">
-                <thead>
-                  <tr style="background:#0f172a; text-align:left; font-size:0.8rem; color:var(--text-muted);">
-                    <th style="padding:10px;">Item & SKU</th>
-                    <th style="padding:10px;">Location Box</th>
-                    <th style="padding:10px;">Available Stock</th>
-                    <th style="padding:10px; width:140px;">Required Qty *</th>
-                    <th style="padding:10px;">Item Note</th>
-                    <th style="padding:10px; text-align:center; width:60px;">Action</th>
-                  </tr>
-                </thead>
-                <tbody id="req-cart-table-body">
-                  <!-- Dynamic cart rows -->
-                </tbody>
-              </table>
+            <!-- SECTION 3: REQUISITION PURPOSE -->
+            <div class="req-section-card" style="background:var(--bg-dark); border:1px solid var(--border-color); border-radius:12px; padding:16px; margin-bottom:16px;">
+              <h3 style="margin:0 0 10px 0; font-size:1rem; color:var(--primary); display:flex; align-items:center; gap:8px;">
+                <i data-lucide="message-square"></i> 3. Requisition Purpose & Notes *
+              </h3>
+              <textarea id="req-general-notes-input" rows="2" placeholder="Enter purpose of requisition for administrator approval (e.g. project assignment, lab experiment)..." style="width:100%; padding:10px; background:#0f172a; border:1px solid var(--border-color); border-radius:8px; color:var(--text-main); font-size:0.88rem; font-family:inherit;" oninput="ModalManager.handleReqNotesChange()"></textarea>
+            </div>
+
+            <!-- Submit Requisition Button -->
+            <div style="display:flex; justify-content:flex-end; gap:12px; border-top:1px solid var(--border-color); padding-top:14px;">
+              <button class="btn btn-secondary" onclick="ModalManager.closeMultiItemRequestModal()">Close</button>
+              <button id="btn-req-submit-final" class="btn btn-primary btn-lg" onclick="ModalManager.handleSubmitMultiItemRequisition()" style="background:linear-gradient(135deg, #10b981 0%, #059669 100%); font-weight:800; padding:10px 24px; border:none; box-shadow:0 4px 14px rgba(16,185,129,0.4);">
+                <i data-lucide="send"></i> Submit Requisition to Administrator
+              </button>
             </div>
           </div>
 
-          <!-- SECTION 4: ADD REQUEST NOTES -->
-          <div class="req-section-card" style="background:var(--bg-dark); border:1px solid var(--border-color); border-radius:12px; padding:16px;">
-            <h3 style="margin:0 0 10px 0; font-size:1rem; color:var(--primary); display:flex; align-items:center; gap:8px;">
-              <i data-lucide="message-square"></i> 4. Add Requisition Purpose & Notes
-            </h3>
-            <textarea id="req-general-notes-input" rows="2" placeholder="Describe overall purpose of this requisition, lab assignment, experiment milestone, or project justification..." style="width:100%; padding:10px; background:#0f172a; border:1px solid var(--border-color); border-radius:8px; color:var(--text-main); font-size:0.88rem; font-family:inherit;" oninput="ModalManager.handleReqNotesChange()"></textarea>
+          <!-- TAB 2 CONTENT: MY SUBMITTED REQUESTS STATUS, EDIT & CANCEL -->
+          <div id="student-tab-status-req" class="student-req-tab-content hidden">
+            <div style="background:rgba(56,189,248,0.1); border:1px solid rgba(56,189,248,0.3); border-radius:10px; padding:12px 16px; margin-bottom:16px; font-size:0.88rem; color:#38bdf8; display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <strong>My Submitted Requisitions Status</strong><br>
+                Track live status, edit pending quantities/purpose, or cancel pending requests before administrator issuance.
+              </div>
+            </div>
+
+            <div id="student-req-status-list-container" style="display:flex; flex-direction:column; gap:12px; max-height:460px; overflow-y:auto;">
+              <!-- Dynamically populated submitted requests with Edit and Cancel buttons -->
+            </div>
           </div>
 
-        </div>
-
-        <div class="modal-footer" style="display:flex; justify-content:space-between; align-items:center; background:#0f172a; padding:14px 20px; border-top:1px solid var(--border-color);">
-          <div style="display:flex; gap:10px; align-items:center;">
-            <button id="btn-req-save-draft" class="btn btn-secondary" onclick="ModalManager.handleSaveRequisitionDraft()" style="background:#1e293b; color:#38bdf8; border:1px solid #0284c7; font-weight:700; padding:10px 18px;">
-              <i data-lucide="save"></i> Save Draft
-            </button>
-            <small id="req-draft-timestamp-text" class="text-muted" style="font-size:0.78rem;">Draft unsaved</small>
-          </div>
-          <div style="display:flex; gap:10px; align-items:center;">
-            <button class="btn btn-secondary" onclick="ModalManager.closeMultiItemRequestModal()">Cancel</button>
-            <button id="btn-req-submit-final" class="btn btn-primary" onclick="ModalManager.handleSubmitMultiItemRequisition()" style="background:linear-gradient(135deg, #0284c7 0%, #2563eb 100%); font-weight:800; padding:10px 24px;">
-              <i data-lucide="send"></i> Submit Requisition
-            </button>
-          </div>
         </div>
       </div>
     </div>
@@ -2049,13 +2040,13 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
   </div>
 
   <!-- JavaScript App Logic with Cache Busters -->
-  <script src="js/types.js?v=10800_student_project_requisition_flow"></script>
-  <script src="js/initialData.js?v=10800_student_project_requisition_flow"></script>
-  <script src="js/storage.js?v=10800_student_project_requisition_flow"></script>
-  <script src="js/rackViewer.js?v=10800_student_project_requisition_flow"></script>
-  <script src="js/componentsView.js?v=10800_student_project_requisition_flow"></script>
-  <script src="js/modalManager.js?v=10800_student_project_requisition_flow"></script>
-  <script src="js/app.js?v=10800_student_project_requisition_flow"></script>
+  <script src="js/types.js?v=11000_student_streamlined_multi_req"></script>
+  <script src="js/initialData.js?v=11000_student_streamlined_multi_req"></script>
+  <script src="js/storage.js?v=11000_student_streamlined_multi_req"></script>
+  <script src="js/rackViewer.js?v=11000_student_streamlined_multi_req"></script>
+  <script src="js/componentsView.js?v=11000_student_streamlined_multi_req"></script>
+  <script src="js/modalManager.js?v=11000_student_streamlined_multi_req"></script>
+  <script src="js/app.js?v=11000_student_streamlined_multi_req"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       if (window.lucide) {

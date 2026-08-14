@@ -2,18 +2,18 @@
    LabSphere Service Worker - Offline Cache & PWA Support
    ============================================================ */
 
-const CACHE_NAME = 'labsphere-v10900_project_workspace_2step_wizard';
+const CACHE_NAME = 'labsphere-v11000_student_streamlined_multi_req';
 const ASSETS_TO_CACHE = [
   '/Labsphere/',
   '/Labsphere/index.html',
-  '/Labsphere/css/styles.css?v=10900_project_workspace_2step_wizard',
-  '/Labsphere/js/app.js?v=10900_project_workspace_2step_wizard',
-  '/Labsphere/js/types.js?v=10900_project_workspace_2step_wizard',
-  '/Labsphere/js/initialData.js?v=10900_project_workspace_2step_wizard',
-  '/Labsphere/js/storage.js?v=10900_project_workspace_2step_wizard',
-  '/Labsphere/js/rackViewer.js?v=10900_project_workspace_2step_wizard',
-  '/Labsphere/js/componentsView.js?v=10900_project_workspace_2step_wizard',
-  '/Labsphere/js/modalManager.js?v=10900_project_workspace_2step_wizard',
+  '/Labsphere/css/styles.css?v=11000_student_streamlined_multi_req',
+  '/Labsphere/js/app.js?v=11000_student_streamlined_multi_req',
+  '/Labsphere/js/types.js?v=11000_student_streamlined_multi_req',
+  '/Labsphere/js/initialData.js?v=11000_student_streamlined_multi_req',
+  '/Labsphere/js/storage.js?v=11000_student_streamlined_multi_req',
+  '/Labsphere/js/rackViewer.js?v=11000_student_streamlined_multi_req',
+  '/Labsphere/js/componentsView.js?v=11000_student_streamlined_multi_req',
+  '/Labsphere/js/modalManager.js?v=11000_student_streamlined_multi_req',
   '/Labsphere/icons/icon-192.png',
   '/Labsphere/icons/icon-512.png',
   '/Labsphere/manifest.json'

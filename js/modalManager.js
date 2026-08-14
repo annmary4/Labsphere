@@ -3958,6 +3958,137 @@ ModalManager.handleSubmitProjectWizardRequest = function() {
   }
 };
 
+ModalManager.switchStudentReqTab = function(tabName) {
+  const createTab = document.getElementById("student-tab-create-req");
+  const statusTab = document.getElementById("student-tab-status-req");
+  const btnCreate = document.getElementById("tab-btn-req-components");
+  const btnStatus = document.getElementById("tab-btn-my-req-status");
+
+  if (tabName === "status") {
+    if (createTab) createTab.classList.add("hidden");
+    if (statusTab) statusTab.classList.remove("hidden");
+    if (btnCreate) { btnCreate.classList.remove("btn-primary"); btnCreate.classList.add("btn-secondary"); }
+    if (btnStatus) { btnStatus.classList.remove("btn-secondary"); btnStatus.classList.add("btn-primary"); }
+    this.renderStudentRequisitionsStatusList();
+  } else {
+    if (createTab) createTab.classList.remove("hidden");
+    if (statusTab) statusTab.classList.add("hidden");
+    if (btnCreate) { btnCreate.classList.remove("btn-secondary"); btnCreate.classList.add("btn-primary"); }
+    if (btnStatus) { btnStatus.classList.remove("btn-primary"); btnStatus.classList.add("btn-secondary"); }
+  }
+};
+
+ModalManager.renderStudentRequisitionsStatusList = function() {
+  const container = document.getElementById("student-req-status-list-container");
+  const badgeCount = document.getElementById("student-my-req-count");
+  if (!container) return;
+
+  const requests = StorageService.getRequests();
+  if (badgeCount) badgeCount.innerText = requests.length;
+
+  if (requests.length === 0) {
+    container.innerHTML = `
+      <div style="text-align:center; padding:30px; background:var(--bg-dark); border-radius:10px; border:1px solid var(--border-color);">
+        <p style="color:var(--text-muted); font-weight:600; margin:0;">No material requisitions submitted yet.</p>
+        <button class="btn btn-primary btn-sm" onclick="ModalManager.switchStudentReqTab('create')" style="margin-top:12px; font-weight:700;">
+          ➕ Search & Add Components Now
+        </button>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = requests.map(r => {
+    let statusBadge = `<span class="badge" style="background:rgba(245,158,11,0.15); color:#f59e0b; border:1px solid rgba(245,158,11,0.3); font-weight:800; font-size:0.8rem; padding:4px 10px;">⏳ Pending Administrator Approval</span>`;
+    let isPending = r.status === "SUBMITTED" || r.status === "PENDING" || r.status === "LEAD_APPROVED";
+
+    if (r.status === "ISSUED" || r.status === "APPROVED") {
+      statusBadge = `<span class="badge" style="background:rgba(16,185,129,0.15); color:#10b981; border:1px solid rgba(16,185,129,0.3); font-weight:800; font-size:0.8rem; padding:4px 10px;">✅ Issued & Approved by Admin</span>`;
+    } else if (r.status === "REJECTED") {
+      statusBadge = `<span class="badge" style="background:rgba(239,68,68,0.15); color:#ef4444; border:1px solid rgba(239,68,68,0.3); font-weight:800; font-size:0.8rem; padding:4px 10px;">❌ Rejected</span>`;
+    }
+
+    return `
+      <div style="background:var(--bg-dark); border:1px solid var(--border-color); border-radius:12px; padding:16px; display:flex; flex-direction:column; gap:8px;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:8px;">
+          <div>
+            <strong style="color:var(--text-main); font-size:1.05rem;">${r.componentName}</strong>
+            <span class="mono text-muted" style="font-size:0.78rem; margin-left:8px;">#${r.id}</span>
+          </div>
+          <div>${statusBadge}</div>
+        </div>
+
+        <div style="font-size:0.85rem; color:var(--text-main);">
+          Requested Quantity: <strong style="color:var(--primary); font-size:0.95rem;">${r.qtyRequested} pcs</strong>
+          <span style="color:var(--text-muted); margin-left:10px;">• Submitted: ${r.requestedAt || 'Recently'}</span>
+        </div>
+
+        ${r.notes ? `
+          <div style="background:#0f172a; padding:8px 12px; border-radius:6px; border:1px solid rgba(255,255,255,0.05); font-size:0.83rem; color:var(--text-muted);">
+            📝 Purpose / Notes: <span style="color:var(--text-main);">${r.notes}</span>
+          </div>
+        ` : ''}
+
+        ${isPending ? `
+          <div style="display:flex; justify-content:flex-end; gap:10px; border-top:1px solid rgba(255,255,255,0.05); padding-top:10px; margin-top:4px;">
+            <button class="btn btn-secondary btn-sm" onclick="ModalManager.handleEditStudentPendingRequest('${r.id}')" style="font-weight:700; color:#38bdf8; border-color:rgba(56,189,248,0.4);">
+              ✏ Edit Request
+            </button>
+            <button class="btn btn-danger btn-sm" onclick="ModalManager.handleCancelStudentPendingRequest('${r.id}')" style="font-weight:700; background:rgba(239,68,68,0.15); color:#ef4444; border:1px solid rgba(239,68,68,0.4);">
+              🚫 Cancel Request
+            </button>
+          </div>
+        ` : ''}
+      </div>
+    `;
+  }).join("");
+
+  if (window.lucide) window.lucide.createIcons();
+};
+
+ModalManager.handleEditStudentPendingRequest = function(requestId) {
+  const requests = StorageService.getRequests();
+  const req = requests.find(r => r.id === requestId);
+  if (!req) return;
+
+  const newQtyStr = prompt(`Edit Requisition #${req.id} (${req.componentName}):\nEnter updated quantity required:`, `${req.qtyRequested}`);
+  if (!newQtyStr) return;
+
+  const newQty = parseInt(newQtyStr);
+  if (isNaN(newQty) || newQty < 1) {
+    alert("Please enter a valid numeric quantity!");
+    return;
+  }
+
+  const newNotes = prompt(`Edit Requisition #${req.id} Purpose / Notes:`, req.notes || "");
+  
+  try {
+    StorageService.editPendingRequest(requestId, newQty, newNotes !== null ? newNotes : req.notes);
+    this.showToast(`Updated requisition #${requestId} successfully`, "success");
+    this.renderStudentRequisitionsStatusList();
+    if (window.App && window.App.refreshApp) window.App.refreshApp();
+  } catch (err) {
+    alert(err.message);
+  }
+};
+
+ModalManager.handleCancelStudentPendingRequest = function(requestId) {
+  const requests = StorageService.getRequests();
+  const req = requests.find(r => r.id === requestId);
+  if (!req) return;
+
+  if (confirm(`Are you sure you want to cancel requisition #${req.id} for ${req.componentName}?`)) {
+    try {
+      StorageService.cancelRequest(requestId);
+      this.showToast(`Requisition #${requestId} cancelled`, "info");
+      this.renderStudentRequisitionsStatusList();
+      if (window.App && window.App.refreshApp) window.App.refreshApp();
+    } catch (err) {
+      alert(err.message);
+    }
+  }
+};
+
 ModalManager.openMultiItemRequestModal = function(initialComponentId = null, targetProjectId = null) {
   if (StorageService.isRole("ADMIN")) {
     if (this.showToast) this.showToast("Lab Administrators manage approvals & material issuance. Redirecting to Approvals Queue.", "info");
@@ -3968,13 +4099,7 @@ ModalManager.openMultiItemRequestModal = function(initialComponentId = null, tar
   const backdrop = document.getElementById("multi-item-request-modal");
   if (!backdrop) return;
 
-  if (targetProjectId) {
-    this._requisitionState.projectId = targetProjectId;
-    const proj = StorageService.getProjects().find(p => p.id === targetProjectId);
-    if (proj) this._requisitionState.projectName = proj.projectName;
-  }
-
-  this.populateReqProjectsDropdown();
+  this.switchStudentReqTab('create');
   this.populateReqCategoriesDropdown();
 
   if (initialComponentId) {
@@ -3983,8 +4108,10 @@ ModalManager.openMultiItemRequestModal = function(initialComponentId = null, tar
 
   this.handleReqInventorySearch("");
   this.renderRequisitionCart();
-  this.updateReqDraftStatusPill();
-  this.updateSavedDraftsCountBadge();
+
+  const reqs = StorageService.getRequests();
+  const badgeCount = document.getElementById("student-my-req-count");
+  if (badgeCount) badgeCount.innerText = reqs.length;
 
   if (window.lucide) window.lucide.createIcons();
   backdrop.classList.remove("hidden");

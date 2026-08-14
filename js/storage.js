@@ -1195,6 +1195,37 @@ class StorageService {
     return newReq;
   }
 
+  static cancelRequest(requestId) {
+    let requests = this.getRequests();
+    const req = requests.find(r => r.id === requestId);
+    if (!req) throw new Error("Request not found!");
+    
+    // Only allow cancelling pending/submitted requisitions
+    if (req.status !== "SUBMITTED" && req.status !== "PENDING" && req.status !== "LEAD_APPROVED") {
+      throw new Error("Only pending requisitions awaiting approval can be cancelled.");
+    }
+    
+    requests = requests.filter(r => r.id !== requestId);
+    this.saveRequests(requests);
+    this.addNotification("REQUEST_CANCELLED", "Requisition Cancelled", `Requisition #${requestId} for ${req.componentName} was cancelled by requester.`);
+    return true;
+  }
+
+  static editPendingRequest(requestId, newQty, newNotes) {
+    let requests = this.getRequests();
+    const req = requests.find(r => r.id === requestId);
+    if (!req) throw new Error("Request not found!");
+    
+    if (req.status !== "SUBMITTED" && req.status !== "PENDING") {
+      throw new Error("Only pending requisitions can be edited before approval.");
+    }
+    
+    if (newQty) req.qtyRequested = parseInt(newQty) || req.qtyRequested;
+    if (newNotes !== undefined) req.notes = newNotes;
+    this.saveRequests(requests);
+    return req;
+  }
+
   // --- MULTI-ITEM REQUISITION & DRAFT MANAGEMENT ---
   static getRequisitionDrafts() {
     try {
