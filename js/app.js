@@ -638,6 +638,12 @@ class App {
         btnStudentReqsHeader.style.setProperty("display", "inline-flex", "important");
       }
     }
+    const btnProjectsHeader = document.getElementById("btn-projects-mgr");
+    if (btnProjectsHeader) {
+      if (!isMobile) {
+        btnProjectsHeader.style.setProperty("display", "inline-flex", "important");
+      }
+    }
 
     // Drawer items (shown inside hamburger menu for Admin)
     const drawerAdminElements = [

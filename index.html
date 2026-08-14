@@ -19,7 +19,7 @@
     rel="stylesheet">
 
   <!-- CSS with cache buster -->
-  <link rel="stylesheet" href="css/styles.css?v=10700_preserve_student_requests_sync">
+  <link rel="stylesheet" href="css/styles.css?v=10800_student_project_requisition_flow">
 
   <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -1765,6 +1765,30 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
       </div>
     </div>
 
+    <!-- Modal: Projects Workspace & Requisition Launcher Modal -->
+    <div class="modal-backdrop hidden" id="projects-modal">
+      <div class="modal-content modal-lg" style="max-width:960px;">
+        <div class="modal-header" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border-bottom:1px solid var(--border-color);">
+          <div class="modal-title-group">
+            <i data-lucide="folder-kanban" style="color:var(--primary); font-size:1.6rem;"></i>
+            <div>
+              <h2 style="margin:0; font-size:1.3rem; color:var(--text-main);">Lab Projects & Requisition Workspaces</h2>
+              <span style="font-size:0.8rem; color:var(--text-muted);">Select Project Workspace to Search Inventory, Request Multiple Items, Add Notes & Submit</span>
+            </div>
+          </div>
+          <button class="modal-close" onclick="ModalManager.closeProjectModal()" style="cursor:pointer; background:none; border:none; color:white; font-size:1.6rem; font-weight:800; padding:4px 12px; line-height:1;" title="Close Window">&times;</button>
+        </div>
+        <div class="modal-body" style="padding:20px;">
+          <div id="projects-list-container">
+            <!-- Dynamically rendered projects -->
+          </div>
+        </div>
+        <div class="modal-footer" style="padding:12px 20px; border-top:1px solid var(--border-color); text-align:right;">
+          <button class="btn btn-secondary" onclick="ModalManager.closeProjectModal()">Close</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Modal: Multi-Item Material Requisition Workbench Modal -->
     <div class="modal-backdrop hidden" id="multi-item-request-modal">
       <div class="modal-content modal-xl" style="max-width:1100px;">
@@ -1920,13 +1944,13 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
   </div>
 
   <!-- JavaScript App Logic with Cache Busters -->
-  <script src="js/types.js?v=10700_preserve_student_requests_sync"></script>
-  <script src="js/initialData.js?v=10700_preserve_student_requests_sync"></script>
-  <script src="js/storage.js?v=10700_preserve_student_requests_sync"></script>
-  <script src="js/rackViewer.js?v=10700_preserve_student_requests_sync"></script>
-  <script src="js/componentsView.js?v=10700_preserve_student_requests_sync"></script>
-  <script src="js/modalManager.js?v=10700_preserve_student_requests_sync"></script>
-  <script src="js/app.js?v=10700_preserve_student_requests_sync"></script>
+  <script src="js/types.js?v=10800_student_project_requisition_flow"></script>
+  <script src="js/initialData.js?v=10800_student_project_requisition_flow"></script>
+  <script src="js/storage.js?v=10800_student_project_requisition_flow"></script>
+  <script src="js/rackViewer.js?v=10800_student_project_requisition_flow"></script>
+  <script src="js/componentsView.js?v=10800_student_project_requisition_flow"></script>
+  <script src="js/modalManager.js?v=10800_student_project_requisition_flow"></script>
+  <script src="js/app.js?v=10800_student_project_requisition_flow"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       if (window.lucide) {

@@ -3675,7 +3675,70 @@ ModalManager._requisitionState = {
   lastSavedAt: null
 };
 
-ModalManager.openMultiItemRequestModal = function(initialComponentId = null) {
+ModalManager.openProjectModal = function() {
+  const projects = StorageService.getProjects();
+  const backdrop = document.getElementById("projects-modal");
+  const container = document.getElementById("projects-list-container");
+
+  if (!backdrop || !container) {
+    this.openMultiItemRequestModal();
+    return;
+  }
+
+  const isAdmin = StorageService.isRole("ADMIN");
+
+  container.innerHTML = `
+    <div style="background:rgba(56,189,248,0.1); border:1px solid rgba(56,189,248,0.3); border-radius:10px; padding:12px 16px; margin-bottom:16px; font-size:0.85rem; color:#38bdf8; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+      <div>
+        <strong>Lab Project Workspaces & Requisition Hub</strong><br>
+        Select a project workspace to search inventory, request multiple items, add notes, save drafts & submit.
+      </div>
+      ${!isAdmin ? `
+        <button class="btn btn-primary btn-sm" onclick="ModalManager.closeProjectModal(); ModalManager.openMultiItemRequestModal();" style="font-weight:700; background:linear-gradient(135deg, #0284c7 0%, #2563eb 100%);">
+          <i data-lucide="shopping-bag"></i> Launch Multi-Item Request Workbench
+        </button>
+      ` : ''}
+    </div>
+
+    <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap:16px;">
+      ${projects.map(p => `
+        <div style="background:var(--bg-dark); border:1px solid var(--border-color); border-radius:12px; padding:16px; display:flex; flex-direction:column; justify-content:space-between; box-shadow:0 4px 12px rgba(0,0,0,0.2);">
+          <div>
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+              <strong style="color:var(--text-main); font-size:1.05rem;">${p.projectName}</strong>
+              <span class="mono text-muted" style="font-size:0.75rem;">${p.id}</span>
+            </div>
+            <p style="font-size:0.83rem; color:var(--text-muted); margin-bottom:12px; line-height:1.4;">${p.description || 'No project description provided.'}</p>
+            <div style="font-size:0.8rem; margin-bottom:12px; background:rgba(255,255,255,0.02); padding:10px; border-radius:8px;">
+              👨‍💻 Project Lead: <strong style="color:var(--primary);">${p.leaderName}</strong><br>
+              👥 Members: <span class="text-muted">${Array.isArray(p.members) ? p.members.join(', ') : 'Lab Team'}</span>
+            </div>
+          </div>
+          <div style="border-top:1px solid var(--border-color); padding-top:12px; margin-top:8px; display:flex; justify-content:space-between; align-items:center;">
+            <span class="badge" style="background:rgba(56,189,248,0.15); color:#38bdf8; font-weight:700; font-size:0.78rem;">
+              📦 ${Array.isArray(p.bom) ? p.bom.length : 0} BOM Components
+            </span>
+            ${!isAdmin ? `
+              <button class="btn btn-primary btn-sm" onclick="ModalManager.closeProjectModal(); ModalManager.openMultiItemRequestModal(null, '${p.id}');" style="font-weight:800; background:linear-gradient(135deg, #10b981 0%, #059669 100%); border:none; box-shadow:0 2px 8px rgba(16,185,129,0.3);">
+                <i data-lucide="shopping-bag"></i> Request Materials for Project
+              </button>
+            ` : ''}
+          </div>
+        </div>
+      `).join("")}
+    </div>
+  `;
+
+  if (window.lucide) window.lucide.createIcons();
+  backdrop.classList.remove("hidden");
+};
+
+ModalManager.closeProjectModal = function() {
+  const backdrop = document.getElementById("projects-modal");
+  if (backdrop) backdrop.classList.add("hidden");
+};
+
+ModalManager.openMultiItemRequestModal = function(initialComponentId = null, targetProjectId = null) {
   if (StorageService.isRole("ADMIN")) {
     if (this.showToast) this.showToast("Lab Administrators manage approvals & material issuance. Redirecting to Approvals Queue.", "info");
     this.openAdminApprovalModal();
@@ -3684,6 +3747,12 @@ ModalManager.openMultiItemRequestModal = function(initialComponentId = null) {
 
   const backdrop = document.getElementById("multi-item-request-modal");
   if (!backdrop) return;
+
+  if (targetProjectId) {
+    this._requisitionState.projectId = targetProjectId;
+    const proj = StorageService.getProjects().find(p => p.id === targetProjectId);
+    if (proj) this._requisitionState.projectName = proj.projectName;
+  }
 
   this.populateReqProjectsDropdown();
   this.populateReqCategoriesDropdown();

@@ -2,18 +2,18 @@
    LabSphere Service Worker - Offline Cache & PWA Support
    ============================================================ */
 
-const CACHE_NAME = 'labsphere-v10700_preserve_student_requests_sync';
+const CACHE_NAME = 'labsphere-v10800_student_project_requisition_flow';
 const ASSETS_TO_CACHE = [
   '/Labsphere/',
   '/Labsphere/index.html',
-  '/Labsphere/css/styles.css?v=10700_preserve_student_requests_sync',
-  '/Labsphere/js/app.js?v=10700_preserve_student_requests_sync',
-  '/Labsphere/js/types.js?v=10700_preserve_student_requests_sync',
-  '/Labsphere/js/initialData.js?v=10700_preserve_student_requests_sync',
-  '/Labsphere/js/storage.js?v=10700_preserve_student_requests_sync',
-  '/Labsphere/js/rackViewer.js?v=10700_preserve_student_requests_sync',
-  '/Labsphere/js/componentsView.js?v=10700_preserve_student_requests_sync',
-  '/Labsphere/js/modalManager.js?v=10700_preserve_student_requests_sync',
+  '/Labsphere/css/styles.css?v=10800_student_project_requisition_flow',
+  '/Labsphere/js/app.js?v=10800_student_project_requisition_flow',
+  '/Labsphere/js/types.js?v=10800_student_project_requisition_flow',
+  '/Labsphere/js/initialData.js?v=10800_student_project_requisition_flow',
+  '/Labsphere/js/storage.js?v=10800_student_project_requisition_flow',
+  '/Labsphere/js/rackViewer.js?v=10800_student_project_requisition_flow',
+  '/Labsphere/js/componentsView.js?v=10800_student_project_requisition_flow',
+  '/Labsphere/js/modalManager.js?v=10800_student_project_requisition_flow',
   '/Labsphere/icons/icon-192.png',
   '/Labsphere/icons/icon-512.png',
   '/Labsphere/manifest.json'
