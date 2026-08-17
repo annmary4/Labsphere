@@ -1696,25 +1696,7 @@ class ModalManager {
           const returnBtn = card.querySelector(".btn-partial-return-item");
           if (returnBtn) {
             returnBtn.addEventListener("click", () => {
-              const retQtyStr = prompt(`Return '${r.componentName}':\nEnter quantity returning now (Remaining borrowed: ${remainingQty} pcs):`, `${remainingQty}`);
-              if (!retQtyStr) return;
-              const retQty = parseInt(retQtyStr);
-              if (isNaN(retQty) || retQty <= 0) {
-                alert("Please enter a valid positive number.");
-                return;
-              }
-
-              const cond = prompt("Select Item Condition (GOOD / FAIR / DAMAGED):", "GOOD") || "GOOD";
-              const notes = cond.toUpperCase() === "DAMAGED" ? prompt("Describe damage or issue:", "Minor cosmetic/pin damage") : "";
-
-              try {
-                StorageService.handlePartialReturn(r.id, retQty, cond.toUpperCase(), notes || "");
-                alert(`Successfully logged return of ${retQty} pcs (${cond.toUpperCase()} condition)!`);
-                this.openStudentRequestsModal();
-                if (this.callbacks.onInventoryChanged) this.callbacks.onInventoryChanged();
-              } catch (err) {
-                alert(err.message);
-              }
+              ModalManager.openReturnMaterialsModal(r.id);
             });
           }
 
@@ -2123,6 +2105,223 @@ class ModalManager {
         alert(`Success: Materials (${issueQty} pcs of '${req.componentName}') ISSUED by ${issuedBy} on ${issueDate}!\n\nPhysical inventory stock has been updated automatically.`);
         backdrop.remove();
         this.openAdminApprovalModal();
+        if (this.callbacks.onInventoryChanged) this.callbacks.onInventoryChanged();
+      } catch (err) {
+        alert(err.message);
+      }
+  // --- COMPLETE, PARTIAL & MULTIPLE RETURN PORTAL MODAL (5 CONDITIONS SUPPORT) ---
+  static openReturnMaterialsModal(requestId) {
+    const requests = StorageService.getRequests();
+    const components = StorageService.getComponents();
+    const req = requests.find(r => r.id === requestId);
+    if (!req) return;
+
+    const comp = components.find(c => c.id === req.componentId);
+    const targetIssuedQty = req.issuedQty || req.qtyApproved || req.qtyRequested || 1;
+    const previouslyReturned = req.returnedQty || 0;
+    const remainingToReturn = Math.max(1, targetIssuedQty - previouslyReturned);
+
+    const oldModal = document.getElementById("return-materials-dialog");
+    if (oldModal) oldModal.remove();
+
+    const session = StorageService.getCurrentSession();
+    const defaultActor = session ? session.fullName : req.requesterName;
+    const defaultDate = new Date().toISOString().slice(0, 10);
+
+    let returnHistoryHtml = "";
+    if (Array.isArray(req.returnHistory) && req.returnHistory.length > 0) {
+      returnHistoryHtml = `
+        <div style="background:#0f172a; border:1px solid #334155; border-radius:10px; padding:12px; margin-bottom:16px;">
+          <span style="font-size:0.75rem; font-weight:800; text-transform:uppercase; color:#38bdf8; letter-spacing:0.5px;">📋 Return History Log (${req.returnHistory.length} Event${req.returnHistory.length === 1 ? '' : 's'})</span>
+          <div style="max-height:120px; overflow-y:auto; margin-top:8px; display:flex; flex-direction:column; gap:6px;">
+            ${req.returnHistory.map(log => `
+              <div style="font-size:0.78rem; background:rgba(255,255,255,0.04); padding:6px 10px; border-radius:6px; display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                  <strong>${log.qty} pcs</strong> • <span style="color:#38bdf8; font-weight:700;">${log.condition}</span> (${log.returnDate || 'N/A'})
+                  ${log.notes ? `<br><small style="color:#94a3b8;">${log.notes}</small>` : ''}
+                </div>
+                <span style="font-size:0.72rem; color:#94a3b8;">${log.returnedBy || 'User'}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    const backdrop = document.createElement("div");
+    backdrop.id = "return-materials-dialog";
+    backdrop.style.cssText = `
+      position: fixed !important; top: 0 !important; left: 0 !important;
+      width: 100vw !important; height: 100vh !important;
+      background: rgba(15, 23, 42, 0.9) !important;
+      backdrop-filter: blur(8px) !important;
+      z-index: 99999999 !important;
+      display: flex !important; align-items: center !important; justify-content: center !important;
+      padding: 16px !important; box-sizing: border-box !important;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+    `;
+
+    backdrop.innerHTML = `
+      <div style="background:#1e293b; border:1px solid #334155; border-radius:16px; width:100%; max-width:560px; color:#f8fafc; padding:24px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.5);">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #334155; padding-bottom:14px; margin-bottom:18px;">
+          <div>
+            <span style="font-size:0.75rem; font-weight:800; text-transform:uppercase; color:#38bdf8; letter-spacing:0.5px;">🔄 Component Return Portal</span>
+            <h3 style="margin:4px 0 0 0; font-size:1.2rem; font-weight:800; color:#f8fafc;">Return Materials for Request #${req.id}</h3>
+          </div>
+          <button id="close-return-dialog" style="background:transparent; border:none; color:#94a3b8; font-size:1.4rem; cursor:pointer; padding:4px;">&times;</button>
+        </div>
+
+        <div style="background:#0f172a; border:1px solid #334155; border-radius:12px; padding:14px; margin-bottom:16px; display:flex; gap:12px; align-items:center;">
+          <div style="flex:1;">
+            <div style="font-weight:800; font-size:1rem; color:#f8fafc;">${req.componentName}</div>
+            <div style="font-size:0.8rem; color:#94a3b8; margin-top:2px;">
+              Requester: <strong style="color:#e2e8f0;">${req.requesterName}</strong> • Project: <strong style="color:#e2e8f0;">${req.projectName || 'General'}</strong>
+            </div>
+            <div style="font-size:0.8rem; color:#94a3b8; margin-top:4px;">
+              Total Issued: <strong style="color:#38bdf8;">${targetIssuedQty} pcs</strong> | Previously Returned: <strong style="color:#10b981;">${previouslyReturned} pcs</strong> | Outstanding: <strong style="color:#f59e0b;">${remainingToReturn} pcs</strong>
+            </div>
+          </div>
+        </div>
+
+        ${returnHistoryHtml}
+
+        <div style="display:flex; flex-direction:column; gap:14px; margin-bottom:20px;">
+          <div>
+            <label style="display:block; font-size:0.82rem; font-weight:700; color:#cbd5e1; margin-bottom:6px;">
+              1. Return Quantity Mode:
+            </label>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+              <button id="btn-return-type-full" type="button" style="padding:10px; border-radius:8px; border:2px solid #38bdf8; background:rgba(56,189,248,0.15); color:#38bdf8; font-weight:800; font-size:0.85rem; cursor:pointer;">
+                🟢 Complete Return (${remainingToReturn} pcs)
+              </button>
+              <button id="btn-return-type-partial" type="button" style="padding:10px; border-radius:8px; border:1px solid #475569; background:rgba(255,255,255,0.05); color:#94a3b8; font-weight:700; font-size:0.85rem; cursor:pointer;">
+                🟡 Partial Return
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <label style="display:block; font-size:0.82rem; font-weight:700; color:#cbd5e1; margin-bottom:6px;">
+              2. Quantity Returning Now (pcs):
+            </label>
+            <input type="number" id="return-qty-field" value="${remainingToReturn}" min="1" max="${remainingToReturn}" style="width:100%; padding:10px 12px; background:#0f172a; border:1px solid #334155; border-radius:8px; color:#f8fafc; font-weight:700; font-size:0.95rem; box-sizing:border-box;" />
+            <span style="font-size:0.75rem; color:#94a3b8; display:block; margin-top:4px;">
+              Maximum returning quantity: ${remainingToReturn} pcs
+            </span>
+          </div>
+
+          <div>
+            <label style="display:block; font-size:0.82rem; font-weight:700; color:#cbd5e1; margin-bottom:6px;">
+              3. Return Condition (5 Conditions Support):
+            </label>
+            <select id="return-condition-field" style="width:100%; padding:10px 12px; background:#0f172a; border:1px solid #334155; border-radius:8px; color:#f8fafc; font-weight:700; font-size:0.88rem; box-sizing:border-box;">
+              <option value="GOOD" selected>🟢 GOOD Condition (Fully Working -> Restores Inventory Stock)</option>
+              <option value="DAMAGED">🔴 DAMAGED / Defective (Component Broken -> Flags Damaged State)</option>
+              <option value="MISSING">❓ MISSING / Lost (Component Lost -> Logs Missing Asset)</option>
+              <option value="NEEDS_REPAIR">🛠 NEEDS REPAIR (Requires Maintenance -> Flags Repair Queue)</option>
+              <option value="CONSUMABLE_USED">🧪 CONSUMABLE USED (Material Used Up -> Logs Consumable)</option>
+            </select>
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+            <div>
+              <label style="display:block; font-size:0.82rem; font-weight:700; color:#cbd5e1; margin-bottom:6px;">
+                📅 Return Date:
+              </label>
+              <input type="date" id="return-date-field" value="${defaultDate}" style="width:100%; padding:9px 12px; background:#0f172a; border:1px solid #334155; border-radius:8px; color:#f8fafc; font-weight:600; font-size:0.85rem; box-sizing:border-box;" />
+            </div>
+
+            <div>
+              <label style="display:block; font-size:0.82rem; font-weight:700; color:#cbd5e1; margin-bottom:6px;">
+                👤 Returned By:
+              </label>
+              <input type="text" id="returned-by-field" value="${defaultActor}" placeholder="Requester Name" style="width:100%; padding:9px 12px; background:#0f172a; border:1px solid #334155; border-radius:8px; color:#f8fafc; font-weight:600; font-size:0.85rem; box-sizing:border-box;" />
+            </div>
+          </div>
+
+          <div>
+            <label style="display:block; font-size:0.82rem; font-weight:700; color:#cbd5e1; margin-bottom:6px;">
+              📝 Return Notes / Remarks (optional):
+            </label>
+            <input type="text" id="return-notes-field" placeholder="E.g. Completed lab prototype, pin calibration ok" style="width:100%; padding:9px 12px; background:#0f172a; border:1px solid #334155; border-radius:8px; color:#f8fafc; font-size:0.85rem; box-sizing:border-box;" />
+          </div>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:10px; border-top:1px solid #334155; padding-top:16px;">
+          <button id="cancel-return-dialog" style="padding:10px 18px; background:#334155; color:#cbd5e1; border:none; border-radius:8px; font-weight:700; cursor:pointer;">Cancel</button>
+          <button id="confirm-return-dialog" style="padding:10px 22px; background:linear-gradient(135deg, #0284c7 0%, #2563eb 100%); color:white; border:none; border-radius:8px; font-weight:800; cursor:pointer; box-shadow:0 4px 12px rgba(2,132,199,0.4);">
+            🔄 Confirm Return & Update Inventory
+          </button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(backdrop);
+
+    const qtyField = backdrop.querySelector("#return-qty-field");
+    const fullBtn = backdrop.querySelector("#btn-return-type-full");
+    const partialBtn = backdrop.querySelector("#btn-return-type-partial");
+
+    fullBtn.addEventListener("click", () => {
+      fullBtn.style.border = "2px solid #38bdf8";
+      fullBtn.style.background = "rgba(56,189,248,0.15)";
+      fullBtn.style.color = "#38bdf8";
+
+      partialBtn.style.border = "1px solid #475569";
+      partialBtn.style.background = "rgba(255,255,255,0.05)";
+      partialBtn.style.color = "#94a3b8";
+
+      qtyField.value = remainingToReturn;
+    });
+
+    partialBtn.addEventListener("click", () => {
+      partialBtn.style.border = "2px solid #f59e0b";
+      partialBtn.style.background = "rgba(245,158,11,0.15)";
+      partialBtn.style.color = "#f59e0b";
+
+      fullBtn.style.border = "1px solid #475569";
+      fullBtn.style.background = "rgba(255,255,255,0.05)";
+      fullBtn.style.color = "#94a3b8";
+
+      if (parseInt(qtyField.value) >= remainingToReturn && remainingToReturn > 1) {
+        qtyField.value = Math.max(1, Math.floor(remainingToReturn / 2));
+      }
+      qtyField.focus();
+    });
+
+    const closeFn = () => backdrop.remove();
+    backdrop.querySelector("#close-return-dialog").addEventListener("click", closeFn);
+    backdrop.querySelector("#cancel-return-dialog").addEventListener("click", closeFn);
+
+    backdrop.querySelector("#confirm-return-dialog").addEventListener("click", () => {
+      const returnQty = parseInt(qtyField.value);
+      const condition = backdrop.querySelector("#return-condition-field").value;
+      const returnDate = backdrop.querySelector("#return-date-field").value;
+      const returnedBy = backdrop.querySelector("#returned-by-field").value.trim();
+      const notes = backdrop.querySelector("#return-notes-field").value.trim();
+
+      if (isNaN(returnQty) || returnQty <= 0) {
+        alert("Please enter a valid positive return quantity.");
+        return;
+      }
+
+      if (returnQty > remainingToReturn) {
+        alert(`Cannot return ${returnQty} pcs! Maximum outstanding borrowed count is ${remainingToReturn} pcs.`);
+        return;
+      }
+
+      try {
+        StorageService.handlePartialReturn(req.id, {
+          returnQty,
+          condition,
+          notes,
+          returnDate,
+          returnedBy
+        });
+
+        alert(`Success: Logged return of ${returnQty} pcs of '${req.componentName}' (${condition} condition) on ${returnDate}!\n\nInventory status updated automatically.`);
+        backdrop.remove();
+        this.openStudentRequestsModal();
         if (this.callbacks.onInventoryChanged) this.callbacks.onInventoryChanged();
       } catch (err) {
         alert(err.message);

@@ -2,18 +2,18 @@
    LabSphere Service Worker - Offline Cache & PWA Support
    ============================================================ */
 
-const CACHE_NAME = 'labsphere-v11800_removed_navbar_projects_button';
+const CACHE_NAME = 'labsphere-v11900_returns_full_partial_multiple_5_conditions';
 const ASSETS_TO_CACHE = [
   '/Labsphere/',
   '/Labsphere/index.html',
-  '/Labsphere/css/styles.css?v=11800_removed_navbar_projects_button',
-  '/Labsphere/js/app.js?v=11800_removed_navbar_projects_button',
-  '/Labsphere/js/types.js?v=11800_removed_navbar_projects_button',
-  '/Labsphere/js/initialData.js?v=11800_removed_navbar_projects_button',
-  '/Labsphere/js/storage.js?v=11800_removed_navbar_projects_button',
-  '/Labsphere/js/rackViewer.js?v=11800_removed_navbar_projects_button',
-  '/Labsphere/js/componentsView.js?v=11800_removed_navbar_projects_button',
-  '/Labsphere/js/modalManager.js?v=11800_removed_navbar_projects_button',
+  '/Labsphere/css/styles.css?v=11900_returns_full_partial_multiple_5_conditions',
+  '/Labsphere/js/app.js?v=11900_returns_full_partial_multiple_5_conditions',
+  '/Labsphere/js/types.js?v=11900_returns_full_partial_multiple_5_conditions',
+  '/Labsphere/js/initialData.js?v=11900_returns_full_partial_multiple_5_conditions',
+  '/Labsphere/js/storage.js?v=11900_returns_full_partial_multiple_5_conditions',
+  '/Labsphere/js/rackViewer.js?v=11900_returns_full_partial_multiple_5_conditions',
+  '/Labsphere/js/componentsView.js?v=11900_returns_full_partial_multiple_5_conditions',
+  '/Labsphere/js/modalManager.js?v=11900_returns_full_partial_multiple_5_conditions',
   '/Labsphere/icons/icon-192.png',
   '/Labsphere/icons/icon-512.png',
   '/Labsphere/manifest.json'

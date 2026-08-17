@@ -363,8 +363,28 @@ class StorageService {
     this.saveNotifications(notifs);
   }
 
-  // --- PARTIAL RETURN & BORROW WORKFLOW METHODS ---
-  static handlePartialReturn(requestId, returnQty, condition = "GOOD", notes = "") {
+  // --- COMPLETE, PARTIAL & MULTIPLE RETURN WORKFLOW WITH 5 CONDITIONS ---
+  static handlePartialReturn(requestId, returnQtyInput, conditionInput = "GOOD", notesInput = "", returnDateInput = null, returnedByInput = null) {
+    let returnQty = 0;
+    let condition = "GOOD";
+    let notes = "";
+    let returnDate = null;
+    let returnedBy = null;
+
+    if (typeof returnQtyInput === "object" && returnQtyInput !== null) {
+      returnQty = parseInt(returnQtyInput.returnQty || returnQtyInput.qty) || 0;
+      condition = returnQtyInput.condition || "GOOD";
+      notes = returnQtyInput.notes || "";
+      returnDate = returnQtyInput.returnDate || null;
+      returnedBy = returnQtyInput.returnedBy || null;
+    } else {
+      returnQty = parseInt(returnQtyInput) || 0;
+      condition = conditionInput || "GOOD";
+      notes = notesInput || "";
+      returnDate = returnDateInput || null;
+      returnedBy = returnedByInput || null;
+    }
+
     const requests = this.getRequests();
     const components = this.getComponents();
     const req = requests.find(r => r.id === requestId);
@@ -372,62 +392,84 @@ class StorageService {
     if (!req) throw new Error("Request record not found!");
 
     const comp = components.find(c => c.id === req.componentId);
-    const targetIssuedQty = req.qtyApproved || req.qtyRequested;
-    const remainingToReturn = targetIssuedQty - (req.returnedQty || 0);
+    const targetIssuedQty = req.issuedQty || req.qtyApproved || req.qtyRequested || 1;
+    const previouslyReturned = req.returnedQty || 0;
+    const remainingToReturn = Math.max(0, targetIssuedQty - previouslyReturned);
+
     const qtyToReturn = Math.min(returnQty, remainingToReturn);
 
     if (qtyToReturn <= 0) {
-      throw new Error("Invalid return quantity or all items already returned.");
+      throw new Error("Invalid return quantity or all issued items have already been returned.");
     }
+
+    const validConditions = ["GOOD", "DAMAGED", "MISSING", "NEEDS_REPAIR", "CONSUMABLE_USED"];
+    const normCondition = validConditions.includes(condition.toUpperCase()) ? condition.toUpperCase() : "GOOD";
+
+    const session = this.getCurrentSession();
+    const actorName = returnedBy || (session ? session.fullName : req.requesterName);
+    const returnDateStr = returnDate || new Date().toISOString().slice(0, 10);
+    const timestampStr = new Date().toLocaleString();
 
     req.returnedQty = (req.returnedQty || 0) + qtyToReturn;
-    req.condition = condition;
+    req.condition = normCondition;
 
-    if (condition === "DAMAGED") {
-      req.damagedQty = (req.damagedQty || 0) + qtyToReturn;
-      req.damageReport = notes || `Reported ${qtyToReturn} pcs damaged on return`;
+    if (!Array.isArray(req.returnHistory)) {
+      req.returnHistory = [];
     }
 
+    const returnLogEntry = {
+      returnId: "RET-" + Date.now().toString().slice(-4),
+      qty: qtyToReturn,
+      condition: normCondition,
+      notes: notes || "",
+      returnDate: returnDateStr,
+      returnedAt: timestampStr,
+      returnedBy: actorName
+    };
+    req.returnHistory.push(returnLogEntry);
+
+    // Track specific condition metrics on request
+    if (normCondition === "DAMAGED") {
+      req.damagedQty = (req.damagedQty || 0) + qtyToReturn;
+      req.damageReport = notes || `Reported ${qtyToReturn} pcs damaged on return`;
+    } else if (normCondition === "MISSING") {
+      req.missingQty = (req.missingQty || 0) + qtyToReturn;
+      req.missingReport = notes || `Reported ${qtyToReturn} pcs missing on return`;
+    } else if (normCondition === "NEEDS_REPAIR") {
+      req.needsRepairQty = (req.needsRepairQty || 0) + qtyToReturn;
+    } else if (normCondition === "CONSUMABLE_USED") {
+      req.consumedQty = (req.consumedQty || 0) + qtyToReturn;
+    }
+
+    // Determine new request status
     if (req.returnedQty >= targetIssuedQty) {
-      req.status = condition === "DAMAGED" ? "DAMAGED" : "RETURNED";
-      req.returnedAt = new Date().toLocaleString();
+      if (normCondition === "DAMAGED") req.status = "DAMAGED";
+      else if (normCondition === "MISSING") req.status = "MISSING";
+      else if (normCondition === "NEEDS_REPAIR") req.status = "NEEDS_REPAIR";
+      else if (normCondition === "CONSUMABLE_USED") req.status = "CONSUMED";
+      else req.status = "RETURNED";
+
+      req.returnedAt = timestampStr;
     } else {
       req.status = "PARTIAL_RETURN";
     }
 
-    req.notes += ` [Returned ${qtyToReturn} pcs in ${condition} condition on ${new Date().toLocaleDateString()}${notes ? ': ' + notes : ''}]`;
+    req.notes += ` [Return Log: ${qtyToReturn} pcs in ${normCondition} condition on ${returnDateStr} by ${actorName}${notes ? ' - ' + notes : ''}]`;
     this.saveRequests(requests);
 
     if (comp) {
       const prevQty = comp.quantity;
-      if (condition === "DAMAGED") {
-        comp.inventoryState = "DAMAGED";
-        this.saveComponents(components);
 
-        this.addNotification(
-          "RETURNED_ITEM",
-          `Alert: Damaged Component Returned: ${comp.name}`,
-          `${req.requesterName} returned ${qtyToReturn} pcs of ${comp.name} in DAMAGED condition. ${notes}`
-        );
-
-        this.logTransaction(
-          comp.id,
-          comp.name,
-          "ITEM_DAMAGED",
-          0,
-          prevQty,
-          comp.quantity,
-          `Damaged asset reported: ${qtyToReturn} unit(s) of ${comp.name} returned in DAMAGED condition by ${req.requesterName}. Note: ${notes || 'N/A'}`
-        );
-      } else {
+      if (normCondition === "GOOD") {
+        // Physical stock is restored only if condition is GOOD
         comp.quantity += qtyToReturn;
-        comp.inventoryState = "AVAILABLE";
+        comp.inventoryState = comp.quantity > 0 ? "AVAILABLE" : "BORROWED";
         this.saveComponents(components);
 
         this.addNotification(
           "RETURNED_ITEM",
-          `Sync Component Returned: ${comp.name}`,
-          `${req.requesterName} returned ${qtyToReturn} pcs of ${comp.name} (${condition} condition).`
+          `Component Returned (GOOD): ${comp.name}`,
+          `${actorName} returned ${qtyToReturn} pcs of ${comp.name} in GOOD condition. Stock updated automatically.`
         );
 
         this.logTransaction(
@@ -437,7 +479,85 @@ class StorageService {
           qtyToReturn,
           prevQty,
           comp.quantity,
-          `Returned ${qtyToReturn} unit(s) of ${comp.name} (Condition: ${condition}). Stock restored to ${comp.quantity}.`
+          `Returned ${qtyToReturn} ${comp.unit || 'pcs'} of ${comp.name} (Condition: GOOD). Stock restored to ${comp.quantity}.`
+        );
+      } else if (normCondition === "DAMAGED") {
+        comp.damagedQuantity = (comp.damagedQuantity || 0) + qtyToReturn;
+        comp.inventoryState = "DAMAGED";
+        this.saveComponents(components);
+
+        this.addNotification(
+          "RETURNED_ITEM",
+          `Alert: Damaged Component Returned: ${comp.name}`,
+          `${actorName} returned ${qtyToReturn} pcs of ${comp.name} in DAMAGED condition. ${notes}`
+        );
+
+        this.logTransaction(
+          comp.id,
+          comp.name,
+          "ITEM_DAMAGED",
+          0,
+          prevQty,
+          comp.quantity,
+          `Damaged asset reported: ${qtyToReturn} unit(s) of ${comp.name} returned in DAMAGED condition by ${actorName}. Notes: ${notes || 'N/A'}`
+        );
+      } else if (normCondition === "MISSING") {
+        comp.missingQuantity = (comp.missingQuantity || 0) + qtyToReturn;
+        this.saveComponents(components);
+
+        this.addNotification(
+          "RETURNED_ITEM",
+          `Alert: Missing / Lost Asset Reported: ${comp.name}`,
+          `${actorName} reported ${qtyToReturn} pcs of ${comp.name} as MISSING / LOST. ${notes}`
+        );
+
+        this.logTransaction(
+          comp.id,
+          comp.name,
+          "ITEM_MISSING",
+          0,
+          prevQty,
+          comp.quantity,
+          `Missing asset reported: ${qtyToReturn} unit(s) of ${comp.name} reported as MISSING by ${actorName}. Notes: ${notes || 'N/A'}`
+        );
+      } else if (normCondition === "NEEDS_REPAIR") {
+        comp.needsRepairQuantity = (comp.needsRepairQuantity || 0) + qtyToReturn;
+        comp.inventoryState = "NEEDS_REPAIR";
+        this.saveComponents(components);
+
+        this.addNotification(
+          "RETURNED_ITEM",
+          `Alert: Component Needs Repair: ${comp.name}`,
+          `${actorName} returned ${qtyToReturn} pcs of ${comp.name} marked as NEEDS REPAIR. ${notes}`
+        );
+
+        this.logTransaction(
+          comp.id,
+          comp.name,
+          "ITEM_NEEDS_REPAIR",
+          0,
+          prevQty,
+          comp.quantity,
+          `Repair asset reported: ${qtyToReturn} unit(s) of ${comp.name} returned needing repair by ${actorName}. Notes: ${notes || 'N/A'}`
+        );
+      } else if (normCondition === "CONSUMABLE_USED") {
+        comp.consumedQuantity = (comp.consumedQuantity || 0) + qtyToReturn;
+        this.saveComponents(components);
+
+        this.addNotification(
+          "RETURNED_ITEM",
+          `Consumable Material Used: ${comp.name}`,
+          `${actorName} logged ${qtyToReturn} pcs of ${comp.name} as CONSUMABLE USED. ${notes}`
+        );
+
+        this.logTransaction(
+          comp.id,
+          comp.name,
+          "CONSUMABLE_USED",
+          0,
+          prevQty,
+          comp.quantity,
+          `Consumable material used: ${qtyToReturn} unit(s) of ${comp.name} used during lab project by ${actorName}. Notes: ${notes || 'N/A'}`
         );
       }
     }
