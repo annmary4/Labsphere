@@ -19,7 +19,7 @@
     rel="stylesheet">
 
   <!-- CSS with cache buster -->
-  <link rel="stylesheet" href="css/styles.css?v=12000_modal_dialog_syntax_fix">
+  <link rel="stylesheet" href="css/styles.css?v=12100_prevent_search_autofill_saved_credentials">
 
   <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -108,12 +108,12 @@
       <form id="login-panel-member" class="login-panel" onsubmit="handleMemberSignIn(event)">
         <div class="form-group">
           <label for="login-email"><i data-lucide="mail"></i> Email Address or Username</label>
-          <input type="text" id="login-email" class="form-control" placeholder="admin@labsphere.io or admin" required />
+          <input type="text" id="login-email" name="username" autocomplete="username" class="form-control" placeholder="admin@labsphere.io or admin" required />
         </div>
 
         <div class="form-group">
           <label for="login-password"><i data-lucide="lock"></i> Password</label>
-          <input type="password" id="login-password" class="form-control" placeholder="••••••••" required />
+          <input type="password" id="login-password" name="password" autocomplete="current-password" class="form-control" placeholder="••••••••" required />
         </div>
 
         <button type="submit" class="btn btn-primary btn-block btn-lg" style="margin-top:8px;">
@@ -492,8 +492,13 @@
           <i data-lucide="menu"></i>
         </button>
         <div style="position:relative; flex:1;">
+          <!-- Prevent browser password managers from auto-filling saved credentials into catalog search box -->
+          <input type="text" style="display:none !important; visibility:hidden !important; position:absolute !important; width:0 !important; height:0 !important;" name="fake_username_autofill_trap" tabindex="-1" autocomplete="off" />
+          <input type="password" style="display:none !important; visibility:hidden !important; position:absolute !important; width:0 !important; height:0 !important;" name="fake_password_autofill_trap" tabindex="-1" autocomplete="off" />
+
           <i data-lucide="search" class="search-icon"></i>
-          <input type="text" id="search-input"
+          <input type="search" id="search-input" name="catalog_search_query_no_autofill"
+            autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" role="searchbox"
             placeholder="Search by Name, Part #, Manufacturer, Category, Tags, Specs, or Compatible Items... [Press '/' to focus]" />
           <button id="search-clear-btn" class="search-clear hidden" title="Clear Search">
             <i data-lucide="x"></i>
@@ -2037,13 +2042,13 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
   </div>
 
   <!-- JavaScript App Logic with Cache Busters -->
-  <script src="js/types.js?v=12000_modal_dialog_syntax_fix"></script>
-  <script src="js/initialData.js?v=12000_modal_dialog_syntax_fix"></script>
-  <script src="js/storage.js?v=12000_modal_dialog_syntax_fix"></script>
-  <script src="js/rackViewer.js?v=12000_modal_dialog_syntax_fix"></script>
-  <script src="js/componentsView.js?v=12000_modal_dialog_syntax_fix"></script>
-  <script src="js/modalManager.js?v=12000_modal_dialog_syntax_fix"></script>
-  <script src="js/app.js?v=12000_modal_dialog_syntax_fix"></script>
+  <script src="js/types.js?v=12100_prevent_search_autofill_saved_credentials"></script>
+  <script src="js/initialData.js?v=12100_prevent_search_autofill_saved_credentials"></script>
+  <script src="js/storage.js?v=12100_prevent_search_autofill_saved_credentials"></script>
+  <script src="js/rackViewer.js?v=12100_prevent_search_autofill_saved_credentials"></script>
+  <script src="js/componentsView.js?v=12100_prevent_search_autofill_saved_credentials"></script>
+  <script src="js/modalManager.js?v=12100_prevent_search_autofill_saved_credentials"></script>
+  <script src="js/app.js?v=12100_prevent_search_autofill_saved_credentials"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       if (window.lucide) {

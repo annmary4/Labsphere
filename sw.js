@@ -2,18 +2,18 @@
    LabSphere Service Worker - Offline Cache & PWA Support
    ============================================================ */
 
-const CACHE_NAME = 'labsphere-v12000_modal_dialog_syntax_fix';
+const CACHE_NAME = 'labsphere-v12100_prevent_search_autofill_saved_credentials';
 const ASSETS_TO_CACHE = [
   '/Labsphere/',
   '/Labsphere/index.html',
-  '/Labsphere/css/styles.css?v=12000_modal_dialog_syntax_fix',
-  '/Labsphere/js/app.js?v=12000_modal_dialog_syntax_fix',
-  '/Labsphere/js/types.js?v=12000_modal_dialog_syntax_fix',
-  '/Labsphere/js/initialData.js?v=12000_modal_dialog_syntax_fix',
-  '/Labsphere/js/storage.js?v=12000_modal_dialog_syntax_fix',
-  '/Labsphere/js/rackViewer.js?v=12000_modal_dialog_syntax_fix',
-  '/Labsphere/js/componentsView.js?v=12000_modal_dialog_syntax_fix',
-  '/Labsphere/js/modalManager.js?v=12000_modal_dialog_syntax_fix',
+  '/Labsphere/css/styles.css?v=12100_prevent_search_autofill_saved_credentials',
+  '/Labsphere/js/app.js?v=12100_prevent_search_autofill_saved_credentials',
+  '/Labsphere/js/types.js?v=12100_prevent_search_autofill_saved_credentials',
+  '/Labsphere/js/initialData.js?v=12100_prevent_search_autofill_saved_credentials',
+  '/Labsphere/js/storage.js?v=12100_prevent_search_autofill_saved_credentials',
+  '/Labsphere/js/rackViewer.js?v=12100_prevent_search_autofill_saved_credentials',
+  '/Labsphere/js/componentsView.js?v=12100_prevent_search_autofill_saved_credentials',
+  '/Labsphere/js/modalManager.js?v=12100_prevent_search_autofill_saved_credentials',
   '/Labsphere/icons/icon-192.png',
   '/Labsphere/icons/icon-512.png',
   '/Labsphere/manifest.json'

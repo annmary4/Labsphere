@@ -250,11 +250,32 @@ class App {
       });
     }
 
-    // Universal Multi-Criteria Search Input
+    // Universal Multi-Criteria Search Input (with Anti-Autofill Clear Protection)
     const searchInput = document.getElementById("search-input");
     const clearSearchBtn = document.getElementById("search-clear-btn");
 
     if (searchInput) {
+      // Force clear browser autofilled credentials on page load / refresh
+      const clearAutofill = () => {
+        const val = (searchInput.value || "").trim();
+        const activeUser = StorageService.getCurrentSession()?.username || "";
+        const activeEmail = StorageService.getCurrentSession()?.email || "";
+
+        if (val && (val === activeUser || val === activeEmail || val.includes("@") || val === "admin" || val === "admin123")) {
+          searchInput.value = "";
+          this.searchQuery = "";
+          if (clearSearchBtn) clearSearchBtn.classList.add("hidden");
+        }
+      };
+
+      searchInput.value = "";
+      this.searchQuery = "";
+      if (clearSearchBtn) clearSearchBtn.classList.add("hidden");
+
+      setTimeout(clearAutofill, 50);
+      setTimeout(clearAutofill, 200);
+      setTimeout(clearAutofill, 500);
+
       searchInput.addEventListener("input", (e) => {
         this.searchQuery = e.target.value.trim().toLowerCase();
         if (clearSearchBtn) {
