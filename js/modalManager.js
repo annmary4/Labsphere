@@ -1656,6 +1656,17 @@ class ModalManager {
             ${r.issuedBy ? `<p class="request-meta" style="font-size:0.75rem; color:var(--accent-green);">Issued By Admin: ${r.issuedBy} (${r.issuedAt || 'Issued'})</p>` : ''}
             <p class="request-notes" style="background:var(--bg-dark); padding:8px; border-radius:6px; margin-top:6px; font-size:0.82rem;">${r.notes}</p>
             
+            ${(r.status === 'SUBMITTED' || r.status === 'PENDING') ? `
+              <div style="margin-top:10px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                <button class="btn btn-secondary btn-sm" onclick="ModalManager.handleEditStudentPendingRequest('${r.id}'); ModalManager.openStudentRequestsModal();" style="font-weight:700; color:#38bdf8; border-color:rgba(56,189,248,0.4);">
+                  ✏ Edit Request
+                </button>
+                <button class="btn btn-danger btn-sm" onclick="ModalManager.handleCancelStudentPendingRequest('${r.id}'); ModalManager.openStudentRequestsModal();" style="font-weight:700; background:rgba(239,68,68,0.15); color:#ef4444; border:1px solid rgba(239,68,68,0.4);">
+                  🚫 Cancel Request
+                </button>
+              </div>
+            ` : ''}
+            
             ${(r.status === 'ISSUED' || r.status === 'APPROVED' || r.status === 'PARTIAL_RETURN') && remainingQty > 0 ? `
               <div style="margin-top:10px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
                 <button class="btn btn-secondary btn-sm btn-partial-return-item" data-req-id="${r.id}" style="border-color:var(--primary); color:var(--primary);">
@@ -3953,8 +3964,8 @@ ModalManager.renderProjectWizardCart = function() {
         <input type="text" value="${item.itemNotes || ''}" placeholder="Item note (optional)..." style="width:100%; padding:6px 8px; background:#0f172a; border:1px solid var(--border-color); border-radius:6px; color:var(--text-main); font-size:0.8rem;" oninput="ModalManager.updateProjectWizardItemNote('${item.componentId}', this.value)">
       </td>
       <td style="padding:10px; text-align:center;">
-        <button class="btn btn-secondary btn-sm" onclick="ModalManager.removeProjectWizardItem('${item.componentId}')" style="padding:4px 8px; color:#ef4444; border-color:rgba(239,68,68,0.4);" title="Remove item">
-          &times;
+        <button class="btn btn-secondary btn-sm" onclick="ModalManager.removeProjectWizardItem('${item.componentId}')" style="padding:4px 10px; color:#ef4444; border-color:rgba(239,68,68,0.4); font-weight:700; font-size:0.78rem;" title="Cancel or remove component from project request">
+          🚫 Cancel
         </button>
       </td>
     </tr>
@@ -4455,8 +4466,8 @@ ModalManager.renderRequisitionCart = function() {
           <input type="text" value="${item.itemNotes || ''}" placeholder="Item note (optional)..." style="width:100%; padding:6px 8px; background:#0f172a; border:1px solid var(--border-color); border-radius:6px; color:var(--text-main); font-size:0.8rem;" oninput="ModalManager.updateRequisitionItemNote('${item.componentId}', this.value)">
         </td>
         <td style="padding:10px; text-align:center;">
-          <button class="btn btn-secondary btn-sm" onclick="ModalManager.removeItemFromRequisitionCart('${item.componentId}')" style="padding:4px 8px; color:#ef4444; border-color:rgba(239,68,68,0.4);" title="Remove item from basket">
-            <i data-lucide="trash-2"></i>
+          <button class="btn btn-secondary btn-sm" onclick="ModalManager.removeItemFromRequisitionCart('${item.componentId}')" style="padding:4px 10px; color:#ef4444; border-color:rgba(239,68,68,0.4); font-weight:700; font-size:0.78rem;" title="Cancel or remove component from request basket">
+            🚫 Cancel
           </button>
         </td>
       </tr>
