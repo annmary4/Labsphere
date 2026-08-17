@@ -2109,6 +2109,9 @@ class ModalManager {
       } catch (err) {
         alert(err.message);
       }
+    });
+  }
+
   // --- COMPLETE, PARTIAL & MULTIPLE RETURN PORTAL MODAL (5 CONDITIONS SUPPORT) ---
   static openReturnMaterialsModal(requestId) {
     const requests = StorageService.getRequests();

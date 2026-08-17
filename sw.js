@@ -2,18 +2,18 @@
    LabSphere Service Worker - Offline Cache & PWA Support
    ============================================================ */
 
-const CACHE_NAME = 'labsphere-v11900_returns_full_partial_multiple_5_conditions';
+const CACHE_NAME = 'labsphere-v12000_modal_dialog_syntax_fix';
 const ASSETS_TO_CACHE = [
   '/Labsphere/',
   '/Labsphere/index.html',
-  '/Labsphere/css/styles.css?v=11900_returns_full_partial_multiple_5_conditions',
-  '/Labsphere/js/app.js?v=11900_returns_full_partial_multiple_5_conditions',
-  '/Labsphere/js/types.js?v=11900_returns_full_partial_multiple_5_conditions',
-  '/Labsphere/js/initialData.js?v=11900_returns_full_partial_multiple_5_conditions',
-  '/Labsphere/js/storage.js?v=11900_returns_full_partial_multiple_5_conditions',
-  '/Labsphere/js/rackViewer.js?v=11900_returns_full_partial_multiple_5_conditions',
-  '/Labsphere/js/componentsView.js?v=11900_returns_full_partial_multiple_5_conditions',
-  '/Labsphere/js/modalManager.js?v=11900_returns_full_partial_multiple_5_conditions',
+  '/Labsphere/css/styles.css?v=12000_modal_dialog_syntax_fix',
+  '/Labsphere/js/app.js?v=12000_modal_dialog_syntax_fix',
+  '/Labsphere/js/types.js?v=12000_modal_dialog_syntax_fix',
+  '/Labsphere/js/initialData.js?v=12000_modal_dialog_syntax_fix',
+  '/Labsphere/js/storage.js?v=12000_modal_dialog_syntax_fix',
+  '/Labsphere/js/rackViewer.js?v=12000_modal_dialog_syntax_fix',
+  '/Labsphere/js/componentsView.js?v=12000_modal_dialog_syntax_fix',
+  '/Labsphere/js/modalManager.js?v=12000_modal_dialog_syntax_fix',
   '/Labsphere/icons/icon-192.png',
   '/Labsphere/icons/icon-512.png',
   '/Labsphere/manifest.json'
