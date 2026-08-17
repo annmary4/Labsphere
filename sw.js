@@ -2,18 +2,18 @@
    LabSphere Service Worker - Offline Cache & PWA Support
    ============================================================ */
 
-const CACHE_NAME = 'labsphere-v11300_inventory_reserved_state_machine';
+const CACHE_NAME = 'labsphere-v11400_admin_only_component_edit_delete';
 const ASSETS_TO_CACHE = [
   '/Labsphere/',
   '/Labsphere/index.html',
-  '/Labsphere/css/styles.css?v=11300_inventory_reserved_state_machine',
-  '/Labsphere/js/app.js?v=11300_inventory_reserved_state_machine',
-  '/Labsphere/js/types.js?v=11300_inventory_reserved_state_machine',
-  '/Labsphere/js/initialData.js?v=11300_inventory_reserved_state_machine',
-  '/Labsphere/js/storage.js?v=11300_inventory_reserved_state_machine',
-  '/Labsphere/js/rackViewer.js?v=11300_inventory_reserved_state_machine',
-  '/Labsphere/js/componentsView.js?v=11300_inventory_reserved_state_machine',
-  '/Labsphere/js/modalManager.js?v=11300_inventory_reserved_state_machine',
+  '/Labsphere/css/styles.css?v=11400_admin_only_component_edit_delete',
+  '/Labsphere/js/app.js?v=11400_admin_only_component_edit_delete',
+  '/Labsphere/js/types.js?v=11400_admin_only_component_edit_delete',
+  '/Labsphere/js/initialData.js?v=11400_admin_only_component_edit_delete',
+  '/Labsphere/js/storage.js?v=11400_admin_only_component_edit_delete',
+  '/Labsphere/js/rackViewer.js?v=11400_admin_only_component_edit_delete',
+  '/Labsphere/js/componentsView.js?v=11400_admin_only_component_edit_delete',
+  '/Labsphere/js/modalManager.js?v=11400_admin_only_component_edit_delete',
   '/Labsphere/icons/icon-192.png',
   '/Labsphere/icons/icon-512.png',
   '/Labsphere/manifest.json'

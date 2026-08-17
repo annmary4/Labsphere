@@ -1681,6 +1681,9 @@ class StorageService {
   }
 
   static deleteComponent(componentId) {
+    if (!this.isRole("ADMIN")) {
+      throw new Error("Access Restricted: Only Lab Administrators can delete component details.");
+    }
     let components = this.getComponents();
     const target = components.find(c => c.id === componentId);
     if (!target) return false;

@@ -513,8 +513,15 @@ class ModalManager {
       console.error("[ModalManager] renderInspectorData error:", e);
     }
 
+    const deleteBtn = document.getElementById("btn-delete-component");
+    const qtyControls = document.getElementById("insp-qty-controls-group");
+    const isAdmin = StorageService.isRole("ADMIN");
+
+    if (deleteBtn) deleteBtn.style.display = isAdmin ? "inline-block" : "none";
+    if (qtyControls) qtyControls.style.display = isAdmin ? "flex" : "none";
+
     try {
-      this.toggleEditMode(startInEditMode);
+      this.toggleEditMode(startInEditMode && isAdmin);
     } catch (e) {
       console.error("[ModalManager] toggleEditMode error:", e);
     }
@@ -613,14 +620,18 @@ class ModalManager {
           </button>
           
           <div style="display:flex; gap:6px;">
-            <button class="btn btn-sm btn-secondary btn-move-item" data-id="${c.id}" title="Move only this component to a different box">
-              <i data-lucide="corner-up-right"></i> Move Box
-            </button>
+            ${isAdmin ? `
+              <button class="btn btn-sm btn-secondary btn-move-item" data-id="${c.id}" title="Move only this component to a different box">
+                <i data-lucide="corner-up-right"></i> Move Box
+              </button>
+            ` : ''}
             <button class="btn btn-sm btn-secondary btn-inspect-single" data-id="${c.id}">
               <i data-lucide="sliders"></i> Full Details
             </button>
-            <button class="btn btn-sm btn-warning btn-qty-plus" data-id="${c.id}" title="Add 1 Qty">+1</button>
-            <button class="btn btn-sm btn-danger btn-qty-minus" data-id="${c.id}" title="Remove 1 Qty">-1</button>
+            ${isAdmin ? `
+              <button class="btn btn-sm btn-warning btn-qty-plus" data-id="${c.id}" title="Add 1 Qty">+1</button>
+              <button class="btn btn-sm btn-danger btn-qty-minus" data-id="${c.id}" title="Remove 1 Qty">-1</button>
+            ` : ''}
           </div>
         </div>
       `;
@@ -1340,8 +1351,11 @@ class ModalManager {
   }
 
   static handleDeleteComponent() {
+    if (!StorageService.isRole("ADMIN")) {
+      alert("Access Restricted: Only Lab Administrators can delete component details.");
+      return;
+    }
     if (!this.currentComponent) return;
-    StorageService.setRole("ADMIN");
 
     if (confirm(`Are you sure you want to delete '${this.currentComponent.name}' (${this.currentComponent.boxId})?`)) {
       let components = StorageService.getComponents();
@@ -3284,6 +3298,11 @@ console.log('[ModalManager] File loaded. ModalManager defined:', typeof ModalMan
 window.ModalManager = ModalManager;
 
 window.openComponentEditDialog = function (compId) {
+  if (!StorageService.isRole("ADMIN")) {
+    alert("Access Restricted: Only Lab Administrators can edit or modify component details.");
+    return;
+  }
+
   if (document.body.classList.contains("qr-scan-mode")) {
     alert("ℹ️ Read-Only QR View: Component details are displayed for viewing only. Editing is disabled when scanning via QR code.");
     return;

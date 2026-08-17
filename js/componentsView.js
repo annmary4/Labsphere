@@ -190,9 +190,11 @@ class ComponentsView {
         <div class="card-image-wrap" style="width:100%; height:120px; border-radius:8px; overflow:hidden; margin-bottom:10px; background:#0f172a; position:relative;">
           <img src="${imgSrc}" alt="${c.name}" referrerpolicy="no-referrer" loading="lazy" style="width:100%; height:100%; object-fit:contain; background:#0f172a; padding:6px;" onerror="this.src='https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&q=80'" />
           ${c.datasheetUrl ? `<a href="${c.datasheetUrl}" target="_blank" onclick="event.stopPropagation();" title="View PDF Datasheet" style="position:absolute; top:8px; right:8px; background:rgba(15,23,42,0.85); color:var(--primary); padding:4px 8px; border-radius:4px; font-size:0.7rem; font-weight:700; text-decoration:none; display:flex; align-items:center; gap:4px; border:1px solid var(--border-color);"><i data-lucide="file-text"></i> PDF</a>` : ''}
-          <button class="btn-edit-image" data-id="${c.id}" title="Change component image" onclick="event.stopPropagation();" style="position:absolute; bottom:6px; right:6px; background:rgba(15,23,42,0.85); color:#38bdf8; border:1px solid #38bdf8; border-radius:6px; padding:3px 8px; font-size:0.7rem; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:4px; opacity:0; transition:opacity 0.2s;">
-            <i data-lucide="camera"></i> Edit Image
-          </button>
+          ${StorageService.isRole("ADMIN") ? `
+            <button class="btn-edit-image" data-id="${c.id}" title="Change component image" onclick="event.stopPropagation();" style="position:absolute; bottom:6px; right:6px; background:rgba(15,23,42,0.85); color:#38bdf8; border:1px solid #38bdf8; border-radius:6px; padding:3px 8px; font-size:0.7rem; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:4px; opacity:0; transition:opacity 0.2s;">
+              <i data-lucide="camera"></i> Edit Image
+            </button>
+          ` : ''}
         </div>
 
         <div class="card-top">
@@ -218,9 +220,11 @@ class ComponentsView {
               <i data-lucide="shopping-bag"></i> Request Checkout
             </button>
           ` : ''}
-          <button class="btn btn-primary btn-sm btn-edit-direct" data-id="${c.id}" onclick="event.stopPropagation(); window.openComponentEditDialog('${c.id}');" title="Edit details, quantity, rate, and box location for ${c.name}" style="padding:6px 14px; font-size:0.8rem; font-weight:800; background:#0ea5e9; color:white; border:none; border-radius:6px; cursor:pointer; box-shadow:0 2px 8px rgba(14,165,233,0.5);">
-            Edit Details
-          </button>
+          ${StorageService.isRole("ADMIN") ? `
+            <button class="btn btn-primary btn-sm btn-edit-direct" data-id="${c.id}" onclick="event.stopPropagation(); window.openComponentEditDialog('${c.id}');" title="Edit details, quantity, rate, and box location for ${c.name}" style="padding:6px 14px; font-size:0.8rem; font-weight:800; background:#0ea5e9; color:white; border:none; border-radius:6px; cursor:pointer; box-shadow:0 2px 8px rgba(14,165,233,0.5);">
+              Edit Details
+            </button>
+          ` : ''}
           <button class="btn btn-secondary btn-sm btn-inspect-direct" data-id="${c.id}" onclick="event.stopPropagation(); window.openViewModal('${c.id}');" title="View info for ${c.name}" style="padding:4px 8px; font-size:0.7rem; cursor:pointer;">
             View Info
           </button>
@@ -464,12 +468,14 @@ class ComponentsView {
             <button class="btn btn-secondary btn-sm btn-print-table-qr" title="Print Box QR Label for ${c.boxId}">
               <i data-lucide="printer"></i> Box QR
             </button>
-            <button class="btn btn-secondary btn-sm btn-delete-table-row" style="border-color:var(--danger); color:var(--danger);" title="Delete ${c.name}">
-              <i data-lucide="trash-2"></i> Delete
-            </button>
-            <button class="btn btn-primary btn-sm btn-inspect-row" style="background:#0ea5e9; color:white; border:none; font-weight:700;">
-              Edit Details
-            </button>
+            ${StorageService.isRole("ADMIN") ? `
+              <button class="btn btn-secondary btn-sm btn-delete-table-row" style="border-color:var(--danger); color:var(--danger);" title="Delete ${c.name}">
+                <i data-lucide="trash-2"></i> Delete
+              </button>
+              <button class="btn btn-primary btn-sm btn-inspect-row" style="background:#0ea5e9; color:white; border:none; font-weight:700;">
+                Edit Details
+              </button>
+            ` : ''}
           </div>
         </td>
       `;
