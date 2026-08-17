@@ -397,7 +397,7 @@ class App {
     mapDrawerTrigger("drawer-btn-approvals", "btn-admin-approve");
     mapDrawerTrigger("drawer-btn-student-reqs", "btn-student-reqs");
     mapDrawerTrigger("drawer-btn-engineer-bom", "btn-engineer-bom");
-    mapDrawerTrigger("drawer-btn-projects-mgr", "btn-projects-mgr");
+    mapDrawerTrigger("drawer-btn-projects-mgr", null, () => ModalManager.openProjectModal());
     mapDrawerTrigger("drawer-btn-mgmt-dashboard", "btn-mgmt-dashboard");
     mapDrawerTrigger("drawer-btn-print-inventory-sheet", null, () => {
       if (typeof openPrintableInventorySheet === "function") openPrintableInventorySheet();
