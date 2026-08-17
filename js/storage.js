@@ -1449,7 +1449,19 @@ class StorageService {
   }
 
   // --- STAGE 3: INVENTORY ADMIN ISSUANCE WORKFLOW ---
-  static issueMaterials(requestId, adminName = null) {
+  static issueMaterials(requestId, options = {}) {
+    let adminName = null;
+    let customQty = null;
+    let customDate = null;
+
+    if (typeof options === "string") {
+      adminName = options;
+    } else if (typeof options === "object" && options !== null) {
+      adminName = options.issuedBy || options.adminName || null;
+      customQty = options.issueQty !== undefined && options.issueQty !== null ? parseInt(options.issueQty) : null;
+      customDate = options.issueDate || null;
+    }
+
     const requests = this.getRequests();
     const components = this.getComponents();
     const req = requests.find(r => r.id === requestId);
@@ -1462,15 +1474,29 @@ class StorageService {
     const comp = components.find(c => c.id === req.componentId);
     if (!comp) throw new Error("Component not found in catalog!");
 
-    const issueQty = req.qtyApproved || req.qtyRequested;
+    const totalApprovedOrRequested = req.qtyApproved || req.qtyRequested || 1;
+    const previouslyIssued = req.issuedQty || 0;
+    const remainingToIssue = Math.max(0, totalApprovedOrRequested - previouslyIssued);
+
+    let issueQty = customQty !== null ? customQty : remainingToIssue;
+    if (isNaN(issueQty) || issueQty <= 0) {
+      throw new Error("Invalid issue quantity specified!");
+    }
+
+    if (issueQty > remainingToIssue) {
+      throw new Error(`Cannot issue ${issueQty} pcs! Maximum remaining to issue for Request #${req.id} is ${remainingToIssue} pcs.`);
+    }
+
     if (comp.quantity < issueQty) {
-      throw new Error(`Insufficient lab inventory! Need ${issueQty} pcs of ${comp.name}, but only ${comp.quantity} pcs are available in stock.`);
+      throw new Error(`Insufficient lab inventory! Trying to issue ${issueQty} pcs of ${comp.name}, but only ${comp.quantity} pcs are physically available in stock.`);
     }
 
     const session = this.getCurrentSession();
     const issuer = adminName || (session ? session.fullName : "Inventory Administrator");
+    const issueDateStr = customDate || new Date().toISOString().slice(0, 10);
+    const timestampStr = new Date().toLocaleString();
 
-    // Release reserved quantity and deduct physical quantity upon issuance
+    // Release reserved quantity and deduct physical inventory quantity automatically
     const prevQty = comp.quantity;
     comp.reservedQuantity = Math.max(0, (comp.reservedQuantity || 0) - issueQty);
     comp.quantity -= issueQty;
@@ -1483,28 +1509,37 @@ class StorageService {
       comp.inventoryState = "AVAILABLE";
     }
 
-    req.status = "ISSUED";
+    req.issuedQty = (req.issuedQty || 0) + issueQty;
     req.issuedBy = issuer;
-    req.issuedAt = new Date().toLocaleString();
-    req.notes += ` [Issued by Inventory Admin (${issuer}) on ${new Date().toLocaleDateString()}]`;
+    req.issuedAt = timestampStr;
+    req.issueDate = issueDateStr;
+
+    if (req.issuedQty >= totalApprovedOrRequested) {
+      req.status = "ISSUED";
+    } else {
+      req.status = "PARTIALLY_ISSUED";
+    }
+
+    const modeText = req.status === "ISSUED" ? "FULL ISSUANCE" : "PARTIAL ISSUANCE";
+    req.notes += ` [${modeText}: ${issueQty} pcs Issued by ${issuer} on ${issueDateStr}]`;
 
     this.saveComponents(components);
     this.saveRequests(requests);
 
     this.addNotification(
       "REQUEST_STATUS",
-      "Materials Issued from Inventory",
-      `Materials for request #${req.id} (${req.componentName} x ${issueQty}) have been ISSUED by Inventory Admin ${issuer}.`
+      `Materials ${req.status === "ISSUED" ? 'Issued' : 'Partially Issued'} (${issueQty} pcs)`,
+      `Materials for request #${req.id} (${req.componentName} x ${issueQty} pcs) have been ISSUED by ${issuer} on ${issueDateStr}. Inventory updated automatically.`
     );
 
     this.logTransaction(
       comp.id,
       comp.name,
-      "MATERIALS_ISSUED",
+      req.status === "ISSUED" ? "MATERIALS_ISSUED" : "PARTIAL_MATERIALS_ISSUED",
       -issueQty,
       prevQty,
       comp.quantity,
-      `Issued ${issueQty} ${comp.unit} of ${comp.name} for request #${req.id} to ${req.requesterName} (Issued by: ${issuer}).`
+      `Issued ${issueQty} ${comp.unit || 'pcs'} of ${comp.name} (${modeText}) for request #${req.id} to ${req.requesterName} (Issued by: ${issuer}, Date: ${issueDateStr}).`
     );
 
     return req;

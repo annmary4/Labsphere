@@ -2,18 +2,18 @@
    LabSphere Service Worker - Offline Cache & PWA Support
    ============================================================ */
 
-const CACHE_NAME = 'labsphere-v11600_rack2_5_shelves_removed_shelf_f';
+const CACHE_NAME = 'labsphere-v11700_inventory_admin_full_partial_issuance';
 const ASSETS_TO_CACHE = [
   '/Labsphere/',
   '/Labsphere/index.html',
-  '/Labsphere/css/styles.css?v=11600_rack2_5_shelves_removed_shelf_f',
-  '/Labsphere/js/app.js?v=11600_rack2_5_shelves_removed_shelf_f',
-  '/Labsphere/js/types.js?v=11600_rack2_5_shelves_removed_shelf_f',
-  '/Labsphere/js/initialData.js?v=11600_rack2_5_shelves_removed_shelf_f',
-  '/Labsphere/js/storage.js?v=11600_rack2_5_shelves_removed_shelf_f',
-  '/Labsphere/js/rackViewer.js?v=11600_rack2_5_shelves_removed_shelf_f',
-  '/Labsphere/js/componentsView.js?v=11600_rack2_5_shelves_removed_shelf_f',
-  '/Labsphere/js/modalManager.js?v=11600_rack2_5_shelves_removed_shelf_f',
+  '/Labsphere/css/styles.css?v=11700_inventory_admin_full_partial_issuance',
+  '/Labsphere/js/app.js?v=11700_inventory_admin_full_partial_issuance',
+  '/Labsphere/js/types.js?v=11700_inventory_admin_full_partial_issuance',
+  '/Labsphere/js/initialData.js?v=11700_inventory_admin_full_partial_issuance',
+  '/Labsphere/js/storage.js?v=11700_inventory_admin_full_partial_issuance',
+  '/Labsphere/js/rackViewer.js?v=11700_inventory_admin_full_partial_issuance',
+  '/Labsphere/js/componentsView.js?v=11700_inventory_admin_full_partial_issuance',
+  '/Labsphere/js/modalManager.js?v=11700_inventory_admin_full_partial_issuance',
   '/Labsphere/icons/icon-192.png',
   '/Labsphere/icons/icon-512.png',
   '/Labsphere/manifest.json'

@@ -1816,10 +1816,12 @@ class ModalManager {
 
           const isPending = r.status === "SUBMITTED" || r.status === "PENDING" || r.status === "LEAD_APPROVED" || r.status === "LEAD_MODIFIED";
           const isIssued = r.status === "ISSUED" || r.status === "APPROVED";
+          const isPartiallyIssued = r.status === "PARTIALLY_ISSUED";
           const isRejected = r.status === "REJECTED";
 
           let statusBadgeHtml = '<span class="stock-tag warning" style="font-weight:800; font-size:0.8rem;">⏳ Pending Approval</span>';
-          if (isIssued) statusBadgeHtml = `<span class="stock-tag success" style="font-weight:800; font-size:0.8rem;">📦 Issued by ${r.issuedBy || 'Admin'}</span>`;
+          if (isIssued) statusBadgeHtml = `<span class="stock-tag success" style="font-weight:800; font-size:0.8rem;">📦 Issued (${r.issuedQty || r.qtyRequested} pcs) by ${r.issuedBy || 'Admin'} on ${r.issueDate || 'Today'}</span>`;
+          else if (isPartiallyIssued) statusBadgeHtml = `<span class="stock-tag warning" style="font-weight:800; font-size:0.8rem; background:#f59e0b; color:#0f172a;">🟡 Partial Issued (${r.issuedQty || 0}/${r.qtyRequested} pcs) by ${r.issuedBy || 'Admin'} on ${r.issueDate || 'Today'}</span>`;
           else if (isRejected) statusBadgeHtml = '<span class="stock-tag danger" style="font-weight:800; font-size:0.8rem;">❌ Rejected</span>';
 
           // Look up component for physical inventory verification
@@ -1854,7 +1856,7 @@ class ModalManager {
 
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; font-size:0.85rem; margin-bottom:10px;">
               <div>
-                <span class="text-muted">Requester:</span> <strong>${r.requesterName}</strong> (${r.role})
+                <span class="text-muted">Requester:</span> <strong>${r.requesterName}</strong> (${r.role || 'Student'})
               </div>
               <div>
                 <span class="text-muted">Project:</span> <strong>${r.projectName || 'General / Unassigned'}</strong>
@@ -1866,27 +1868,32 @@ class ModalManager {
                 <span class="text-muted">Requested Qty:</span> <strong>${r.qtyRequested} pcs</strong>
               </div>
               <div>
-                <span class="text-muted">Issuance Approved Qty:</span> 
-                ${isPending ? `
-                  <input type="number" class="approved-qty-input" data-id="${r.id}" value="${r.qtyApproved || r.qtyRequested}" min="1" max="${availStock || 999}" style="width:75px; padding:4px 8px; background:#0f172a; border:1px solid var(--primary); color:white; border-radius:6px; font-weight:700;" />
-                ` : `<strong style="color:var(--primary);">${r.qtyApproved || r.qtyRequested} pcs</strong>`}
+                <span class="text-muted">Issuance Status:</span> 
+                <strong style="color:var(--primary);">${r.issuedQty || 0} / ${r.qtyApproved || r.qtyRequested} pcs Issued</strong>
               </div>
+              ${r.issuedBy ? `
+                <div>
+                  <span class="text-muted">Issued By:</span> <strong>${r.issuedBy}</strong> (${r.issueDate || 'N/A'})
+                </div>
+              ` : ''}
             </div>
 
             <p class="approval-notes" style="font-size:0.82rem; background:rgba(255,255,255,0.04); padding:8px 12px; border-radius:6px; margin-bottom:12px; color:var(--text-muted);">
               📝 Notes / Purpose: <span style="color:var(--text-main);">${r.notes}</span>
             </p>
 
-            ${isPending ? `
+            ${(isPending || isPartiallyIssued) ? `
               <div class="approval-actions" style="display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap;">
                 <button class="btn btn-secondary btn-suggest-alt" data-id="${r.id}" style="font-weight:700; color:#38bdf8; border-color:rgba(56,189,248,0.4);" title="Suggest compatible alternative component from stock">
                   💡 Suggest Alternative
                 </button>
-                <button class="btn btn-danger btn-lead-reject" data-id="${r.id}" style="font-weight:700;" title="Reject request if stock unavailable">
-                  ❌ Reject (Stock Unavailable)
-                </button>
-                <button class="btn btn-success btn-admin-direct-issue" data-id="${r.id}" style="background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:white; font-weight:800; border:none; box-shadow:0 2px 8px rgba(16,185,129,0.3);" title="Approve & Issue materials directly, update inventory stock">
-                  ✅ Approve & Issue Materials
+                ${isPending ? `
+                  <button class="btn btn-danger btn-lead-reject" data-id="${r.id}" style="font-weight:700;" title="Reject request if stock unavailable">
+                    ❌ Reject (Stock Unavailable)
+                  </button>
+                ` : ''}
+                <button class="btn btn-success btn-admin-direct-issue" data-id="${r.id}" style="background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:white; font-weight:800; border:none; box-shadow:0 2px 8px rgba(16,185,129,0.3);" title="Configure & Issue materials (Full / Partial Quantity, Date, Admin Name)">
+                  📦 ${isPartiallyIssued ? 'Issue Remaining Stock' : 'Issue Materials (Full / Partial)'}
                 </button>
               </div>
             ` : ''}
@@ -1900,34 +1907,13 @@ class ModalManager {
             });
           }
 
-          // Team Lead Approve/Modify Listener
-          const btnLeadApprove = card.querySelector(".btn-lead-approve");
-          if (btnLeadApprove) {
-            btnLeadApprove.addEventListener("click", () => {
-              const qtyInput = card.querySelector(".approved-qty-input");
-              const numQty = parseInt(qtyInput ? qtyInput.value : r.qtyRequested) || r.qtyRequested;
-
-              const session = StorageService.getCurrentSession();
-              const reviewer = session ? session.fullName : "Team Lead";
-
-              try {
-                StorageService.reviewLeadRequest(r.id, numQty, reviewer, "APPROVE");
-                alert(`Team Lead Approved request #${r.id} (${numQty} pcs)! Advanced to Inventory Admin Issuance Queue.`);
-                this.openAdminApprovalModal();
-                if (this.callbacks.onInventoryChanged) this.callbacks.onInventoryChanged();
-              } catch (err) {
-                alert(err.message);
-              }
-            });
-          }
-
           // Team Lead Reject Listener
           const btnLeadReject = card.querySelector(".btn-lead-reject");
           if (btnLeadReject) {
             btnLeadReject.addEventListener("click", () => {
               const reason = prompt("Enter rejection reason:", "Insufficient project justification / reserved stock");
               const session = StorageService.getCurrentSession();
-              const reviewer = session ? session.fullName : "Team Lead";
+              const reviewer = session ? session.fullName : "Lab Administrator";
 
               try {
                 StorageService.reviewLeadRequest(r.id, 0, reviewer, "REJECT", reason || "");
@@ -1940,42 +1926,11 @@ class ModalManager {
             });
           }
 
-          // Admin Direct Approve & Issue Listener
+          // Admin Direct Approve & Issue Listener -> Opens Full/Partial Issuance Portal Modal!
           const btnAdminDirectIssue = card.querySelector(".btn-admin-direct-issue");
           if (btnAdminDirectIssue) {
             btnAdminDirectIssue.addEventListener("click", () => {
-              const qtyInput = card.querySelector(".approved-qty-input");
-              const numQty = parseInt(qtyInput ? qtyInput.value : r.qtyRequested) || r.qtyRequested;
-              const session = StorageService.getCurrentSession();
-              const reviewer = session ? session.fullName : "Lab Administrator";
-
-              try {
-                StorageService.reviewLeadRequest(r.id, numQty, reviewer, "APPROVE");
-                StorageService.issueMaterials(r.id, reviewer);
-                alert(`Success: Approved & ISSUED ${numQty} pcs of '${r.componentName}' for request #${r.id}! Physical inventory stock updated.`);
-                this.openAdminApprovalModal();
-                if (this.callbacks.onInventoryChanged) this.callbacks.onInventoryChanged();
-              } catch (err) {
-                alert(err.message);
-              }
-            });
-          }
-
-          // Inventory Admin Material Issuance Listener
-          const btnAdminIssue = card.querySelector(".btn-admin-issue");
-          if (btnAdminIssue) {
-            btnAdminIssue.addEventListener("click", () => {
-              const session = StorageService.getCurrentSession();
-              const issuer = session ? session.fullName : "Inventory Administrator";
-
-              try {
-                StorageService.issueMaterials(r.id, issuer);
-                alert(`Materials for request #${r.id} successfully ISSUED from inventory! Physical stock updated.`);
-                this.openAdminApprovalModal();
-                if (this.callbacks.onInventoryChanged) this.callbacks.onInventoryChanged();
-              } catch (err) {
-                alert(err.message);
-              }
+              ModalManager.openIssueMaterialsModal(r.id);
             });
           }
 
@@ -1986,6 +1941,193 @@ class ModalManager {
 
     if (window.lucide) window.lucide.createIcons();
     if (backdrop) backdrop.classList.remove("hidden");
+  }
+
+  // --- INVENTORY ADMIN MATERIAL ISSUANCE DIALOG (FULL / PARTIAL, DATE, ISSUED BY, AUTO-STOCK UPDATE) ---
+  static openIssueMaterialsModal(requestId) {
+    const requests = StorageService.getRequests();
+    const components = StorageService.getComponents();
+    const req = requests.find(r => r.id === requestId);
+    if (!req) return;
+
+    const comp = components.find(c => c.id === req.componentId);
+    const availStock = comp ? comp.quantity : 0;
+    const totalApprovedOrRequested = req.qtyApproved || req.qtyRequested || 1;
+    const previouslyIssued = req.issuedQty || 0;
+    const remainingToIssue = Math.max(1, totalApprovedOrRequested - previouslyIssued);
+
+    const oldModal = document.getElementById("issue-materials-dialog");
+    if (oldModal) oldModal.remove();
+
+    const session = StorageService.getCurrentSession();
+    const defaultIssuer = session ? session.fullName : "Inventory Administrator";
+    const defaultDate = new Date().toISOString().slice(0, 10);
+
+    const backdrop = document.createElement("div");
+    backdrop.id = "issue-materials-dialog";
+    backdrop.style.cssText = `
+      position: fixed !important; top: 0 !important; left: 0 !important;
+      width: 100vw !important; height: 100vh !important;
+      background: rgba(15, 23, 42, 0.9) !important;
+      backdrop-filter: blur(8px) !important;
+      z-index: 99999999 !important;
+      display: flex !important; align-items: center !important; justify-content: center !important;
+      padding: 16px !important; box-sizing: border-box !important;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+    `;
+
+    backdrop.innerHTML = `
+      <div style="background:#1e293b; border:1px solid #334155; border-radius:16px; width:100%; max-width:540px; color:#f8fafc; padding:24px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.5);">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #334155; padding-bottom:14px; margin-bottom:18px;">
+          <div>
+            <span style="font-size:0.75rem; font-weight:800; text-transform:uppercase; color:#10b981; letter-spacing:0.5px;">📦 Material Issuance Portal</span>
+            <h3 style="margin:4px 0 0 0; font-size:1.2rem; font-weight:800; color:#f8fafc;">Issue Materials for Request #${req.id}</h3>
+          </div>
+          <button id="close-issue-dialog" style="background:transparent; border:none; color:#94a3b8; font-size:1.4rem; cursor:pointer; padding:4px;">&times;</button>
+        </div>
+
+        <div style="background:#0f172a; border:1px solid #334155; border-radius:12px; padding:14px; margin-bottom:18px; display:flex; gap:12px; align-items:center;">
+          <div style="flex:1;">
+            <div style="font-weight:800; font-size:1rem; color:#f8fafc;">${req.componentName}</div>
+            <div style="font-size:0.8rem; color:#94a3b8; margin-top:2px;">
+              Requester: <strong style="color:#e2e8f0;">${req.requesterName}</strong> (${req.role || 'Student'}) • Project: <strong style="color:#e2e8f0;">${req.projectName || 'General'}</strong>
+            </div>
+            <div style="font-size:0.8rem; color:#94a3b8; margin-top:4px;">
+              Total Approved/Requested: <strong style="color:#38bdf8;">${totalApprovedOrRequested} pcs</strong> | Previously Issued: <strong style="color:#f59e0b;">${previouslyIssued} pcs</strong>
+            </div>
+            <div style="font-size:0.8rem; color:#10b981; font-weight:700; margin-top:4px;">
+              Physical Stock Available: ${availStock} pcs (Location Box ${comp ? comp.boxId : 'N/A'})
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:14px; margin-bottom:20px;">
+          <div>
+            <label style="display:block; font-size:0.82rem; font-weight:700; color:#cbd5e1; margin-bottom:6px;">
+              1. Issuance Quantity Mode:
+            </label>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+              <button id="btn-issue-type-full" type="button" style="padding:10px; border-radius:8px; border:2px solid #10b981; background:rgba(16,185,129,0.15); color:#10b981; font-weight:800; font-size:0.85rem; cursor:pointer;">
+                🟢 Issue Full Qty (${remainingToIssue} pcs)
+              </button>
+              <button id="btn-issue-type-partial" type="button" style="padding:10px; border-radius:8px; border:1px solid #475569; background:rgba(255,255,255,0.05); color:#94a3b8; font-weight:700; font-size:0.85rem; cursor:pointer;">
+                🟡 Issue Partial Qty
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <label style="display:block; font-size:0.82rem; font-weight:700; color:#cbd5e1; margin-bottom:6px;">
+              2. Quantity to Issue Now (pcs):
+            </label>
+            <input type="number" id="issue-qty-field" value="${Math.min(remainingToIssue, availStock)}" min="1" max="${Math.min(remainingToIssue, availStock)}" style="width:100%; padding:10px 12px; background:#0f172a; border:1px solid #334155; border-radius:8px; color:#f8fafc; font-weight:700; font-size:0.95rem; box-sizing:border-box;" />
+            <span style="font-size:0.75rem; color:#94a3b8; display:block; margin-top:4px;">
+              Max available for issuance: ${Math.min(remainingToIssue, availStock)} pcs
+            </span>
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+            <div>
+              <label style="display:block; font-size:0.82rem; font-weight:700; color:#cbd5e1; margin-bottom:6px;">
+                3. Record Issue Date:
+              </label>
+              <input type="date" id="issue-date-field" value="${defaultDate}" style="width:100%; padding:9px 12px; background:#0f172a; border:1px solid #334155; border-radius:8px; color:#f8fafc; font-weight:600; font-size:0.85rem; box-sizing:border-box;" />
+            </div>
+
+            <div>
+              <label style="display:block; font-size:0.82rem; font-weight:700; color:#cbd5e1; margin-bottom:6px;">
+                4. Record Issued By (Admin):
+              </label>
+              <input type="text" id="issued-by-field" value="${defaultIssuer}" placeholder="Inventory Admin Name" style="width:100%; padding:9px 12px; background:#0f172a; border:1px solid #334155; border-radius:8px; color:#f8fafc; font-weight:600; font-size:0.85rem; box-sizing:border-box;" />
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:10px; border-top:1px solid #334155; padding-top:16px;">
+          <button id="cancel-issue-dialog" style="padding:10px 18px; background:#334155; color:#cbd5e1; border:none; border-radius:8px; font-weight:700; cursor:pointer;">Cancel</button>
+          <button id="confirm-issue-dialog" style="padding:10px 22px; background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:white; border:none; border-radius:8px; font-weight:800; cursor:pointer; box-shadow:0 4px 12px rgba(16,185,129,0.4);">
+            🚀 Confirm & Update Inventory Automatically
+          </button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(backdrop);
+
+    const qtyField = backdrop.querySelector("#issue-qty-field");
+    const fullBtn = backdrop.querySelector("#btn-issue-type-full");
+    const partialBtn = backdrop.querySelector("#btn-issue-type-partial");
+
+    fullBtn.addEventListener("click", () => {
+      fullBtn.style.border = "2px solid #10b981";
+      fullBtn.style.background = "rgba(16,185,129,0.15)";
+      fullBtn.style.color = "#10b981";
+
+      partialBtn.style.border = "1px solid #475569";
+      partialBtn.style.background = "rgba(255,255,255,0.05)";
+      partialBtn.style.color = "#94a3b8";
+
+      qtyField.value = Math.min(remainingToIssue, availStock);
+    });
+
+    partialBtn.addEventListener("click", () => {
+      partialBtn.style.border = "2px solid #f59e0b";
+      partialBtn.style.background = "rgba(245,158,11,0.15)";
+      partialBtn.style.color = "#f59e0b";
+
+      fullBtn.style.border = "1px solid #475569";
+      fullBtn.style.background = "rgba(255,255,255,0.05)";
+      fullBtn.style.color = "#94a3b8";
+
+      if (parseInt(qtyField.value) >= remainingToIssue && remainingToIssue > 1) {
+        qtyField.value = Math.max(1, Math.floor(remainingToIssue / 2));
+      }
+      qtyField.focus();
+    });
+
+    const closeFn = () => backdrop.remove();
+    backdrop.querySelector("#close-issue-dialog").addEventListener("click", closeFn);
+    backdrop.querySelector("#cancel-issue-dialog").addEventListener("click", closeFn);
+
+    backdrop.querySelector("#confirm-issue-dialog").addEventListener("click", () => {
+      const issueQty = parseInt(qtyField.value);
+      const issueDate = backdrop.querySelector("#issue-date-field").value;
+      const issuedBy = backdrop.querySelector("#issued-by-field").value.trim();
+
+      if (isNaN(issueQty) || issueQty <= 0) {
+        alert("Please enter a valid positive issue quantity.");
+        return;
+      }
+
+      if (issueQty > availStock) {
+        alert(`Cannot issue ${issueQty} pcs! Only ${availStock} pcs are physically available in inventory.`);
+        return;
+      }
+
+      if (!issuedBy) {
+        alert("Please enter the name of the Inventory Admin issuing the materials.");
+        return;
+      }
+
+      try {
+        if (req.status === "SUBMITTED" || req.status === "PENDING") {
+          StorageService.reviewLeadRequest(req.id, req.qtyRequested, issuedBy, "APPROVE");
+        }
+
+        StorageService.issueMaterials(req.id, {
+          issueQty,
+          issueDate,
+          issuedBy
+        });
+
+        alert(`Success: Materials (${issueQty} pcs of '${req.componentName}') ISSUED by ${issuedBy} on ${issueDate}!\n\nPhysical inventory stock has been updated automatically.`);
+        backdrop.remove();
+        this.openAdminApprovalModal();
+        if (this.callbacks.onInventoryChanged) this.callbacks.onInventoryChanged();
+      } catch (err) {
+        alert(err.message);
+      }
+    });
   }
 
   static openSuggestAlternativeModal(requestId) {
