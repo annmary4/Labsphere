@@ -3800,12 +3800,12 @@ window.openComponentEditDialog = function (compId) {
       <!-- Footer Buttons -->
       <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 10px; padding-top: 12px; border-top: 1px solid #1e293b;">
         <button type="button" id="delete-edit-dialog" style="padding: 10px 18px; background: rgba(248, 113, 113, 0.2); color: #f87171; border: 1px solid #f87171; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 0.85rem; display: flex; align-items: center; gap: 6px;">
-          Delete Delete Component
+          Delete Component
         </button>
         <div style="display: flex; gap: 10px;">
           <button type="button" id="cancel-edit-dialog" style="padding: 10px 18px; background: #334155; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 0.85rem;">Cancel</button>
           <button type="submit" style="padding: 10px 24px; background: #0ea5e9; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 800; font-size: 0.9rem; box-shadow: 0 4px 12px rgba(14,165,233,0.4);">
-            Save Save All Component Details
+            Save Component
           </button>
         </div>
       </div>
