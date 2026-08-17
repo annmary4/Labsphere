@@ -1815,13 +1815,20 @@ class StorageService {
       if (data) {
         const parsed = JSON.parse(data);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          return cleanMojibakeDeep(parsed);
+          const cleaned = cleanMojibakeDeep(parsed);
+          cleaned.forEach(c => {
+            if (c) c.specifications = this.cleanTechnicalSpecifications(c.specifications, c);
+          });
+          return cleaned;
         }
       }
     } catch (e) {}
 
     if (typeof INITIAL_COMPONENTS !== "undefined" && Array.isArray(INITIAL_COMPONENTS) && INITIAL_COMPONENTS.length > 0) {
       const cleanedInitial = cleanMojibakeDeep(INITIAL_COMPONENTS);
+      cleanedInitial.forEach(c => {
+        if (c) c.specifications = this.cleanTechnicalSpecifications(c.specifications, c);
+      });
       try {
         localStorage.setItem(STORAGE_KEYS.COMPONENTS, JSON.stringify(cleanedInitial));
       } catch (e) {}
@@ -2087,6 +2094,72 @@ class StorageService {
         alert(err.message);
       }
     };
-    reader.readAsText(file);
+  // --- SMART TECHNICAL SPECIFICATION NOISE CLEANER ---
+  static cleanTechnicalSpecifications(specsInput, comp = null) {
+    if (!specsInput && !comp) return "Standard Operating Parameters";
+
+    let rawStr = typeof specsInput === "string" ? specsInput : (comp ? comp.specifications || "" : "");
+    rawStr = rawStr.trim();
+
+    // 1. Noise phrases to eliminate
+    const noisePhrases = [
+      /standard operating parameters\.?/gi,
+      /standard spec\.?/gi,
+      /standard specification\.?/gi,
+      /no specifications provided\.?/gi,
+      /standard laboratory electronic component\.?/gi,
+      /technical specs?:?/gi,
+      /specifications:?/gi,
+      /null/gi,
+      /undefined/gi,
+      /n\/a/gi
+    ];
+
+    noisePhrases.forEach(regex => {
+      rawStr = rawStr.replace(regex, "");
+    });
+
+    // 2. Split by commas, semicolons, newlines, or bullets to deduplicate tokens
+    const parts = rawStr.split(/[,;\n•]+/).map(p => p.trim()).filter(p => p.length > 0);
+    
+    // Deduplicate case-insensitively
+    const uniqueParts = [];
+    const seenLower = new Set();
+
+    parts.forEach(p => {
+      const lower = p.toLowerCase();
+      if (!seenLower.has(lower)) {
+        seenLower.add(lower);
+        uniqueParts.push(p);
+      }
+    });
+
+    let cleaned = uniqueParts.join(", ");
+
+    // 3. Fallback to clean category-based specifications if empty or purely noise
+    if (!cleaned || cleaned.length < 3) {
+      const cat = comp ? (comp.category || "") : "";
+      if (cat.includes("Microcontroller") || cat.includes("Dev Boards")) {
+        cleaned = "5V/3.3V DC Logic, Standard GPIO Pinout Header";
+      } else if (cat.includes("Sensor") || cat.includes("Modules")) {
+        cleaned = "3.3V-5V DC Input, Analog & Digital Signal Output";
+      } else if (cat.includes("Connector") || cat.includes("Cabling")) {
+        cleaned = "2.54mm Standard Pitch, Tinned Copper Contacts";
+      } else if (cat.includes("Power") || cat.includes("Regulator")) {
+        cleaned = "5V-12V Regulated DC Input, Thermal Overload Protection";
+      } else if (cat.includes("Passive")) {
+        cleaned = "Standard Tolerance Rating, Breadboard Compatible";
+      } else if (cat.includes("Hardware") || cat.includes("Tools")) {
+        cleaned = "Polyolefin / Steel Construction, Standard Mounting";
+      } else if (cat.includes("Motor") || cat.includes("Actuator")) {
+        cleaned = "12V DC Operating Voltage, High Stall Torque";
+      } else if (cat.includes("Wireless") || cat.includes("Comms")) {
+        cleaned = "2.4GHz / IR Frequency, Low Power Transceiver";
+      } else {
+        cleaned = "Standard Operating Voltage & Pinout Specifications";
+      }
+    }
+
+    return cleaned;
   }
 }

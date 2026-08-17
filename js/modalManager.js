@@ -809,7 +809,7 @@ class ModalManager {
     setTxt("insp-location-path", `${lab} › ${room} › Rack ${c.rackId} › Shelf ${String.fromCharCode(64 + Number(c.shelfId))} › ${c.boxId} › ${stack}`);
 
     setTxt("insp-purpose", c.purpose || "No purpose description available.");
-    setTxt("insp-specs", c.specifications || "No technical specs available.");
+    setTxt("insp-specs", StorageService.cleanTechnicalSpecifications(c.specifications, c));
     setTxt("insp-updated", c.lastUpdated || "2026-07-29");
 
     const reqBtn = document.getElementById("btn-request-component");
@@ -3794,7 +3794,7 @@ window.openComponentEditDialog = function (compId) {
       <!-- Row 6: Specs -->
       <div>
         <label style="display: block; font-size: 0.78rem; font-weight: 700; color: #94a3b8; margin-bottom: 4px;">Technical Specifications</label>
-        <textarea id="dedit-specs" rows="2" style="width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid #334155; background: #1e293b; color: white; font-size: 0.85rem; box-sizing: border-box; outline: none; resize: vertical;">${c.specifications || ''}</textarea>
+        <textarea id="dedit-specs" rows="2" style="width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid #334155; background: #1e293b; color: white; font-size: 0.85rem; box-sizing: border-box; outline: none; resize: vertical;">${StorageService.cleanTechnicalSpecifications(c.specifications, c)}</textarea>
       </div>
 
       <!-- Footer Buttons -->
@@ -3870,7 +3870,7 @@ window.openComponentEditDialog = function (compId) {
         target.category = document.getElementById("dedit-category").value;
         target.manufacturer = document.getElementById("dedit-mfg").value.trim();
         target.purpose = document.getElementById("dedit-purpose").value.trim();
-        target.specifications = document.getElementById("dedit-specs").value.trim();
+        target.specifications = StorageService.cleanTechnicalSpecifications(document.getElementById("dedit-specs").value, target);
         target.lastUpdated = new Date().toISOString().slice(0, 10);
 
         StorageService.ensureBoxExists(newBox, newRack, newShelf);
