@@ -10,7 +10,7 @@ const INITIAL_RACKS = [
     "id": 2,
     "name": "Rack 2",
     "subtitle": "Wireless Comms, Displays & Traffic Lights, Batteries & Power, Hardware",
-    "shelvesCount": 6
+    "shelvesCount": 5
   }
 ];
 

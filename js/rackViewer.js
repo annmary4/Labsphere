@@ -7,7 +7,7 @@ class RackViewer {
   // Static set to persist expanded racks state (Racks start closed by default on load)
   static expandedRackIds = new Set();
   // Static set to persist expanded shelves state (Shelves & boxes open by default when rack is expanded)
-  static expandedShelfKeys = new Set(["1_1", "1_2", "1_3", "1_4", "1_5", "1_6", "2_1", "2_2", "2_3", "2_4", "2_5", "2_6"]);
+  static expandedShelfKeys = new Set(["1_1", "1_2", "1_3", "1_4", "1_5", "1_6", "2_1", "2_2", "2_3", "2_4", "2_5"]);
 
   static render(options) {
     const {

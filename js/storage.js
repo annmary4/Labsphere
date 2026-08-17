@@ -1834,6 +1834,11 @@ class StorageService {
       if (data) {
         const parsed = JSON.parse(data);
         if (Array.isArray(parsed) && parsed.length > 0) {
+          const rack2 = parsed.find(r => Number(r.id) === 2);
+          if (rack2 && rack2.shelvesCount !== 5) {
+            rack2.shelvesCount = 5;
+            this.saveRacks(parsed);
+          }
           return parsed;
         }
       }

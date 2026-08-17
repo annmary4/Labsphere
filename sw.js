@@ -2,18 +2,18 @@
    LabSphere Service Worker - Offline Cache & PWA Support
    ============================================================ */
 
-const CACHE_NAME = 'labsphere-v11500_restore_student_component_view_fix';
+const CACHE_NAME = 'labsphere-v11600_rack2_5_shelves_removed_shelf_f';
 const ASSETS_TO_CACHE = [
   '/Labsphere/',
   '/Labsphere/index.html',
-  '/Labsphere/css/styles.css?v=11500_restore_student_component_view_fix',
-  '/Labsphere/js/app.js?v=11500_restore_student_component_view_fix',
-  '/Labsphere/js/types.js?v=11500_restore_student_component_view_fix',
-  '/Labsphere/js/initialData.js?v=11500_restore_student_component_view_fix',
-  '/Labsphere/js/storage.js?v=11500_restore_student_component_view_fix',
-  '/Labsphere/js/rackViewer.js?v=11500_restore_student_component_view_fix',
-  '/Labsphere/js/componentsView.js?v=11500_restore_student_component_view_fix',
-  '/Labsphere/js/modalManager.js?v=11500_restore_student_component_view_fix',
+  '/Labsphere/css/styles.css?v=11600_rack2_5_shelves_removed_shelf_f',
+  '/Labsphere/js/app.js?v=11600_rack2_5_shelves_removed_shelf_f',
+  '/Labsphere/js/types.js?v=11600_rack2_5_shelves_removed_shelf_f',
+  '/Labsphere/js/initialData.js?v=11600_rack2_5_shelves_removed_shelf_f',
+  '/Labsphere/js/storage.js?v=11600_rack2_5_shelves_removed_shelf_f',
+  '/Labsphere/js/rackViewer.js?v=11600_rack2_5_shelves_removed_shelf_f',
+  '/Labsphere/js/componentsView.js?v=11600_rack2_5_shelves_removed_shelf_f',
+  '/Labsphere/js/modalManager.js?v=11600_rack2_5_shelves_removed_shelf_f',
   '/Labsphere/icons/icon-192.png',
   '/Labsphere/icons/icon-512.png',
   '/Labsphere/manifest.json'
