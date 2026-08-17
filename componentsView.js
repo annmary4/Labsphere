@@ -159,13 +159,26 @@ class ComponentsView {
       card.title = `Click to view or edit details for ${c.name}`;
 
       let stockTagClass = "IN_STOCK";
-      let stockLabel = "In Stock";
-      if (c.quantity === 0) {
-        stockTagClass = "OUT_OF_STOCK";
-        stockLabel = "Out of Stock";
-      } else if (c.quantity <= c.minQuantity) {
+      let stockLabel = "AVAILABLE";
+
+      if (c.inventoryState === "RESERVED" || (c.reservedQuantity && c.reservedQuantity > 0)) {
         stockTagClass = "LOW_STOCK";
-        stockLabel = "Low Stock";
+        stockLabel = `RESERVED (${c.reservedQuantity || 0} pcs)`;
+      } else if (c.inventoryState === "BORROWED" || c.quantity === 0) {
+        stockTagClass = "OUT_OF_STOCK";
+        stockLabel = "BORROWED";
+      } else if (c.inventoryState === "DAMAGED") {
+        stockTagClass = "OUT_OF_STOCK";
+        stockLabel = "DAMAGED";
+      } else if (c.inventoryState === "ARCHIVED") {
+        stockTagClass = "OUT_OF_STOCK";
+        stockLabel = "ARCHIVED";
+      } else if (c.quantity <= (c.minQuantity || 1)) {
+        stockTagClass = "LOW_STOCK";
+        stockLabel = "LOW STOCK";
+      } else {
+        stockTagClass = "IN_STOCK";
+        stockLabel = "AVAILABLE";
       }
 
       const imgSrc = this.getAccurateImageForComponent(c);
@@ -177,9 +190,11 @@ class ComponentsView {
         <div class="card-image-wrap" style="width:100%; height:120px; border-radius:8px; overflow:hidden; margin-bottom:10px; background:#0f172a; position:relative;">
           <img src="${imgSrc}" alt="${c.name}" referrerpolicy="no-referrer" loading="lazy" style="width:100%; height:100%; object-fit:contain; background:#0f172a; padding:6px;" onerror="this.src='https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&q=80'" />
           ${c.datasheetUrl ? `<a href="${c.datasheetUrl}" target="_blank" onclick="event.stopPropagation();" title="View PDF Datasheet" style="position:absolute; top:8px; right:8px; background:rgba(15,23,42,0.85); color:var(--primary); padding:4px 8px; border-radius:4px; font-size:0.7rem; font-weight:700; text-decoration:none; display:flex; align-items:center; gap:4px; border:1px solid var(--border-color);"><i data-lucide="file-text"></i> PDF</a>` : ''}
-          <button class="btn-edit-image" data-id="${c.id}" title="Change component image" onclick="event.stopPropagation();" style="position:absolute; bottom:6px; right:6px; background:rgba(15,23,42,0.85); color:#38bdf8; border:1px solid #38bdf8; border-radius:6px; padding:3px 8px; font-size:0.7rem; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:4px; opacity:0; transition:opacity 0.2s;">
-            <i data-lucide="camera"></i> Edit Image
-          </button>
+          ${StorageService.isRole("ADMIN") ? `
+            <button class="btn-edit-image" data-id="${c.id}" title="Change component image" onclick="event.stopPropagation();" style="position:absolute; bottom:6px; right:6px; background:rgba(15,23,42,0.85); color:#38bdf8; border:1px solid #38bdf8; border-radius:6px; padding:3px 8px; font-size:0.7rem; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:4px; opacity:0; transition:opacity 0.2s;">
+              <i data-lucide="camera"></i> Edit Image
+            </button>
+          ` : ''}
         </div>
 
         <div class="card-top">
@@ -200,12 +215,16 @@ class ComponentsView {
           <span class="stock-tag ${stockTagClass}">${stockLabel}</span>
           <span class="card-qty">${c.quantity} <small>${c.unit || 'pcs'}</small></span>
           
-          <button class="btn btn-warning btn-sm btn-req-checkout-card" data-id="${c.id}" onclick="event.stopPropagation(); window.requestComponentCheckout('${c.id}');" title="Submit Checkout Requisition for ${c.name}" style="padding:6px 12px; font-size:0.8rem; font-weight:800; background:#f59e0b; color:#0f172a; border:none; border-radius:6px; cursor:pointer; box-shadow:0 2px 8px rgba(245,158,11,0.4);">
-            <i data-lucide="shopping-bag"></i> Request Checkout
-          </button>
-          <button class="btn btn-primary btn-sm btn-edit-direct" data-id="${c.id}" onclick="event.stopPropagation(); window.openComponentEditDialog('${c.id}');" title="Edit details, quantity, rate, and box location for ${c.name}" style="padding:6px 14px; font-size:0.8rem; font-weight:800; background:#0ea5e9; color:white; border:none; border-radius:6px; cursor:pointer; box-shadow:0 2px 8px rgba(14,165,233,0.5);">
-            Edit Details
-          </button>
+          ${!StorageService.isRole("ADMIN") ? `
+            <button class="btn btn-warning btn-sm btn-req-checkout-card" data-id="${c.id}" onclick="event.stopPropagation(); window.requestComponentCheckout('${c.id}');" title="Submit Checkout Requisition for ${c.name}" style="padding:6px 12px; font-size:0.8rem; font-weight:800; background:#f59e0b; color:#0f172a; border:none; border-radius:6px; cursor:pointer; box-shadow:0 2px 8px rgba(245,158,11,0.4);">
+              <i data-lucide="shopping-bag"></i> Request Checkout
+            </button>
+          ` : ''}
+          ${StorageService.isRole("ADMIN") ? `
+            <button class="btn btn-primary btn-sm btn-edit-direct" data-id="${c.id}" onclick="event.stopPropagation(); window.openComponentEditDialog('${c.id}');" title="Edit details, quantity, rate, and box location for ${c.name}" style="padding:6px 14px; font-size:0.8rem; font-weight:800; background:#0ea5e9; color:white; border:none; border-radius:6px; cursor:pointer; box-shadow:0 2px 8px rgba(14,165,233,0.5);">
+              Edit Details
+            </button>
+          ` : ''}
           <button class="btn btn-secondary btn-sm btn-inspect-direct" data-id="${c.id}" onclick="event.stopPropagation(); window.openViewModal('${c.id}');" title="View info for ${c.name}" style="padding:4px 8px; font-size:0.7rem; cursor:pointer;">
             View Info
           </button>
@@ -218,11 +237,12 @@ class ComponentsView {
       // Show/hide edit image button on hover
       const imgWrap = card.querySelector('.card-image-wrap');
       const editImgBtn = card.querySelector('.btn-edit-image');
-      imgWrap.addEventListener('mouseenter', () => { editImgBtn.style.opacity = '1'; });
-      imgWrap.addEventListener('mouseleave', () => { editImgBtn.style.opacity = '0'; });
+      if (imgWrap && editImgBtn) {
+        imgWrap.addEventListener('mouseenter', () => { editImgBtn.style.opacity = '1'; });
+        imgWrap.addEventListener('mouseleave', () => { editImgBtn.style.opacity = '0'; });
 
-      // Image edit button handler
-      editImgBtn.addEventListener('click', (e) => {
+        // Image edit button handler
+        editImgBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         document.querySelectorAll('.img-edit-popover').forEach(p => p.remove());
 
@@ -357,6 +377,7 @@ class ComponentsView {
           });
         }, 100);
       });
+      }
 
       // Direct Edit Details Button -> Opens Standalone Edit Form!
       const editBtn = card.querySelector('.btn-edit-direct');
@@ -440,19 +461,23 @@ class ComponentsView {
         <td class="mono"><strong>${c.quantity}</strong> ${c.unit || 'pcs'}</td>
         <td>
           <div style="display:flex; gap:6px;">
-            <button class="btn btn-warning btn-sm btn-req-checkout-row" onclick="event.stopPropagation(); window.requestComponentCheckout('${c.id}');" title="Request Checkout for ${c.name}" style="background:#f59e0b; color:#0f172a; font-weight:800; border:none;">
-              <i data-lucide="shopping-bag"></i> Request
-            </button>
+            ${!StorageService.isRole("ADMIN") ? `
+              <button class="btn btn-warning btn-sm btn-req-checkout-row" onclick="event.stopPropagation(); window.requestComponentCheckout('${c.id}');" title="Request Checkout for ${c.name}" style="background:#f59e0b; color:#0f172a; font-weight:800; border:none;">
+                <i data-lucide="shopping-bag"></i> Request
+              </button>
+            ` : ''}
             ${c.datasheetUrl ? `<a href="${c.datasheetUrl}" target="_blank" class="btn btn-secondary btn-sm" title="View PDF Datasheet"><i data-lucide="file-text"></i> PDF</a>` : ''}
             <button class="btn btn-secondary btn-sm btn-print-table-qr" title="Print Box QR Label for ${c.boxId}">
               <i data-lucide="printer"></i> Box QR
             </button>
-            <button class="btn btn-secondary btn-sm btn-delete-table-row" style="border-color:var(--danger); color:var(--danger);" title="Delete ${c.name}">
-              <i data-lucide="trash-2"></i> Delete
-            </button>
-            <button class="btn btn-primary btn-sm btn-inspect-row" style="background:#0ea5e9; color:white; border:none; font-weight:700;">
-              Edit Details
-            </button>
+            ${StorageService.isRole("ADMIN") ? `
+              <button class="btn btn-secondary btn-sm btn-delete-table-row" style="border-color:var(--danger); color:var(--danger);" title="Delete ${c.name}">
+                <i data-lucide="trash-2"></i> Delete
+              </button>
+              <button class="btn btn-primary btn-sm btn-inspect-row" style="background:#0ea5e9; color:white; border:none; font-weight:700;">
+                Edit Details
+              </button>
+            ` : ''}
           </div>
         </td>
       `;
@@ -480,14 +505,17 @@ class ComponentsView {
         });
       }
 
-      tr.querySelector(".btn-inspect-row").addEventListener("click", (e) => {
-        e.stopPropagation();
-        if (window.openComponentEditDialog) {
-          window.openComponentEditDialog(c.id);
-        } else if (onComponentClick) {
-          onComponentClick(c);
-        }
-      });
+      const inspectRowBtn = tr.querySelector(".btn-inspect-row");
+      if (inspectRowBtn) {
+        inspectRowBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          if (window.openComponentEditDialog) {
+            window.openComponentEditDialog(c.id);
+          } else if (onComponentClick) {
+            onComponentClick(c);
+          }
+        });
+      }
 
       tbody.appendChild(tr);
     });
@@ -496,40 +524,67 @@ class ComponentsView {
 
 // Global helper for Students/Interns & all users to request checkout for any component
 window.requestComponentCheckout = function(componentId) {
-  const components = StorageService.getComponents();
-  const c = components.find(item => item.id === componentId);
-  if (!c) {
-    alert("Component not found in catalog!");
-    return;
-  }
-
-  const qtyStr = prompt(`Request Material Checkout for '${c.name}':\n\nEnter quantity required (Available stock: ${c.quantity} ${c.unit || 'pcs'}):`, "1");
-  if (!qtyStr) return;
-  const qty = parseInt(qtyStr);
-  if (isNaN(qty) || qty <= 0) {
-    alert("Please enter a valid positive quantity number.");
-    return;
-  }
-
-  const session = StorageService.getCurrentSession();
-  const defaultName = session ? session.fullName : "Student Intern";
-  const requesterName = prompt("Enter Student / Requester Name:", defaultName);
-  if (!requesterName) return;
-
-  const notes = prompt("Enter Requisition Purpose / Note (optional):", "Student Lab Project / Prototyping Checkout") || "";
-
-  try {
-    StorageService.submitComponentRequest(c.id, qty, requesterName, notes);
-    const msg = `Success: Requisition request for ${qty} ${c.unit || 'pcs'} of '${c.name}' submitted! Pending Team Lead & Admin approval.`;
-    alert(msg);
+  if (StorageService.isRole("ADMIN")) {
     if (window.ModalManager && window.ModalManager.showToast) {
-      window.ModalManager.showToast(`Checkout Request submitted for ${c.name} (${qty} pcs)`, "success");
+      window.ModalManager.showToast("As Lab Administrator, your role is to review & approve material requests. Opening Approvals Queue.", "info");
     }
-    if (window.App && window.App.refreshApp) {
-      window.App.refreshApp();
+    if (window.ModalManager && window.ModalManager.openAdminApprovalModal) {
+      window.ModalManager.openAdminApprovalModal();
     }
-  } catch (err) {
-    alert(err.message);
+    return;
+  }
+
+  if (window.ModalManager && window.ModalManager.openMultiItemRequestModal) {
+    window.ModalManager.openMultiItemRequestModal(componentId);
+  } else {
+    const components = StorageService.getComponents();
+    const c = components.find(item => item.id === componentId);
+    if (!c) {
+      alert("Component not found in catalog!");
+      return;
+    }
+
+    const qtyStr = prompt(`Request Material Checkout for '${c.name}':\n\nEnter quantity required (Available stock: ${c.quantity} ${c.unit || 'pcs'}):`, "1");
+    if (!qtyStr) return;
+    const qty = parseInt(qtyStr);
+    if (isNaN(qty) || qty <= 0) {
+      alert("Please enter a valid positive quantity number.");
+      return;
+    }
+
+    const session = StorageService.getCurrentSession();
+    const defaultName = session ? session.fullName : "Student Intern";
+    const requesterName = prompt("Enter Student / Requester Name:", defaultName);
+    if (!requesterName) return;
+
+    const notes = prompt("Enter Requisition Purpose / Note (optional):", "Student Lab Project / Prototyping Checkout") || "";
+
+    try {
+      StorageService.submitComponentRequest(c.id, qty, requesterName, notes);
+      const msg = `Success: Requisition request for ${qty} ${c.unit || 'pcs'} of '${c.name}' submitted! Pending Team Lead & Admin approval.`;
+      alert(msg);
+      if (window.ModalManager && window.ModalManager.showToast) {
+        window.ModalManager.showToast(`Checkout Request submitted for ${c.name} (${qty} pcs)`, "success");
+      }
+      if (window.App && window.App.refreshApp) {
+        window.App.refreshApp();
+      }
+    } catch (err) {
+      alert(err.message);
+    }
+  }
+};
+
+window.addToRequisitionCart = function(componentId) {
+  if (StorageService.isRole("ADMIN")) {
+    if (window.ModalManager && window.ModalManager.openAdminApprovalModal) {
+      window.ModalManager.openAdminApprovalModal();
+    }
+    return;
+  }
+  if (window.ModalManager && window.ModalManager.addItemToRequisitionCart) {
+    window.ModalManager.addItemToRequisitionCart(componentId);
+    window.ModalManager.openMultiItemRequestModal();
   }
 };
 

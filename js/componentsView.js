@@ -237,11 +237,12 @@ class ComponentsView {
       // Show/hide edit image button on hover
       const imgWrap = card.querySelector('.card-image-wrap');
       const editImgBtn = card.querySelector('.btn-edit-image');
-      imgWrap.addEventListener('mouseenter', () => { editImgBtn.style.opacity = '1'; });
-      imgWrap.addEventListener('mouseleave', () => { editImgBtn.style.opacity = '0'; });
+      if (imgWrap && editImgBtn) {
+        imgWrap.addEventListener('mouseenter', () => { editImgBtn.style.opacity = '1'; });
+        imgWrap.addEventListener('mouseleave', () => { editImgBtn.style.opacity = '0'; });
 
-      // Image edit button handler
-      editImgBtn.addEventListener('click', (e) => {
+        // Image edit button handler
+        editImgBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         document.querySelectorAll('.img-edit-popover').forEach(p => p.remove());
 
@@ -376,6 +377,7 @@ class ComponentsView {
           });
         }, 100);
       });
+      }
 
       // Direct Edit Details Button -> Opens Standalone Edit Form!
       const editBtn = card.querySelector('.btn-edit-direct');
@@ -503,14 +505,17 @@ class ComponentsView {
         });
       }
 
-      tr.querySelector(".btn-inspect-row").addEventListener("click", (e) => {
-        e.stopPropagation();
-        if (window.openComponentEditDialog) {
-          window.openComponentEditDialog(c.id);
-        } else if (onComponentClick) {
-          onComponentClick(c);
-        }
-      });
+      const inspectRowBtn = tr.querySelector(".btn-inspect-row");
+      if (inspectRowBtn) {
+        inspectRowBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          if (window.openComponentEditDialog) {
+            window.openComponentEditDialog(c.id);
+          } else if (onComponentClick) {
+            onComponentClick(c);
+          }
+        });
+      }
 
       tbody.appendChild(tr);
     });

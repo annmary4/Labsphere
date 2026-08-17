@@ -2,18 +2,18 @@
    LabSphere Service Worker - Offline Cache & PWA Support
    ============================================================ */
 
-const CACHE_NAME = 'labsphere-v11400_admin_only_component_edit_delete';
+const CACHE_NAME = 'labsphere-v11500_restore_student_component_view_fix';
 const ASSETS_TO_CACHE = [
   '/Labsphere/',
   '/Labsphere/index.html',
-  '/Labsphere/css/styles.css?v=11400_admin_only_component_edit_delete',
-  '/Labsphere/js/app.js?v=11400_admin_only_component_edit_delete',
-  '/Labsphere/js/types.js?v=11400_admin_only_component_edit_delete',
-  '/Labsphere/js/initialData.js?v=11400_admin_only_component_edit_delete',
-  '/Labsphere/js/storage.js?v=11400_admin_only_component_edit_delete',
-  '/Labsphere/js/rackViewer.js?v=11400_admin_only_component_edit_delete',
-  '/Labsphere/js/componentsView.js?v=11400_admin_only_component_edit_delete',
-  '/Labsphere/js/modalManager.js?v=11400_admin_only_component_edit_delete',
+  '/Labsphere/css/styles.css?v=11500_restore_student_component_view_fix',
+  '/Labsphere/js/app.js?v=11500_restore_student_component_view_fix',
+  '/Labsphere/js/types.js?v=11500_restore_student_component_view_fix',
+  '/Labsphere/js/initialData.js?v=11500_restore_student_component_view_fix',
+  '/Labsphere/js/storage.js?v=11500_restore_student_component_view_fix',
+  '/Labsphere/js/rackViewer.js?v=11500_restore_student_component_view_fix',
+  '/Labsphere/js/componentsView.js?v=11500_restore_student_component_view_fix',
+  '/Labsphere/js/modalManager.js?v=11500_restore_student_component_view_fix',
   '/Labsphere/icons/icon-192.png',
   '/Labsphere/icons/icon-512.png',
   '/Labsphere/manifest.json'
