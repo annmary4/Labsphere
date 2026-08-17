@@ -159,13 +159,26 @@ class ComponentsView {
       card.title = `Click to view or edit details for ${c.name}`;
 
       let stockTagClass = "IN_STOCK";
-      let stockLabel = "In Stock";
-      if (c.quantity === 0) {
-        stockTagClass = "OUT_OF_STOCK";
-        stockLabel = "Out of Stock";
-      } else if (c.quantity <= c.minQuantity) {
+      let stockLabel = "AVAILABLE";
+
+      if (c.inventoryState === "RESERVED" || (c.reservedQuantity && c.reservedQuantity > 0)) {
         stockTagClass = "LOW_STOCK";
-        stockLabel = "Low Stock";
+        stockLabel = `RESERVED (${c.reservedQuantity || 0} pcs)`;
+      } else if (c.inventoryState === "BORROWED" || c.quantity === 0) {
+        stockTagClass = "OUT_OF_STOCK";
+        stockLabel = "BORROWED";
+      } else if (c.inventoryState === "DAMAGED") {
+        stockTagClass = "OUT_OF_STOCK";
+        stockLabel = "DAMAGED";
+      } else if (c.inventoryState === "ARCHIVED") {
+        stockTagClass = "OUT_OF_STOCK";
+        stockLabel = "ARCHIVED";
+      } else if (c.quantity <= (c.minQuantity || 1)) {
+        stockTagClass = "LOW_STOCK";
+        stockLabel = "LOW STOCK";
+      } else {
+        stockTagClass = "IN_STOCK";
+        stockLabel = "AVAILABLE";
       }
 
       const imgSrc = this.getAccurateImageForComponent(c);

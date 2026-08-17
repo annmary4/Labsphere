@@ -1195,6 +1195,13 @@ class StorageService {
     return newReq;
   }
 
+  static getEffectiveAvailableStock(component) {
+    if (!component) return 0;
+    const total = component.quantity || 0;
+    const reserved = component.reservedQuantity || 0;
+    return Math.max(0, total - reserved);
+  }
+
   static cancelRequest(requestId) {
     let requests = this.getRequests();
     const req = requests.find(r => r.id === requestId);
@@ -1205,6 +1212,17 @@ class StorageService {
       throw new Error("Only pending requisitions awaiting approval can be cancelled.");
     }
     
+    // Release reserved inventory if request was approved/reserved
+    if (req.status === "LEAD_APPROVED" || req.status === "LEAD_MODIFIED" || req.status === "APPROVED") {
+      const components = this.getComponents();
+      const comp = components.find(c => c.id === req.componentId);
+      if (comp) {
+        comp.reservedQuantity = Math.max(0, (comp.reservedQuantity || 0) - (req.qtyApproved || req.qtyRequested));
+        comp.inventoryState = (comp.reservedQuantity || 0) > 0 ? "RESERVED" : (comp.quantity > 0 ? "AVAILABLE" : "BORROWED");
+        this.saveComponents(components);
+      }
+    }
+
     requests = requests.filter(r => r.id !== requestId);
     this.saveRequests(requests);
     this.addNotification("REQUEST_CANCELLED", "Requisition Cancelled", `Requisition #${requestId} for ${req.componentName} was cancelled by requester.`);
@@ -1350,15 +1368,26 @@ class StorageService {
     const numApprovedQty = Math.max(0, parseInt(qtyApproved) || 0);
 
     if (decision === "REJECT") {
+      // Release reserved stock if request was previously approved
+      if (req.status === "LEAD_APPROVED" || req.status === "LEAD_MODIFIED" || req.status === "APPROVED") {
+        const components = this.getComponents();
+        const comp = components.find(c => c.id === req.componentId);
+        if (comp) {
+          comp.reservedQuantity = Math.max(0, (comp.reservedQuantity || 0) - (req.qtyApproved || req.qtyRequested));
+          comp.inventoryState = (comp.reservedQuantity || 0) > 0 ? "RESERVED" : (comp.quantity > 0 ? "AVAILABLE" : "BORROWED");
+          this.saveComponents(components);
+        }
+      }
+
       req.status = "REJECTED";
       req.leadName = reviewerName;
       req.leadApprovedAt = new Date().toLocaleString();
-      req.notes += ` [Rejected by Team Lead (${reviewerName}): ${reason || 'No reason specified'}]`;
+      req.notes += ` [Rejected by Administrator/Lead (${reviewerName}): ${reason || 'No reason specified'}]`;
       this.saveRequests(requests);
 
       this.addNotification(
         "REQUEST_STATUS",
-        "Request Rejected by Team Lead",
+        "Request Rejected",
         `Material request #${req.id} for ${req.componentName} was REJECTED by ${reviewerName}.`
       );
 
@@ -1369,7 +1398,7 @@ class StorageService {
         0,
         0,
         0,
-        `Request #${req.id} rejected by Team Lead ${reviewerName}. Reason: ${reason || 'N/A'}.`
+        `Request #${req.id} rejected by ${reviewerName}. Reason: ${reason || 'N/A'}.`
       );
       return req;
     }
@@ -1384,27 +1413,36 @@ class StorageService {
     req.leadName = reviewerName;
     req.leadApprovedAt = new Date().toLocaleString();
     if (wasModified) {
-      req.notes += ` [Modified by Team Lead (${reviewerName}): Requested ${req.qtyRequested}, Approved ${numApprovedQty}]`;
+      req.notes += ` [Modified by Reviewer (${reviewerName}): Requested ${req.qtyRequested}, Approved ${numApprovedQty}]`;
     } else {
-      req.notes += ` [Approved by Team Lead (${reviewerName})]`;
+      req.notes += ` [Approved by Reviewer (${reviewerName})]`;
+    }
+
+    // Immediately reserve component inventory upon approval
+    const components = this.getComponents();
+    const comp = components.find(c => c.id === req.componentId);
+    if (comp) {
+      comp.reservedQuantity = (comp.reservedQuantity || 0) + numApprovedQty;
+      comp.inventoryState = "RESERVED";
+      this.saveComponents(components);
     }
 
     this.saveRequests(requests);
 
     this.addNotification(
       "PENDING_APPROVAL",
-      "Material Request Approved by Lead",
-      `Request #${req.id} for ${req.componentName} (${numApprovedQty} pcs) was APPROVED by Team Lead ${reviewerName}. Pending Inventory Admin Issuance.`
+      "Material Request Approved & Inventory Reserved",
+      `Request #${req.id} for ${req.componentName} (${numApprovedQty} pcs) was APPROVED by ${reviewerName}. Inventory is now RESERVED awaiting physical issuance.`
     );
 
     this.logTransaction(
       req.componentId,
       req.componentName,
-      wasModified ? "LEAD_MODIFIED" : "LEAD_APPROVED",
+      "INVENTORY_RESERVED",
       0,
-      0,
-      0,
-      `Team Lead ${reviewerName} ${wasModified ? 'modified & approved' : 'approved'} request #${req.id} (${numApprovedQty} pcs).`
+      comp ? comp.quantity : 0,
+      comp ? comp.quantity : 0,
+      `Request #${req.id} approved by ${reviewerName} (${numApprovedQty} pcs). Inventory moved to RESERVED state.`
     );
 
     return req;
@@ -1432,9 +1470,18 @@ class StorageService {
     const session = this.getCurrentSession();
     const issuer = adminName || (session ? session.fullName : "Inventory Administrator");
 
+    // Release reserved quantity and deduct physical quantity upon issuance
     const prevQty = comp.quantity;
+    comp.reservedQuantity = Math.max(0, (comp.reservedQuantity || 0) - issueQty);
     comp.quantity -= issueQty;
-    comp.inventoryState = comp.quantity === 0 ? "BORROWED" : "AVAILABLE";
+
+    if (comp.quantity === 0) {
+      comp.inventoryState = "BORROWED";
+    } else if (comp.reservedQuantity > 0) {
+      comp.inventoryState = "RESERVED";
+    } else {
+      comp.inventoryState = "AVAILABLE";
+    }
 
     req.status = "ISSUED";
     req.issuedBy = issuer;
