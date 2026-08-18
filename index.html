@@ -19,7 +19,7 @@
     rel="stylesheet">
 
   <!-- CSS with cache buster -->
-  <link rel="stylesheet" href="css/styles.css?v=13000_multi_tier_approval_issuance_flow">
+  <link rel="stylesheet" href="css/styles.css?v=13100_submit_requisition_to_team_lead">
 
   <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -1886,7 +1886,7 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
                   💾 Save as Draft
                 </button>
                 <button class="btn btn-primary btn-lg" onclick="ModalManager.handleSubmitProjectWizardRequest()" style="font-weight:800; padding:10px 24px; background:linear-gradient(135deg, #10b981 0%, #059669 100%); border:none; box-shadow:0 4px 14px rgba(16,185,129,0.4);">
-                  🚀 Submit Request to Administrator
+                  🚀 Submit Request to Team Lead
                 </button>
               </div>
             </div>
@@ -1986,14 +1986,14 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
               <h3 style="margin:0 0 10px 0; font-size:1rem; color:var(--primary); display:flex; align-items:center; gap:8px;">
                 <i data-lucide="message-square"></i> 3. Requisition Purpose & Notes *
               </h3>
-              <textarea id="req-general-notes-input" rows="2" placeholder="Enter purpose of requisition for administrator approval (e.g. project assignment, lab experiment)..." style="width:100%; padding:10px; background:#0f172a; border:1px solid var(--border-color); border-radius:8px; color:var(--text-main); font-size:0.88rem; font-family:inherit;" oninput="ModalManager.handleReqNotesChange()"></textarea>
+              <textarea id="req-general-notes-input" rows="2" placeholder="Enter purpose of requisition for Team Lead approval (e.g. project assignment, lab experiment)..." style="width:100%; padding:10px; background:#0f172a; border:1px solid var(--border-color); border-radius:8px; color:var(--text-main); font-size:0.88rem; font-family:inherit;" oninput="ModalManager.handleReqNotesChange()"></textarea>
             </div>
 
             <!-- Submit Requisition Button -->
             <div style="display:flex; justify-content:flex-end; gap:12px; border-top:1px solid var(--border-color); padding-top:14px;">
               <button class="btn btn-secondary" onclick="ModalManager.closeMultiItemRequestModal()">Close</button>
               <button id="btn-req-submit-final" class="btn btn-primary btn-lg" onclick="ModalManager.handleSubmitMultiItemRequisition()" style="background:linear-gradient(135deg, #10b981 0%, #059669 100%); font-weight:800; padding:10px 24px; border:none; box-shadow:0 4px 14px rgba(16,185,129,0.4);">
-                <i data-lucide="send"></i> Submit Requisition to Administrator
+                <i data-lucide="send"></i> Submit Requisition to Team Lead
               </button>
             </div>
           </div>
@@ -2042,13 +2042,13 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
   </div>
 
   <!-- JavaScript App Logic with Cache Busters -->
-  <script src="js/types.js?v=13000_multi_tier_approval_issuance_flow"></script>
-  <script src="js/initialData.js?v=13000_multi_tier_approval_issuance_flow"></script>
-  <script src="js/storage.js?v=13000_multi_tier_approval_issuance_flow"></script>
-  <script src="js/rackViewer.js?v=13000_multi_tier_approval_issuance_flow"></script>
-  <script src="js/componentsView.js?v=13000_multi_tier_approval_issuance_flow"></script>
-  <script src="js/modalManager.js?v=13000_multi_tier_approval_issuance_flow"></script>
-  <script src="js/app.js?v=13000_multi_tier_approval_issuance_flow"></script>
+  <script src="js/types.js?v=13100_submit_requisition_to_team_lead"></script>
+  <script src="js/initialData.js?v=13100_submit_requisition_to_team_lead"></script>
+  <script src="js/storage.js?v=13100_submit_requisition_to_team_lead"></script>
+  <script src="js/rackViewer.js?v=13100_submit_requisition_to_team_lead"></script>
+  <script src="js/componentsView.js?v=13100_submit_requisition_to_team_lead"></script>
+  <script src="js/modalManager.js?v=13100_submit_requisition_to_team_lead"></script>
+  <script src="js/app.js?v=13100_submit_requisition_to_team_lead"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       if (window.lucide) {

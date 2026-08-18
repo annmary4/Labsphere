@@ -4498,11 +4498,13 @@ ModalManager.renderStudentRequisitionsStatusList = function() {
   }
 
   container.innerHTML = requests.map(r => {
-    let statusBadge = `<span class="badge" style="background:rgba(245,158,11,0.15); color:#f59e0b; border:1px solid rgba(245,158,11,0.3); font-weight:800; font-size:0.8rem; padding:4px 10px;">⏳ Pending Administrator Approval</span>`;
-    let isPending = r.status === "SUBMITTED" || r.status === "PENDING" || r.status === "LEAD_APPROVED";
+    let statusBadge = `<span class="badge" style="background:rgba(245,158,11,0.15); color:#f59e0b; border:1px solid rgba(245,158,11,0.3); font-weight:800; font-size:0.8rem; padding:4px 10px;">⏳ Stage 1: Pending Team Lead Approval</span>`;
+    let isPending = r.status === "PENDING_LEAD_APPROVAL" || r.status === "SUBMITTED" || r.status === "PENDING";
 
-    if (r.status === "ISSUED" || r.status === "APPROVED") {
-      statusBadge = `<span class="badge" style="background:rgba(16,185,129,0.15); color:#10b981; border:1px solid rgba(16,185,129,0.3); font-weight:800; font-size:0.8rem; padding:4px 10px;">✅ Issued & Approved by Admin</span>`;
+    if (r.status === "PENDING_ADMIN_ISSUANCE" || r.status === "LEAD_APPROVED" || r.status === "LEAD_MODIFIED") {
+      statusBadge = `<span class="badge" style="background:rgba(14,165,233,0.15); color:#38bdf8; border:1px solid rgba(14,165,233,0.3); font-weight:800; font-size:0.8rem; padding:4px 10px;">📦 Stage 2: Lead Approved (Pending Admin Issue)</span>`;
+    } else if (r.status === "ISSUED" || r.status === "APPROVED") {
+      statusBadge = `<span class="badge" style="background:rgba(16,185,129,0.15); color:#10b981; border:1px solid rgba(16,185,129,0.3); font-weight:800; font-size:0.8rem; padding:4px 10px;">✅ Stage 3: Issued by Admin</span>`;
     } else if (r.status === "REJECTED") {
       statusBadge = `<span class="badge" style="background:rgba(239,68,68,0.15); color:#ef4444; border:1px solid rgba(239,68,68,0.3); font-weight:800; font-size:0.8rem; padding:4px 10px;">❌ Rejected</span>`;
     }

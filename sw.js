@@ -2,18 +2,18 @@
    LabSphere Service Worker - Offline Cache & PWA Support
    ============================================================ */
 
-const CACHE_NAME = 'labsphere-v13000_multi_tier_approval_issuance_flow';
+const CACHE_NAME = 'labsphere-v13100_submit_requisition_to_team_lead';
 const ASSETS_TO_CACHE = [
   '/Labsphere/',
   '/Labsphere/index.html',
-  '/Labsphere/css/styles.css?v=13000_multi_tier_approval_issuance_flow',
-  '/Labsphere/js/app.js?v=13000_multi_tier_approval_issuance_flow',
-  '/Labsphere/js/types.js?v=13000_multi_tier_approval_issuance_flow',
-  '/Labsphere/js/initialData.js?v=13000_multi_tier_approval_issuance_flow',
-  '/Labsphere/js/storage.js?v=13000_multi_tier_approval_issuance_flow',
-  '/Labsphere/js/rackViewer.js?v=13000_multi_tier_approval_issuance_flow',
-  '/Labsphere/js/componentsView.js?v=13000_multi_tier_approval_issuance_flow',
-  '/Labsphere/js/modalManager.js?v=13000_multi_tier_approval_issuance_flow',
+  '/Labsphere/css/styles.css?v=13100_submit_requisition_to_team_lead',
+  '/Labsphere/js/app.js?v=13100_submit_requisition_to_team_lead',
+  '/Labsphere/js/types.js?v=13100_submit_requisition_to_team_lead',
+  '/Labsphere/js/initialData.js?v=13100_submit_requisition_to_team_lead',
+  '/Labsphere/js/storage.js?v=13100_submit_requisition_to_team_lead',
+  '/Labsphere/js/rackViewer.js?v=13100_submit_requisition_to_team_lead',
+  '/Labsphere/js/componentsView.js?v=13100_submit_requisition_to_team_lead',
+  '/Labsphere/js/modalManager.js?v=13100_submit_requisition_to_team_lead',
   '/Labsphere/icons/icon-192.png',
   '/Labsphere/icons/icon-512.png',
   '/Labsphere/manifest.json'
