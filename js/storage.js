@@ -1288,7 +1288,7 @@ class StorageService {
       qtyApproved: parseInt(qtyRequested) || 1,
       returnedQty: 0,
       damagedQty: 0,
-      status: "SUBMITTED",
+      status: "PENDING_LEAD_APPROVAL",
       requestedAt: new Date().toLocaleString(),
       notes: notes || `Submitted request for ${qtyRequested} ${comp.unit} of ${comp.name}`
     };
@@ -1443,7 +1443,7 @@ class StorageService {
         qtyApproved: qty,
         returnedQty: 0,
         damagedQty: 0,
-        status: "SUBMITTED",
+        status: "PENDING_LEAD_APPROVAL",
         requestedAt: timestamp,
         notes: fullNotes
       };
@@ -1529,13 +1529,13 @@ class StorageService {
 
     const wasModified = numApprovedQty !== req.qtyRequested;
     req.qtyApproved = numApprovedQty;
-    req.status = wasModified ? "LEAD_MODIFIED" : "LEAD_APPROVED";
+    req.status = "PENDING_ADMIN_ISSUANCE";
     req.leadName = reviewerName;
     req.leadApprovedAt = new Date().toLocaleString();
     if (wasModified) {
-      req.notes += ` [Modified by Reviewer (${reviewerName}): Requested ${req.qtyRequested}, Approved ${numApprovedQty}]`;
+      req.notes += ` [Modified by Team Lead (${reviewerName}): Requested ${req.qtyRequested}, Approved ${numApprovedQty} • Forwarded to Administrator for stock issuance]`;
     } else {
-      req.notes += ` [Approved by Reviewer (${reviewerName})]`;
+      req.notes += ` [Approved by Team Lead (${reviewerName}): Forwarded to Administrator for stock issuance]`;
     }
 
     // Immediately reserve component inventory upon approval

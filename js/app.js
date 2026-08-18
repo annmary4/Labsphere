@@ -713,7 +713,7 @@ class App {
       btnNavNotif.style.setProperty("display", "none", "important");
     }
 
-    const pendingReqs = StorageService.getRequests().filter(r => r.status === "SUBMITTED" || r.status === "PENDING" || r.status === "LEAD_APPROVED" || r.status === "LEAD_MODIFIED").length;
+    const pendingReqs = StorageService.getRequests().filter(r => r.status === "PENDING_LEAD_APPROVAL" || r.status === "PENDING_ADMIN_ISSUANCE" || r.status === "SUBMITTED" || r.status === "PENDING" || r.status === "LEAD_APPROVED" || r.status === "LEAD_MODIFIED").length;
     const apprBadge = document.getElementById("admin-approval-count");
     const drawerApprBadge = document.getElementById("drawer-approvals-badge");
     const isLeadOrAdmin = StorageService.isRole("ADMIN") || StorageService.isRole("ENGINEER");

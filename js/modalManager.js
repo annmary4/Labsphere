@@ -1624,15 +1624,15 @@ class ModalManager {
           let statusBadgeClass = "warning";
           let statusLabel = r.status || "SUBMITTED";
 
-          if (r.status === "SUBMITTED" || r.status === "PENDING") {
+          if (r.status === "PENDING_LEAD_APPROVAL" || r.status === "SUBMITTED" || r.status === "PENDING") {
             statusBadgeClass = "warning";
-            statusLabel = "⏳ Pending Admin Approval & Stock Issue";
-          } else if (r.status === "LEAD_APPROVED" || r.status === "LEAD_MODIFIED") {
+            statusLabel = "⏳ Stage 1: Pending Team Lead Approval";
+          } else if (r.status === "PENDING_ADMIN_ISSUANCE" || r.status === "LEAD_APPROVED" || r.status === "LEAD_MODIFIED") {
             statusBadgeClass = "info";
-            statusLabel = r.status === "LEAD_MODIFIED" ? "✏️ Modified (Pending Admin Issue)" : "✅ Lead Approved (Pending Admin Issue)";
+            statusLabel = "📦 Stage 2: Lead Approved (Pending Admin Stock Issue)";
           } else if (r.status === "ISSUED" || r.status === "APPROVED") {
             statusBadgeClass = "success";
-            statusLabel = "📦 Approved & Issued by Admin";
+            statusLabel = "✅ Stage 3: Issued by Admin (Inventory Updated)";
           } else if (r.status === "REJECTED") {
             statusBadgeClass = "danger";
             statusLabel = "❌ Rejected";
@@ -1749,12 +1749,14 @@ class ModalManager {
     const container = document.getElementById("admin-approval-container");
     const allRequests = StorageService.getRequests();
 
-    const pendingRequests = allRequests.filter(r => r.status === "SUBMITTED" || r.status === "PENDING" || r.status === "LEAD_APPROVED" || r.status === "LEAD_MODIFIED");
+    const leadQueueRequests = allRequests.filter(r => r.status === "PENDING_LEAD_APPROVAL" || r.status === "SUBMITTED" || r.status === "PENDING");
+    const adminIssuanceRequests = allRequests.filter(r => r.status === "PENDING_ADMIN_ISSUANCE" || r.status === "LEAD_APPROVED" || r.status === "LEAD_MODIFIED");
     const issuedRequests = allRequests.filter(r => r.status === "ISSUED" || r.status === "APPROVED");
     const rejectedRequests = allRequests.filter(r => r.status === "REJECTED");
 
-    let displayRequests = pendingRequests;
-    if (activeTab === "issued") displayRequests = issuedRequests;
+    let displayRequests = leadQueueRequests;
+    if (activeTab === "admin_issuance") displayRequests = adminIssuanceRequests;
+    else if (activeTab === "issued") displayRequests = issuedRequests;
     else if (activeTab === "all") displayRequests = allRequests;
     else if (activeTab === "rejected") displayRequests = rejectedRequests;
 
@@ -1763,21 +1765,24 @@ class ModalManager {
         <div style="background:rgba(56,189,248,0.1); border:1px solid rgba(56,189,248,0.3); border-radius:10px; padding:12px 16px; margin-bottom:14px; font-size:0.85rem; color:#38bdf8; display:flex; align-items:center; gap:10px;">
           <i data-lucide="shield-check" style="font-size:1.4rem; flex-shrink:0;"></i>
           <div>
-            <strong>Administrator Material Approval Center</strong><br>
-            Review component checkout requests submitted by students and engineers. Approve requests to issue stock or view complete requisition history.
+            <strong>Multi-Tier Material Approval & Inventory Issuance Center</strong><br>
+            <strong>Step 1:</strong> Team Leads approve student/intern requisitions. <strong>Step 2:</strong> Lab Administrator issues physical stock and inventory automatically updates.
           </div>
         </div>
 
         <!-- Filter Tabs -->
         <div class="approval-tabs" style="display:flex; gap:8px; margin-bottom:16px; border-bottom:1px solid var(--border-color); padding-bottom:10px; flex-wrap:wrap;">
-          <button class="btn btn-sm ${activeTab === 'pending' ? 'btn-primary' : 'btn-secondary'}" onclick="ModalManager.openAdminApprovalModal('pending')" style="font-weight:700;">
-            ⏳ Pending Approvals (${pendingRequests.length})
+          <button class="btn btn-sm ${activeTab === 'pending' || activeTab === 'lead_queue' ? 'btn-primary' : 'btn-secondary'}" onclick="ModalManager.openAdminApprovalModal('pending')" style="font-weight:700;">
+            ⏳ 1. Team Lead Approval Queue (${leadQueueRequests.length})
+          </button>
+          <button class="btn btn-sm ${activeTab === 'admin_issuance' ? 'btn-primary' : 'btn-secondary'}" onclick="ModalManager.openAdminApprovalModal('admin_issuance')" style="font-weight:700; background:${activeTab === 'admin_issuance' ? '#10b981' : ''};">
+            📦 2. Admin Issuance Queue (${adminIssuanceRequests.length})
           </button>
           <button class="btn btn-sm ${activeTab === 'issued' ? 'btn-primary' : 'btn-secondary'}" onclick="ModalManager.openAdminApprovalModal('issued')" style="font-weight:700;">
-            📦 Issued Stock (${issuedRequests.length})
+            ✅ Issued Stock (${issuedRequests.length})
           </button>
           <button class="btn btn-sm ${activeTab === 'all' ? 'btn-primary' : 'btn-secondary'}" onclick="ModalManager.openAdminApprovalModal('all')" style="font-weight:700;">
-            📋 All Requests (${allRequests.length})
+            📋 All History (${allRequests.length})
           </button>
         </div>
       `;
@@ -1785,7 +1790,7 @@ class ModalManager {
       if (displayRequests.length === 0) {
         container.innerHTML += `
           <p class="empty-hint" style="text-align:center; padding:24px; color:var(--text-muted); font-weight:600; background:rgba(255,255,255,0.02); border-radius:8px;">
-            ${activeTab === 'pending' ? '✅ No pending material requisitions submitted by registered users awaiting approval right now.' : 'No requisitions found under this filter.'}
+            ${(activeTab === 'pending' || activeTab === 'lead_queue') ? '✅ No pending requisitions awaiting Team Lead approval right now.' : (activeTab === 'admin_issuance' ? '✅ No Lead-approved requisitions awaiting Admin stock issuance right now.' : 'No requisitions found under this filter.')}
           </p>
         `;
       } else {
@@ -1796,13 +1801,15 @@ class ModalManager {
           card.className = "approval-card";
           card.style.cssText = "background:var(--bg-dark); border:1px solid var(--border-color); border-radius:12px; padding:16px; margin-bottom:14px; box-shadow:0 4px 12px rgba(0,0,0,0.2);";
 
-          const isPending = r.status === "SUBMITTED" || r.status === "PENDING" || r.status === "LEAD_APPROVED" || r.status === "LEAD_MODIFIED";
+          const isLeadPending = r.status === "PENDING_LEAD_APPROVAL" || r.status === "SUBMITTED" || r.status === "PENDING";
+          const isAdminPending = r.status === "PENDING_ADMIN_ISSUANCE" || r.status === "LEAD_APPROVED" || r.status === "LEAD_MODIFIED";
           const isIssued = r.status === "ISSUED" || r.status === "APPROVED";
           const isPartiallyIssued = r.status === "PARTIALLY_ISSUED";
           const isRejected = r.status === "REJECTED";
 
-          let statusBadgeHtml = '<span class="stock-tag warning" style="font-weight:800; font-size:0.8rem;">⏳ Pending Approval</span>';
-          if (isIssued) statusBadgeHtml = `<span class="stock-tag success" style="font-weight:800; font-size:0.8rem;">📦 Issued (${r.issuedQty || r.qtyRequested} pcs) by ${r.issuedBy || 'Admin'} on ${r.issueDate || 'Today'}</span>`;
+          let statusBadgeHtml = '<span class="stock-tag warning" style="font-weight:800; font-size:0.8rem;">⏳ Stage 1: Pending Team Lead Approval</span>';
+          if (isAdminPending) statusBadgeHtml = '<span class="stock-tag info" style="font-weight:800; font-size:0.8rem; background:#0ea5e9; color:white;">📦 Stage 2: Lead Approved (Pending Admin Issue)</span>';
+          else if (isIssued) statusBadgeHtml = `<span class="stock-tag success" style="font-weight:800; font-size:0.8rem;">✅ Stage 3: Issued (${r.issuedQty || r.qtyRequested} pcs) by ${r.issuedBy || 'Admin'} on ${r.issueDate || 'Today'}</span>`;
           else if (isPartiallyIssued) statusBadgeHtml = `<span class="stock-tag warning" style="font-weight:800; font-size:0.8rem; background:#f59e0b; color:#0f172a;">🟡 Partial Issued (${r.issuedQty || 0}/${r.qtyRequested} pcs) by ${r.issuedBy || 'Admin'} on ${r.issueDate || 'Today'}</span>`;
           else if (isRejected) statusBadgeHtml = '<span class="stock-tag danger" style="font-weight:800; font-size:0.8rem;">❌ Rejected</span>';
 
@@ -1849,13 +1856,18 @@ class ModalManager {
               <div>
                 <span class="text-muted">Requested Qty:</span> <strong>${r.qtyRequested} pcs</strong>
               </div>
+              ${r.leadName ? `
+                <div>
+                  <span class="text-muted">Team Lead Review:</span> <strong style="color:#38bdf8;">Approved by ${r.leadName}</strong> (${r.leadApprovedAt || 'Approved'})
+                </div>
+              ` : ''}
               <div>
                 <span class="text-muted">Issuance Status:</span> 
                 <strong style="color:var(--primary);">${r.issuedQty || 0} / ${r.qtyApproved || r.qtyRequested} pcs Issued</strong>
               </div>
               ${r.issuedBy ? `
                 <div>
-                  <span class="text-muted">Issued By:</span> <strong>${r.issuedBy}</strong> (${r.issueDate || 'N/A'})
+                  <span class="text-muted">Issued By Admin:</span> <strong style="color:#10b981;">${r.issuedBy}</strong> (${r.issueDate || 'N/A'})
                 </div>
               ` : ''}
             </div>
@@ -1864,19 +1876,24 @@ class ModalManager {
               📝 Notes / Purpose: <span style="color:var(--text-main);">${r.notes}</span>
             </p>
 
-            ${(isPending || isPartiallyIssued) ? `
+            ${(isLeadPending || isAdminPending || isPartiallyIssued) ? `
               <div class="approval-actions" style="display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap;">
                 <button class="btn btn-secondary btn-suggest-alt" data-id="${r.id}" style="font-weight:700; color:#38bdf8; border-color:rgba(56,189,248,0.4);" title="Suggest compatible alternative component from stock">
                   💡 Suggest Alternative
                 </button>
-                ${isPending ? `
-                  <button class="btn btn-danger btn-lead-reject" data-id="${r.id}" style="font-weight:700;" title="Reject request if stock unavailable">
-                    ❌ Reject (Stock Unavailable)
+                <button class="btn btn-danger btn-lead-reject" data-id="${r.id}" style="font-weight:700;" title="Reject request if stock or project justification unavailable">
+                  ❌ Reject
+                </button>
+                ${isLeadPending ? `
+                  <button class="btn btn-primary btn-team-lead-approve" data-id="${r.id}" style="background:linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); color:white; font-weight:800; border:none; box-shadow:0 2px 8px rgba(14,165,233,0.4);" title="Team Lead: Approve requisition & forward to Lab Administrator for inventory issuance">
+                    ✅ Team Lead: Approve & Send to Admin
                   </button>
                 ` : ''}
-                <button class="btn btn-success btn-admin-direct-issue" data-id="${r.id}" style="background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:white; font-weight:800; border:none; box-shadow:0 2px 8px rgba(16,185,129,0.3);" title="Configure & Issue materials (Full / Partial Quantity, Date, Admin Name)">
-                  📦 ${isPartiallyIssued ? 'Issue Remaining Stock' : 'Issue Materials (Full / Partial)'}
-                </button>
+                ${(isAdminPending || isPartiallyIssued) ? `
+                  <button class="btn btn-success btn-admin-direct-issue" data-id="${r.id}" style="background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:white; font-weight:800; border:none; box-shadow:0 2px 8px rgba(16,185,129,0.4);" title="Lab Administrator: Configure & Issue physical stock (Full / Partial Quantity, Date, Admin Name)">
+                    📦 Admin: Issue Materials & Update Stock
+                  </button>
+                ` : ''}
               </div>
             ` : ''}
           `;
@@ -1895,12 +1912,37 @@ class ModalManager {
             btnLeadReject.addEventListener("click", () => {
               const reason = prompt("Enter rejection reason:", "Insufficient project justification / reserved stock");
               const session = StorageService.getCurrentSession();
-              const reviewer = session ? session.fullName : "Lab Administrator";
+              const reviewer = session ? session.fullName : "Team Lead";
 
               try {
                 StorageService.reviewLeadRequest(r.id, 0, reviewer, "REJECT", reason || "");
                 alert(`Request #${r.id} rejected.`);
                 this.openAdminApprovalModal();
+                if (this.callbacks.onInventoryChanged) this.callbacks.onInventoryChanged();
+              } catch (err) {
+                alert(err.message);
+              }
+            });
+          }
+
+          // Team Lead Approve Listener -> Moves status to PENDING_ADMIN_ISSUANCE
+          const btnTeamLeadApprove = card.querySelector(".btn-team-lead-approve");
+          if (btnTeamLeadApprove) {
+            btnTeamLeadApprove.addEventListener("click", () => {
+              const session = StorageService.getCurrentSession();
+              const reviewer = session ? session.fullName : "Team Lead";
+              const qtyStr = prompt(`Team Lead Approval for Requisition #${r.id} (${r.componentName}):\n\nEnter approved quantity to forward to Administrator:`, String(r.qtyRequested));
+              if (!qtyStr) return;
+              const appQty = parseInt(qtyStr);
+              if (isNaN(appQty) || appQty <= 0) {
+                alert("Please enter a valid positive quantity.");
+                return;
+              }
+
+              try {
+                StorageService.reviewLeadRequest(r.id, appQty, reviewer, "APPROVE");
+                alert(`Success! Requisition #${r.id} approved by Team Lead (${reviewer}) and forwarded to Lab Administrator for inventory issuance.`);
+                this.openAdminApprovalModal("admin_issuance");
                 if (this.callbacks.onInventoryChanged) this.callbacks.onInventoryChanged();
               } catch (err) {
                 alert(err.message);

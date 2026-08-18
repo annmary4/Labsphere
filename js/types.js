@@ -92,7 +92,7 @@ const USER_ROLES = {
  * @property {number} [damagedQty] - Quantity reported as damaged
  * @property {string} [dueDate] - Optional return due date
  * @property {string} [condition] - Item Condition: GOOD | FAIR | DAMAGED
- * @property {string} status - SUBMITTED | LEAD_APPROVED | LEAD_MODIFIED | ISSUED | REJECTED | PARTIAL_RETURN | RETURNED | DAMAGED
+ * @property {string} status - PENDING_LEAD_APPROVAL | PENDING_ADMIN_ISSUANCE | LEAD_APPROVED | LEAD_MODIFIED | ISSUED | PARTIALLY_ISSUED | REJECTED | PARTIAL_RETURN | RETURNED | DAMAGED
  * @property {string} requestedAt
  * @property {string} [leadName] - Name of Team Lead who reviewed request
  * @property {string} [leadApprovedAt] - Timestamp of Lead Approval

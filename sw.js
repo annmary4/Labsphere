@@ -2,18 +2,18 @@
    LabSphere Service Worker - Offline Cache & PWA Support
    ============================================================ */
 
-const CACHE_NAME = 'labsphere-v12200_edit_dialog_button_labels_fix';
+const CACHE_NAME = 'labsphere-v13000_multi_tier_approval_issuance_flow';
 const ASSETS_TO_CACHE = [
   '/Labsphere/',
   '/Labsphere/index.html',
-  '/Labsphere/css/styles.css?v=12200_edit_dialog_button_labels_fix',
-  '/Labsphere/js/app.js?v=12200_edit_dialog_button_labels_fix',
-  '/Labsphere/js/types.js?v=12200_edit_dialog_button_labels_fix',
-  '/Labsphere/js/initialData.js?v=12200_edit_dialog_button_labels_fix',
-  '/Labsphere/js/storage.js?v=12200_edit_dialog_button_labels_fix',
-  '/Labsphere/js/rackViewer.js?v=12200_edit_dialog_button_labels_fix',
-  '/Labsphere/js/componentsView.js?v=12200_edit_dialog_button_labels_fix',
-  '/Labsphere/js/modalManager.js?v=12200_edit_dialog_button_labels_fix',
+  '/Labsphere/css/styles.css?v=13000_multi_tier_approval_issuance_flow',
+  '/Labsphere/js/app.js?v=13000_multi_tier_approval_issuance_flow',
+  '/Labsphere/js/types.js?v=13000_multi_tier_approval_issuance_flow',
+  '/Labsphere/js/initialData.js?v=13000_multi_tier_approval_issuance_flow',
+  '/Labsphere/js/storage.js?v=13000_multi_tier_approval_issuance_flow',
+  '/Labsphere/js/rackViewer.js?v=13000_multi_tier_approval_issuance_flow',
+  '/Labsphere/js/componentsView.js?v=13000_multi_tier_approval_issuance_flow',
+  '/Labsphere/js/modalManager.js?v=13000_multi_tier_approval_issuance_flow',
   '/Labsphere/icons/icon-192.png',
   '/Labsphere/icons/icon-512.png',
   '/Labsphere/manifest.json'
