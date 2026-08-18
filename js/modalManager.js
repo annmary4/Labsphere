@@ -1738,8 +1738,8 @@ class ModalManager {
   }
 
   // --- MULTI-TIER APPROVAL & ISSUANCE QUEUE MODAL ---
-  static openAdminApprovalModal(activeTab = "pending") {
-    const isLeadOrAdmin = StorageService.isRole("ADMIN") || StorageService.isRole("ENGINEER");
+  static openAdminApprovalModal(activeTab = "default") {
+    const isLeadOrAdmin = StorageService.isRole("ADMIN") || StorageService.isRole("TEAM_LEAD") || StorageService.isRole("ENGINEER");
     if (!isLeadOrAdmin) {
       alert("Access Restricted: Requisition Approval & Material Issuance are strictly reserved for Team Leads and Inventory Administrators.");
       return;
@@ -1753,6 +1753,14 @@ class ModalManager {
     const adminIssuanceRequests = allRequests.filter(r => r.status === "PENDING_ADMIN_ISSUANCE" || r.status === "LEAD_APPROVED" || r.status === "LEAD_MODIFIED");
     const issuedRequests = allRequests.filter(r => r.status === "ISSUED" || r.status === "APPROVED");
     const rejectedRequests = allRequests.filter(r => r.status === "REJECTED");
+
+    if (activeTab === "default") {
+      if (StorageService.isRole("ADMIN") && adminIssuanceRequests.length > 0) {
+        activeTab = "admin_issuance";
+      } else {
+        activeTab = "pending";
+      }
+    }
 
     let displayRequests = leadQueueRequests;
     if (activeTab === "admin_issuance") displayRequests = adminIssuanceRequests;

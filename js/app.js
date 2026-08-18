@@ -468,7 +468,7 @@ class App {
 
     if (btnRbac) {
       btnRbac.addEventListener("click", () => {
-        const roles = ["STUDENT", "ENGINEER", "ADMIN", "MANAGEMENT"];
+        const roles = ["STUDENT", "TEAM_LEAD", "ENGINEER", "ADMIN", "MANAGEMENT"];
         const current = StorageService.getRole();
         const nextRole = roles[(roles.indexOf(current) + 1) % roles.length];
         StorageService.setRole(nextRole);
@@ -624,9 +624,19 @@ class App {
     const isAdmin = StorageService.isRole("ADMIN");
     const isMobile = window.innerWidth <= 768;
 
-    // Header buttons (shown on Desktop only for Admin, and hidden for Admin when they should be drawer-only)
+    const isTeamLeadOrAdmin = StorageService.isRole("ADMIN") || StorageService.isRole("TEAM_LEAD") || StorageService.isRole("ENGINEER");
+
+    // Header Approvals Button (shown for Admin & Team Lead on Desktop)
+    const btnAdminApproveHeader = document.getElementById("btn-admin-approve");
+    if (btnAdminApproveHeader) {
+      if (isTeamLeadOrAdmin && !isMobile) {
+        btnAdminApproveHeader.style.setProperty("display", "inline-flex", "important");
+      } else {
+        btnAdminApproveHeader.style.setProperty("display", "none", "important");
+      }
+    }
+
     const headerAdminButtons = [
-      document.getElementById("btn-admin-approve"),
       document.getElementById("btn-mgmt-dashboard"),
       document.getElementById("btn-audit-log"),
       document.getElementById("btn-procurement-insights")
@@ -666,10 +676,19 @@ class App {
       }
     }
 
+    // Drawer Approvals Item (shown for Admin & Team Lead)
+    const drawerApprovalsBtn = document.getElementById("drawer-btn-approvals");
+    if (drawerApprovalsBtn) {
+      if (isTeamLeadOrAdmin) {
+        drawerApprovalsBtn.style.setProperty("display", "flex", "important");
+      } else {
+        drawerApprovalsBtn.style.setProperty("display", "none", "important");
+      }
+    }
+
     // Drawer items (shown inside hamburger menu for Admin)
     const drawerAdminElements = [
       document.getElementById("popover-btn-user-manager"),
-      document.getElementById("drawer-btn-approvals"),
       document.getElementById("drawer-btn-mgmt-dashboard"),
       document.getElementById("drawer-btn-audit-log"),
       document.getElementById("drawer-btn-procurement-insights"),
@@ -716,16 +735,15 @@ class App {
     const pendingReqs = StorageService.getRequests().filter(r => r.status === "PENDING_LEAD_APPROVAL" || r.status === "PENDING_ADMIN_ISSUANCE" || r.status === "SUBMITTED" || r.status === "PENDING" || r.status === "LEAD_APPROVED" || r.status === "LEAD_MODIFIED").length;
     const apprBadge = document.getElementById("admin-approval-count");
     const drawerApprBadge = document.getElementById("drawer-approvals-badge");
-    const isLeadOrAdmin = StorageService.isRole("ADMIN") || StorageService.isRole("ENGINEER");
 
     if (apprBadge) {
       apprBadge.innerText = pendingReqs;
-      if (pendingReqs > 0 && isLeadOrAdmin) apprBadge.classList.remove("hidden");
+      if (pendingReqs > 0 && isTeamLeadOrAdmin) apprBadge.classList.remove("hidden");
       else apprBadge.classList.add("hidden");
     }
     if (drawerApprBadge) {
       drawerApprBadge.innerText = pendingReqs;
-      if (pendingReqs > 0 && isLeadOrAdmin) drawerApprBadge.classList.remove("hidden");
+      if (pendingReqs > 0 && isTeamLeadOrAdmin) drawerApprBadge.classList.remove("hidden");
       else drawerApprBadge.classList.add("hidden");
     }
   }

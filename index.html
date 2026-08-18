@@ -19,7 +19,7 @@
     rel="stylesheet">
 
   <!-- CSS with cache buster -->
-  <link rel="stylesheet" href="css/styles.css?v=13100_submit_requisition_to_team_lead">
+  <link rel="stylesheet" href="css/styles.css?v=13200_team_lead_user_role_and_workflow">
 
   <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -50,13 +50,14 @@
       <div class="splash-logo-ring">
         <div class="splash-logo-icon">
           <svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect width="44" height="44" rx="12" fill="url(#splashGrad)"/>
-            <path d="M10 22 L22 10 L34 22 L22 34 Z" stroke="white" stroke-width="2.5" fill="none" stroke-linejoin="round"/>
-            <circle cx="22" cy="22" r="4" fill="white"/>
+            <rect width="44" height="44" rx="12" fill="url(#splashGrad)" />
+            <path d="M10 22 L22 10 L34 22 L22 34 Z" stroke="white" stroke-width="2.5" fill="none"
+              stroke-linejoin="round" />
+            <circle cx="22" cy="22" r="4" fill="white" />
             <defs>
               <linearGradient id="splashGrad" x1="0" y1="0" x2="44" y2="44">
-                <stop offset="0%" stop-color="#0284c7"/>
-                <stop offset="100%" stop-color="#c084fc"/>
+                <stop offset="0%" stop-color="#0284c7" />
+                <stop offset="100%" stop-color="#c084fc" />
               </linearGradient>
             </defs>
           </svg>
@@ -108,12 +109,14 @@
       <form id="login-panel-member" class="login-panel" onsubmit="handleMemberSignIn(event)">
         <div class="form-group">
           <label for="login-email"><i data-lucide="mail"></i> Email Address or Username</label>
-          <input type="text" id="login-email" name="username" autocomplete="username" class="form-control" placeholder="admin@labsphere.io or admin" required />
+          <input type="text" id="login-email" name="username" autocomplete="username" class="form-control"
+            placeholder="admin@labsphere.io or admin" required />
         </div>
 
         <div class="form-group">
           <label for="login-password"><i data-lucide="lock"></i> Password</label>
-          <input type="password" id="login-password" name="password" autocomplete="current-password" class="form-control" placeholder="••••••••" required />
+          <input type="password" id="login-password" name="password" autocomplete="current-password"
+            class="form-control" placeholder="••••••••" required />
         </div>
 
         <button type="submit" class="btn btn-primary btn-block btn-lg" style="margin-top:8px;">
@@ -146,7 +149,8 @@
         <div class="form-group">
           <label for="reg-role"><i data-lucide="shield"></i> Laboratory Role</label>
           <select id="reg-role" class="form-control" style="background:var(--bg-dark); color:var(--text-main);">
-            <option value="ADMIN">Lab Administrator</option>
+            <option value="ADMIN">Lab Administrator (Stock Issuance & Full Control)</option>
+            <option value="TEAM_LEAD">Team Lead (Approve Student Requisitions)</option>
             <option value="ENGINEER">Lab Engineer / Maintainer</option>
             <option value="MANAGEMENT">Research Lead</option>
             <option value="STUDENT" selected>Student / Intern</option>
@@ -166,7 +170,16 @@
             <div class="role-icon"><i data-lucide="shield-check"></i></div>
             <div class="role-info">
               <h4>Lab Administrator</h4>
-              <span class="role-tag">Full Control, Approvals & Maintenance</span>
+              <span class="role-tag">Stock Issuance, Catalog & User Controls</span>
+            </div>
+            <i data-lucide="arrow-right" class="role-arrow"></i>
+          </div>
+
+          <div class="quick-role-card role-teamlead" onclick="loginWithRole('TEAM_LEAD')">
+            <div class="role-icon"><i data-lucide="user-check"></i></div>
+            <div class="role-info">
+              <h4>Team Lead</h4>
+              <span class="role-tag">Approve Student Requisitions & Send to Admin</span>
             </div>
             <i data-lucide="arrow-right" class="role-arrow"></i>
           </div>
@@ -245,7 +258,8 @@
       <div class="nav-actions">
         <!-- Notification bell hidden from header (accessible via hamburger View Navigation drawer) -->
         <div class="dropdown" style="display:none !important;">
-          <button class="btn btn-icon" id="btn-nav-notif" title="Real-Time Notifications Bell" style="display:none !important;">
+          <button class="btn btn-icon" id="btn-nav-notif" title="Real-Time Notifications Bell"
+            style="display:none !important;">
             <i data-lucide="bell"></i>
             <span id="notif-unread-count" class="count-badge danger hidden">0</span>
           </button>
@@ -261,8 +275,10 @@
         </div>
 
         <!-- Student & General Actions -->
-        <button id="btn-multi-item-req" class="btn btn-primary" title="Create Multi-Item Component Requisition" style="background:linear-gradient(135deg, #0284c7 0%, #2563eb 100%); font-weight:700;">
-          <i data-lucide="shopping-bag"></i> Multi-Item Request <span id="req-cart-count-badge" class="count-badge hidden" style="background:#f59e0b; color:#0f172a; margin-left:4px;">0</span>
+        <button id="btn-multi-item-req" class="btn btn-primary" title="Create Multi-Item Component Requisition"
+          style="background:linear-gradient(135deg, #0284c7 0%, #2563eb 100%); font-weight:700;">
+          <i data-lucide="shopping-bag"></i> Multi-Item Request <span id="req-cart-count-badge"
+            class="count-badge hidden" style="background:#f59e0b; color:#0f172a; margin-left:4px;">0</span>
         </button>
         <button id="btn-student-reqs" class="btn btn-secondary" title="My Component Requests & Issued Items">
           <i data-lucide="clipboard-list"></i> My Requests
@@ -286,7 +302,9 @@
         <button id="btn-mgmt-dashboard" class="btn btn-primary" title="Executive Financial Valuation & Usage Dashboard">
           <i data-lucide="bar-chart-3"></i> Executive Report
         </button>
-        <button id="btn-print-inventory-sheet" class="btn btn-secondary" title="Generate & Print Component Inventory Sheet (with Quantities & Rates)" onclick="openPrintableInventorySheet()">
+        <button id="btn-print-inventory-sheet" class="btn btn-secondary"
+          title="Generate & Print Component Inventory Sheet (with Quantities & Rates)"
+          onclick="openPrintableInventorySheet()">
           <i data-lucide="printer"></i> Inventory Sheet
         </button>
 
@@ -301,35 +319,46 @@
         <!-- User Session Profile & Role Badge with Top-Right Popover -->
         <div class="nav-user-profile">
           <div class="user-profile-wrapper" id="user-profile-wrapper">
-            <button class="user-avatar-trigger" id="btn-user-profile-trigger" title="Click to view User Profile, Designation & Account Options">
+            <button class="user-avatar-trigger" id="btn-user-profile-trigger"
+              title="Click to view User Profile, Designation & Account Options">
               <i data-lucide="user"></i>
             </button>
-            
+
             <div class="user-profile-popover hidden" id="user-profile-popover">
               <div class="user-profile-popover-header">
                 <div class="popover-avatar-icon"><i data-lucide="user-check"></i></div>
                 <div class="popover-user-details">
-                  <span class="user-name" id="user-profile-name" title="Click to Edit Profile Name" style="cursor:pointer; font-weight:800; color:var(--text-main); font-size:0.92rem; display:block;">Lab Administrator</span>
-                  <span class="user-designation" id="user-profile-designation" style="font-size:0.75rem; color:var(--primary); font-weight:700; display:block; margin-top:2px;">Admin (Full Control)</span>
+                  <span class="user-name" id="user-profile-name" title="Click to Edit Profile Name"
+                    style="cursor:pointer; font-weight:800; color:var(--text-main); font-size:0.92rem; display:block;">Lab
+                    Administrator</span>
+                  <span class="user-designation" id="user-profile-designation"
+                    style="font-size:0.75rem; color:var(--primary); font-weight:700; display:block; margin-top:2px;">Admin
+                    (Full Control)</span>
                 </div>
               </div>
-              
+
               <div class="user-profile-role-select" style="margin-top:10px; margin-bottom:10px;">
-                <button id="btn-rbac-switch" class="rbac-btn" title="Click to Cycle Active Role Session" style="width:100%; justify-content:center;">
+                <button id="btn-rbac-switch" class="rbac-btn" title="Click to Cycle Active Role Session"
+                  style="width:100%; justify-content:center;">
                   <span id="rbac-role-badge" class="role-badge role-admin">Admin (Full Control)</span>
                 </button>
               </div>
 
-              <div class="user-popover-divider" style="height:1px; background:var(--border-color); margin:10px 0;"></div>
+              <div class="user-popover-divider" style="height:1px; background:var(--border-color); margin:10px 0;">
+              </div>
 
               <div class="user-popover-actions" style="display:flex; flex-direction:column; gap:6px;">
-                <button id="popover-btn-user-manager" class="btn btn-secondary btn-sm" title="Administrator User Management & Accounts" style="width:100%; display:flex; justify-content:center; align-items:center; gap:6px;">
+                <button id="popover-btn-user-manager" class="btn btn-secondary btn-sm"
+                  title="Administrator User Management & Accounts"
+                  style="width:100%; display:flex; justify-content:center; align-items:center; gap:6px;">
                   <i data-lucide="users"></i> Manage User Accounts
                 </button>
-                <button id="btn-nav-logout" class="btn btn-secondary btn-sm danger-btn" title="Log Out of Session" style="width:100%; display:flex; justify-content:center; align-items:center; gap:6px; color:#ef4444; border-color:rgba(239,68,68,0.4);">
+                <button id="btn-nav-logout" class="btn btn-secondary btn-sm danger-btn" title="Log Out of Session"
+                  style="width:100%; display:flex; justify-content:center; align-items:center; gap:6px; color:#ef4444; border-color:rgba(239,68,68,0.4);">
                   <i data-lucide="log-out"></i> Log Out
                 </button>
-                <button id="btn-nav-login" class="btn btn-primary btn-sm hidden" title="Log In to Account" style="width:100%; display:flex; justify-content:center; align-items:center; gap:6px;">
+                <button id="btn-nav-login" class="btn btn-primary btn-sm hidden" title="Log In to Account"
+                  style="width:100%; display:flex; justify-content:center; align-items:center; gap:6px;">
                   <i data-lucide="log-in"></i> Sign In / Switch
                 </button>
               </div>
@@ -404,7 +433,8 @@
           <span id="drawer-approvals-badge" class="count-badge danger hidden" style="margin-left:auto;">0</span>
         </button>
 
-        <button class="drawer-menu-item" id="drawer-btn-multi-item-req" style="background:rgba(2,132,199,0.15); border:1px solid rgba(2,132,199,0.3);">
+        <button class="drawer-menu-item" id="drawer-btn-multi-item-req"
+          style="background:rgba(2,132,199,0.15); border:1px solid rgba(2,132,199,0.3);">
           <i data-lucide="shopping-bag" style="font-size:1.2rem; color:#38bdf8;"></i>
           <div style="display:flex; flex-direction:column; text-align:left;">
             <span style="font-weight:700; color:#38bdf8;">Multi-Item Requisition</span>
@@ -493,12 +523,16 @@
         </button>
         <div style="position:relative; flex:1;">
           <!-- Prevent browser password managers from auto-filling saved credentials into catalog search box -->
-          <input type="text" style="display:none !important; visibility:hidden !important; position:absolute !important; width:0 !important; height:0 !important;" name="fake_username_autofill_trap" tabindex="-1" autocomplete="off" />
-          <input type="password" style="display:none !important; visibility:hidden !important; position:absolute !important; width:0 !important; height:0 !important;" name="fake_password_autofill_trap" tabindex="-1" autocomplete="off" />
+          <input type="text"
+            style="display:none !important; visibility:hidden !important; position:absolute !important; width:0 !important; height:0 !important;"
+            name="fake_username_autofill_trap" tabindex="-1" autocomplete="off" />
+          <input type="password"
+            style="display:none !important; visibility:hidden !important; position:absolute !important; width:0 !important; height:0 !important;"
+            name="fake_password_autofill_trap" tabindex="-1" autocomplete="off" />
 
           <i data-lucide="search" class="search-icon"></i>
-          <input type="search" id="search-input" name="catalog_search_query_no_autofill"
-            autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" role="searchbox"
+          <input type="search" id="search-input" name="catalog_search_query_no_autofill" autocomplete="off"
+            autocorrect="off" autocapitalize="off" spellcheck="false" role="searchbox"
             placeholder="Search by Name, Part #, Manufacturer, Category, Tags, Specs, or Compatible Items... [Press '/' to focus]" />
           <button id="search-clear-btn" class="search-clear hidden" title="Clear Search">
             <i data-lucide="x"></i>
@@ -584,7 +618,8 @@
           </div>
 
           <div style="display:flex; align-items:center; gap:10px;">
-            <button id="btn-close-components-dialog" class="btn btn-secondary btn-icon btn-close-dialog hidden" title="Close Component Details Dialog Box">
+            <button id="btn-close-components-dialog" class="btn btn-secondary btn-icon btn-close-dialog hidden"
+              title="Close Component Details Dialog Box">
               <i data-lucide="x"></i>
             </button>
           </div>
@@ -1049,7 +1084,8 @@
 
           <div class="demo-login-box"
             style="margin-top: 20px; border-top: 1px solid var(--border-color); padding-top: 14px;">
-            <h4 style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px;">Power 1-Click Demo Accounts:</h4>
+            <h4 style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px;">Power 1-Click Demo Accounts:
+            </h4>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
               <button class="btn btn-secondary btn-sm" id="demo-login-admin">👑 Admin</button>
               <button class="btn btn-secondary btn-sm" id="demo-login-engineer">⚙️ Engineer</button>
@@ -1100,9 +1136,13 @@
           <button class="modal-close" id="btn-close-student-req-modal"><i data-lucide="x"></i></button>
         </div>
         <div class="modal-body">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
-            <p class="modal-desc" style="margin:0;">Track status of submitted checkout requests and return borrowed items back to laboratory stock.</p>
-            <button class="btn btn-primary btn-sm" onclick="ModalManager.closeStudentRequestsModal(); ModalManager.openMultiItemRequestModal();" style="background:linear-gradient(135deg, #0284c7 0%, #2563eb 100%); font-weight:800; padding:8px 14px; border:none; border-radius:6px; cursor:pointer;">
+          <div
+            style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
+            <p class="modal-desc" style="margin:0;">Track status of submitted checkout requests and return borrowed
+              items back to laboratory stock.</p>
+            <button class="btn btn-primary btn-sm"
+              onclick="ModalManager.closeStudentRequestsModal(); ModalManager.openMultiItemRequestModal();"
+              style="background:linear-gradient(135deg, #0284c7 0%, #2563eb 100%); font-weight:800; padding:8px 14px; border:none; border-radius:6px; cursor:pointer;">
               <i data-lucide="shopping-bag"></i> + New Multi-Item Requisition
             </button>
           </div>
@@ -1770,21 +1810,27 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
     <!-- Modal: Project Workspace Requisition Wizard Modal -->
     <div class="modal-backdrop hidden" id="projects-modal">
       <div class="modal-content modal-xl" style="max-width:1050px;">
-        <div class="modal-header" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border-bottom:1px solid var(--border-color);">
+        <div class="modal-header"
+          style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border-bottom:1px solid var(--border-color);">
           <div class="modal-title-group">
             <i data-lucide="folder-kanban" style="color:var(--primary); font-size:1.6rem;"></i>
             <div>
-              <h2 style="margin:0; font-size:1.3rem; color:var(--text-main);" id="proj-wizard-modal-title">Project Workspace Requisition</h2>
-              <span style="font-size:0.8rem; color:var(--text-muted);">Step 1: Enter Project Details ➔ Step 2: Search Inventory & Request Components</span>
+              <h2 style="margin:0; font-size:1.3rem; color:var(--text-main);" id="proj-wizard-modal-title">Project
+                Workspace Requisition</h2>
+              <span style="font-size:0.8rem; color:var(--text-muted);">Step 1: Enter Project Details ➔ Step 2: Search
+                Inventory & Request Components</span>
             </div>
           </div>
-          <button class="modal-close" onclick="ModalManager.closeProjectModal()" style="cursor:pointer; background:none; border:none; color:white; font-size:1.6rem; font-weight:800; padding:4px 12px; line-height:1;" title="Close Window">&times;</button>
+          <button class="modal-close" onclick="ModalManager.closeProjectModal()"
+            style="cursor:pointer; background:none; border:none; color:white; font-size:1.6rem; font-weight:800; padding:4px 12px; line-height:1;"
+            title="Close Window">&times;</button>
         </div>
         <div class="modal-body" style="padding:24px;">
-          
+
           <!-- STEP 1: ENTER PROJECT NAME & DETAILS -->
           <div id="proj-wizard-step1">
-            <div style="background:rgba(56,189,248,0.1); border:1px solid rgba(56,189,248,0.3); border-radius:10px; padding:14px 18px; margin-bottom:20px; font-size:0.9rem; color:#38bdf8; display:flex; align-items:center; gap:12px;">
+            <div
+              style="background:rgba(56,189,248,0.1); border:1px solid rgba(56,189,248,0.3); border-radius:10px; padding:14px 18px; margin-bottom:20px; font-size:0.9rem; color:#38bdf8; display:flex; align-items:center; gap:12px;">
               <i data-lucide="folder-plus" style="font-size:1.6rem; flex-shrink:0;"></i>
               <div>
                 <strong>Step 1 of 2: Specify Project Name</strong><br>
@@ -1793,28 +1839,41 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
             </div>
 
             <div class="form-group" style="margin-bottom:18px;">
-              <label style="font-weight:700; color:var(--text-main); margin-bottom:6px; display:block; font-size:0.92rem;">
+              <label
+                style="font-weight:700; color:var(--text-main); margin-bottom:6px; display:block; font-size:0.92rem;">
                 📁 Type Project Name *
               </label>
-              <input type="text" id="proj-wizard-name-input" class="form-control" placeholder="e.g. Smart IoT Weather Station / Robotics Arm Prototype" style="background:#0f172a; color:var(--text-main); border:1px solid var(--border-color); padding:12px 16px; border-radius:8px; width:100%; font-weight:700; font-size:1.05rem;" />
-              
-              <div style="margin-top:14px; background:rgba(255,255,255,0.02); padding:12px; border-radius:8px; border:1px solid rgba(255,255,255,0.05);">
-                <small style="color:var(--text-muted); font-size:0.82rem; font-weight:600; display:block; margin-bottom:6px;">Or select from active lab projects:</small>
-                <select id="proj-wizard-existing-select" class="form-control" style="background:#0f172a; color:var(--text-main); border:1px solid var(--border-color); padding:10px 14px; border-radius:6px; width:100%; font-size:0.9rem;" onchange="ModalManager.handleSelectExistingWizardProject(this.value)">
+              <input type="text" id="proj-wizard-name-input" class="form-control"
+                placeholder="e.g. Smart IoT Weather Station / Robotics Arm Prototype"
+                style="background:#0f172a; color:var(--text-main); border:1px solid var(--border-color); padding:12px 16px; border-radius:8px; width:100%; font-weight:700; font-size:1.05rem;" />
+
+              <div
+                style="margin-top:14px; background:rgba(255,255,255,0.02); padding:12px; border-radius:8px; border:1px solid rgba(255,255,255,0.05);">
+                <small
+                  style="color:var(--text-muted); font-size:0.82rem; font-weight:600; display:block; margin-bottom:6px;">Or
+                  select from active lab projects:</small>
+                <select id="proj-wizard-existing-select" class="form-control"
+                  style="background:#0f172a; color:var(--text-main); border:1px solid var(--border-color); padding:10px 14px; border-radius:6px; width:100%; font-size:0.9rem;"
+                  onchange="ModalManager.handleSelectExistingWizardProject(this.value)">
                   <option value="">-- Choose Existing Project Workspace (Optional) --</option>
                 </select>
               </div>
             </div>
 
             <div class="form-group" style="margin-bottom:24px;">
-              <label style="font-weight:700; color:var(--text-main); margin-bottom:6px; display:block; font-size:0.92rem;">
+              <label
+                style="font-weight:700; color:var(--text-main); margin-bottom:6px; display:block; font-size:0.92rem;">
                 📝 Project Description / Scope Notes (Optional)
               </label>
-              <textarea id="proj-wizard-desc-input" class="form-control" rows="3" placeholder="Briefly describe project goals, target milestones, or team lead..." style="background:#0f172a; color:var(--text-main); border:1px solid var(--border-color); padding:12px; border-radius:8px; width:100%; font-size:0.88rem;"></textarea>
+              <textarea id="proj-wizard-desc-input" class="form-control" rows="3"
+                placeholder="Briefly describe project goals, target milestones, or team lead..."
+                style="background:#0f172a; color:var(--text-main); border:1px solid var(--border-color); padding:12px; border-radius:8px; width:100%; font-size:0.88rem;"></textarea>
             </div>
 
-            <div style="display:flex; justify-content:flex-end; border-top:1px solid var(--border-color); padding-top:18px;">
-              <button class="btn btn-primary btn-lg" onclick="ModalManager.goToProjectWizardStep2()" style="font-weight:800; padding:12px 28px; background:linear-gradient(135deg, #0284c7 0%, #2563eb 100%); font-size:1rem; border:none; box-shadow:0 4px 14px rgba(2,132,199,0.4);">
+            <div
+              style="display:flex; justify-content:flex-end; border-top:1px solid var(--border-color); padding-top:18px;">
+              <button class="btn btn-primary btn-lg" onclick="ModalManager.goToProjectWizardStep2()"
+                style="font-weight:800; padding:12px 28px; background:linear-gradient(135deg, #0284c7 0%, #2563eb 100%); font-size:1rem; border:none; box-shadow:0 4px 14px rgba(2,132,199,0.4);">
                 Next: Select Components ➔
               </button>
             </div>
@@ -1822,38 +1881,51 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
 
           <!-- STEP 2: SEARCH INVENTORY, SELECT COMPONENTS, QUANTITY, NOTES & SUBMIT/DRAFT -->
           <div id="proj-wizard-step2" class="hidden">
-            <div style="background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.3); border-radius:10px; padding:12px 18px; margin-bottom:18px; font-size:0.9rem; color:#10b981; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+            <div
+              style="background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.3); border-radius:10px; padding:12px 18px; margin-bottom:18px; font-size:0.9rem; color:#10b981; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
               <div>
                 <strong>Step 2 of 2: Search Components & Enter Quantities</strong><br>
-                Active Project: <span id="proj-wizard-active-name-display" style="font-weight:800; color:white; font-size:0.95rem;">-</span>
+                Active Project: <span id="proj-wizard-active-name-display"
+                  style="font-weight:800; color:white; font-size:0.95rem;">-</span>
               </div>
-              <button class="btn btn-sm btn-secondary" onclick="ModalManager.goToProjectWizardStep1()" style="font-weight:600;">
+              <button class="btn btn-sm btn-secondary" onclick="ModalManager.goToProjectWizardStep1()"
+                style="font-weight:600;">
                 ✏ Edit Project Name
               </button>
             </div>
 
             <!-- Search & Quick Add Components -->
-            <div style="background:var(--bg-dark); border:1px solid var(--border-color); border-radius:12px; padding:16px; margin-bottom:18px;">
-              <label style="font-weight:700; color:var(--primary); margin-bottom:8px; display:flex; align-items:center; gap:8px; font-size:0.95rem;">
+            <div
+              style="background:var(--bg-dark); border:1px solid var(--border-color); border-radius:12px; padding:16px; margin-bottom:18px;">
+              <label
+                style="font-weight:700; color:var(--primary); margin-bottom:8px; display:flex; align-items:center; gap:8px; font-size:0.95rem;">
                 <i data-lucide="search"></i> Search Inventory Catalog & Add Components
               </label>
               <div style="display:flex; gap:10px; margin-bottom:12px;">
-                <input type="text" id="proj-wizard-search-input" class="form-control" placeholder="Type component name, part number, SKU, box ID..." style="background:#0f172a; color:white; border:1px solid var(--border-color); padding:10px 14px; border-radius:8px; flex:1; font-weight:600;" oninput="ModalManager.handleProjectWizardSearch(this.value)" />
+                <input type="text" id="proj-wizard-search-input" class="form-control"
+                  placeholder="Type component name, part number, SKU, box ID..."
+                  style="background:#0f172a; color:white; border:1px solid var(--border-color); padding:10px 14px; border-radius:8px; flex:1; font-weight:600;"
+                  oninput="ModalManager.handleProjectWizardSearch(this.value)" />
               </div>
-              <div id="proj-wizard-search-results" style="max-height:220px; overflow-y:auto; display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:10px; padding:4px;">
+              <div id="proj-wizard-search-results"
+                style="max-height:220px; overflow-y:auto; display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:10px; padding:4px;">
                 <!-- Live search component cards -->
               </div>
             </div>
 
             <!-- Selected Components List Table with Quantity & Item Notes -->
-            <div style="background:var(--bg-dark); border:1px solid var(--border-color); border-radius:12px; padding:16px; margin-bottom:18px;">
-              <h4 style="margin:0 0 12px 0; color:var(--text-main); font-size:0.95rem; display:flex; align-items:center; justify-content:space-between;">
-                <span>📦 Selected Components for Project (<span id="proj-wizard-cart-count" style="color:var(--primary); font-weight:800;">0</span> items)</span>
+            <div
+              style="background:var(--bg-dark); border:1px solid var(--border-color); border-radius:12px; padding:16px; margin-bottom:18px;">
+              <h4
+                style="margin:0 0 12px 0; color:var(--text-main); font-size:0.95rem; display:flex; align-items:center; justify-content:space-between;">
+                <span>📦 Selected Components for Project (<span id="proj-wizard-cart-count"
+                    style="color:var(--primary); font-weight:800;">0</span> items)</span>
               </h4>
               <div style="overflow-x:auto;">
                 <table class="table" style="width:100%; border-collapse:collapse;">
                   <thead>
-                    <tr style="border-bottom:1px solid var(--border-color); color:var(--text-muted); font-size:0.8rem; text-align:left;">
+                    <tr
+                      style="border-bottom:1px solid var(--border-color); color:var(--text-muted); font-size:0.8rem; text-align:left;">
                       <th style="padding:10px;">Component Name</th>
                       <th style="padding:10px;">Available Stock</th>
                       <th style="padding:10px; width:120px;">Quantity</th>
@@ -1869,23 +1941,31 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
             </div>
 
             <!-- General Request Notes Box -->
-            <div style="background:var(--bg-dark); border:1px solid var(--border-color); border-radius:12px; padding:16px; margin-bottom:20px;">
-              <label style="font-weight:700; color:var(--text-main); margin-bottom:6px; display:block; font-size:0.9rem;">
+            <div
+              style="background:var(--bg-dark); border:1px solid var(--border-color); border-radius:12px; padding:16px; margin-bottom:20px;">
+              <label
+                style="font-weight:700; color:var(--text-main); margin-bottom:6px; display:block; font-size:0.9rem;">
                 📝 Request Notes for Lab Administrator *
               </label>
-              <textarea id="proj-wizard-request-notes" class="form-control" rows="2" placeholder="Add specific notes for administrator regarding project goals, checkout urgency, or testing timeframe..." style="background:#0f172a; color:white; border:1px solid var(--border-color); padding:10px 14px; border-radius:8px; width:100%; font-size:0.88rem;"></textarea>
+              <textarea id="proj-wizard-request-notes" class="form-control" rows="2"
+                placeholder="Add specific notes for administrator regarding project goals, checkout urgency, or testing timeframe..."
+                style="background:#0f172a; color:white; border:1px solid var(--border-color); padding:10px 14px; border-radius:8px; width:100%; font-size:0.88rem;"></textarea>
             </div>
 
             <!-- Action Buttons: Save Draft or Submit Request -->
-            <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border-color); padding-top:18px;">
-              <button class="btn btn-secondary" onclick="ModalManager.goToProjectWizardStep1()" style="font-weight:700;">
+            <div
+              style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border-color); padding-top:18px;">
+              <button class="btn btn-secondary" onclick="ModalManager.goToProjectWizardStep1()"
+                style="font-weight:700;">
                 ⬅ Back to Step 1
               </button>
               <div style="display:flex; gap:12px;">
-                <button class="btn btn-secondary" onclick="ModalManager.handleSaveProjectWizardDraft()" style="font-weight:700; background:rgba(255,255,255,0.06); padding:10px 20px;">
+                <button class="btn btn-secondary" onclick="ModalManager.handleSaveProjectWizardDraft()"
+                  style="font-weight:700; background:rgba(255,255,255,0.06); padding:10px 20px;">
                   💾 Save as Draft
                 </button>
-                <button class="btn btn-primary btn-lg" onclick="ModalManager.handleSubmitProjectWizardRequest()" style="font-weight:800; padding:10px 24px; background:linear-gradient(135deg, #10b981 0%, #059669 100%); border:none; box-shadow:0 4px 14px rgba(16,185,129,0.4);">
+                <button class="btn btn-primary btn-lg" onclick="ModalManager.handleSubmitProjectWizardRequest()"
+                  style="font-weight:800; padding:10px 24px; background:linear-gradient(135deg, #10b981 0%, #059669 100%); border:none; box-shadow:0 4px 14px rgba(16,185,129,0.4);">
                   🚀 Submit Request to Team Lead
                 </button>
               </div>
@@ -1899,25 +1979,32 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
     <!-- Modal: Multi-Item Material Requisition Workbench Modal -->
     <div class="modal-backdrop hidden" id="multi-item-request-modal">
       <div class="modal-content modal-xl" style="max-width:1100px;">
-        <div class="modal-header" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+        <div class="modal-header"
+          style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
           <div class="modal-title-group">
             <i data-lucide="shopping-bag" style="color:var(--primary); font-size:1.6rem;"></i>
             <div>
               <h2 style="margin:0; font-size:1.3rem; color:var(--text-main);">Multi-Item Material Requisition</h2>
-              <span style="font-size:0.8rem; color:var(--text-muted);">Search Catalog, Add Components, Enter Purpose, View Status, Edit & Cancel Requests</span>
+              <span style="font-size:0.8rem; color:var(--text-muted);">Search Catalog, Add Components, Enter Purpose,
+                View Status, Edit & Cancel Requests</span>
             </div>
           </div>
-          <button class="modal-close" onclick="ModalManager.closeMultiItemRequestModal()" style="cursor:pointer; background:none; border:none; color:white; font-size:1.6rem; font-weight:800; padding:4px 12px; line-height:1;" title="Close Window">&times;</button>
+          <button class="modal-close" onclick="ModalManager.closeMultiItemRequestModal()"
+            style="cursor:pointer; background:none; border:none; color:white; font-size:1.6rem; font-weight:800; padding:4px 12px; line-height:1;"
+            title="Close Window">&times;</button>
         </div>
 
         <div class="modal-body" style="padding:20px; display:flex; flex-direction:column; gap:16px;">
-          
+
           <!-- Student Multi-Item Request Navigation Tabs -->
-          <div class="student-multi-req-tabs" style="display:flex; gap:10px; border-bottom:1px solid var(--border-color); padding-bottom:10px;">
-            <button id="tab-btn-req-components" class="btn btn-primary btn-sm" onclick="ModalManager.switchStudentReqTab('create')" style="font-weight:800; padding:8px 16px;">
+          <div class="student-multi-req-tabs"
+            style="display:flex; gap:10px; border-bottom:1px solid var(--border-color); padding-bottom:10px;">
+            <button id="tab-btn-req-components" class="btn btn-primary btn-sm"
+              onclick="ModalManager.switchStudentReqTab('create')" style="font-weight:800; padding:8px 16px;">
               ➕ Search & Add Components
             </button>
-            <button id="tab-btn-my-req-status" class="btn btn-secondary btn-sm" onclick="ModalManager.switchStudentReqTab('status')" style="font-weight:800; padding:8px 16px;">
+            <button id="tab-btn-my-req-status" class="btn btn-secondary btn-sm"
+              onclick="ModalManager.switchStudentReqTab('status')" style="font-weight:800; padding:8px 16px;">
               📋 View Request Status, Edit & Cancel (<span id="student-my-req-count">0</span>)
             </button>
           </div>
@@ -1925,39 +2012,51 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
           <!-- TAB 1 CONTENT: SEARCH COMPONENTS, ADD QUANTITY & PURPOSE -->
           <div id="student-tab-create-req" class="student-req-tab-content">
             <!-- SECTION 1: SEARCH INVENTORY & SELECT COMPONENTS -->
-            <div class="req-section-card" style="background:var(--bg-dark); border:1px solid var(--border-color); border-radius:12px; padding:16px; margin-bottom:16px;">
+            <div class="req-section-card"
+              style="background:var(--bg-dark); border:1px solid var(--border-color); border-radius:12px; padding:16px; margin-bottom:16px;">
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
                 <h3 style="margin:0; font-size:1rem; color:var(--primary); display:flex; align-items:center; gap:8px;">
                   <i data-lucide="search"></i> 1. Search & Add Components
                 </h3>
-                <span id="req-search-matches-badge" class="badge" style="background:var(--bg-card); color:var(--text-muted); border:1px solid var(--border-color);">Search catalog...</span>
+                <span id="req-search-matches-badge" class="badge"
+                  style="background:var(--bg-card); color:var(--text-muted); border:1px solid var(--border-color);">Search
+                  catalog...</span>
               </div>
-              
+
               <div style="display:grid; grid-template-columns: 3fr 1.5fr; gap:12px; margin-bottom:14px;">
                 <div class="search-input-wrapper" style="position:relative;">
-                  <i data-lucide="search" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--text-muted); font-size:1.1rem;"></i>
-                  <input type="text" id="req-inventory-search-input" placeholder="Search catalog by component name, part #, SKU, category..." style="width:100%; padding:10px 12px 10px 38px; background:#0f172a; border:1px solid var(--border-color); border-radius:8px; color:var(--text-main); font-size:0.9rem;" oninput="ModalManager.handleReqInventorySearch(this.value)">
+                  <i data-lucide="search"
+                    style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--text-muted); font-size:1.1rem;"></i>
+                  <input type="text" id="req-inventory-search-input"
+                    placeholder="Search catalog by component name, part #, SKU, category..."
+                    style="width:100%; padding:10px 12px 10px 38px; background:#0f172a; border:1px solid var(--border-color); border-radius:8px; color:var(--text-main); font-size:0.9rem;"
+                    oninput="ModalManager.handleReqInventorySearch(this.value)">
                 </div>
                 <div>
-                  <select id="req-inventory-category-filter" style="width:100%; padding:10px 12px; background:#0f172a; border:1px solid var(--border-color); border-radius:8px; color:var(--text-main); font-size:0.85rem;" onchange="ModalManager.handleReqInventoryCategoryFilter(this.value)">
+                  <select id="req-inventory-category-filter"
+                    style="width:100%; padding:10px 12px; background:#0f172a; border:1px solid var(--border-color); border-radius:8px; color:var(--text-main); font-size:0.85rem;"
+                    onchange="ModalManager.handleReqInventoryCategoryFilter(this.value)">
                     <option value="ALL">All Categories</option>
                   </select>
                 </div>
               </div>
 
               <!-- Quick Search Results Grid -->
-              <div id="req-search-results-container" style="max-height:220px; overflow-y:auto; display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:10px; background:#0f172a; padding:10px; border-radius:8px; border:1px dashed var(--border-color);">
+              <div id="req-search-results-container"
+                style="max-height:220px; overflow-y:auto; display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:10px; background:#0f172a; padding:10px; border-radius:8px; border:1px dashed var(--border-color);">
                 <!-- Rendered search result component items -->
               </div>
             </div>
 
             <!-- SECTION 2: REQUESTED ITEMS BASKET & QUANTITIES -->
-            <div class="req-section-card" style="background:var(--bg-dark); border:1px solid var(--border-color); border-radius:12px; padding:16px; margin-bottom:16px;">
+            <div class="req-section-card"
+              style="background:var(--bg-dark); border:1px solid var(--border-color); border-radius:12px; padding:16px; margin-bottom:16px;">
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
                 <h3 style="margin:0; font-size:1rem; color:var(--primary); display:flex; align-items:center; gap:8px;">
                   <i data-lucide="layers"></i> 2. Selected Components (<span id="req-cart-item-count">0</span> items)
                 </h3>
-                <button class="btn btn-secondary btn-sm" onclick="ModalManager.clearRequisitionCart()" style="font-size:0.75rem; color:#ef4444; border-color:rgba(239,68,68,0.3);">
+                <button class="btn btn-secondary btn-sm" onclick="ModalManager.clearRequisitionCart()"
+                  style="font-size:0.75rem; color:#ef4444; border-color:rgba(239,68,68,0.3);">
                   <i data-lucide="trash-2"></i> Clear Items
                 </button>
               </div>
@@ -1982,17 +2081,25 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
             </div>
 
             <!-- SECTION 3: REQUISITION PURPOSE -->
-            <div class="req-section-card" style="background:var(--bg-dark); border:1px solid var(--border-color); border-radius:12px; padding:16px; margin-bottom:16px;">
-              <h3 style="margin:0 0 10px 0; font-size:1rem; color:var(--primary); display:flex; align-items:center; gap:8px;">
+            <div class="req-section-card"
+              style="background:var(--bg-dark); border:1px solid var(--border-color); border-radius:12px; padding:16px; margin-bottom:16px;">
+              <h3
+                style="margin:0 0 10px 0; font-size:1rem; color:var(--primary); display:flex; align-items:center; gap:8px;">
                 <i data-lucide="message-square"></i> 3. Requisition Purpose & Notes *
               </h3>
-              <textarea id="req-general-notes-input" rows="2" placeholder="Enter purpose of requisition for Team Lead approval (e.g. project assignment, lab experiment)..." style="width:100%; padding:10px; background:#0f172a; border:1px solid var(--border-color); border-radius:8px; color:var(--text-main); font-size:0.88rem; font-family:inherit;" oninput="ModalManager.handleReqNotesChange()"></textarea>
+              <textarea id="req-general-notes-input" rows="2"
+                placeholder="Enter purpose of requisition for Team Lead approval (e.g. project assignment, lab experiment)..."
+                style="width:100%; padding:10px; background:#0f172a; border:1px solid var(--border-color); border-radius:8px; color:var(--text-main); font-size:0.88rem; font-family:inherit;"
+                oninput="ModalManager.handleReqNotesChange()"></textarea>
             </div>
 
             <!-- Submit Requisition Button -->
-            <div style="display:flex; justify-content:flex-end; gap:12px; border-top:1px solid var(--border-color); padding-top:14px;">
+            <div
+              style="display:flex; justify-content:flex-end; gap:12px; border-top:1px solid var(--border-color); padding-top:14px;">
               <button class="btn btn-secondary" onclick="ModalManager.closeMultiItemRequestModal()">Close</button>
-              <button id="btn-req-submit-final" class="btn btn-primary btn-lg" onclick="ModalManager.handleSubmitMultiItemRequisition()" style="background:linear-gradient(135deg, #10b981 0%, #059669 100%); font-weight:800; padding:10px 24px; border:none; box-shadow:0 4px 14px rgba(16,185,129,0.4);">
+              <button id="btn-req-submit-final" class="btn btn-primary btn-lg"
+                onclick="ModalManager.handleSubmitMultiItemRequisition()"
+                style="background:linear-gradient(135deg, #10b981 0%, #059669 100%); font-weight:800; padding:10px 24px; border:none; box-shadow:0 4px 14px rgba(16,185,129,0.4);">
                 <i data-lucide="send"></i> Submit Requisition to Team Lead
               </button>
             </div>
@@ -2000,14 +2107,17 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
 
           <!-- TAB 2 CONTENT: MY SUBMITTED REQUESTS STATUS, EDIT & CANCEL -->
           <div id="student-tab-status-req" class="student-req-tab-content hidden">
-            <div style="background:rgba(56,189,248,0.1); border:1px solid rgba(56,189,248,0.3); border-radius:10px; padding:12px 16px; margin-bottom:16px; font-size:0.88rem; color:#38bdf8; display:flex; justify-content:space-between; align-items:center;">
+            <div
+              style="background:rgba(56,189,248,0.1); border:1px solid rgba(56,189,248,0.3); border-radius:10px; padding:12px 16px; margin-bottom:16px; font-size:0.88rem; color:#38bdf8; display:flex; justify-content:space-between; align-items:center;">
               <div>
                 <strong>My Submitted Requisitions Status</strong><br>
-                Track live status, edit pending quantities/purpose, or cancel pending requests before administrator issuance.
+                Track live status, edit pending quantities/purpose, or cancel pending requests before administrator
+                issuance.
               </div>
             </div>
 
-            <div id="student-req-status-list-container" style="display:flex; flex-direction:column; gap:12px; max-height:460px; overflow-y:auto;">
+            <div id="student-req-status-list-container"
+              style="display:flex; flex-direction:column; gap:12px; max-height:460px; overflow-y:auto;">
               <!-- Dynamically populated submitted requests with Edit and Cancel buttons -->
             </div>
           </div>
@@ -2018,16 +2128,21 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
 
     <!-- Modal: Saved Drafts Picker Modal -->
     <div class="modal-backdrop hidden" id="saved-drafts-picker-modal" style="z-index:1100;">
-      <div class="modal-card" style="max-width:600px; background:#0f172a; border:1px solid var(--border-color); border-radius:12px; padding:20px;">
-        <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+      <div class="modal-card"
+        style="max-width:600px; background:#0f172a; border:1px solid var(--border-color); border-radius:12px; padding:20px;">
+        <div class="modal-header"
+          style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
           <h2 style="margin:0; font-size:1.1rem; color:var(--text-main); display:flex; align-items:center; gap:8px;">
             <i data-lucide="folder-open" style="color:var(--primary);"></i> Saved Draft Requisitions
           </h2>
-          <button class="btn-close" onclick="ModalManager.closeSavedDraftsPicker()" style="background:none; border:none; color:white; font-size:1.4rem; cursor:pointer;">&times;</button>
+          <button class="btn-close" onclick="ModalManager.closeSavedDraftsPicker()"
+            style="background:none; border:none; color:white; font-size:1.4rem; cursor:pointer;">&times;</button>
         </div>
         <div class="modal-body">
-          <p class="text-muted" style="font-size:0.85rem; margin-bottom:12px;">Select a previously saved draft to resume editing or submit:</p>
-          <div id="saved-drafts-list-container" style="display:flex; flex-direction:column; gap:10px; max-height:350px; overflow-y:auto;">
+          <p class="text-muted" style="font-size:0.85rem; margin-bottom:12px;">Select a previously saved draft to resume
+            editing or submit:</p>
+          <div id="saved-drafts-list-container"
+            style="display:flex; flex-direction:column; gap:10px; max-height:350px; overflow-y:auto;">
             <!-- Dynamically rendered drafts -->
           </div>
         </div>
@@ -2042,13 +2157,13 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
   </div>
 
   <!-- JavaScript App Logic with Cache Busters -->
-  <script src="js/types.js?v=13100_submit_requisition_to_team_lead"></script>
-  <script src="js/initialData.js?v=13100_submit_requisition_to_team_lead"></script>
-  <script src="js/storage.js?v=13100_submit_requisition_to_team_lead"></script>
-  <script src="js/rackViewer.js?v=13100_submit_requisition_to_team_lead"></script>
-  <script src="js/componentsView.js?v=13100_submit_requisition_to_team_lead"></script>
-  <script src="js/modalManager.js?v=13100_submit_requisition_to_team_lead"></script>
-  <script src="js/app.js?v=13100_submit_requisition_to_team_lead"></script>
+  <script src="js/types.js?v=13200_team_lead_user_role_and_workflow"></script>
+  <script src="js/initialData.js?v=13200_team_lead_user_role_and_workflow"></script>
+  <script src="js/storage.js?v=13200_team_lead_user_role_and_workflow"></script>
+  <script src="js/rackViewer.js?v=13200_team_lead_user_role_and_workflow"></script>
+  <script src="js/componentsView.js?v=13200_team_lead_user_role_and_workflow"></script>
+  <script src="js/modalManager.js?v=13200_team_lead_user_role_and_workflow"></script>
+  <script src="js/app.js?v=13200_team_lead_user_role_and_workflow"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       if (window.lucide) {
@@ -2073,7 +2188,7 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
           console.log("🔒 Active Session Restored on Startup:", session.fullName);
           redirectToDashboard();
         }
-      } catch (err) {}
+      } catch (err) { }
     });
   </script>
 
@@ -2239,11 +2354,11 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
       const users = StorageService.getUsers();
       const user = users.find(u => u.role === roleKey) || users[0];
       StorageService.createSessionForUser(user);
-      
+
       if (window.ModalManager && window.ModalManager.showToast) {
         window.ModalManager.showToast(`Welcome back, ${user.fullName}! Logged in as ${USER_ROLES[user.role] || user.role}.`, 'success');
       }
-      
+
       redirectToDashboard();
     }
 
@@ -2293,7 +2408,7 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
 
       try {
         const newUser = StorageService.createUser(username, email, password, role, fullName);
-        
+
         // Show prominent creation success message
         showLoginAlert(`Success: Account created successfully! Please sign in with your username/email and password.`, 'success');
 

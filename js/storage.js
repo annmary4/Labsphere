@@ -75,6 +75,7 @@ const MASTER_USERS_KEY = "labsphere_master_user_accounts";
 
 const DEFAULT_SYSTEM_USERS = [
   { id: "USR-1001", username: "lab administrator", email: "ann.sunil@jobinandjismi.com", passwordHash: "123", role: "ADMIN", fullName: "Lab Administrator", status: "ACTIVE", createdAt: "2026-08-01" },
+  { id: "USR-1005", username: "team lead", email: "teamlead@labsphere.io", passwordHash: "lead123", role: "TEAM_LEAD", fullName: "Team Lead", status: "ACTIVE", createdAt: "2026-08-01" },
   { id: "USR-1002", username: "engineer", email: "engineer@labsphere.io", passwordHash: "eng123", role: "ENGINEER", fullName: "Lead Lab Engineer", status: "ACTIVE", createdAt: "2026-08-01" },
   { id: "USR-1003", username: "researcher", email: "researcher@labsphere.io", passwordHash: "research123", role: "MANAGEMENT", fullName: "Research Associate", status: "ACTIVE", createdAt: "2026-08-01" },
   { id: "USR-1004", username: "student", email: "student@labsphere.io", passwordHash: "student123", role: "STUDENT", fullName: "Student Intern", status: "ACTIVE", createdAt: "2026-08-01" }
@@ -1470,8 +1471,8 @@ class StorageService {
 
     this.addNotification(
       "PENDING_APPROVAL",
-      `Multi-Item Requisition #${batchId} Submitted`,
-      `${name} submitted requisition batch #${batchId} with ${createdRequests.length} items for '${projectName || "General"}'.`
+      `New Requisition Batch #${batchId} Awaiting Team Lead Approval`,
+      `${name} submitted requisition batch #${batchId} with ${createdRequests.length} items for '${projectName || "General"}'. Awaiting Team Lead review & approval.`
     );
 
     return { batchId, createdRequests };

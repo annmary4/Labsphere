@@ -4,9 +4,10 @@
 
 const USER_ROLES = {
   STUDENT: "Student / Intern (Search, Request & Return)",
-  ENGINEER: "Engineer (Projects, Reserve & Upload BOM)",
-  ADMIN: "Inventory Administrator (Maintain, Approve & Procure)",
-  MANAGEMENT: "Management (Reports, Asset Value & Trends)"
+  TEAM_LEAD: "Team Lead (Approve Student Requisitions)",
+  ENGINEER: "Lab Engineer / Maintainer",
+  ADMIN: "Lab Administrator (Fulfill & Issue Stock)",
+  MANAGEMENT: "Research Lead (Reports & BOM)"
 };
 
 /**
