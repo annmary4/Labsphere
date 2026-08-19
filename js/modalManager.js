@@ -1856,6 +1856,9 @@ class ModalManager {
                 <span class="text-muted">Requester:</span> <strong>${r.requesterName}</strong> (${r.role || 'Student'})
               </div>
               <div>
+                <span class="text-muted">Target Team Lead:</span> <strong style="color:#38bdf8;">👤 ${r.assignedLeadName || 'Anson'}</strong>
+              </div>
+              <div>
                 <span class="text-muted">Project:</span> <strong>${r.projectName || 'General / Unassigned'}</strong>
               </div>
               <div>
@@ -4529,6 +4532,7 @@ ModalManager.renderStudentRequisitionsStatusList = function() {
 
         <div style="font-size:0.85rem; color:var(--text-main);">
           Requested Quantity: <strong style="color:var(--primary); font-size:0.95rem;">${r.qtyRequested} pcs</strong>
+          <span style="color:#38bdf8; font-weight:700; margin-left:10px;">• Target Lead: 👤 ${r.assignedLeadName || 'Anson'}</span>
           <span style="color:var(--text-muted); margin-left:10px;">• Submitted: ${r.requestedAt || 'Recently'}</span>
         </div>
 
@@ -5030,6 +5034,8 @@ ModalManager.handleSubmitMultiItemRequisition = function() {
 
   const session = StorageService.getCurrentSession();
   const requesterName = session ? session.fullName : "Project Member";
+  const teamLeadSelect = document.getElementById("req-team-lead-select");
+  const assignedLead = teamLeadSelect ? teamLeadSelect.value : "Anson";
 
   try {
     const result = StorageService.submitMultiItemRequisition({
@@ -5038,11 +5044,12 @@ ModalManager.handleSubmitMultiItemRequisition = function() {
       notes: this._requisitionState.notes,
       items: this._requisitionState.items,
       requesterName: requesterName,
-      draftId: this._requisitionState.currentDraftId
+      draftId: this._requisitionState.currentDraftId,
+      assignedLeadName: assignedLead
     });
 
-    this.showToast(`Success: Requisition Batch #${result.batchId} submitted! (${result.createdRequests.length} items)`, "success");
-    alert(`Success: Requisition Batch #${result.batchId} submitted with ${result.createdRequests.length} component items!\n\nPending Team Lead & Admin approval.`);
+    this.showToast(`Success: Requisition Batch #${result.batchId} submitted to Team Lead ${assignedLead}! (${result.createdRequests.length} items)`, "success");
+    alert(`Success: Requisition Batch #${result.batchId} submitted to Team Lead ${assignedLead} with ${result.createdRequests.length} component items!\n\nAwaiting ${assignedLead}'s review & approval.`);
 
     this._requisitionState = {
       currentDraftId: null,

@@ -557,11 +557,15 @@ window.requestComponentCheckout = function(componentId) {
     const requesterName = prompt("Enter Student / Requester Name:", defaultName);
     if (!requesterName) return;
 
+    const leadChoice = prompt("Select Team Lead for Approval:\n1. Anson\n2. Amal\n\nEnter 1 for Anson or 2 for Amal:", "1");
+    if (!leadChoice) return;
+    const assignedLeadName = (leadChoice === "2" || leadChoice.trim().toLowerCase().includes("amal")) ? "Amal" : "Anson";
+
     const notes = prompt("Enter Requisition Purpose / Note (optional):", "Student Lab Project / Prototyping Checkout") || "";
 
     try {
-      StorageService.submitComponentRequest(c.id, qty, requesterName, notes);
-      const msg = `Success: Requisition request for ${qty} ${c.unit || 'pcs'} of '${c.name}' submitted! Pending Team Lead & Admin approval.`;
+      StorageService.submitComponentRequest(c.id, qty, requesterName, notes, null, assignedLeadName);
+      const msg = `Success: Requisition request for ${qty} ${c.unit || 'pcs'} of '${c.name}' submitted to Team Lead ${assignedLeadName}!`;
       alert(msg);
       if (window.ModalManager && window.ModalManager.showToast) {
         window.ModalManager.showToast(`Checkout Request submitted for ${c.name} (${qty} pcs)`, "success");

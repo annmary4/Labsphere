@@ -75,7 +75,8 @@ const MASTER_USERS_KEY = "labsphere_master_user_accounts";
 
 const DEFAULT_SYSTEM_USERS = [
   { id: "USR-1001", username: "lab administrator", email: "ann.sunil@jobinandjismi.com", passwordHash: "123", role: "ADMIN", fullName: "Lab Administrator", status: "ACTIVE", createdAt: "2026-08-01" },
-  { id: "USR-1005", username: "team lead", email: "teamlead@labsphere.io", passwordHash: "lead123", role: "TEAM_LEAD", fullName: "Team Lead", status: "ACTIVE", createdAt: "2026-08-01" },
+  { id: "USR-1005", username: "anson", email: "anson@labsphere.io", passwordHash: "lead123", role: "TEAM_LEAD", fullName: "Anson", status: "ACTIVE", createdAt: "2026-08-01" },
+  { id: "USR-1006", username: "amal", email: "amal@labsphere.io", passwordHash: "lead123", role: "TEAM_LEAD", fullName: "Amal", status: "ACTIVE", createdAt: "2026-08-01" },
   { id: "USR-1002", username: "engineer", email: "engineer@labsphere.io", passwordHash: "eng123", role: "ENGINEER", fullName: "Lead Lab Engineer", status: "ACTIVE", createdAt: "2026-08-01" },
   { id: "USR-1003", username: "researcher", email: "researcher@labsphere.io", passwordHash: "research123", role: "MANAGEMENT", fullName: "Research Associate", status: "ACTIVE", createdAt: "2026-08-01" },
   { id: "USR-1004", username: "student", email: "student@labsphere.io", passwordHash: "student123", role: "STUDENT", fullName: "Student Intern", status: "ACTIVE", createdAt: "2026-08-01" }
@@ -1268,7 +1269,7 @@ class StorageService {
     localStorage.setItem(STORAGE_KEYS.REQUESTS, JSON.stringify(requests));
   }
 
-  static submitComponentRequest(componentId, qtyRequested, requesterName, notes = "", projectId = null) {
+  static submitComponentRequest(componentId, qtyRequested, requesterName, notes = "", projectId = null, assignedLeadName = "Anson") {
     const components = this.getComponents();
     const comp = components.find(c => c.id === componentId);
     if (!comp) throw new Error("Component not found!");
@@ -1285,6 +1286,7 @@ class StorageService {
       requesterName: requesterName || (session ? session.fullName : "Project Member"),
       role: USER_ROLES[currentRole] || "Project Member",
       projectId: projectId || null,
+      assignedLeadName: assignedLeadName || "Anson",
       qtyRequested: parseInt(qtyRequested) || 1,
       qtyApproved: parseInt(qtyRequested) || 1,
       returnedQty: 0,
@@ -1409,7 +1411,7 @@ class StorageService {
     this.saveRequisitionDrafts(drafts);
   }
 
-  static submitMultiItemRequisition({ projectId, projectName, notes, items, requesterName, draftId }) {
+  static submitMultiItemRequisition({ projectId, projectName, notes, items, requesterName, draftId, assignedLeadName = "Anson" }) {
     if (!items || !items.length) {
       throw new Error("No items selected for requisition!");
     }
@@ -1419,6 +1421,7 @@ class StorageService {
     const currentRole = this.getRole();
     const batchId = "REQ-BATCH-" + Date.now().toString().slice(-4);
     const name = requesterName || (session ? session.fullName : "Project Member");
+    const targetLead = assignedLeadName || "Anson";
     const timestamp = new Date().toLocaleString();
 
     const createdRequests = [];
@@ -1429,7 +1432,7 @@ class StorageService {
 
       const qty = parseInt(item.quantity) || 1;
       const itemNotes = item.itemNotes ? ` [Note: ${item.itemNotes}]` : "";
-      const fullNotes = `[Batch ${batchId}] Project: '${projectName || "General"}'. ${notes || ''}${itemNotes}`.trim();
+      const fullNotes = `[Batch ${batchId}] Project: '${projectName || "General"}'. Assigned Lead: ${targetLead}. ${notes || ''}${itemNotes}`.trim();
 
       const newReq = {
         id: `REQ-${Date.now().toString().slice(-4)}-${idx + 1}`,
@@ -1440,6 +1443,7 @@ class StorageService {
         role: USER_ROLES[currentRole] || "Project Member",
         projectId: projectId || null,
         projectName: projectName || "General",
+        assignedLeadName: targetLead,
         qtyRequested: qty,
         qtyApproved: qty,
         returnedQty: 0,

@@ -19,7 +19,7 @@
     rel="stylesheet">
 
   <!-- CSS with cache buster -->
-  <link rel="stylesheet" href="css/styles.css?v=13200_team_lead_user_role_and_workflow">
+  <link rel="stylesheet" href="css/styles.css?v=13300_team_lead_selection_anson_amal">
 
   <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -2080,17 +2080,33 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
               </div>
             </div>
 
-            <!-- SECTION 3: REQUISITION PURPOSE -->
+            <!-- SECTION 3: REQUISITION PURPOSE & TEAM LEAD SELECTION -->
             <div class="req-section-card"
               style="background:var(--bg-dark); border:1px solid var(--border-color); border-radius:12px; padding:16px; margin-bottom:16px;">
               <h3
-                style="margin:0 0 10px 0; font-size:1rem; color:var(--primary); display:flex; align-items:center; gap:8px;">
-                <i data-lucide="message-square"></i> 3. Requisition Purpose & Notes *
+                style="margin:0 0 12px 0; font-size:1rem; color:var(--primary); display:flex; align-items:center; gap:8px;">
+                <i data-lucide="user-check"></i> 3. Select Team Lead & Purpose *
               </h3>
-              <textarea id="req-general-notes-input" rows="2"
-                placeholder="Enter purpose of requisition for Team Lead approval (e.g. project assignment, lab experiment)..."
-                style="width:100%; padding:10px; background:#0f172a; border:1px solid var(--border-color); border-radius:8px; color:var(--text-main); font-size:0.88rem; font-family:inherit;"
-                oninput="ModalManager.handleReqNotesChange()"></textarea>
+
+              <div style="margin-bottom:14px;">
+                <label for="req-team-lead-select" style="font-size:0.85rem; font-weight:700; color:var(--text-muted); display:block; margin-bottom:6px;">
+                  Select Team Lead for Request Approval *
+                </label>
+                <select id="req-team-lead-select" style="width:100%; padding:10px 12px; background:#0f172a; border:1px solid var(--border-color); border-radius:8px; color:var(--text-main); font-size:0.9rem; font-weight:700;">
+                  <option value="Anson">Anson (Team Lead)</option>
+                  <option value="Amal">Amal (Team Lead)</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="req-general-notes-input" style="font-size:0.85rem; font-weight:700; color:var(--text-muted); display:block; margin-bottom:6px;">
+                  Requisition Purpose & Notes *
+                </label>
+                <textarea id="req-general-notes-input" rows="2"
+                  placeholder="Enter purpose of requisition for Team Lead approval (e.g. project assignment, lab experiment)..."
+                  style="width:100%; padding:10px; background:#0f172a; border:1px solid var(--border-color); border-radius:8px; color:var(--text-main); font-size:0.88rem; font-family:inherit;"
+                  oninput="ModalManager.handleReqNotesChange()"></textarea>
+              </div>
             </div>
 
             <!-- Submit Requisition Button -->
@@ -2157,13 +2173,13 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
   </div>
 
   <!-- JavaScript App Logic with Cache Busters -->
-  <script src="js/types.js?v=13200_team_lead_user_role_and_workflow"></script>
-  <script src="js/initialData.js?v=13200_team_lead_user_role_and_workflow"></script>
-  <script src="js/storage.js?v=13200_team_lead_user_role_and_workflow"></script>
-  <script src="js/rackViewer.js?v=13200_team_lead_user_role_and_workflow"></script>
-  <script src="js/componentsView.js?v=13200_team_lead_user_role_and_workflow"></script>
-  <script src="js/modalManager.js?v=13200_team_lead_user_role_and_workflow"></script>
-  <script src="js/app.js?v=13200_team_lead_user_role_and_workflow"></script>
+  <script src="js/types.js?v=13300_team_lead_selection_anson_amal"></script>
+  <script src="js/initialData.js?v=13300_team_lead_selection_anson_amal"></script>
+  <script src="js/storage.js?v=13300_team_lead_selection_anson_amal"></script>
+  <script src="js/rackViewer.js?v=13300_team_lead_selection_anson_amal"></script>
+  <script src="js/componentsView.js?v=13300_team_lead_selection_anson_amal"></script>
+  <script src="js/modalManager.js?v=13300_team_lead_selection_anson_amal"></script>
+  <script src="js/app.js?v=13300_team_lead_selection_anson_amal"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       if (window.lucide) {
