@@ -1256,6 +1256,17 @@ class StorageService {
             const name = r.requesterName.toLowerCase();
             return !name.includes("sarah jenkins") && !name.includes("dr. sarah");
           });
+          cleaned.forEach(r => {
+            const isIssuedActive = r.status === 'ISSUED' || r.status === 'APPROVED' || r.status === 'PARTIAL_RETURN';
+            if (isIssuedActive && !r.dueDate && (r.issueDate || r.issuedAt || r.requestedAt)) {
+              const base = new Date(r.issueDate || r.issuedAt || r.requestedAt);
+              if (!isNaN(base.getTime())) {
+                const dueD = new Date(base);
+                dueD.setDate(dueD.getDate() + 14);
+                r.dueDate = dueD.toISOString().slice(0, 10);
+              }
+            }
+          });
           return cleaned;
         }
       }
@@ -1638,6 +1649,15 @@ class StorageService {
     req.issuedBy = issuer;
     req.issuedAt = timestampStr;
     req.issueDate = issueDateStr;
+    if (options && options.dueDate) {
+      req.dueDate = options.dueDate;
+    } else if (!req.dueDate) {
+      const d = new Date(issueDateStr);
+      if (!isNaN(d.getTime())) {
+        d.setDate(d.getDate() + 14);
+        req.dueDate = d.toISOString().slice(0, 10);
+      }
+    }
 
     if (req.issuedQty >= totalApprovedOrRequested) {
       req.status = "ISSUED";

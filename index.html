@@ -1186,8 +1186,12 @@
               ⏳ Pending Requests <span id="sreq-count-pending" style="background:rgba(245,158,11,0.15); border-radius:12px; padding:1px 7px; font-size:0.75rem; margin-left:2px;">0</span>
             </button>
             <button id="sreq-tab-due" onclick="ModalManager.openStudentRequestsModal('due')"
+              style="display:inline-flex; align-items:center; gap:6px; padding:8px 16px; border-radius:8px; font-weight:800; font-size:0.83rem; cursor:pointer; border:1px solid rgba(245,158,11,0.5); background:transparent; color:#f59e0b; transition:all 0.2s;">
+              📅 Due Date <span id="sreq-count-due" style="background:rgba(245,158,11,0.15); border-radius:12px; padding:1px 7px; font-size:0.75rem; margin-left:2px;">0</span>
+            </button>
+            <button id="sreq-tab-overdue" onclick="ModalManager.openStudentRequestsModal('overdue')"
               style="display:inline-flex; align-items:center; gap:6px; padding:8px 16px; border-radius:8px; font-weight:800; font-size:0.83rem; cursor:pointer; border:1px solid rgba(239,68,68,0.4); background:transparent; color:#ef4444; transition:all 0.2s;">
-              📅 Due Date / Overdue <span id="sreq-count-due" style="background:rgba(239,68,68,0.15); border-radius:12px; padding:1px 7px; font-size:0.75rem; margin-left:2px;">0</span>
+              🚨 Overdue <span id="sreq-count-overdue" style="background:rgba(239,68,68,0.15); border-radius:12px; padding:1px 7px; font-size:0.75rem; margin-left:2px;">0</span>
             </button>
           </div>
 
@@ -2501,7 +2505,7 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/Labsphere/sw.js?v=13303_due_date_badge', { scope: '/Labsphere/' })
+        navigator.serviceWorker.register('/Labsphere/sw.js?v=13304_separate_due_and_overdue_tabs', { scope: '/Labsphere/' })
           .then(reg => {
             console.log('[LabSphere PWA] Service Worker registered:', reg.scope);
             if (reg.update) reg.update();

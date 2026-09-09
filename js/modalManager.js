@@ -1698,15 +1698,49 @@ class ModalManager {
     const container = document.getElementById("student-requests-container");
     const allRequests = StorageService.getRequests();
 
-    // --- Compute counts for each tab ---
+    const todayDate = new Date();
+    todayDate.setHours(0, 0, 0, 0);
+
+    // Helper to extract or resolve return due date info for issued components
+    const getRequestDueDateInfo = (r) => {
+      const isIssuedActive = r.status === 'ISSUED' || r.status === 'APPROVED' || r.status === 'PARTIAL_RETURN';
+      if (!isIssuedActive) return null;
+
+      let dueDateStr = r.dueDate;
+      // Default fallback if no explicit dueDate on issued item: 14 days from issue/requested date
+      if (!dueDateStr && (r.issueDate || r.issuedAt || r.requestedAt)) {
+        const base = new Date(r.issueDate || r.issuedAt || r.requestedAt);
+        if (!isNaN(base.getTime())) {
+          const d = new Date(base);
+          d.setDate(d.getDate() + 14);
+          dueDateStr = d.toISOString().slice(0, 10);
+        }
+      }
+
+      if (!dueDateStr) return null;
+
+      const due = new Date(dueDateStr);
+      if (isNaN(due.getTime())) return null;
+      due.setHours(0, 0, 0, 0);
+
+      const diffDays = Math.round((due - todayDate) / (1000 * 60 * 60 * 24));
+      return {
+        dueDateStr,
+        diffDays,
+        isOverdue: diffDays < 0
+      };
+    };
+
+    // --- Compute sets & counts for each tab ---
     const issuedSet  = allRequests.filter(r => r.status === 'ISSUED' || r.status === 'APPROVED' || r.status === 'PARTIAL_RETURN');
     const pendingSet = allRequests.filter(r => r.status === 'PENDING_LEAD_APPROVAL' || r.status === 'SUBMITTED' || r.status === 'PENDING' || r.status === 'PENDING_ADMIN_ISSUANCE' || r.status === 'LEAD_APPROVED' || r.status === 'LEAD_MODIFIED');
     const dueSet     = allRequests.filter(r => {
-      const isActive = r.status === 'ISSUED' || r.status === 'APPROVED' || r.status === 'PARTIAL_RETURN';
-      if (!isActive || !r.dueDate) return false;
-      const due = new Date(r.dueDate);
-      const diff = Math.ceil((due - new Date()) / (1000 * 60 * 60 * 24));
-      return diff <= 7; // due within 7 days or overdue
+      const info = getRequestDueDateInfo(r);
+      return info !== null && !info.isOverdue; // Active issued items with due date, not overdue
+    });
+    const overdueSet = allRequests.filter(r => {
+      const info = getRequestDueDateInfo(r);
+      return info !== null && info.isOverdue;  // Items past their due date
     });
 
     // --- Update count badges ---
@@ -1715,16 +1749,17 @@ class ModalManager {
     setCount('sreq-count-issued',  issuedSet.length);
     setCount('sreq-count-pending', pendingSet.length);
     setCount('sreq-count-due',     dueSet.length);
+    setCount('sreq-count-overdue', overdueSet.length);
 
     // --- Highlight active tab ---
     const tabStyles = {
       all:     { bg: 'var(--primary)',              color: 'white',    border: 'var(--border-color)' },
       issued:  { bg: 'rgba(16,185,129,0.18)',       color: '#10b981',  border: 'rgba(16,185,129,0.5)' },
       pending: { bg: 'rgba(245,158,11,0.18)',       color: '#f59e0b',  border: 'rgba(245,158,11,0.5)' },
-      due:     { bg: 'rgba(239,68,68,0.18)',        color: '#ef4444',  border: 'rgba(239,68,68,0.5)' },
+      due:     { bg: 'rgba(245,158,11,0.18)',       color: '#f59e0b',  border: 'rgba(245,158,11,0.5)' },
+      overdue: { bg: 'rgba(239,68,68,0.18)',        color: '#ef4444',  border: 'rgba(239,68,68,0.5)' },
     };
-    const inactiveBase = 'background:transparent; border:1px solid';
-    ['all','issued','pending','due'].forEach(tab => {
+    ['all','issued','pending','due','overdue'].forEach(tab => {
       const btn = document.getElementById(`sreq-tab-${tab}`);
       if (!btn) return;
       if (tab === filter) {
@@ -1753,7 +1788,8 @@ class ModalManager {
       all:     '',
       issued:  '📦 Showing only actively issued & borrowed components',
       pending: '⏳ Showing only requests awaiting Team Lead or Admin approval',
-      due:     '📅 Showing only items due within 7 days or overdue',
+      due:     '📅 Showing issued components with upcoming return due dates',
+      overdue: '🚨 Showing overdue components past return due date (action required)',
     };
     if (sectionHeader && sectionLabel) {
       if (filter === 'all') {
@@ -1767,9 +1803,10 @@ class ModalManager {
 
     // --- Filter the requests ---
     let requests;
-    if (filter === 'issued')  requests = issuedSet;
+    if (filter === 'issued')       requests = issuedSet;
     else if (filter === 'pending') requests = pendingSet;
     else if (filter === 'due')     requests = dueSet;
+    else if (filter === 'overdue') requests = overdueSet;
     else                           requests = allRequests;
 
     if (!container) {
@@ -1784,11 +1821,19 @@ class ModalManager {
         all:     'No material requests submitted yet.',
         issued:  'No components are currently issued to you.',
         pending: 'No requests are pending approval right now.',
-        due:     'No items are due or overdue within the next 7 days. \u2705',
+        due:     'No issued components are currently due for return. ✅',
+        overdue: 'No overdue components! All returns are on schedule. 🎉',
+      };
+      const emptyIcons = {
+        all:     '📋',
+        issued:  '📦',
+        pending: '⏳',
+        due:     '📅',
+        overdue: '🎉',
       };
       container.innerHTML = `
         <div style="text-align:center; padding:40px 20px; background:var(--bg-dark); border-radius:12px; border:1px dashed var(--border-color);">
-          <div style="font-size:2.5rem; margin-bottom:12px; opacity:0.5;">${filter === 'due' ? '✅' : filter === 'issued' ? '📦' : filter === 'pending' ? '⏳' : '📋'}</div>
+          <div style="font-size:2.5rem; margin-bottom:12px; opacity:0.6;">${emptyIcons[filter] || '📋'}</div>
           <p style="color:var(--text-muted); font-weight:600; margin:0; font-size:0.95rem;">${emptyMessages[filter] || 'Nothing here.'}</p>
         </div>
       `;
@@ -1835,18 +1880,17 @@ class ModalManager {
 
       // Compute due date badge for issued items
       let dueDateBadgeHtml = '';
-      if (isIssuedActive && r.dueDate) {
-        const now = new Date();
-        const due = new Date(r.dueDate);
-        const diffDays = Math.ceil((due - now) / (1000 * 60 * 60 * 24));
+      const dueInfo = getRequestDueDateInfo(r);
+      if (isIssuedActive && dueInfo) {
+        const { dueDateStr, diffDays, isOverdue } = dueInfo;
 
         let dueBadgeColor = '#10b981';
         let dueBadgeBg   = 'rgba(16,185,129,0.12)';
         let dueBadgeBdr  = 'rgba(16,185,129,0.35)';
         let dueIcon = '📅';
-        let dueLabel = `Due in ${diffDays} days`;
+        let dueLabel = `Due in ${diffDays} day${diffDays !== 1 ? 's' : ''}`;
 
-        if (diffDays < 0) {
+        if (isOverdue) {
           dueBadgeColor = '#ef4444'; dueBadgeBg = 'rgba(239,68,68,0.12)'; dueBadgeBdr = 'rgba(239,68,68,0.35)';
           dueIcon = '🚨'; dueLabel = `OVERDUE by ${Math.abs(diffDays)} day${Math.abs(diffDays) !== 1 ? 's' : ''}`;
         } else if (diffDays === 0) {
@@ -1860,7 +1904,7 @@ class ModalManager {
         dueDateBadgeHtml = `
           <div style="display:flex; align-items:center; gap:8px; margin-top:8px; margin-bottom:2px; flex-wrap:wrap;">
             <span style="display:inline-flex; align-items:center; gap:6px; background:${dueBadgeBg}; color:${dueBadgeColor}; border:1px solid ${dueBadgeBdr}; border-radius:8px; padding:5px 12px; font-size:0.83rem; font-weight:800;">
-              ${dueIcon} Return Due: <strong style="font-size:0.88rem;">${r.dueDate}</strong>
+              ${dueIcon} Return Due: <strong style="font-size:0.88rem;">${dueDateStr}</strong>
               <span style="font-size:0.75rem; opacity:0.9;">(${dueLabel})</span>
             </span>
             ${r.issuedAt ? `<span style="font-size:0.75rem; color:var(--text-muted);">Issued: ${r.issuedAt}</span>` : ''}
@@ -2205,6 +2249,9 @@ class ModalManager {
     const session = StorageService.getCurrentSession();
     const defaultIssuer = session ? session.fullName : "Inventory Administrator";
     const defaultDate = new Date().toISOString().slice(0, 10);
+    const defaultDueDateObj = new Date();
+    defaultDueDateObj.setDate(defaultDueDateObj.getDate() + 14);
+    const defaultDueDate = req.dueDate || defaultDueDateObj.toISOString().slice(0, 10);
 
     const backdrop = document.createElement("div");
     backdrop.id = "issue-materials-dialog";
@@ -2284,6 +2331,16 @@ class ModalManager {
               <input type="text" id="issued-by-field" value="${defaultIssuer}" placeholder="Inventory Admin Name" style="width:100%; padding:9px 12px; background:#0f172a; border:1px solid #334155; border-radius:8px; color:#f8fafc; font-weight:600; font-size:0.85rem; box-sizing:border-box;" />
             </div>
           </div>
+
+          <div>
+            <label style="display:block; font-size:0.82rem; font-weight:700; color:#cbd5e1; margin-bottom:6px;">
+              5. Return Due Date:
+            </label>
+            <input type="date" id="issue-due-date-field" value="${defaultDueDate}" style="width:100%; padding:9px 12px; background:#0f172a; border:1px solid #334155; border-radius:8px; color:#f8fafc; font-weight:600; font-size:0.85rem; box-sizing:border-box;" />
+            <span style="font-size:0.75rem; color:#94a3b8; display:block; margin-top:4px;">
+              📅 Loan Due Date (used to track active due vs overdue components)
+            </span>
+          </div>
         </div>
 
         <div style="display:flex; justify-content:flex-end; gap:10px; border-top:1px solid #334155; padding-top:16px;">
@@ -2352,6 +2409,9 @@ class ModalManager {
         return;
       }
 
+      const dueDateField = backdrop.querySelector("#issue-due-date-field");
+      const dueDate = dueDateField ? dueDateField.value : null;
+
       try {
         if (req.status === "SUBMITTED" || req.status === "PENDING") {
           StorageService.reviewLeadRequest(req.id, req.qtyRequested, issuedBy, "APPROVE");
@@ -2360,7 +2420,8 @@ class ModalManager {
         StorageService.issueMaterials(req.id, {
           issueQty,
           issueDate,
-          issuedBy
+          issuedBy,
+          dueDate
         });
 
         alert(`Success: Materials (${issueQty} pcs of '${req.componentName}') ISSUED by ${issuedBy} on ${issueDate}!\n\nPhysical inventory stock has been updated automatically.`);

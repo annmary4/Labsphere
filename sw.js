@@ -2,18 +2,18 @@
    LabSphere Service Worker - Offline Cache & PWA Support
    ============================================================ */
 
-const CACHE_NAME = 'labsphere-v13303_due_date_badge';
+const CACHE_NAME = 'labsphere-v13304_separate_due_and_overdue_tabs';
 const ASSETS_TO_CACHE = [
   '/Labsphere/',
   '/Labsphere/index.html',
-  '/Labsphere/css/styles.css?v=13303_due_date_badge',
-  '/Labsphere/js/app.js?v=13303_due_date_badge',
-  '/Labsphere/js/types.js?v=13303_due_date_badge',
-  '/Labsphere/js/initialData.js?v=13303_due_date_badge',
-  '/Labsphere/js/storage.js?v=13303_due_date_badge',
-  '/Labsphere/js/rackViewer.js?v=13303_due_date_badge',
-  '/Labsphere/js/componentsView.js?v=13303_due_date_badge',
-  '/Labsphere/js/modalManager.js?v=13303_due_date_badge',
+  '/Labsphere/css/styles.css?v=13304_separate_due_and_overdue_tabs',
+  '/Labsphere/js/app.js?v=13304_separate_due_and_overdue_tabs',
+  '/Labsphere/js/types.js?v=13304_separate_due_and_overdue_tabs',
+  '/Labsphere/js/initialData.js?v=13304_separate_due_and_overdue_tabs',
+  '/Labsphere/js/storage.js?v=13304_separate_due_and_overdue_tabs',
+  '/Labsphere/js/rackViewer.js?v=13304_separate_due_and_overdue_tabs',
+  '/Labsphere/js/componentsView.js?v=13304_separate_due_and_overdue_tabs',
+  '/Labsphere/js/modalManager.js?v=13304_separate_due_and_overdue_tabs',
   '/Labsphere/icons/icon-192.png',
   '/Labsphere/icons/icon-512.png',
   '/Labsphere/manifest.json'
