@@ -256,13 +256,31 @@
 
       <!-- Persona Action Buttons -->
       <div class="nav-actions">
+        <!-- Notification bell hidden from header (accessible via hamburger View Navigation drawer) -->
+        <div class="dropdown" style="display:none !important;">
+          <button class="btn btn-icon" id="btn-nav-notif" title="Real-Time Notifications Bell"
+            style="display:none !important;">
+            <i data-lucide="bell"></i>
+            <span id="notif-unread-count" class="count-badge danger hidden">0</span>
+          </button>
+          <div class="dropdown-menu notif-dropdown-menu" id="notif-dropdown">
+            <div class="notif-header">
+              <h3><i data-lucide="bell"></i> Notifications</h3>
+              <button id="btn-mark-notif-read" class="btn btn-secondary btn-sm">Mark All Read</button>
+            </div>
+            <div id="notif-list" class="notif-list-wrapper">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+        </div>
+
         <!-- Student & General Actions -->
         <button id="btn-multi-item-req" class="btn btn-primary" title="Create Multi-Item Component Requisition"
           style="background:linear-gradient(135deg, #0284c7 0%, #2563eb 100%); font-weight:700;">
           <i data-lucide="shopping-bag"></i> Multi-Item Request <span id="req-cart-count-badge"
             class="count-badge hidden" style="background:#f59e0b; color:#0f172a; margin-left:4px;">0</span>
         </button>
-        <button id="btn-student-reqs" class="btn btn-secondary" onclick="ModalManager.openStudentRequestsModal('auto');" title="My Component Requests & Issued Items">
+        <button id="btn-student-reqs" class="btn btn-secondary" title="My Component Requests & Issued Items">
           <i data-lucide="clipboard-list"></i> My Requests
         </button>
 
@@ -424,7 +442,7 @@
           </div>
         </button>
 
-        <button class="drawer-menu-item" id="drawer-btn-student-reqs" onclick="ModalManager.openStudentRequestsModal('auto');">
+        <button class="drawer-menu-item" id="drawer-btn-student-reqs">
           <i data-lucide="clipboard-list" style="font-size:1.2rem; color:var(--primary);"></i>
           <div style="display:flex; flex-direction:column; text-align:left;">
             <span style="font-weight:700;">My Requests</span>
@@ -1241,30 +1259,6 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
                 <!-- Valuation rows -->
               </tbody>
             </table>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Modal: Real-Time Notification Center Modal -->
-    <div class="modal-backdrop hidden" id="notification-modal" style="z-index: 10050;">
-      <div class="modal-content modal-md" style="max-width: 540px; border: 2px solid #38bdf8; background: #0f172a; box-shadow: 0 25px 80px rgba(0,0,0,0.9); border-radius: 16px;">
-        <div class="modal-header" style="border-bottom: 1px solid var(--border-color); padding-bottom: 12px; display:flex; justify-content:space-between; align-items:center;">
-          <div class="modal-title-group" style="display:flex; align-items:center; gap:10px;">
-            <i data-lucide="bell" style="color:var(--primary); font-size:1.4rem;"></i>
-            <h2 style="margin:0; font-size:1.15rem; font-weight:700; color:var(--text-main);">Notifications & Return Reminders</h2>
-          </div>
-          <div style="display:flex; align-items:center; gap:10px;">
-            <button id="btn-mark-notif-read" class="btn btn-secondary btn-sm" style="font-size:0.75rem; padding:4px 10px; font-weight:600;">Mark All Read</button>
-            <button class="modal-close" id="btn-close-notification-modal" title="Close Notifications Modal"><i data-lucide="x"></i></button>
-          </div>
-        </div>
-        <div class="modal-body" style="padding-top: 16px;">
-          <p class="modal-desc" style="font-size:0.82rem; color:var(--text-muted); margin-bottom:14px;">
-            Real-time status updates, inventory requisitions activity, and automated return due alerts (7 Days, 14 Days, 1 Month overdue).
-          </p>
-          <div id="notif-list" class="notif-list-wrapper" style="max-height: 440px; overflow-y: auto; padding-right: 4px;">
-            <!-- Rendered dynamically -->
           </div>
         </div>
       </div>
@@ -2457,7 +2451,7 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/Labsphere/sw.js?v=13400_fresh_v2', { scope: '/Labsphere/' })
+        navigator.serviceWorker.register('/Labsphere/sw.js?v=10415_fresh', { scope: '/Labsphere/' })
           .then(reg => {
             console.log('[LabSphere PWA] Service Worker registered:', reg.scope);
             if (reg.update) reg.update();

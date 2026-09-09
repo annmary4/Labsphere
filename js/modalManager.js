@@ -11,7 +11,6 @@ class ModalManager {
 
     try {
       this.bindEvents();
-      this.renderNotificationCenter();
       console.log('[ModalManager] bindEvents() OK');
     } catch (e) {
       console.error('[ModalManager] bindEvents() threw:', e.message, e);
@@ -41,48 +40,30 @@ class ModalManager {
     }, 4500);
   }
 
-  static openNotificationModal() {
-    const backdrop = document.getElementById("notification-modal");
-    this.renderNotificationCenter();
-    if (backdrop) backdrop.classList.remove("hidden");
-  }
-
-  static closeNotificationModal() {
-    const backdrop = document.getElementById("notification-modal");
-    if (backdrop) backdrop.classList.add("hidden");
-  }
-
   static bindEvents() {
-    // Notification Center Modal Listener
+    // Notification Center Dropdown & Mobile Drawer Listener
+    const btnNotif = document.getElementById("btn-nav-notif");
     const drawerBtnNotif = document.getElementById("drawer-btn-notif");
-    const closeNotifModal = document.getElementById("btn-close-notification-modal");
-    const notifModal = document.getElementById("notification-modal");
+    const notifDropdown = document.getElementById("notif-dropdown");
 
-    if (drawerBtnNotif) {
-      drawerBtnNotif.addEventListener("click", (e) => {
-        if (e) e.stopPropagation();
-        const drawer = document.getElementById("mobile-view-drawer");
-        const drawerBackdrop = document.getElementById("mobile-drawer-backdrop");
-        if (drawer) drawer.classList.remove("is-open");
-        if (drawerBackdrop) drawerBackdrop.classList.remove("is-open");
-        this.openNotificationModal();
-      });
-    }
+    const toggleNotifCenter = (e) => {
+      if (e) e.stopPropagation();
+      const drawer = document.getElementById("mobile-view-drawer");
+      const drawerBackdrop = document.getElementById("mobile-drawer-backdrop");
+      if (drawer) drawer.classList.remove("is-open");
+      if (drawerBackdrop) drawerBackdrop.classList.remove("is-open");
 
-    if (closeNotifModal) {
-      closeNotifModal.addEventListener("click", () => this.closeNotificationModal());
-    }
+      this.renderNotificationCenter();
+      if (notifDropdown) notifDropdown.classList.toggle("show");
+    };
 
-    if (notifModal) {
-      notifModal.addEventListener("click", (e) => {
-        if (e.target === notifModal) this.closeNotificationModal();
-      });
-    }
+    if (btnNotif) btnNotif.addEventListener("click", toggleNotifCenter);
+    if (drawerBtnNotif) drawerBtnNotif.addEventListener("click", toggleNotifCenter);
+    if (notifDropdown) document.addEventListener("click", () => notifDropdown.classList.remove("show"));
 
     const markReadBtn = document.getElementById("btn-mark-notif-read");
     if (markReadBtn) {
-      markReadBtn.addEventListener("click", (e) => {
-        if (e) e.stopPropagation();
+      markReadBtn.addEventListener("click", () => {
         StorageService.markNotificationsRead();
         this.renderNotificationCenter();
         if (this.callbacks.onInventoryChanged) this.callbacks.onInventoryChanged();
@@ -252,8 +233,7 @@ class ModalManager {
 
   // --- NOTIFICATION CENTER RENDERER ---
   static renderNotificationCenter() {
-    const session = StorageService.getSession ? StorageService.getSession() : null;
-    const notifs = StorageService.getNotifications(session);
+    const notifs = StorageService.getNotifications();
     const list = document.getElementById("notif-list");
     const badge = document.getElementById("notif-unread-count");
     const drawerBadge = document.getElementById("drawer-notif-badge");
@@ -284,22 +264,10 @@ class ModalManager {
         notifs.forEach(n => {
           const item = document.createElement("div");
           item.className = `notif-item ${n.read ? 'read' : 'unread'}`;
-
-          let severityBadge = '';
-          if (n.severity === 'CRITICAL' || n.type === 'ISSUED_DUE_1MONTH') {
-            severityBadge = '<span style="font-size:0.65rem; background:rgba(239,68,68,0.2); color:#ef4444; border:1px solid rgba(239,68,68,0.4); padding:1px 6px; border-radius:4px; font-weight:700;">🔴 1 MONTH OVERDUE</span>';
-          } else if (n.severity === 'WARNING' || n.type === 'ISSUED_DUE_14DAY') {
-            severityBadge = '<span style="font-size:0.65rem; background:rgba(245,158,11,0.2); color:#f59e0b; border:1px solid rgba(245,158,11,0.4); padding:1px 6px; border-radius:4px; font-weight:700;">🟠 14D DUE</span>';
-          } else if (n.severity === 'REMINDER' || n.type === 'ISSUED_DUE_7DAY') {
-            severityBadge = '<span style="font-size:0.65rem; background:rgba(59,130,246,0.2); color:#3b82f6; border:1px solid rgba(59,130,246,0.4); padding:1px 6px; border-radius:4px; font-weight:700;">🔵 7D DUE</span>';
-          } else if (!n.read) {
-            severityBadge = '<span style="font-size:0.65rem; background:rgba(239,68,68,0.2); color:#ef4444; border:1px solid rgba(239,68,68,0.4); padding:1px 6px; border-radius:4px; font-weight:700;">NEW</span>';
-          }
-
           item.innerHTML = `
             <div class="notif-title" style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
               <strong>${n.title}</strong>
-              ${severityBadge}
+              ${!n.read ? '<span style="font-size:0.65rem; background:rgba(239,68,68,0.2); color:#ef4444; border:1px solid rgba(239,68,68,0.4); padding:1px 6px; border-radius:4px; font-weight:700;">NEW</span>' : ''}
             </div>
             <p class="notif-msg" style="margin:4px 0 6px 0; font-size:0.8rem; color:var(--text-muted); line-height:1.4;">${n.message}</p>
             <span class="notif-time" style="font-size:0.7rem; color:var(--primary); font-weight:600;">${n.timestamp}</span>
@@ -1639,122 +1607,17 @@ class ModalManager {
   }
 
   // --- MULTI-STAGE REQUISITION & RETURNABLE ASSET TRACKING MODAL ---
-  static openStudentRequestsModal(activeTab = "auto") {
+  static openStudentRequestsModal() {
     const backdrop = document.getElementById("student-req-modal");
-    if (backdrop) backdrop.classList.remove("hidden");
-
     const container = document.getElementById("student-requests-container");
-    let requests = StorageService.getRequests() || [];
-
-    // Filter by logged-in user if student/lead, but fallback to all requests if user-specific filter yields 0 items
-    const session = StorageService.getSession();
-    if (session && session.role !== "ADMIN") {
-      const username = (session.username || "").toLowerCase();
-      const fullName = (session.fullName || "").toLowerCase();
-      const userReqs = requests.filter(r => {
-        const reqUser = (r.requesterName || "").toLowerCase();
-        return reqUser === username || reqUser === fullName || username.includes(reqUser) || fullName.includes(reqUser);
-      });
-      if (userReqs.length > 0) {
-        requests = userReqs;
-      }
-    }
+    const requests = StorageService.getRequests();
 
     if (container) {
       container.innerHTML = "";
-
-      // 1. Categorize requests into 3 distinct Filter Sections
-      const allRequests = requests;
-      const issuedRequests = requests.filter(r => {
-        const isIssued = r.status === "ISSUED" || r.status === "APPROVED" || r.status === "PARTIAL_RETURN" || r.status === "PARTIALLY_ISSUED";
-        const issuedQty = r.issuedQty || r.qtyApproved || r.qtyRequested || 0;
-        const returnedQty = r.returnedQty || 0;
-        return isIssued && (issuedQty - returnedQty) > 0;
-      });
-
-      const pendingRequests = requests.filter(r => {
-        return r.status === "PENDING_LEAD_APPROVAL" || r.status === "SUBMITTED" || r.status === "PENDING" || 
-               r.status === "PENDING_ADMIN_ISSUANCE" || r.status === "LEAD_APPROVED" || r.status === "LEAD_MODIFIED";
-      });
-
-      const dueDateRequests = requests.filter(r => {
-        const isIssued = r.status === "ISSUED" || r.status === "APPROVED" || r.status === "PARTIAL_RETURN" || r.status === "PARTIALLY_ISSUED";
-        if (!isIssued) return false;
-        const returnStatus = StorageService.getIssuedItemReturnStatus ? StorageService.getIssuedItemReturnStatus(r) : null;
-        if (returnStatus && returnStatus.days >= 7) return true;
-        if (r.dueNotificationStatus && r.dueNotificationStatus !== "NORMAL") return true;
-        return false;
-      });
-
-      // Auto-select initial active section tab if 'auto' is passed
-      if (activeTab === "auto") {
-        if (issuedRequests.length > 0) activeTab = "issued";
-        else if (pendingRequests.length > 0) activeTab = "pending";
-        else if (dueDateRequests.length > 0) activeTab = "duedate";
-        else activeTab = "all";
-      }
-
-      // 2. Render 3 Distinct Filter Section Tabs
-      const filterBar = document.createElement("div");
-      filterBar.className = "requests-filter-bar";
-      filterBar.style.cssText = "display:flex; gap:10px; margin-bottom:16px; border-bottom:2px solid var(--border-color); padding-bottom:12px; flex-wrap:wrap; align-items:center;";
-      filterBar.innerHTML = `
-        <button class="btn btn-sm" onclick="ModalManager.openStudentRequestsModal('issued')" style="font-weight:800; padding:8px 14px; border-radius:8px; transition:all 0.2s ease; cursor:pointer; ${activeTab === 'issued' ? 'background:#10b981; color:#0f172a; border:2px solid #10b981; box-shadow:0 4px 12px rgba(16,185,129,0.35);' : 'background:rgba(255,255,255,0.05); color:var(--text-main); border:1px solid var(--border-color);'}">
-          📦 Section 1: Issued Items (${issuedRequests.length})
-        </button>
-        <button class="btn btn-sm" onclick="ModalManager.openStudentRequestsModal('pending')" style="font-weight:800; padding:8px 14px; border-radius:8px; transition:all 0.2s ease; cursor:pointer; ${activeTab === 'pending' ? 'background:#f59e0b; color:#0f172a; border:2px solid #f59e0b; box-shadow:0 4px 12px rgba(245,158,11,0.35);' : 'background:rgba(255,255,255,0.05); color:var(--text-main); border:1px solid var(--border-color);'}">
-          ⏳ Section 2: Pending Requests (${pendingRequests.length})
-        </button>
-        <button class="btn btn-sm" onclick="ModalManager.openStudentRequestsModal('duedate')" style="font-weight:800; padding:8px 14px; border-radius:8px; transition:all 0.2s ease; cursor:pointer; ${activeTab === 'duedate' ? 'background:#ef4444; color:#ffffff; border:2px solid #ef4444; box-shadow:0 4px 12px rgba(239,68,68,0.35);' : 'background:rgba(255,255,255,0.05); color:var(--text-main); border:1px solid var(--border-color);'}">
-          📅 Section 3: Due Date / Overdue (${dueDateRequests.length})
-        </button>
-        <button class="btn btn-sm" onclick="ModalManager.openStudentRequestsModal('all')" style="font-weight:800; padding:8px 12px; border-radius:8px; margin-left:auto; transition:all 0.2s ease; cursor:pointer; ${activeTab === 'all' ? 'background:var(--primary); color:#ffffff; border:2px solid var(--primary);' : 'background:rgba(255,255,255,0.05); color:var(--text-muted); border:1px solid var(--border-color);'}">
-          📋 All (${allRequests.length})
-        </button>
-      `;
-      container.appendChild(filterBar);
-
-      // 3. Render Active Section Header Label
-      let sectionTitleHtml = "";
-      if (activeTab === "issued") {
-        sectionTitleHtml = `<h4 style="color:#10b981; margin:0 0 14px 0; font-size:0.95rem; font-weight:800; display:flex; align-items:center; gap:8px;"><i data-lucide="package"></i> Section 1: Active Issued & Borrowed Items (${issuedRequests.length})</h4>`;
-      } else if (activeTab === "pending") {
-        sectionTitleHtml = `<h4 style="color:#f59e0b; margin:0 0 14px 0; font-size:0.95rem; font-weight:800; display:flex; align-items:center; gap:8px;"><i data-lucide="clock"></i> Section 2: Pending Approval Queue (${pendingRequests.length})</h4>`;
-      } else if (activeTab === "duedate") {
-        sectionTitleHtml = `<h4 style="color:#ef4444; margin:0 0 14px 0; font-size:0.95rem; font-weight:800; display:flex; align-items:center; gap:8px;"><i data-lucide="calendar"></i> Section 3: Return Due & Overdue Items (${dueDateRequests.length})</h4>`;
+      if (requests.length === 0) {
+        container.innerHTML = `<p class="empty-hint">No material requests submitted yet.</p>`;
       } else {
-        sectionTitleHtml = `<h4 style="color:var(--primary); margin:0 0 14px 0; font-size:0.95rem; font-weight:800; display:flex; align-items:center; gap:8px;"><i data-lucide="clipboard-list"></i> Complete Requisitions Log (${allRequests.length})</h4>`;
-      }
-
-      const sectionTitleEl = document.createElement("div");
-      sectionTitleEl.innerHTML = sectionTitleHtml;
-      container.appendChild(sectionTitleEl);
-
-      // 4. Determine active display list
-      let displayRequests = allRequests;
-      if (activeTab === "issued") displayRequests = issuedRequests;
-      else if (activeTab === "pending") displayRequests = pendingRequests;
-      else if (activeTab === "duedate") displayRequests = dueDateRequests;
-
-      if (displayRequests.length === 0) {
-        let emptyHint = "No requests found in this section.";
-        if (activeTab === "issued") emptyHint = "No items currently issued or borrowed from lab stock.";
-        else if (activeTab === "pending") emptyHint = "No pending requests awaiting approval.";
-        else if (activeTab === "duedate") emptyHint = "No borrowed items are currently due or overdue for return.";
-
-        const emptyEl = document.createElement("div");
-        emptyEl.style.cssText = "padding:32px 16px; text-align:center; color:var(--text-muted); background:rgba(255,255,255,0.02); border:1px dashed var(--border-color); border-radius:10px; margin-top:10px;";
-        emptyEl.innerHTML = `
-          <i data-lucide="clipboard-list" style="font-size:2.2rem; color:var(--primary); margin-bottom:8px; display:inline-block; opacity:0.6;"></i>
-          <h4 style="margin:0 0 6px 0; color:var(--text-main); font-weight:700;">${emptyHint}</h4>
-          <p style="font-size:0.8rem; margin-bottom:12px; color:var(--text-muted);">Create a component requisition to request items from laboratory inventory.</p>
-          <button class="btn btn-primary btn-sm" onclick="ModalManager.closeStudentRequestsModal(); ModalManager.openMultiItemRequestModal();" style="font-weight:700;">
-            + Create Multi-Item Request
-          </button>
-        `;
-        container.appendChild(emptyEl);
-      } else {
-        displayRequests.forEach(r => {
+        requests.forEach(r => {
           const card = document.createElement("div");
           card.className = "request-card";
 
@@ -1788,26 +1651,6 @@ class ModalManager {
           const returnedCount = r.returnedQty || 0;
           const remainingQty = Math.max(0, targetQty - returnedCount);
 
-          const isIssued = r.status === "ISSUED" || r.status === "APPROVED" || r.status === "PARTIAL_RETURN" || r.status === "PARTIALLY_ISSUED";
-          let returnStatus = isIssued ? StorageService.getIssuedItemReturnStatus(r) : null;
-
-          let computedDueDate = r.dueDate || null;
-          if (isIssued && !computedDueDate) {
-            const issueDateRaw = r.issueDate || r.issuedAt || r.requestedAt;
-            if (issueDateRaw) {
-              let d = new Date(issueDateRaw);
-              if (isNaN(d.getTime())) {
-                const parts = String(issueDateRaw).split(',');
-                d = new Date(parts[0]);
-              }
-              if (!isNaN(d.getTime())) {
-                d.setDate(d.getDate() + 7);
-                computedDueDate = d.toISOString().slice(0, 10);
-              }
-            }
-          }
-          if (isIssued && !computedDueDate) computedDueDate = "7 Days from Issuance Date";
-
           card.innerHTML = `
             <div class="request-header" style="display:flex; justify-content:space-between; align-items:center;">
               <div>
@@ -1820,37 +1663,19 @@ class ModalManager {
               Qty Requested: <strong>${r.qtyRequested} pcs</strong>
               ${r.qtyApproved && r.qtyApproved !== r.qtyRequested ? ` • Approved: <strong style="color:var(--primary);">${r.qtyApproved} pcs</strong>` : ''}
               • Returned: <strong>${returnedCount} pcs</strong>
-              ${isIssued ? ` • Outstanding: <strong class="primary-text" style="color:var(--accent-yellow);">${remainingQty} pcs</strong>` : ''}
+              ${r.status === 'ISSUED' || r.status === 'PARTIAL_RETURN' ? ` • Outstanding: <strong class="primary-text" style="color:var(--accent-yellow);">${remainingQty} pcs</strong>` : ''}
             </p>
-            <p class="request-meta">Requester: <strong>${r.requesterName}</strong> (${r.role}) • Requested: ${r.requestedAt}</p>
-            
-            ${isIssued ? `
-              <div class="due-date-banner" style="margin-top:10px; margin-bottom:8px; padding:10px 14px; background:rgba(15, 23, 42, 0.75); border:1px dashed ${returnStatus ? returnStatus.color : '#38bdf8'}; border-radius:8px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-                <div style="display:flex; align-items:center; gap:8px;">
-                  <i data-lucide="calendar" style="color:${returnStatus ? returnStatus.color : '#38bdf8'}; font-size:1.1rem;"></i>
-                  <div>
-                    <div style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; font-weight:700; letter-spacing:0.5px;">Return Due Date</div>
-                    <div style="font-size:0.95rem; font-weight:800; color:${returnStatus ? returnStatus.color : '#38bdf8'};">${computedDueDate}</div>
-                  </div>
-                </div>
-                <div style="text-align:right;">
-                  <span style="font-size:0.78rem; background:rgba(255,255,255,0.06); padding:4px 10px; border-radius:12px; font-weight:700; color:${returnStatus ? returnStatus.color : '#38bdf8'}; border:1px solid ${returnStatus ? returnStatus.color : '#38bdf8'}; display:inline-block;">
-                    ${returnStatus ? returnStatus.label : 'Issued Item'}
-                  </span>
-                </div>
-              </div>
-            ` : ''}
-
-            ${r.leadName ? `<p class="request-meta" style="font-size:0.75rem; color:var(--primary); margin-top:4px;">Team Lead: ${r.leadName} (${r.leadApprovedAt || 'Approved'})</p>` : ''}
-            ${r.issuedBy ? `<p class="request-meta" style="font-size:0.75rem; color:var(--accent-green);">Issued By Admin: ${r.issuedBy} (Issued On: ${r.issueDate || r.issuedAt || 'N/A'})</p>` : ''}
+            <p class="request-meta">Requester: <strong>${r.requesterName}</strong> (${r.role}) • Date: ${r.requestedAt} ${r.dueDate ? `• Due: ${r.dueDate}` : ''}</p>
+            ${r.leadName ? `<p class="request-meta" style="font-size:0.75rem; color:var(--primary);">Team Lead: ${r.leadName} (${r.leadApprovedAt || 'Approved'})</p>` : ''}
+            ${r.issuedBy ? `<p class="request-meta" style="font-size:0.75rem; color:var(--accent-green);">Issued By Admin: ${r.issuedBy} (${r.issuedAt || 'Issued'})</p>` : ''}
             <p class="request-notes" style="background:var(--bg-dark); padding:8px; border-radius:6px; margin-top:6px; font-size:0.82rem;">${r.notes}</p>
             
             ${(r.status === 'SUBMITTED' || r.status === 'PENDING') ? `
               <div style="margin-top:10px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-                <button class="btn btn-secondary btn-sm" onclick="ModalManager.handleEditStudentPendingRequest('${r.id}'); ModalManager.openStudentRequestsModal('${activeTab}');" style="font-weight:700; color:#38bdf8; border-color:rgba(56,189,248,0.4);">
+                <button class="btn btn-secondary btn-sm" onclick="ModalManager.handleEditStudentPendingRequest('${r.id}'); ModalManager.openStudentRequestsModal();" style="font-weight:700; color:#38bdf8; border-color:rgba(56,189,248,0.4);">
                   ✏ Edit Request
                 </button>
-                <button class="btn btn-danger btn-sm" onclick="ModalManager.handleCancelStudentPendingRequest('${r.id}'); ModalManager.openStudentRequestsModal('${activeTab}');" style="font-weight:700; background:rgba(239,68,68,0.15); color:#ef4444; border:1px solid rgba(239,68,68,0.4);">
+                <button class="btn btn-danger btn-sm" onclick="ModalManager.handleCancelStudentPendingRequest('${r.id}'); ModalManager.openStudentRequestsModal();" style="font-weight:700; background:rgba(239,68,68,0.15); color:#ef4444; border:1px solid rgba(239,68,68,0.4);">
                   🚫 Cancel Request
                 </button>
               </div>
@@ -1890,7 +1715,7 @@ class ModalManager {
               try {
                 StorageService.reportDamagedAsset(r.id, r.componentId, damQty, reportDetails || "");
                 alert(`Reported ${damQty} pcs of '${r.componentName}' as DAMAGED. Inventory Admin notified.`);
-                this.openStudentRequestsModal(activeTab);
+                this.openStudentRequestsModal();
                 if (this.callbacks.onInventoryChanged) this.callbacks.onInventoryChanged();
               } catch (err) {
                 alert(err.message);
@@ -1904,6 +1729,7 @@ class ModalManager {
     }
 
     if (window.lucide) window.lucide.createIcons();
+    if (backdrop) backdrop.classList.remove("hidden");
   }
 
   static closeStudentRequestsModal() {
@@ -2001,25 +1827,6 @@ class ModalManager {
           const reqQty = r.qtyRequested || 1;
           const isSufficient = comp && comp.quantity >= reqQty;
 
-          const isIssuedActive = isIssued || isPartiallyIssued;
-          let returnStatusAdmin = isIssuedActive ? StorageService.getIssuedItemReturnStatus(r) : null;
-          let adminDueDate = r.dueDate || null;
-          if (isIssuedActive && !adminDueDate) {
-            const issueDateRaw = r.issueDate || r.issuedAt || r.requestedAt;
-            if (issueDateRaw) {
-              let d = new Date(issueDateRaw);
-              if (isNaN(d.getTime())) {
-                const parts = String(issueDateRaw).split(',');
-                d = new Date(parts[0]);
-              }
-              if (!isNaN(d.getTime())) {
-                d.setDate(d.getDate() + 7);
-                adminDueDate = d.toISOString().slice(0, 10);
-              }
-            }
-          }
-          if (isIssuedActive && !adminDueDate) adminDueDate = "7 Days from Issuance Date";
-
           const verifyBadgeHtml = comp ? `
             <div style="background:#0f172a; border:1px solid ${isSufficient ? 'rgba(16,185,129,0.3)' : 'rgba(239,68,68,0.3)'}; border-radius:8px; padding:10px; margin-bottom:12px; font-size:0.83rem;">
               <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -2043,20 +1850,6 @@ class ModalManager {
             </div>
 
             ${verifyBadgeHtml}
-
-            ${isIssuedActive ? `
-              <div class="due-date-banner" style="margin-bottom:12px; padding:8px 12px; background:rgba(15, 23, 42, 0.75); border:1px dashed ${returnStatusAdmin ? returnStatusAdmin.color : '#38bdf8'}; border-radius:8px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-                <div style="display:flex; align-items:center; gap:8px;">
-                  <i data-lucide="calendar" style="color:${returnStatusAdmin ? returnStatusAdmin.color : '#38bdf8'}; font-size:1rem;"></i>
-                  <span style="font-size:0.83rem; font-weight:700; color:var(--text-main);">
-                    Return Due Date: <strong style="color:${returnStatusAdmin ? returnStatusAdmin.color : '#38bdf8'}; font-weight:800;">${adminDueDate}</strong>
-                  </span>
-                </div>
-                <span style="font-size:0.75rem; background:rgba(255,255,255,0.06); padding:3px 10px; border-radius:12px; font-weight:700; color:${returnStatusAdmin ? returnStatusAdmin.color : '#38bdf8'}; border:1px solid ${returnStatusAdmin ? returnStatusAdmin.color : '#38bdf8'};">
-                  ${returnStatusAdmin ? returnStatusAdmin.label : 'Issued Asset'}
-                </span>
-              </div>
-            ` : ''}
 
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; font-size:0.85rem; margin-bottom:10px;">
               <div>

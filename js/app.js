@@ -414,9 +414,9 @@ class App {
 
     mapDrawerTrigger("drawer-btn-add-component", null, openAddCompModal);
     mapDrawerTrigger("drawer-btn-multi-item-req", "btn-multi-item-req");
-    mapDrawerTrigger("drawer-btn-notif", null, () => ModalManager.openNotificationModal());
+    mapDrawerTrigger("drawer-btn-notif", "btn-nav-notif");
     mapDrawerTrigger("drawer-btn-approvals", "btn-admin-approve");
-    mapDrawerTrigger("drawer-btn-student-reqs", null, () => ModalManager.openStudentRequestsModal("auto"));
+    mapDrawerTrigger("drawer-btn-student-reqs", "btn-student-reqs");
     mapDrawerTrigger("drawer-btn-engineer-bom", "btn-engineer-bom");
     mapDrawerTrigger("drawer-btn-projects-mgr", null, () => ModalManager.openProjectModal());
     mapDrawerTrigger("drawer-btn-mgmt-dashboard", "btn-mgmt-dashboard");
@@ -723,9 +723,12 @@ class App {
       }
     }
 
-    // Header notification bell is hidden (notifications accessed via hamburger side panel)
+    // Notification bell is hidden from navbar header on ALL screens (desktop & mobile)
+    // It lives exclusively inside the hamburger View Navigation drawer
     const btnNavNotif = document.getElementById("btn-nav-notif");
     if (btnNavNotif) {
+      const notifParent = btnNavNotif.closest(".dropdown");
+      if (notifParent) notifParent.style.setProperty("display", "none", "important");
       btnNavNotif.style.setProperty("display", "none", "important");
     }
 

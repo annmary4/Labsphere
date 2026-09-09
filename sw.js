@@ -2,18 +2,18 @@
    LabSphere Service Worker - Offline Cache & PWA Support
    ============================================================ */
 
-const CACHE_NAME = 'labsphere-v13500_section_filter_tabs_v3';
+const CACHE_NAME = 'labsphere-v13300_team_lead_selection_anson_amal';
 const ASSETS_TO_CACHE = [
   '/Labsphere/',
   '/Labsphere/index.html',
-  '/Labsphere/css/styles.css?v=13500_section_filter_tabs_v3',
-  '/Labsphere/js/app.js?v=13500_section_filter_tabs_v3',
-  '/Labsphere/js/types.js?v=13500_section_filter_tabs_v3',
-  '/Labsphere/js/initialData.js?v=13500_section_filter_tabs_v3',
-  '/Labsphere/js/storage.js?v=13500_section_filter_tabs_v3',
-  '/Labsphere/js/rackViewer.js?v=13500_section_filter_tabs_v3',
-  '/Labsphere/js/componentsView.js?v=13500_section_filter_tabs_v3',
-  '/Labsphere/js/modalManager.js?v=13500_section_filter_tabs_v3',
+  '/Labsphere/css/styles.css?v=13300_team_lead_selection_anson_amal',
+  '/Labsphere/js/app.js?v=13300_team_lead_selection_anson_amal',
+  '/Labsphere/js/types.js?v=13300_team_lead_selection_anson_amal',
+  '/Labsphere/js/initialData.js?v=13300_team_lead_selection_anson_amal',
+  '/Labsphere/js/storage.js?v=13300_team_lead_selection_anson_amal',
+  '/Labsphere/js/rackViewer.js?v=13300_team_lead_selection_anson_amal',
+  '/Labsphere/js/componentsView.js?v=13300_team_lead_selection_anson_amal',
+  '/Labsphere/js/modalManager.js?v=13300_team_lead_selection_anson_amal',
   '/Labsphere/icons/icon-192.png',
   '/Labsphere/icons/icon-512.png',
   '/Labsphere/manifest.json'

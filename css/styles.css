@@ -1859,11 +1859,13 @@ body.qr-scan-mode #direct-edit-dialog {
     padding-right: 0 !important; /* no extra padding needed on mobile */
   }
 
-  /* On Mobile Phone Screens, hide standalone header action buttons */
+  /* On Mobile Phone Screens, hide all standalone header buttons & notifications bell from main page header */
   .nav-actions #btn-admin-approve,
   .nav-actions #btn-mgmt-dashboard,
   .nav-actions #btn-audit-log,
   .nav-actions #btn-procurement-insights,
+  .nav-actions #btn-nav-notif,
+  .nav-actions .dropdown,
   .nav-actions #btn-user-manager,
   .nav-actions #btn-print-inventory-sheet,
   .nav-actions #btn-student-reqs,
