@@ -1683,6 +1683,26 @@ class ModalManager {
           const returnedCount = r.returnedQty || 0;
           const remainingQty = Math.max(0, targetQty - returnedCount);
 
+          const isIssued = r.status === "ISSUED" || r.status === "APPROVED" || r.status === "PARTIAL_RETURN" || r.status === "PARTIALLY_ISSUED";
+          let returnStatus = isIssued ? StorageService.getIssuedItemReturnStatus(r) : null;
+
+          let computedDueDate = r.dueDate || null;
+          if (isIssued && !computedDueDate) {
+            const issueDateRaw = r.issueDate || r.issuedAt || r.requestedAt;
+            if (issueDateRaw) {
+              let d = new Date(issueDateRaw);
+              if (isNaN(d.getTime())) {
+                const parts = String(issueDateRaw).split(',');
+                d = new Date(parts[0]);
+              }
+              if (!isNaN(d.getTime())) {
+                d.setDate(d.getDate() + 7);
+                computedDueDate = d.toISOString().slice(0, 10);
+              }
+            }
+          }
+          if (isIssued && !computedDueDate) computedDueDate = "7 Days from Issuance Date";
+
           card.innerHTML = `
             <div class="request-header" style="display:flex; justify-content:space-between; align-items:center;">
               <div>
@@ -1695,11 +1715,29 @@ class ModalManager {
               Qty Requested: <strong>${r.qtyRequested} pcs</strong>
               ${r.qtyApproved && r.qtyApproved !== r.qtyRequested ? ` • Approved: <strong style="color:var(--primary);">${r.qtyApproved} pcs</strong>` : ''}
               • Returned: <strong>${returnedCount} pcs</strong>
-              ${r.status === 'ISSUED' || r.status === 'PARTIAL_RETURN' ? ` • Outstanding: <strong class="primary-text" style="color:var(--accent-yellow);">${remainingQty} pcs</strong>` : ''}
+              ${isIssued ? ` • Outstanding: <strong class="primary-text" style="color:var(--accent-yellow);">${remainingQty} pcs</strong>` : ''}
             </p>
-            <p class="request-meta">Requester: <strong>${r.requesterName}</strong> (${r.role}) • Date: ${r.requestedAt} ${r.dueDate ? `• Due: ${r.dueDate}` : ''}</p>
-            ${r.leadName ? `<p class="request-meta" style="font-size:0.75rem; color:var(--primary);">Team Lead: ${r.leadName} (${r.leadApprovedAt || 'Approved'})</p>` : ''}
-            ${r.issuedBy ? `<p class="request-meta" style="font-size:0.75rem; color:var(--accent-green);">Issued By Admin: ${r.issuedBy} (${r.issuedAt || 'Issued'})</p>` : ''}
+            <p class="request-meta">Requester: <strong>${r.requesterName}</strong> (${r.role}) • Requested: ${r.requestedAt}</p>
+            
+            ${isIssued ? `
+              <div class="due-date-banner" style="margin-top:10px; margin-bottom:8px; padding:10px 14px; background:rgba(15, 23, 42, 0.75); border:1px dashed ${returnStatus ? returnStatus.color : '#38bdf8'}; border-radius:8px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <i data-lucide="calendar" style="color:${returnStatus ? returnStatus.color : '#38bdf8'}; font-size:1.1rem;"></i>
+                  <div>
+                    <div style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; font-weight:700; letter-spacing:0.5px;">Return Due Date</div>
+                    <div style="font-size:0.95rem; font-weight:800; color:${returnStatus ? returnStatus.color : '#38bdf8'};">${computedDueDate}</div>
+                  </div>
+                </div>
+                <div style="text-align:right;">
+                  <span style="font-size:0.78rem; background:rgba(255,255,255,0.06); padding:4px 10px; border-radius:12px; font-weight:700; color:${returnStatus ? returnStatus.color : '#38bdf8'}; border:1px solid ${returnStatus ? returnStatus.color : '#38bdf8'}; display:inline-block;">
+                    ${returnStatus ? returnStatus.label : 'Issued Item'}
+                  </span>
+                </div>
+              </div>
+            ` : ''}
+
+            ${r.leadName ? `<p class="request-meta" style="font-size:0.75rem; color:var(--primary); margin-top:4px;">Team Lead: ${r.leadName} (${r.leadApprovedAt || 'Approved'})</p>` : ''}
+            ${r.issuedBy ? `<p class="request-meta" style="font-size:0.75rem; color:var(--accent-green);">Issued By Admin: ${r.issuedBy} (Issued On: ${r.issueDate || r.issuedAt || 'N/A'})</p>` : ''}
             <p class="request-notes" style="background:var(--bg-dark); padding:8px; border-radius:6px; margin-top:6px; font-size:0.82rem;">${r.notes}</p>
             
             ${(r.status === 'SUBMITTED' || r.status === 'PENDING') ? `
@@ -1859,6 +1897,25 @@ class ModalManager {
           const reqQty = r.qtyRequested || 1;
           const isSufficient = comp && comp.quantity >= reqQty;
 
+          const isIssuedActive = isIssued || isPartiallyIssued;
+          let returnStatusAdmin = isIssuedActive ? StorageService.getIssuedItemReturnStatus(r) : null;
+          let adminDueDate = r.dueDate || null;
+          if (isIssuedActive && !adminDueDate) {
+            const issueDateRaw = r.issueDate || r.issuedAt || r.requestedAt;
+            if (issueDateRaw) {
+              let d = new Date(issueDateRaw);
+              if (isNaN(d.getTime())) {
+                const parts = String(issueDateRaw).split(',');
+                d = new Date(parts[0]);
+              }
+              if (!isNaN(d.getTime())) {
+                d.setDate(d.getDate() + 7);
+                adminDueDate = d.toISOString().slice(0, 10);
+              }
+            }
+          }
+          if (isIssuedActive && !adminDueDate) adminDueDate = "7 Days from Issuance Date";
+
           const verifyBadgeHtml = comp ? `
             <div style="background:#0f172a; border:1px solid ${isSufficient ? 'rgba(16,185,129,0.3)' : 'rgba(239,68,68,0.3)'}; border-radius:8px; padding:10px; margin-bottom:12px; font-size:0.83rem;">
               <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -1882,6 +1939,20 @@ class ModalManager {
             </div>
 
             ${verifyBadgeHtml}
+
+            ${isIssuedActive ? `
+              <div class="due-date-banner" style="margin-bottom:12px; padding:8px 12px; background:rgba(15, 23, 42, 0.75); border:1px dashed ${returnStatusAdmin ? returnStatusAdmin.color : '#38bdf8'}; border-radius:8px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <i data-lucide="calendar" style="color:${returnStatusAdmin ? returnStatusAdmin.color : '#38bdf8'}; font-size:1rem;"></i>
+                  <span style="font-size:0.83rem; font-weight:700; color:var(--text-main);">
+                    Return Due Date: <strong style="color:${returnStatusAdmin ? returnStatusAdmin.color : '#38bdf8'}; font-weight:800;">${adminDueDate}</strong>
+                  </span>
+                </div>
+                <span style="font-size:0.75rem; background:rgba(255,255,255,0.06); padding:3px 10px; border-radius:12px; font-weight:700; color:${returnStatusAdmin ? returnStatusAdmin.color : '#38bdf8'}; border:1px solid ${returnStatusAdmin ? returnStatusAdmin.color : '#38bdf8'};">
+                  ${returnStatusAdmin ? returnStatusAdmin.label : 'Issued Asset'}
+                </span>
+              </div>
+            ` : ''}
 
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; font-size:0.85rem; margin-bottom:10px;">
               <div>
