@@ -2094,4 +2094,67 @@ class StorageService {
     };
     reader.readAsText(file);
   }
+
+  // --- AUTOMATED RETURN MILESTONE NOTIFICATIONS ---
+  // Call on page load; checks issued items and fires notifications at 7D, 14D, 30D milestones
+  static checkReturnDueNotifications() {
+    try {
+      const requests = this.getRequests();
+      const now = new Date();
+      const existingNotifs = this.getNotifications();
+      const notifKeys = new Set(existingNotifs.map(n => n.id));
+
+      requests.forEach(r => {
+        if (!r.issuedAt) return;
+        const isActive = r.status === 'ISSUED' || r.status === 'PARTIAL_RETURN' || r.status === 'APPROVED';
+        if (!isActive) return;
+
+        const issuedDate = new Date(r.issuedAt);
+        if (isNaN(issuedDate.getTime())) return;
+
+        const daysDiff = Math.floor((now - issuedDate) / (1000 * 60 * 60 * 24));
+
+        // 7-day reminder
+        const key7 = `DUE_7D_${r.id}`;
+        if (daysDiff >= 7 && daysDiff < 14 && !notifKeys.has(key7)) {
+          existingNotifs.unshift({
+            id: key7, type: 'RETURN_DUE_7D',
+            title: `\u23f0 7-Day Return Reminder: ${r.componentName}`,
+            message: `${r.requesterName} has held ${r.qtyApproved || r.qtyRequested} pcs of '${r.componentName}' for 7 days (issued: ${r.issuedAt}). Please remind them to return the item.`,
+            timestamp: now.toLocaleString(), read: false
+          });
+          notifKeys.add(key7);
+        }
+
+        // 14-day reminder
+        const key14 = `DUE_14D_${r.id}`;
+        if (daysDiff >= 14 && daysDiff < 30 && !notifKeys.has(key14)) {
+          existingNotifs.unshift({
+            id: key14, type: 'RETURN_DUE_14D',
+            title: `\u23f0 14-Day Return Reminder: ${r.componentName}`,
+            message: `${r.requesterName} has held '${r.componentName}' for 14 days (since ${r.issuedAt}). Immediate follow-up required.`,
+            timestamp: now.toLocaleString(), read: false
+          });
+          notifKeys.add(key14);
+        }
+
+        // 30-day overdue
+        const key30 = `OVERDUE_1M_${r.id}`;
+        if (daysDiff >= 30 && !notifKeys.has(key30)) {
+          existingNotifs.unshift({
+            id: key30, type: 'RETURN_OVERDUE_1M',
+            title: `\ud83d\udea8 OVERDUE (1 Month+): ${r.componentName}`,
+            message: `CRITICAL: ${r.requesterName} has held '${r.componentName}' for over 1 month (${daysDiff} days, issued: ${r.issuedAt}). Escalate return immediately.`,
+            timestamp: now.toLocaleString(), read: false
+          });
+          notifKeys.add(key30);
+        }
+      });
+
+      this.saveNotifications(existingNotifs);
+    } catch (e) {
+      console.warn('[LabSphere] Return milestone notification check failed:', e);
+    }
+  }
 }
+

@@ -41,25 +41,46 @@ class ModalManager {
   }
 
   static bindEvents() {
-    // Notification Center Dropdown & Mobile Drawer Listener
+    // Notification Center — navbar bell toggles dropdown; drawer button opens dedicated modal
     const btnNotif = document.getElementById("btn-nav-notif");
     const drawerBtnNotif = document.getElementById("drawer-btn-notif");
     const notifDropdown = document.getElementById("notif-dropdown");
 
-    const toggleNotifCenter = (e) => {
+    const toggleNotifDropdown = (e) => {
       if (e) e.stopPropagation();
-      const drawer = document.getElementById("mobile-view-drawer");
-      const drawerBackdrop = document.getElementById("mobile-drawer-backdrop");
-      if (drawer) drawer.classList.remove("is-open");
-      if (drawerBackdrop) drawerBackdrop.classList.remove("is-open");
-
       this.renderNotificationCenter();
       if (notifDropdown) notifDropdown.classList.toggle("show");
     };
 
-    if (btnNotif) btnNotif.addEventListener("click", toggleNotifCenter);
-    if (drawerBtnNotif) drawerBtnNotif.addEventListener("click", toggleNotifCenter);
+    if (btnNotif) btnNotif.addEventListener("click", toggleNotifDropdown);
     if (notifDropdown) document.addEventListener("click", () => notifDropdown.classList.remove("show"));
+
+    // Drawer Notifications button → open full-screen Notification Center modal
+    if (drawerBtnNotif) {
+      drawerBtnNotif.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const drawer = document.getElementById("mobile-view-drawer");
+        const drawerBackdrop = document.getElementById("mobile-drawer-backdrop");
+        if (drawer) drawer.classList.remove("is-open");
+        if (drawerBackdrop) drawerBackdrop.classList.remove("is-open");
+        this.openNotificationCenterModal();
+      });
+    }
+
+    // Close Notification Center modal
+    const closeNotifModal = document.getElementById("btn-close-notif-center-modal");
+    if (closeNotifModal) closeNotifModal.addEventListener("click", () => this.closeNotificationCenterModal());
+
+    // Mark All Read inside Notification Center modal
+    const markAllReadModal = document.getElementById("btn-mark-all-notif-read");
+    if (markAllReadModal) {
+      markAllReadModal.addEventListener("click", () => {
+        StorageService.markNotificationsRead();
+        this.openNotificationCenterModal(); // re-render
+        this.renderNotificationCenter();    // update badge counts
+        if (this.callbacks.onInventoryChanged) this.callbacks.onInventoryChanged();
+      });
+    }
 
     const markReadBtn = document.getElementById("btn-mark-notif-read");
     if (markReadBtn) {
@@ -277,6 +298,71 @@ class ModalManager {
       }
       if (window.lucide) window.lucide.createIcons();
     }
+  }
+
+  // --- NOTIFICATION CENTER MODAL (opened from hamburger drawer) ---
+  static openNotificationCenterModal() {
+    const backdrop = document.getElementById("notif-center-modal");
+    const list = document.getElementById("notif-center-list");
+    const badge = document.getElementById("notif-modal-unread-badge");
+
+    const notifs = StorageService.getNotifications();
+    const unread = notifs.filter(n => !n.read).length;
+
+    if (badge) {
+      badge.innerText = unread;
+      if (unread > 0) badge.classList.remove("hidden");
+      else badge.classList.add("hidden");
+    }
+
+    if (list) {
+      if (notifs.length === 0) {
+        list.innerHTML = `
+          <div style="padding:48px 24px; text-align:center;">
+            <div style="font-size:3rem; margin-bottom:16px; opacity:0.4;">🔔</div>
+            <h3 style="color:var(--text-main); font-weight:700; margin:0 0 8px 0;">No Notifications Yet</h3>
+            <p style="color:var(--text-muted); font-size:0.88rem; margin:0;">You're all caught up! Activity alerts for requisitions, item returns, and inventory changes will appear here.</p>
+          </div>
+        `;
+      } else {
+        list.innerHTML = notifs.map((n, idx) => {
+          let iconColor = '#38bdf8';
+          let icon = '🔔';
+          if (n.type && n.type.includes('RETURN')) { icon = '📦'; iconColor = '#10b981'; }
+          else if (n.type && n.type.includes('OVERDUE')) { icon = '⚠️'; iconColor = '#ef4444'; }
+          else if (n.type && n.type.includes('DUE')) { icon = '⏰'; iconColor = '#f59e0b'; }
+          else if (n.type && n.type.includes('ISSUED')) { icon = '✅'; iconColor = '#10b981'; }
+          else if (n.type && n.type.includes('APPROVED')) { icon = '👍'; iconColor = '#0ea5e9'; }
+          else if (n.type && n.type.includes('REJECTED')) { icon = '❌'; iconColor = '#ef4444'; }
+          else if (n.type && n.type.includes('CANCEL')) { icon = '🚫'; iconColor = '#94a3b8'; }
+          else if (n.type && n.type.includes('DAMAGE')) { icon = '⚠️'; iconColor = '#f97316'; }
+
+          return `
+            <div style="display:flex; gap:14px; padding:16px 20px; border-bottom:1px solid var(--border-color); background:${ !n.read ? 'rgba(56,189,248,0.04)' : 'transparent'}; transition:background 0.2s;">
+              <div style="font-size:1.6rem; flex-shrink:0; margin-top:2px;">${icon}</div>
+              <div style="flex:1; min-width:0;">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px; margin-bottom:4px;">
+                  <strong style="color:var(--text-main); font-size:0.95rem; line-height:1.3;">${n.title}</strong>
+                  ${!n.read ? '<span style="font-size:0.65rem; background:rgba(239,68,68,0.18); color:#ef4444; border:1px solid rgba(239,68,68,0.35); padding:2px 7px; border-radius:4px; font-weight:800; flex-shrink:0;">NEW</span>' : ''}
+                </div>
+                <p style="margin:0 0 6px 0; font-size:0.83rem; color:var(--text-muted); line-height:1.5;">${n.message}</p>
+                <span style="font-size:0.72rem; color:${iconColor}; font-weight:600;">${n.timestamp}</span>
+              </div>
+            </div>
+          `;
+        }).join("");
+      }
+    }
+
+    if (window.lucide) window.lucide.createIcons();
+    // Also refresh the badge counts in the nav
+    this.renderNotificationCenter();
+    if (backdrop) backdrop.classList.remove("hidden");
+  }
+
+  static closeNotificationCenterModal() {
+    const backdrop = document.getElementById("notif-center-modal");
+    if (backdrop) backdrop.classList.add("hidden");
   }
 
   // --- BARCODE & QR SCANNER MODAL ---

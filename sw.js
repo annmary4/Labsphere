@@ -2,18 +2,18 @@
    LabSphere Service Worker - Offline Cache & PWA Support
    ============================================================ */
 
-const CACHE_NAME = 'labsphere-v13301_reverted_clean';
+const CACHE_NAME = 'labsphere-v13302_notification_center_modal';
 const ASSETS_TO_CACHE = [
   '/Labsphere/',
   '/Labsphere/index.html',
-  '/Labsphere/css/styles.css?v=13301_reverted_clean',
-  '/Labsphere/js/app.js?v=13301_reverted_clean',
-  '/Labsphere/js/types.js?v=13301_reverted_clean',
-  '/Labsphere/js/initialData.js?v=13301_reverted_clean',
-  '/Labsphere/js/storage.js?v=13301_reverted_clean',
-  '/Labsphere/js/rackViewer.js?v=13301_reverted_clean',
-  '/Labsphere/js/componentsView.js?v=13301_reverted_clean',
-  '/Labsphere/js/modalManager.js?v=13301_reverted_clean',
+  '/Labsphere/css/styles.css?v=13302_notification_center_modal',
+  '/Labsphere/js/app.js?v=13302_notification_center_modal',
+  '/Labsphere/js/types.js?v=13302_notification_center_modal',
+  '/Labsphere/js/initialData.js?v=13302_notification_center_modal',
+  '/Labsphere/js/storage.js?v=13302_notification_center_modal',
+  '/Labsphere/js/rackViewer.js?v=13302_notification_center_modal',
+  '/Labsphere/js/componentsView.js?v=13302_notification_center_modal',
+  '/Labsphere/js/modalManager.js?v=13302_notification_center_modal',
   '/Labsphere/icons/icon-192.png',
   '/Labsphere/icons/icon-512.png',
   '/Labsphere/manifest.json'

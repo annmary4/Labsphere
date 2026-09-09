@@ -35,6 +35,9 @@ class App {
     this.setViewMode("split");
     this.refreshApp();
 
+    // Run automated return milestone notification check (7D, 14D, 1 Month reminders)
+    StorageService.checkReturnDueNotifications();
+
     // Auto-bypass login overlay on startup if session is already active (e.g. switching to Desktop Mode)
     const activeSession = StorageService.getCurrentSession();
     if (activeSession && typeof redirectToDashboard === "function") {
