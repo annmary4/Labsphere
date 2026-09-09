@@ -1262,7 +1262,7 @@ class StorageService {
               const base = new Date(r.issueDate || r.issuedAt || r.requestedAt);
               if (!isNaN(base.getTime())) {
                 const dueD = new Date(base);
-                dueD.setDate(dueD.getDate() + 14);
+                dueD.setDate(dueD.getDate() + 30);
                 r.dueDate = dueD.toISOString().slice(0, 10);
               }
             }
@@ -1654,7 +1654,7 @@ class StorageService {
     } else if (!req.dueDate) {
       const d = new Date(issueDateStr);
       if (!isNaN(d.getTime())) {
-        d.setDate(d.getDate() + 14);
+        d.setDate(d.getDate() + 30);
         req.dueDate = d.toISOString().slice(0, 10);
       }
     }

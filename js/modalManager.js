@@ -1701,33 +1701,45 @@ class ModalManager {
     const todayDate = new Date();
     todayDate.setHours(0, 0, 0, 0);
 
-    // Helper to extract or resolve return due date info for issued components
+    // Helper to extract or resolve return due date info for issued components (30-day loan limit)
     const getRequestDueDateInfo = (r) => {
       const isIssuedActive = r.status === 'ISSUED' || r.status === 'APPROVED' || r.status === 'PARTIAL_RETURN';
       if (!isIssuedActive) return null;
 
+      // Base loan issuance date
+      const baseRaw = r.issueDate || r.issuedAt || r.requestedAt;
+      const baseDate = baseRaw ? new Date(baseRaw) : new Date();
+      const validBaseDate = !isNaN(baseDate.getTime()) ? baseDate : new Date();
+      validBaseDate.setHours(0, 0, 0, 0);
+
+      // Days held since issuance
+      const daysHeld = Math.max(0, Math.floor((todayDate - validBaseDate) / (1000 * 60 * 60 * 24)));
+
       let dueDateStr = r.dueDate;
-      // Default fallback if no explicit dueDate on issued item: 14 days from issue/requested date
-      if (!dueDateStr && (r.issueDate || r.issuedAt || r.requestedAt)) {
-        const base = new Date(r.issueDate || r.issuedAt || r.requestedAt);
-        if (!isNaN(base.getTime())) {
-          const d = new Date(base);
-          d.setDate(d.getDate() + 14);
-          dueDateStr = d.toISOString().slice(0, 10);
-        }
+      // Default fallback if no explicit dueDate on issued item: 30 days from issuance
+      if (!dueDateStr) {
+        const defaultDue = new Date(validBaseDate);
+        defaultDue.setDate(defaultDue.getDate() + 30);
+        dueDateStr = defaultDue.toISOString().slice(0, 10);
       }
 
-      if (!dueDateStr) return null;
-
       const due = new Date(dueDateStr);
-      if (isNaN(due.getTime())) return null;
-      due.setHours(0, 0, 0, 0);
+      const validDueDate = !isNaN(due.getTime()) ? due : new Date(validBaseDate.getTime() + 30 * 86400000);
+      validDueDate.setHours(0, 0, 0, 0);
 
-      const diffDays = Math.round((due - todayDate) / (1000 * 60 * 60 * 24));
+      // Days remaining before overdue (relative to due date)
+      const daysBeforeOverdue = Math.round((validDueDate - todayDate) / (1000 * 60 * 60 * 24));
+
+      // Exceeded 30 days time limit: held for >30 days or past due date (daysBeforeOverdue < 0)
+      const isExceeded30Days = daysHeld > 30 || daysBeforeOverdue < 0;
+      const daysExceeded = Math.max(daysHeld - 30, Math.abs(daysBeforeOverdue));
+
       return {
         dueDateStr,
-        diffDays,
-        isOverdue: diffDays < 0
+        daysHeld,
+        daysBeforeOverdue,
+        isExceeded30Days,
+        daysExceeded
       };
     };
 
@@ -1736,11 +1748,11 @@ class ModalManager {
     const pendingSet = allRequests.filter(r => r.status === 'PENDING_LEAD_APPROVAL' || r.status === 'SUBMITTED' || r.status === 'PENDING' || r.status === 'PENDING_ADMIN_ISSUANCE' || r.status === 'LEAD_APPROVED' || r.status === 'LEAD_MODIFIED');
     const dueSet     = allRequests.filter(r => {
       const info = getRequestDueDateInfo(r);
-      return info !== null && !info.isOverdue; // Active issued items with due date, not overdue
+      return info !== null && !info.isExceeded30Days; // Active issued items with due date, within 30 days limit
     });
     const overdueSet = allRequests.filter(r => {
       const info = getRequestDueDateInfo(r);
-      return info !== null && info.isOverdue;  // Items past their due date
+      return info !== null && info.isExceeded30Days;  // Issued components that exceeded the 30 days time limit
     });
 
     // --- Update count badges ---
@@ -1788,8 +1800,8 @@ class ModalManager {
       all:     '',
       issued:  '📦 Showing only actively issued & borrowed components',
       pending: '⏳ Showing only requests awaiting Team Lead or Admin approval',
-      due:     '📅 Showing issued components with upcoming return due dates',
-      overdue: '🚨 Showing overdue components past return due date (action required)',
+      due:     '📅 Showing issued components with active return due dates & remaining days before overdue (within 30-day limit)',
+      overdue: '🚨 Showing issued components that exceeded the 30-day loan time limit',
     };
     if (sectionHeader && sectionLabel) {
       if (filter === 'all') {
@@ -1821,8 +1833,8 @@ class ModalManager {
         all:     'No material requests submitted yet.',
         issued:  'No components are currently issued to you.',
         pending: 'No requests are pending approval right now.',
-        due:     'No issued components are currently due for return. ✅',
-        overdue: 'No overdue components! All returns are on schedule. 🎉',
+        due:     'No active issued components within the loan period. ✅',
+        overdue: 'No components have exceeded the 30-day time limit! All returns are within schedule. 🎉',
       };
       const emptyIcons = {
         all:     '📋',
@@ -1878,36 +1890,49 @@ class ModalManager {
 
       const isIssuedActive = r.status === 'ISSUED' || r.status === 'APPROVED' || r.status === 'PARTIAL_RETURN';
 
-      // Compute due date badge for issued items
+      // Compute due date & overdue status badge for issued items
       let dueDateBadgeHtml = '';
       const dueInfo = getRequestDueDateInfo(r);
       if (isIssuedActive && dueInfo) {
-        const { dueDateStr, diffDays, isOverdue } = dueInfo;
+        const { dueDateStr, daysHeld, daysBeforeOverdue, isExceeded30Days, daysExceeded } = dueInfo;
 
-        let dueBadgeColor = '#10b981';
-        let dueBadgeBg   = 'rgba(16,185,129,0.12)';
-        let dueBadgeBdr  = 'rgba(16,185,129,0.35)';
-        let dueIcon = '📅';
-        let dueLabel = `Due in ${diffDays} day${diffDays !== 1 ? 's' : ''}`;
+        let badgeColor = '#10b981';
+        let badgeBg   = 'rgba(16,185,129,0.12)';
+        let badgeBdr  = 'rgba(16,185,129,0.35)';
+        let icon = '📅';
+        let countdownText = `${daysBeforeOverdue} day${daysBeforeOverdue !== 1 ? 's' : ''} remaining before overdue`;
 
-        if (isOverdue) {
-          dueBadgeColor = '#ef4444'; dueBadgeBg = 'rgba(239,68,68,0.12)'; dueBadgeBdr = 'rgba(239,68,68,0.35)';
-          dueIcon = '🚨'; dueLabel = `OVERDUE by ${Math.abs(diffDays)} day${Math.abs(diffDays) !== 1 ? 's' : ''}`;
-        } else if (diffDays === 0) {
-          dueBadgeColor = '#f97316'; dueBadgeBg = 'rgba(249,115,22,0.12)'; dueBadgeBdr = 'rgba(249,115,22,0.35)';
-          dueIcon = '⚠️'; dueLabel = 'Due TODAY';
-        } else if (diffDays <= 7) {
-          dueBadgeColor = '#f59e0b'; dueBadgeBg = 'rgba(245,158,11,0.12)'; dueBadgeBdr = 'rgba(245,158,11,0.35)';
-          dueIcon = '⏰'; dueLabel = `Due in ${diffDays} day${diffDays !== 1 ? 's' : ''}`;
+        if (isExceeded30Days) {
+          badgeColor = '#ef4444';
+          badgeBg    = 'rgba(239,68,68,0.15)';
+          badgeBdr   = 'rgba(239,68,68,0.45)';
+          icon       = '🚨';
+          countdownText = `EXCEEDED 30-DAY LIMIT by ${daysExceeded} day${daysExceeded !== 1 ? 's' : ''} (Held for ${daysHeld} days)`;
+        } else if (daysBeforeOverdue === 0) {
+          badgeColor = '#f97316';
+          badgeBg    = 'rgba(249,115,22,0.14)';
+          badgeBdr   = 'rgba(249,115,22,0.4)';
+          icon       = '⚠️';
+          countdownText = 'Due TODAY — 0 days remaining before overdue';
+        } else if (daysBeforeOverdue <= 7) {
+          badgeColor = '#f59e0b';
+          badgeBg    = 'rgba(245,158,11,0.14)';
+          badgeBdr   = 'rgba(245,158,11,0.4)';
+          icon       = '⏰';
+          countdownText = `${daysBeforeOverdue} day${daysBeforeOverdue !== 1 ? 's' : ''} remaining before overdue`;
         }
 
         dueDateBadgeHtml = `
-          <div style="display:flex; align-items:center; gap:8px; margin-top:8px; margin-bottom:2px; flex-wrap:wrap;">
-            <span style="display:inline-flex; align-items:center; gap:6px; background:${dueBadgeBg}; color:${dueBadgeColor}; border:1px solid ${dueBadgeBdr}; border-radius:8px; padding:5px 12px; font-size:0.83rem; font-weight:800;">
-              ${dueIcon} Return Due: <strong style="font-size:0.88rem;">${dueDateStr}</strong>
-              <span style="font-size:0.75rem; opacity:0.9;">(${dueLabel})</span>
-            </span>
-            ${r.issuedAt ? `<span style="font-size:0.75rem; color:var(--text-muted);">Issued: ${r.issuedAt}</span>` : ''}
+          <div style="display:flex; flex-direction:column; gap:4px; margin-top:8px; margin-bottom:4px;">
+            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+              <span style="display:inline-flex; align-items:center; gap:6px; background:${badgeBg}; color:${badgeColor}; border:1px solid ${badgeBdr}; border-radius:8px; padding:6px 12px; font-size:0.83rem; font-weight:800;">
+                ${icon} Return Due: <strong style="font-size:0.88rem;">${dueDateStr}</strong>
+                <span style="font-size:0.78rem; opacity:0.95; padding-left:6px; border-left:1px solid ${badgeBdr}; margin-left:4px;">
+                  ${countdownText}
+                </span>
+              </span>
+              ${r.issuedAt ? `<span style="font-size:0.75rem; color:var(--text-muted);">Issued: ${r.issuedAt} (${daysHeld}d held / 30d limit)</span>` : ''}
+            </div>
           </div>
         `;
       }
@@ -2250,7 +2275,7 @@ class ModalManager {
     const defaultIssuer = session ? session.fullName : "Inventory Administrator";
     const defaultDate = new Date().toISOString().slice(0, 10);
     const defaultDueDateObj = new Date();
-    defaultDueDateObj.setDate(defaultDueDateObj.getDate() + 14);
+    defaultDueDateObj.setDate(defaultDueDateObj.getDate() + 30);
     const defaultDueDate = req.dueDate || defaultDueDateObj.toISOString().slice(0, 10);
 
     const backdrop = document.createElement("div");
@@ -2338,7 +2363,7 @@ class ModalManager {
             </label>
             <input type="date" id="issue-due-date-field" value="${defaultDueDate}" style="width:100%; padding:9px 12px; background:#0f172a; border:1px solid #334155; border-radius:8px; color:#f8fafc; font-weight:600; font-size:0.85rem; box-sizing:border-box;" />
             <span style="font-size:0.75rem; color:#94a3b8; display:block; margin-top:4px;">
-              📅 Loan Due Date (used to track active due vs overdue components)
+              📅 Standard 30-day loan limit (used for remaining days & overdue tracking)
             </span>
           </div>
         </div>
