@@ -16,7 +16,9 @@ const STORAGE_KEYS = {
   SESSION: "labsphere_session_v10250",
   SECURITY_LOGS: "labsphere_sec_logs_v10250",
   NOTIFICATIONS: "labsphere_notifs_v10250",
-  REQUISITION_DRAFTS: "labsphere_req_drafts_v10250"
+  REQUISITION_DRAFTS: "labsphere_req_drafts_v10250",
+  PENDING_VERIFICATIONS: "labsphere_pending_verifs_v13307",
+  EMAIL_LOGS: "labsphere_email_logs_v13307"
 };
 
 function sanitizeMojibake(str) {
@@ -936,8 +938,9 @@ class StorageService {
     }).catch(() => {});
   }
 
-  static createUser(username, email, password, role, fullName) {
-    if (!this.isRole("ADMIN")) {
+  static createUser(username, email, password, role, fullName, options = {}) {
+    const isAdmin = this.isRole("ADMIN");
+    if (!isAdmin && !options.bypassAdminCheck) {
       throw new Error("Access Denied: Only Administrators are authorized to register new user accounts!");
     }
 
@@ -962,7 +965,9 @@ class StorageService {
       passwordHash: password,
       role,
       fullName,
-      status: "ACTIVE",
+      status: options.status || "ACTIVE",
+      isVerified: options.isVerified !== undefined ? options.isVerified : true,
+      verifiedAt: options.isVerified ? new Date().toISOString() : null,
       createdAt: new Date().toISOString().slice(0, 10),
       lastActive: new Date().toLocaleString()
     };
@@ -971,8 +976,287 @@ class StorageService {
     this.saveUsers(users);
 
     const session = this.getCurrentSession();
-    this.logSecurityEvent("USER_CREATED", session ? session.userId : "ADMIN", username, USER_ROLES[role], `Created new user account '${fullName}' (${email}) with role ${role}.`);
+    this.logSecurityEvent("USER_CREATED", session ? session.userId : "SYSTEM", username, USER_ROLES[role] || role, `Created new user account '${fullName}' (${email}) with role ${role}. Status: ${newUser.status}.`);
     return newUser;
+  }
+
+  // --- EMAIL VERIFICATION & SECRET CODE SECURITY SERVICE ---
+
+  static getPendingVerifications() {
+    try {
+      const data = localStorage.getItem(STORAGE_KEYS.PENDING_VERIFICATIONS);
+      return data ? JSON.parse(data) : {};
+    } catch (e) {
+      return {};
+    }
+  }
+
+  static savePendingVerifications(map) {
+    try {
+      localStorage.setItem(STORAGE_KEYS.PENDING_VERIFICATIONS, JSON.stringify(map));
+    } catch (e) {}
+  }
+
+  static getEmailLogs() {
+    try {
+      const data = localStorage.getItem(STORAGE_KEYS.EMAIL_LOGS);
+      return data ? JSON.parse(data) : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  static saveEmailLogs(logs) {
+    try {
+      localStorage.setItem(STORAGE_KEYS.EMAIL_LOGS, JSON.stringify((logs || []).slice(-50)));
+    } catch (e) {}
+  }
+
+  static generateSecretCode() {
+    // Generate secure 6-digit verification pin (100000 - 999999)
+    return String(Math.floor(100000 + Math.random() * 900000));
+  }
+
+  static sendRegistrationVerificationCode(userData) {
+    const { username, email, password, role, fullName } = userData;
+
+    if (!username || !username.trim()) throw new Error("Username is required.");
+    if (!email || !email.trim()) throw new Error("Email address is required.");
+    if (!password || !password.trim()) throw new Error("Password is required.");
+    if (!fullName || !fullName.trim()) throw new Error("Full name is required.");
+
+    const cleanEmail = email.trim().toLowerCase();
+    const cleanUsername = username.trim().toLowerCase();
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(cleanEmail)) {
+      throw new Error("Please enter a valid email address (e.g., student@labsphere.io).");
+    }
+
+    if (role === "ADMIN" && !isMasterAdmin(cleanEmail, cleanUsername)) {
+      throw new Error("Security Lock: Lab Administrator registration is strictly reserved for the authorized master administrator.");
+    }
+
+    const users = this.getUsers();
+    if (users.some(u => (u.email && u.email.toLowerCase() === cleanEmail))) {
+      throw new Error(`An account with email '${email}' already exists! Please sign in.`);
+    }
+    if (users.some(u => (u.username && u.username.toLowerCase() === cleanUsername))) {
+      throw new Error(`Username '${username}' is already taken! Please pick another.`);
+    }
+
+    const pendingMap = this.getPendingVerifications();
+    const existing = pendingMap[cleanEmail];
+    if (existing && existing.lastSentAt && (Date.now() - existing.lastSentAt < 15000)) {
+      const waitSec = Math.ceil((15000 - (Date.now() - existing.lastSentAt)) / 1000);
+      throw new Error(`Please wait ${waitSec}s before requesting a new code.`);
+    }
+
+    const secretCode = this.generateSecretCode();
+    const expiresAt = Date.now() + (10 * 60 * 1000); // 10 minutes
+
+    pendingMap[cleanEmail] = {
+      username: username.trim(),
+      email: cleanEmail,
+      passwordHash: password,
+      role: role || "STUDENT",
+      fullName: fullName.trim(),
+      secretCode: secretCode,
+      expiresAt: expiresAt,
+      lastSentAt: Date.now(),
+      attempts: 0
+    };
+    this.savePendingVerifications(pendingMap);
+
+    // Dispatch verification email
+    const dispatched = this.dispatchEmailNotification({
+      to: cleanEmail,
+      recipientName: fullName.trim(),
+      subject: `[LabSphere] Your Secret Verification Code: ${secretCode}`,
+      type: "VERIFICATION_CODE",
+      code: secretCode,
+      expiresInMinutes: 10
+    });
+
+    return {
+      success: true,
+      email: cleanEmail,
+      expiresAt: expiresAt,
+      code: secretCode,
+      dispatched
+    };
+  }
+
+  static resendVerificationCode(email) {
+    const cleanEmail = (email || "").trim().toLowerCase();
+    const pendingMap = this.getPendingVerifications();
+    const pending = pendingMap[cleanEmail];
+
+    if (!pending) {
+      throw new Error("No pending registration found for this email. Please fill out the registration form again.");
+    }
+
+    if (pending.lastSentAt && (Date.now() - pending.lastSentAt < 15000)) {
+      const waitSec = Math.ceil((15000 - (Date.now() - pending.lastSentAt)) / 1000);
+      throw new Error(`Please wait ${waitSec}s before requesting another verification code.`);
+    }
+
+    const secretCode = this.generateSecretCode();
+    pending.secretCode = secretCode;
+    pending.expiresAt = Date.now() + (10 * 60 * 1000);
+    pending.lastSentAt = Date.now();
+    pending.attempts = 0;
+    this.savePendingVerifications(pendingMap);
+
+    const dispatched = this.dispatchEmailNotification({
+      to: cleanEmail,
+      recipientName: pending.fullName,
+      subject: `[LabSphere] Resent Secret Verification Code: ${secretCode}`,
+      type: "VERIFICATION_CODE_RESENT",
+      code: secretCode,
+      expiresInMinutes: 10
+    });
+
+    return {
+      success: true,
+      email: cleanEmail,
+      expiresAt: pending.expiresAt,
+      code: secretCode,
+      dispatched
+    };
+  }
+
+  static verifySecretCodeAndCreateUser(email, enteredCode) {
+    const cleanEmail = (email || "").trim().toLowerCase();
+    const code = (enteredCode || "").trim();
+
+    if (!code) {
+      throw new Error("Please enter the 6-digit secret verification code sent to your email.");
+    }
+
+    const pendingMap = this.getPendingVerifications();
+    const pending = pendingMap[cleanEmail];
+
+    if (!pending) {
+      throw new Error("No pending registration found for this email. Please complete the registration form.");
+    }
+
+    if (Date.now() > pending.expiresAt) {
+      throw new Error("Verification code has expired! Please click 'Resend Code' to receive a new code.");
+    }
+
+    if (pending.attempts >= 5) {
+      throw new Error("Maximum code attempts reached. Please click 'Resend Code' for a fresh security code.");
+    }
+
+    if (pending.secretCode !== code) {
+      pending.attempts = (pending.attempts || 0) + 1;
+      this.savePendingVerifications(pendingMap);
+      const left = 5 - pending.attempts;
+      throw new Error(`Invalid secret code! Please check your email and enter the exact 6 digits (${left} attempt${left === 1 ? '' : 's'} remaining).`);
+    }
+
+    // Code verified! Register the verified user account
+    const newUser = this.createUser(
+      pending.username,
+      pending.email,
+      pending.passwordHash,
+      pending.role,
+      pending.fullName,
+      { bypassAdminCheck: true, isVerified: true, status: "ACTIVE" }
+    );
+
+    // Remove pending record
+    delete pendingMap[cleanEmail];
+    this.savePendingVerifications(pendingMap);
+
+    this.logSecurityEvent(
+      "USER_VERIFIED",
+      newUser.id,
+      newUser.username,
+      USER_ROLES[newUser.role] || newUser.role,
+      `User account '${newUser.email}' successfully verified via email secret code.`
+    );
+
+    // Send welcome confirmation email
+    this.dispatchEmailNotification({
+      to: newUser.email,
+      recipientName: newUser.fullName,
+      subject: `[LabSphere] Welcome! Your Account is Verified & Active`,
+      type: "ACCOUNT_VERIFIED",
+      code: null,
+      messageBody: `Hello ${newUser.fullName},\n\nYour LabSphere account (${newUser.username}) has been verified and activated!\nYou can now sign in using your credentials to request lab components, browse the live inventory, and manage your projects.\n\nBest regards,\nLabSphere Engineering Team`
+    });
+
+    return newUser;
+  }
+
+  static dispatchEmailNotification(options) {
+    const { to, recipientName, subject, type, code, expiresInMinutes = 10, messageBody } = options;
+    const timestamp = new Date().toISOString();
+
+    const formattedBody = messageBody || (code 
+      ? `Hello ${recipientName || 'Lab Member'},\n\nYour secret verification code for LabSphere is:\n\n👉  ${code}  👈\n\nThis code will expire in ${expiresInMinutes} minutes.\nPlease type this secret code into the registration verification form to complete your account setup and unlock laboratory access.\n\nIf you did not request this, please ignore this email.\n\nBest regards,\nLabSphere Security & Access Control\nLaboratory Management System`
+      : `Hello ${recipientName || 'Lab Member'},\n\nYour account has been successfully verified! You now have full access to LabSphere.`);
+
+    const emailRecord = {
+      id: "MAIL-" + Date.now().toString().slice(-6),
+      to,
+      recipientName: recipientName || "Lab User",
+      subject,
+      type: type || "NOTIFICATION",
+      code: code || null,
+      expiresAt: code ? new Date(Date.now() + expiresInMinutes * 60 * 1000).toISOString() : null,
+      body: formattedBody,
+      timestamp,
+      status: "SENT"
+    };
+
+    // 1. Record in local email logs
+    const logs = this.getEmailLogs();
+    logs.push(emailRecord);
+    this.saveEmailLogs(logs);
+
+    // 2. Add to LabSphere In-App Notification Center
+    try {
+      this.addNotification(
+        "EMAIL_DISPATCH",
+        type === "ACCOUNT_VERIFIED" ? "🎉 Account Verified Successfully" : "📨 Verification Code Dispatched",
+        type === "ACCOUNT_VERIFIED"
+          ? `Welcome to LabSphere, ${recipientName}! Account (${to}) is active.`
+          : `Secret code sent to ${to}: [ ${code} ] (Expires in ${expiresInMinutes}m)`,
+        "LOW"
+      );
+    } catch (e) {}
+
+    // 3. Dispatch DOM CustomEvent for the UI Mailbox Viewer / Toast
+    try {
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("labsphere:email-dispatched", {
+          detail: emailRecord
+        }));
+      }
+    } catch (e) {}
+
+    // 4. Send via external Web Mail Gateway (Web3Forms/REST Hook)
+    try {
+      if (typeof fetch === "function") {
+        fetch("https://api.web3forms.com/submit", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Accept": "application/json" },
+          body: JSON.stringify({
+            access_key: "099a9a3b-2521-4ba2-bf4f-bf3595f5be4f",
+            subject: subject,
+            from_name: "LabSphere Security Team",
+            email: to,
+            message: formattedBody
+          })
+        }).catch(() => {});
+      }
+    } catch (e) {}
+
+    return emailRecord;
   }
 
   static updateUserNameById(userId, newFullName) {
@@ -1082,6 +1366,14 @@ class StorageService {
     if (!user) {
       this.logSecurityEvent("LOGIN_ATTEMPT", "UNKNOWN", input, "GUEST", `Login attempt for: ${input}`);
       throw new Error("Invalid username/email or password!");
+    }
+
+    if (user.status === "DISABLED") {
+      throw new Error("This account is currently deactivated. Please contact your Lab Administrator.");
+    }
+
+    if (user.isVerified === false || user.status === "PENDING_VERIFICATION") {
+      throw new Error(`ACCOUNT_NOT_VERIFIED:${user.email}`);
     }
 
     user.status = "ACTIVE";

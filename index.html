@@ -19,7 +19,61 @@
     rel="stylesheet">
 
   <!-- CSS with cache buster -->
-  <link rel="stylesheet" href="css/styles.css?v=13300_team_lead_selection_anson_amal">
+  <link rel="stylesheet" href="css/styles.css?v=13307_email_verification_secret_code">
+
+  <style>
+    .vdigit-box {
+      width: 44px;
+      height: 52px;
+      font-size: 1.5rem;
+      text-align: center;
+      font-weight: 800;
+      font-family: 'JetBrains Mono', monospace;
+      border-radius: 8px;
+      border: 2px solid var(--border-color, #334155);
+      background: var(--bg-dark, #0b132b);
+      color: var(--text-main, #f8fafc);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      outline: none;
+    }
+    .vdigit-box:focus {
+      border-color: var(--primary, #38bdf8) !important;
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.3);
+      transform: translateY(-2px);
+      background: rgba(56, 189, 248, 0.08);
+    }
+    .vdigit-box.filled {
+      border-color: rgba(56, 189, 248, 0.6);
+      background: rgba(56, 189, 248, 0.05);
+    }
+    .labsphere-email-toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      max-width: 420px;
+      width: calc(100% - 48px);
+      background: #0b132b;
+      border: 1.5px solid #38bdf8;
+      border-radius: 14px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65), 0 0 25px rgba(56, 189, 248, 0.2);
+      padding: 16px 18px;
+      z-index: 999999;
+      color: #f8fafc;
+      animation: toastSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      backdrop-filter: blur(12px);
+    }
+    @keyframes toastSlideIn {
+      from { transform: translateY(80px) scale(0.95); opacity: 0; }
+      to { transform: translateY(0) scale(1); opacity: 1; }
+    }
+    @media (max-width: 480px) {
+      .vdigit-box { width: 38px; height: 46px; font-size: 1.25rem; }
+      .labsphere-email-toast { bottom: 12px; right: 12px; max-width: calc(100% - 24px); }
+    }
+  </style>
 
   <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -124,43 +178,97 @@
         </button>
       </form>
 
-      <!-- TAB 2: REGISTER NEW USER ACCOUNT FORM -->
-      <form id="login-panel-register" class="login-panel hidden" onsubmit="handleUserRegistration(event)">
-        <div class="form-group">
-          <label for="reg-username"><i data-lucide="at-sign"></i> Username</label>
-          <input type="text" id="reg-username" class="form-control" placeholder="e.g. student_intern" required />
-        </div>
+      <!-- TAB 2: REGISTER NEW USER ACCOUNT & EMAIL VERIFICATION -->
+      <div id="login-panel-register" class="login-panel hidden">
+        <!-- STEP 1: USER REGISTRATION DETAILS -->
+        <form id="reg-step-details" onsubmit="handleSendRegistrationCode(event)">
+          <div class="form-group">
+            <label for="reg-username"><i data-lucide="at-sign"></i> Username</label>
+            <input type="text" id="reg-username" class="form-control" placeholder="e.g. student_intern" required />
+          </div>
 
-        <div class="form-group">
-          <label for="reg-email"><i data-lucide="mail"></i> Email Address (Usermail)</label>
-          <input type="email" id="reg-email" class="form-control" placeholder="student@labsphere.io" required />
-        </div>
+          <div class="form-group">
+            <label for="reg-email"><i data-lucide="mail"></i> Email Address (Verification Code Destination)</label>
+            <input type="email" id="reg-email" class="form-control" placeholder="student@labsphere.io" required />
+            <small style="color:var(--text-muted); font-size:0.75rem; margin-top:3px; display:block;">
+              🔒 A 6-digit secret code will be dispatched to this email to verify your identity.
+            </small>
+          </div>
 
-        <div class="form-group">
-          <label for="reg-password"><i data-lucide="key"></i> Password</label>
-          <input type="password" id="reg-password" class="form-control" placeholder="••••••••" required />
-        </div>
+          <div class="form-group">
+            <label for="reg-password"><i data-lucide="key"></i> Password</label>
+            <input type="password" id="reg-password" class="form-control" placeholder="••••••••" required />
+          </div>
 
-        <div class="form-group">
-          <label for="reg-fullname"><i data-lucide="user"></i> Full Name</label>
-          <input type="text" id="reg-fullname" class="form-control" placeholder="Student Intern" required />
-        </div>
+          <div class="form-group">
+            <label for="reg-fullname"><i data-lucide="user"></i> Full Name</label>
+            <input type="text" id="reg-fullname" class="form-control" placeholder="Student Intern" required />
+          </div>
 
-        <div class="form-group">
-          <label for="reg-role"><i data-lucide="shield"></i> Laboratory Role</label>
-          <select id="reg-role" class="form-control" style="background:var(--bg-dark); color:var(--text-main);">
-            <option value="ADMIN">Lab Administrator (Stock Issuance & Full Control)</option>
-            <option value="TEAM_LEAD">Team Lead (Approve Student Requisitions)</option>
-            <option value="ENGINEER">Lab Engineer / Maintainer</option>
-            <option value="MANAGEMENT">Research Lead</option>
-            <option value="STUDENT" selected>Student / Intern</option>
-          </select>
-        </div>
+          <div class="form-group">
+            <label for="reg-role"><i data-lucide="shield"></i> Laboratory Role</label>
+            <select id="reg-role" class="form-control" style="background:var(--bg-dark); color:var(--text-main);">
+              <option value="ADMIN">Lab Administrator (Stock Issuance & Full Control)</option>
+              <option value="TEAM_LEAD">Team Lead (Approve Student Requisitions)</option>
+              <option value="ENGINEER">Lab Engineer / Maintainer</option>
+              <option value="MANAGEMENT">Research Lead</option>
+              <option value="STUDENT" selected>Student / Intern</option>
+            </select>
+          </div>
 
-        <button type="submit" class="btn btn-primary btn-block btn-lg" style="margin-top:8px;">
-          <i data-lucide="user-plus"></i> Register Account
-        </button>
-      </form>
+          <button type="submit" id="btn-reg-send-code" class="btn btn-primary btn-block btn-lg" style="margin-top:8px;">
+            <i data-lucide="mail-check"></i> Register & Send Secret Code
+          </button>
+        </form>
+
+        <!-- STEP 2: SECRET CODE VERIFICATION PANEL -->
+        <div id="reg-step-verify" class="hidden" style="animation: fadeIn 0.3s ease;">
+          <div style="text-align:center; padding:6px 0 14px 0;">
+            <div style="width:50px; height:50px; border-radius:50%; background:rgba(56, 189, 248, 0.15); border:1.5px solid var(--primary); display:inline-flex; align-items:center; justify-content:center; margin-bottom:10px;">
+              <i data-lucide="shield-alert" style="width:24px; height:24px; color:var(--primary);"></i>
+            </div>
+            <h3 style="margin:0 0 4px 0; font-size:1.15rem; font-weight:700; color:var(--text-main);">Enter Secret Verification Code</h3>
+            <p style="margin:0; font-size:0.83rem; color:var(--text-muted); line-height:1.4;">
+              A 6-digit secret code has been dispatched to your email:<br />
+              <strong id="verify-target-email-display" style="color:var(--primary); font-size:0.9rem; word-break:break-all;"></strong>
+            </p>
+          </div>
+
+          <div class="form-group" style="margin-bottom:14px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <label style="font-weight:600; font-size:0.83rem; margin:0; color:var(--text-main);">
+                Secret Code (6 Digits)
+              </label>
+              <span id="vcode-timer-badge" style="color:var(--warning); font-size:0.8rem; font-weight:700; background:rgba(245,158,11,0.1); padding:2px 8px; border-radius:12px; border:1px solid rgba(245,158,11,0.25);">
+                ⏱️ <span id="vcode-countdown">10:00</span>
+              </span>
+            </div>
+
+            <div style="display:flex; gap:8px; justify-content:center; margin-top:4px;" id="vcode-digits-container">
+              <input type="text" inputmode="numeric" maxlength="1" class="vdigit-box" id="vdigit-0" autofocus />
+              <input type="text" inputmode="numeric" maxlength="1" class="vdigit-box" id="vdigit-1" />
+              <input type="text" inputmode="numeric" maxlength="1" class="vdigit-box" id="vdigit-2" />
+              <input type="text" inputmode="numeric" maxlength="1" class="vdigit-box" id="vdigit-3" />
+              <input type="text" inputmode="numeric" maxlength="1" class="vdigit-box" id="vdigit-4" />
+              <input type="text" inputmode="numeric" maxlength="1" class="vdigit-box" id="vdigit-5" />
+            </div>
+            <input type="hidden" id="vcode-combined-val" />
+          </div>
+
+          <button type="button" id="btn-verify-secret-code" class="btn btn-primary btn-block btn-lg" onclick="handleConfirmVerificationCode()" style="margin-top:12px;">
+            <i data-lucide="check-circle"></i> Verify Secret Code & Activate Account
+          </button>
+
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px; font-size:0.82rem;">
+            <button type="button" id="btn-resend-vcode" class="btn btn-outline btn-sm" onclick="handleResendCode()" style="border-radius:6px; font-weight:600; font-size:0.8rem;">
+              🔄 Resend Code <span id="resend-cooldown-text"></span>
+            </button>
+            <button type="button" class="btn btn-link btn-sm" onclick="backToRegistrationDetails()" style="color:var(--text-muted); text-decoration:none; font-weight:600; font-size:0.8rem; cursor:pointer;">
+              ← Back to Details
+            </button>
+          </div>
+        </div>
+      </div>
 
       <!-- TAB 3: QUICK ACCESS ROLE CARDS -->
       <div id="login-panel-quick" class="login-panel hidden">
@@ -2444,6 +2552,11 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
       }
     }
 
+    let activePendingReg = null;
+    let vcodeCountdownInterval = null;
+    let resendCooldownInterval = null;
+    let lastDispatchedEmail = null;
+
     async function handleMemberSignIn(event) {
       if (event) event.preventDefault();
       const emailOrUser = document.getElementById('login-email').value.trim();
@@ -2457,12 +2570,33 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
         }
         redirectToDashboard();
       } catch (e) {
+        if (e.message && e.message.startsWith('ACCOUNT_NOT_VERIFIED:')) {
+          const unverifiedEmail = e.message.split(':')[1] || emailOrUser;
+          showLoginAlert(
+            `⚠️ Account not yet verified! A secret code was sent to your email. <button type="button" class="btn btn-sm btn-primary" onclick="promptForVerificationCode('${unverifiedEmail}')" style="margin-left:8px; padding:3px 10px; font-size:0.78rem; font-weight:700;">Enter Secret Code Now</button>`,
+            'error'
+          );
+          return;
+        }
         showLoginAlert(e.message || 'Invalid username/email or password.', 'error');
       }
     }
 
-    function handleUserRegistration(event) {
-      event.preventDefault();
+    function promptForVerificationCode(email) {
+      switchLoginTab('register');
+      document.getElementById('reg-step-details').classList.add('hidden');
+      document.getElementById('reg-step-verify').classList.remove('hidden');
+      document.getElementById('verify-target-email-display').innerText = email;
+      activePendingReg = { email: email };
+      setupVerificationDigitBoxes();
+      setTimeout(() => {
+        const first = document.getElementById('vdigit-0');
+        if (first) first.focus();
+      }, 100);
+    }
+
+    function handleSendRegistrationCode(event) {
+      if (event) event.preventDefault();
       const username = document.getElementById('reg-username').value.trim();
       const email = document.getElementById('reg-email').value.trim();
       const password = document.getElementById('reg-password').value;
@@ -2470,34 +2604,399 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
       const fullName = fullNameInput && fullNameInput.trim() ? fullNameInput.trim() : username;
       const role = document.getElementById('reg-role').value || 'STUDENT';
 
-      // Validate that all required columns/fields are filled in
       if (!username || !email || !password || !fullNameInput || !fullNameInput.trim()) {
-        showLoginAlert('Please fill in all columns (Username, Email, Password, and Full Name) to create your account.', 'error');
+        showLoginAlert('Please fill in all fields (Username, Email, Password, and Full Name) to continue.', 'error');
         return;
       }
 
       try {
-        const newUser = StorageService.createUser(username, email, password, role, fullName);
+        const btn = document.getElementById('btn-reg-send-code');
+        if (btn) {
+          btn.disabled = true;
+          btn.innerHTML = '⌛ Generating & Sending Secret Code...';
+        }
 
-        // Show prominent creation success message
-        showLoginAlert(`Success: Account created successfully! Please sign in with your username/email and password.`, 'success');
+        const result = StorageService.sendRegistrationVerificationCode({
+          username,
+          email,
+          password,
+          role,
+          fullName
+        });
 
-        // Reset registration fields
+        activePendingReg = {
+          username,
+          email,
+          fullName,
+          role,
+          expiresAt: result.expiresAt
+        };
+
+        // Transition to Step 2
+        document.getElementById('reg-step-details').classList.add('hidden');
+        document.getElementById('reg-step-verify').classList.remove('hidden');
+        document.getElementById('verify-target-email-display').innerText = email;
+
+        // Setup 6-digit inputs & countdown
+        setupVerificationDigitBoxes();
+        startVcodeCountdown(result.expiresAt);
+        startResendCooldown(30);
+
+        showLoginAlert(`📬 Verification email sent to ${email}! Please enter your 6-digit secret code below to activate your account.`, 'success');
+
+        if (window.lucide) window.lucide.createIcons();
+      } catch (e) {
+        showLoginAlert(e.message || 'Failed to dispatch verification code.', 'error');
+      } finally {
+        const btn = document.getElementById('btn-reg-send-code');
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '<i data-lucide="mail-check"></i> Register & Send Secret Code';
+          if (window.lucide) window.lucide.createIcons();
+        }
+      }
+    }
+
+    function handleConfirmVerificationCode() {
+      if (!activePendingReg || !activePendingReg.email) {
+        showLoginAlert('Session expired or missing registration details. Please fill out details again.', 'error');
+        backToRegistrationDetails();
+        return;
+      }
+
+      // Collect digits
+      let enteredCode = '';
+      for (let i = 0; i < 6; i++) {
+        const box = document.getElementById(`vdigit-${i}`);
+        if (box) enteredCode += box.value.trim();
+      }
+
+      if (enteredCode.length < 6) {
+        showLoginAlert('Please enter the complete 6-digit secret code sent to your email.', 'error');
+        const emptyIdx = [0,1,2,3,4,5].find(i => !document.getElementById(`vdigit-${i}`).value.trim());
+        if (emptyIdx !== undefined) document.getElementById(`vdigit-${emptyIdx}`).focus();
+        return;
+      }
+
+      const verifyBtn = document.getElementById('btn-verify-secret-code');
+      if (verifyBtn) {
+        verifyBtn.disabled = true;
+        verifyBtn.innerHTML = '⌛ Verifying Secret Code...';
+      }
+
+      try {
+        const newUser = StorageService.verifySecretCodeAndCreateUser(activePendingReg.email, enteredCode);
+
+        // Success state
+        showLoginAlert(`🎉 Secret code verified successfully! Account '${newUser.fullName}' is now active. Signing you in...`, 'success');
+
+        // Clear fields
         document.getElementById('reg-username').value = '';
         document.getElementById('reg-email').value = '';
         document.getElementById('reg-password').value = '';
         document.getElementById('reg-fullname').value = '';
+        for (let i = 0; i < 6; i++) {
+          const box = document.getElementById(`vdigit-${i}`);
+          if (box) box.value = '';
+        }
 
-        // Switch to sign-in tab after 1.2s and pre-fill username for seamless login
+        if (vcodeCountdownInterval) clearInterval(vcodeCountdownInterval);
+        if (resendCooldownInterval) clearInterval(resendCooldownInterval);
+
+        // Switch to sign-in tab and pre-fill username for immediate access
         setTimeout(() => {
+          backToRegistrationDetails();
           switchLoginTab('member');
           const loginEmailInput = document.getElementById('login-email');
           if (loginEmailInput) loginEmailInput.value = newUser.username;
-        }, 1200);
+          const loginPasswordInput = document.getElementById('login-password');
+          if (loginPasswordInput) loginPasswordInput.focus();
+        }, 1400);
 
       } catch (e) {
-        showLoginAlert(e.message || 'Registration failed.', 'error');
+        showLoginAlert(e.message || 'Invalid secret code.', 'error');
+        // Pulse input boxes with error style
+        for (let i = 0; i < 6; i++) {
+          const box = document.getElementById(`vdigit-${i}`);
+          if (box) {
+            box.style.borderColor = 'var(--danger, #ef4444)';
+            setTimeout(() => { box.style.borderColor = ''; }, 1200);
+          }
+        }
+      } finally {
+        if (verifyBtn) {
+          verifyBtn.disabled = false;
+          verifyBtn.innerHTML = '<i data-lucide="check-circle"></i> Verify Secret Code & Activate Account';
+          if (window.lucide) window.lucide.createIcons();
+        }
       }
+    }
+
+    function handleResendCode() {
+      if (!activePendingReg || !activePendingReg.email) {
+        showLoginAlert('No email found to resend to. Please fill out registration details.', 'error');
+        return;
+      }
+
+      try {
+        const res = StorageService.resendVerificationCode(activePendingReg.email);
+        startVcodeCountdown(res.expiresAt);
+        startResendCooldown(30);
+        showLoginAlert(`📬 A fresh secret verification code was sent to ${activePendingReg.email}.`, 'success');
+        
+        // Clear digits and refocus first
+        for (let i = 0; i < 6; i++) {
+          const box = document.getElementById(`vdigit-${i}`);
+          if (box) box.value = '';
+        }
+        const first = document.getElementById('vdigit-0');
+        if (first) first.focus();
+      } catch (e) {
+        showLoginAlert(e.message || 'Could not resend code.', 'error');
+      }
+    }
+
+    function backToRegistrationDetails() {
+      document.getElementById('reg-step-verify').classList.add('hidden');
+      document.getElementById('reg-step-details').classList.remove('hidden');
+      if (vcodeCountdownInterval) clearInterval(vcodeCountdownInterval);
+      if (resendCooldownInterval) clearInterval(resendCooldownInterval);
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    function setupVerificationDigitBoxes() {
+      for (let i = 0; i < 6; i++) {
+        const box = document.getElementById(`vdigit-${i}`);
+        if (!box) continue;
+
+        box.oninput = (e) => {
+          const val = box.value.replace(/[^0-9]/g, '');
+          box.value = val ? val.slice(-1) : '';
+          if (box.value) {
+            box.classList.add('filled');
+            if (i < 5) {
+              const next = document.getElementById(`vdigit-${i + 1}`);
+              if (next) next.focus();
+            } else {
+              // Auto-trigger verify on 6th digit
+              handleConfirmVerificationCode();
+            }
+          } else {
+            box.classList.remove('filled');
+          }
+        };
+
+        box.onkeydown = (e) => {
+          if (e.key === 'Backspace' && !box.value && i > 0) {
+            const prev = document.getElementById(`vdigit-${i - 1}`);
+            if (prev) {
+              prev.focus();
+              prev.value = '';
+              prev.classList.remove('filled');
+            }
+          } else if (e.key === 'ArrowLeft' && i > 0) {
+            const prev = document.getElementById(`vdigit-${i - 1}`);
+            if (prev) prev.focus();
+          } else if (e.key === 'ArrowRight' && i < 5) {
+            const next = document.getElementById(`vdigit-${i + 1}`);
+            if (next) next.focus();
+          } else if (e.key === 'Enter') {
+            handleConfirmVerificationCode();
+          }
+        };
+
+        box.onpaste = (e) => {
+          e.preventDefault();
+          const paste = (e.clipboardData || window.clipboardData).getData('text');
+          const digits = paste.replace(/[^0-9]/g, '').slice(0, 6);
+          if (digits) {
+            for (let j = 0; j < 6; j++) {
+              const b = document.getElementById(`vdigit-${j}`);
+              if (b) {
+                b.value = digits[j] || '';
+                if (digits[j]) b.classList.add('filled');
+                else b.classList.remove('filled');
+              }
+            }
+            if (digits.length === 6) {
+              handleConfirmVerificationCode();
+            } else {
+              const target = document.getElementById(`vdigit-${digits.length}`);
+              if (target) target.focus();
+            }
+          }
+        };
+      }
+    }
+
+    function startVcodeCountdown(expiresAt) {
+      if (vcodeCountdownInterval) clearInterval(vcodeCountdownInterval);
+      const timerSpan = document.getElementById('vcode-countdown');
+
+      function update() {
+        const diffMs = expiresAt - Date.now();
+        if (diffMs <= 0) {
+          if (timerSpan) timerSpan.innerText = 'EXPIRED';
+          clearInterval(vcodeCountdownInterval);
+          return;
+        }
+        const totalSec = Math.floor(diffMs / 1000);
+        const m = Math.floor(totalSec / 60);
+        const s = totalSec % 60;
+        if (timerSpan) timerSpan.innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
+      }
+
+      update();
+      vcodeCountdownInterval = setInterval(update, 1000);
+    }
+
+    function startResendCooldown(seconds) {
+      if (resendCooldownInterval) clearInterval(resendCooldownInterval);
+      const btn = document.getElementById('btn-resend-vcode');
+      const textSpan = document.getElementById('resend-cooldown-text');
+      let left = seconds;
+
+      if (btn) btn.disabled = true;
+      if (textSpan) textSpan.innerText = `(${left}s)`;
+
+      resendCooldownInterval = setInterval(() => {
+        left--;
+        if (left <= 0) {
+          clearInterval(resendCooldownInterval);
+          if (btn) btn.disabled = false;
+          if (textSpan) textSpan.innerText = '';
+        } else {
+          if (textSpan) textSpan.innerText = `(${left}s)`;
+        }
+      }, 1000);
+    }
+
+    // --- FLOATING LABSPHERE MAILBOX VIEWER & NOTIFICATION DISPATCHER ---
+    window.addEventListener('labsphere:email-dispatched', (e) => {
+      const email = e.detail;
+      lastDispatchedEmail = email;
+      showEmailNotificationToast(email);
+    });
+
+    function showEmailNotificationToast(email) {
+      const existing = document.getElementById('labsphere-mail-toast-container');
+      if (existing) existing.remove();
+
+      const toast = document.createElement('div');
+      toast.id = 'labsphere-mail-toast-container';
+      toast.className = 'labsphere-email-toast';
+
+      toast.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <div style="width:32px; height:32px; border-radius:50%; background:rgba(56,189,248,0.2); display:flex; align-items:center; justify-content:center; color:#38bdf8;">
+              <i data-lucide="mail-check" style="width:18px; height:18px;"></i>
+            </div>
+            <div>
+              <div style="font-weight:700; font-size:0.9rem; color:#f8fafc;">LabSphere Mail Notification</div>
+              <div style="font-size:0.75rem; color:#94a3b8;">Delivered to: <strong style="color:#38bdf8;">${email.to}</strong></div>
+            </div>
+          </div>
+          <button onclick="document.getElementById('labsphere-mail-toast-container').remove()" style="background:none; border:none; color:#64748b; font-size:1.1rem; cursor:pointer; padding:0 4px;">&times;</button>
+        </div>
+
+        <div style="background:rgba(15,23,42,0.8); border:1px solid #1e293b; border-radius:8px; padding:10px 12px; font-size:0.82rem; line-height:1.4;">
+          <div style="color:#cbd5e1; font-weight:600; margin-bottom:4px;">${email.subject}</div>
+          ${email.code ? `
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-top:8px; padding-top:6px; border-top:1px dashed #334155;">
+              <span style="color:#94a3b8; font-size:0.78rem;">Secret Code:</span>
+              <span style="font-family:'JetBrains Mono',monospace; font-size:1.25rem; font-weight:900; letter-spacing:4px; color:#38bdf8; background:rgba(56,189,248,0.1); padding:2px 10px; border-radius:6px; border:1px solid rgba(56,189,248,0.3);">${email.code}</span>
+            </div>
+          ` : ''}
+        </div>
+
+        <div style="display:flex; gap:8px; justify-content:flex-end;">
+          ${email.code ? `
+            <button class="btn btn-sm btn-primary" onclick="autoFillSecretCode('${email.code}')" style="font-size:0.75rem; font-weight:700; padding:4px 10px;">
+              ⚡ Auto-Fill Code
+            </button>
+          ` : ''}
+          <button class="btn btn-sm btn-outline" onclick="openEmailPreviewModal()" style="font-size:0.75rem; font-weight:600; padding:4px 10px;">
+            👁️ Preview Email
+          </button>
+        </div>
+      `;
+
+      document.body.appendChild(toast);
+      if (window.lucide) window.lucide.createIcons();
+
+      // Auto-dismiss after 25 seconds
+      setTimeout(() => {
+        const t = document.getElementById('labsphere-mail-toast-container');
+        if (t) t.remove();
+      }, 25000);
+    }
+
+    function autoFillSecretCode(code) {
+      if (!code) return;
+      promptForVerificationCode(lastDispatchedEmail ? lastDispatchedEmail.to : '');
+      for (let i = 0; i < 6; i++) {
+        const box = document.getElementById(`vdigit-${i}`);
+        if (box) {
+          box.value = code[i] || '';
+          box.classList.add('filled');
+        }
+      }
+      showLoginAlert(`⚡ Auto-filled secret code: ${code}. Click verify to activate!`, 'success');
+      const toast = document.getElementById('labsphere-mail-toast-container');
+      if (toast) toast.remove();
+      const verifyBtn = document.getElementById('btn-verify-secret-code');
+      if (verifyBtn) verifyBtn.focus();
+    }
+
+    function openEmailPreviewModal() {
+      if (!lastDispatchedEmail) return;
+      const existing = document.getElementById('labsphere-email-modal-backdrop');
+      if (existing) existing.remove();
+
+      const modal = document.createElement('div');
+      modal.id = 'labsphere-email-modal-backdrop';
+      modal.style.cssText = 'position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.75); backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; z-index:9999999; padding:16px;';
+
+      modal.innerHTML = `
+        <div style="background:#0f172a; border:1.5px solid #38bdf8; border-radius:16px; width:100%; max-width:540px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.85); overflow:hidden; animation:modalIn 0.25s ease;">
+          <div style="background:linear-gradient(135deg, #0284c7, #6366f1); padding:16px 20px; color:white; display:flex; justify-content:space-between; align-items:center;">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <span style="font-size:1.4rem;">📬</span>
+              <div>
+                <h4 style="margin:0; font-weight:800; font-size:1.05rem;">LabSphere Email Dispatcher</h4>
+                <div style="font-size:0.75rem; opacity:0.85;">Official Access Verification System</div>
+              </div>
+            </div>
+            <button onclick="document.getElementById('labsphere-email-modal-backdrop').remove()" style="background:rgba(255,255,255,0.2); border:none; color:white; border-radius:50%; width:28px; height:28px; font-size:1.1rem; cursor:pointer; display:flex; align-items:center; justify-content:center;">&times;</button>
+          </div>
+
+          <div style="padding:20px; color:#f8fafc;">
+            <div style="background:#1e293b; border-radius:10px; padding:12px 14px; margin-bottom:16px; font-size:0.82rem; line-height:1.6; border:1px solid #334155;">
+              <div><strong style="color:#94a3b8;">From:</strong> LabSphere Security &lt;security@labsphere.io&gt;</div>
+              <div><strong style="color:#94a3b8;">To:</strong> ${lastDispatchedEmail.recipientName} &lt;${lastDispatchedEmail.to}&gt;</div>
+              <div><strong style="color:#94a3b8;">Subject:</strong> ${lastDispatchedEmail.subject}</div>
+              <div><strong style="color:#94a3b8;">Date:</strong> ${new Date(lastDispatchedEmail.timestamp).toLocaleString()}</div>
+            </div>
+
+            <div style="background:#0b132b; border-radius:10px; padding:18px; border:1px solid #1e293b; font-size:0.88rem; line-height:1.6; white-space:pre-wrap; color:#e2e8f0;">${lastDispatchedEmail.body}</div>
+
+            ${lastDispatchedEmail.code ? `
+              <div style="margin-top:16px; text-align:center; padding:14px; background:rgba(56,189,248,0.08); border-radius:10px; border:1.5px dashed #38bdf8;">
+                <div style="font-size:0.8rem; color:#94a3b8; margin-bottom:6px; text-transform:uppercase; letter-spacing:1px;">Your 6-Digit Secret Verification Code</div>
+                <div style="font-family:'JetBrains Mono',monospace; font-size:2rem; font-weight:900; letter-spacing:8px; color:#38bdf8;">
+                  ${lastDispatchedEmail.code}
+                </div>
+                <button class="btn btn-sm btn-primary" onclick="autoFillSecretCode('${lastDispatchedEmail.code}'); document.getElementById('labsphere-email-modal-backdrop').remove();" style="margin-top:10px; font-weight:700;">
+                  ⚡ Use This Secret Code & Close
+                </button>
+              </div>
+            ` : ''}
+          </div>
+        </div>
+      `;
+
+      document.body.appendChild(modal);
     }
   </script>
 
@@ -2505,7 +3004,7 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/Labsphere/sw.js?v=13306_user_specific_requests', { scope: '/Labsphere/' })
+        navigator.serviceWorker.register('/Labsphere/sw.js?v=13307_email_verification_secret_code', { scope: '/Labsphere/' })
           .then(reg => {
             console.log('[LabSphere PWA] Service Worker registered:', reg.scope);
             if (reg.update) reg.update();
