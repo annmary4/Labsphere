@@ -1170,8 +1170,34 @@
               <i data-lucide="shopping-bag"></i> + New Multi-Item Requisition
             </button>
           </div>
+
+          <!-- Filter Tabs -->
+          <div id="student-req-filter-tabs" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; border-bottom:1px solid var(--border-color); padding-bottom:12px;">
+            <button id="sreq-tab-all" onclick="ModalManager.openStudentRequestsModal('all')"
+              style="display:inline-flex; align-items:center; gap:6px; padding:8px 16px; border-radius:8px; font-weight:800; font-size:0.83rem; cursor:pointer; border:1px solid var(--border-color); background:var(--primary); color:white; transition:all 0.2s;">
+              📋 All <span id="sreq-count-all" style="background:rgba(255,255,255,0.2); border-radius:12px; padding:1px 7px; font-size:0.75rem; margin-left:2px;">0</span>
+            </button>
+            <button id="sreq-tab-issued" onclick="ModalManager.openStudentRequestsModal('issued')"
+              style="display:inline-flex; align-items:center; gap:6px; padding:8px 16px; border-radius:8px; font-weight:800; font-size:0.83rem; cursor:pointer; border:1px solid rgba(16,185,129,0.4); background:transparent; color:#10b981; transition:all 0.2s;">
+              📦 Issued Items <span id="sreq-count-issued" style="background:rgba(16,185,129,0.15); border-radius:12px; padding:1px 7px; font-size:0.75rem; margin-left:2px;">0</span>
+            </button>
+            <button id="sreq-tab-pending" onclick="ModalManager.openStudentRequestsModal('pending')"
+              style="display:inline-flex; align-items:center; gap:6px; padding:8px 16px; border-radius:8px; font-weight:800; font-size:0.83rem; cursor:pointer; border:1px solid rgba(245,158,11,0.4); background:transparent; color:#f59e0b; transition:all 0.2s;">
+              ⏳ Pending Requests <span id="sreq-count-pending" style="background:rgba(245,158,11,0.15); border-radius:12px; padding:1px 7px; font-size:0.75rem; margin-left:2px;">0</span>
+            </button>
+            <button id="sreq-tab-due" onclick="ModalManager.openStudentRequestsModal('due')"
+              style="display:inline-flex; align-items:center; gap:6px; padding:8px 16px; border-radius:8px; font-weight:800; font-size:0.83rem; cursor:pointer; border:1px solid rgba(239,68,68,0.4); background:transparent; color:#ef4444; transition:all 0.2s;">
+              📅 Due Date / Overdue <span id="sreq-count-due" style="background:rgba(239,68,68,0.15); border-radius:12px; padding:1px 7px; font-size:0.75rem; margin-left:2px;">0</span>
+            </button>
+          </div>
+
+          <!-- Section header (shows current filter context) -->
+          <div id="student-req-section-header" style="margin-bottom:12px; display:none;">
+            <p id="student-req-section-label" style="font-size:0.82rem; color:var(--text-muted); font-weight:600; margin:0;"></p>
+          </div>
+
           <div class="student-requests-container" id="student-requests-container">
-            <!-- Request cards -->
+            <!-- Request cards rendered dynamically -->
           </div>
         </div>
       </div>

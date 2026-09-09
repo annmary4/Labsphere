@@ -1693,176 +1693,248 @@ class ModalManager {
   }
 
   // --- MULTI-STAGE REQUISITION & RETURNABLE ASSET TRACKING MODAL ---
-  static openStudentRequestsModal() {
+  static openStudentRequestsModal(filter = 'all') {
     const backdrop = document.getElementById("student-req-modal");
     const container = document.getElementById("student-requests-container");
-    const requests = StorageService.getRequests();
+    const allRequests = StorageService.getRequests();
 
-    if (container) {
-      container.innerHTML = "";
-      if (requests.length === 0) {
-        container.innerHTML = `<p class="empty-hint">No material requests submitted yet.</p>`;
+    // --- Compute counts for each tab ---
+    const issuedSet  = allRequests.filter(r => r.status === 'ISSUED' || r.status === 'APPROVED' || r.status === 'PARTIAL_RETURN');
+    const pendingSet = allRequests.filter(r => r.status === 'PENDING_LEAD_APPROVAL' || r.status === 'SUBMITTED' || r.status === 'PENDING' || r.status === 'PENDING_ADMIN_ISSUANCE' || r.status === 'LEAD_APPROVED' || r.status === 'LEAD_MODIFIED');
+    const dueSet     = allRequests.filter(r => {
+      const isActive = r.status === 'ISSUED' || r.status === 'APPROVED' || r.status === 'PARTIAL_RETURN';
+      if (!isActive || !r.dueDate) return false;
+      const due = new Date(r.dueDate);
+      const diff = Math.ceil((due - new Date()) / (1000 * 60 * 60 * 24));
+      return diff <= 7; // due within 7 days or overdue
+    });
+
+    // --- Update count badges ---
+    const setCount = (id, val) => { const el = document.getElementById(id); if (el) el.innerText = val; };
+    setCount('sreq-count-all',     allRequests.length);
+    setCount('sreq-count-issued',  issuedSet.length);
+    setCount('sreq-count-pending', pendingSet.length);
+    setCount('sreq-count-due',     dueSet.length);
+
+    // --- Highlight active tab ---
+    const tabStyles = {
+      all:     { bg: 'var(--primary)',              color: 'white',    border: 'var(--border-color)' },
+      issued:  { bg: 'rgba(16,185,129,0.18)',       color: '#10b981',  border: 'rgba(16,185,129,0.5)' },
+      pending: { bg: 'rgba(245,158,11,0.18)',       color: '#f59e0b',  border: 'rgba(245,158,11,0.5)' },
+      due:     { bg: 'rgba(239,68,68,0.18)',        color: '#ef4444',  border: 'rgba(239,68,68,0.5)' },
+    };
+    const inactiveBase = 'background:transparent; border:1px solid';
+    ['all','issued','pending','due'].forEach(tab => {
+      const btn = document.getElementById(`sreq-tab-${tab}`);
+      if (!btn) return;
+      if (tab === filter) {
+        const s = tabStyles[tab];
+        btn.style.background = s.bg;
+        btn.style.color = s.color;
+        btn.style.border = `1px solid ${s.border}`;
+        btn.style.boxShadow = '0 2px 8px rgba(0,0,0,0.15)';
       } else {
-        requests.forEach(r => {
-          const card = document.createElement("div");
-          card.className = "request-card";
+        const s = tabStyles[tab];
+        btn.style.background = 'transparent';
+        btn.style.color = tab === 'all' ? 'var(--text-muted)' : s.color;
+        btn.style.border = `1px solid ${tab === 'all' ? 'var(--border-color)' : s.border.replace('0.5','0.35')}`;
+        btn.style.boxShadow = 'none';
+        btn.style.opacity = '0.75';
+      }
+    });
+    // Reset opacity of active button
+    const activeBtn = document.getElementById(`sreq-tab-${filter}`);
+    if (activeBtn) activeBtn.style.opacity = '1';
 
-          let statusBadgeClass = "warning";
-          let statusLabel = r.status || "SUBMITTED";
-
-          if (r.status === "PENDING_LEAD_APPROVAL" || r.status === "SUBMITTED" || r.status === "PENDING") {
-            statusBadgeClass = "warning";
-            statusLabel = "⏳ Stage 1: Pending Team Lead Approval";
-          } else if (r.status === "PENDING_ADMIN_ISSUANCE" || r.status === "LEAD_APPROVED" || r.status === "LEAD_MODIFIED") {
-            statusBadgeClass = "info";
-            statusLabel = "📦 Stage 2: Lead Approved (Pending Admin Stock Issue)";
-          } else if (r.status === "ISSUED" || r.status === "APPROVED") {
-            statusBadgeClass = "success";
-            statusLabel = "✅ Stage 3: Issued by Admin (Inventory Updated)";
-          } else if (r.status === "REJECTED") {
-            statusBadgeClass = "danger";
-            statusLabel = "❌ Rejected";
-          } else if (r.status === "RETURNED") {
-            statusBadgeClass = "primary";
-            statusLabel = "🔄 Fully Returned";
-          } else if (r.status === "PARTIAL_RETURN") {
-            statusBadgeClass = "warning";
-            statusLabel = "🌗 Partial Return";
-          } else if (r.status === "DAMAGED") {
-            statusBadgeClass = "danger";
-            statusLabel = "⚠️ Damaged Reported";
-          }
-
-          const targetQty = r.qtyApproved || r.qtyRequested;
-          const returnedCount = r.returnedQty || 0;
-          const remainingQty = Math.max(0, targetQty - returnedCount);
-
-          const isIssuedActive = r.status === 'ISSUED' || r.status === 'APPROVED' || r.status === 'PARTIAL_RETURN';
-
-          // Compute due date badge for issued items
-          let dueDateBadgeHtml = '';
-          if (isIssuedActive && r.dueDate) {
-            const now = new Date();
-            const due = new Date(r.dueDate);
-            const diffMs = due - now;
-            const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
-
-            let dueBadgeColor = '#10b981';   // green - on time
-            let dueBadgeBg   = 'rgba(16,185,129,0.12)';
-            let dueBadgeBdr  = 'rgba(16,185,129,0.35)';
-            let dueIcon = '📅';
-            let dueLabel = '';
-
-            if (diffDays < 0) {
-              dueBadgeColor = '#ef4444';
-              dueBadgeBg   = 'rgba(239,68,68,0.12)';
-              dueBadgeBdr  = 'rgba(239,68,68,0.35)';
-              dueIcon = '🚨';
-              dueLabel = `OVERDUE by ${Math.abs(diffDays)} day${Math.abs(diffDays) !== 1 ? 's' : ''}`;
-            } else if (diffDays === 0) {
-              dueBadgeColor = '#f97316';
-              dueBadgeBg   = 'rgba(249,115,22,0.12)';
-              dueBadgeBdr  = 'rgba(249,115,22,0.35)';
-              dueIcon = '⚠️';
-              dueLabel = 'Due TODAY';
-            } else if (diffDays <= 7) {
-              dueBadgeColor = '#f59e0b';
-              dueBadgeBg   = 'rgba(245,158,11,0.12)';
-              dueBadgeBdr  = 'rgba(245,158,11,0.35)';
-              dueIcon = '⏰';
-              dueLabel = `Due in ${diffDays} day${diffDays !== 1 ? 's' : ''}`;
-            } else {
-              dueLabel = `Due in ${diffDays} days`;
-            }
-
-            dueDateBadgeHtml = `
-              <div style="display:flex; align-items:center; gap:8px; margin-top:8px; margin-bottom:2px; flex-wrap:wrap;">
-                <span style="display:inline-flex; align-items:center; gap:6px; background:${dueBadgeBg}; color:${dueBadgeColor}; border:1px solid ${dueBadgeBdr}; border-radius:8px; padding:5px 12px; font-size:0.83rem; font-weight:800;">
-                  ${dueIcon} Return Due: <strong style="font-size:0.88rem;">${r.dueDate}</strong>
-                  ${dueLabel ? `<span style="font-size:0.75rem; opacity:0.9;">(${dueLabel})</span>` : ''}
-                </span>
-                ${r.issuedAt ? `<span style="font-size:0.75rem; color:var(--text-muted);">Issued: ${r.issuedAt}</span>` : ''}
-              </div>
-            `;
-          }
-
-          card.innerHTML = `
-            <div class="request-header" style="display:flex; justify-content:space-between; align-items:center;">
-              <div>
-                <strong style="font-size:1.05rem;">${r.componentName}</strong>
-                <span class="mono text-muted" style="font-size:0.8rem; margin-left:8px;">#${r.id}</span>
-              </div>
-              <span class="stock-tag ${statusBadgeClass}">${statusLabel}</span>
-            </div>
-            ${dueDateBadgeHtml}
-            <p class="request-meta" style="margin-top:6px;">
-              Qty Requested: <strong>${r.qtyRequested} pcs</strong>
-              ${r.qtyApproved && r.qtyApproved !== r.qtyRequested ? ` • Approved: <strong style="color:var(--primary);">${r.qtyApproved} pcs</strong>` : ''}
-              • Returned: <strong>${returnedCount} pcs</strong>
-              ${r.status === 'ISSUED' || r.status === 'PARTIAL_RETURN' ? ` • Outstanding: <strong class="primary-text" style="color:var(--accent-yellow);">${remainingQty} pcs</strong>` : ''}
-            </p>
-            <p class="request-meta">Requester: <strong>${r.requesterName}</strong> (${r.role}) • Submitted: ${r.requestedAt}</p>
-            ${r.leadName ? `<p class="request-meta" style="font-size:0.75rem; color:var(--primary);">Team Lead: ${r.leadName} (${r.leadApprovedAt || 'Approved'})</p>` : ''}
-            ${r.issuedBy ? `<p class="request-meta" style="font-size:0.75rem; color:var(--accent-green);">Issued By Admin: ${r.issuedBy}</p>` : ''}
-            <p class="request-notes" style="background:var(--bg-dark); padding:8px; border-radius:6px; margin-top:6px; font-size:0.82rem;">${r.notes}</p>
-            
-            ${(r.status === 'SUBMITTED' || r.status === 'PENDING') ? `
-              <div style="margin-top:10px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-                <button class="btn btn-secondary btn-sm" onclick="ModalManager.handleEditStudentPendingRequest('${r.id}'); ModalManager.openStudentRequestsModal();" style="font-weight:700; color:#38bdf8; border-color:rgba(56,189,248,0.4);">
-                  ✏ Edit Request
-                </button>
-                <button class="btn btn-danger btn-sm" onclick="ModalManager.handleCancelStudentPendingRequest('${r.id}'); ModalManager.openStudentRequestsModal();" style="font-weight:700; background:rgba(239,68,68,0.15); color:#ef4444; border:1px solid rgba(239,68,68,0.4);">
-                  🚫 Cancel Request
-                </button>
-              </div>
-            ` : ''}
-            
-            ${(r.status === 'ISSUED' || r.status === 'APPROVED' || r.status === 'PARTIAL_RETURN') && remainingQty > 0 ? `
-              <div style="margin-top:10px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-                <button class="btn btn-secondary btn-sm btn-partial-return-item" data-req-id="${r.id}" style="border-color:var(--primary); color:var(--primary);">
-                  <i data-lucide="rotate-ccw"></i> Return Item (Full or Partial)
-                </button>
-                <button class="btn btn-danger btn-sm btn-report-damage" data-req-id="${r.id}">
-                  <i data-lucide="alert-triangle"></i> Report Damaged Asset
-                </button>
-              </div>
-            ` : ''}
-          `;
-
-          const returnBtn = card.querySelector(".btn-partial-return-item");
-          if (returnBtn) {
-            returnBtn.addEventListener("click", () => {
-              ModalManager.openReturnMaterialsModal(r.id);
-            });
-          }
-
-          const damageBtn = card.querySelector(".btn-report-damage");
-          if (damageBtn) {
-            damageBtn.addEventListener("click", () => {
-              const damQtyStr = prompt(`Report Damaged Asset '${r.componentName}':\nEnter quantity damaged:`, `1`);
-              if (!damQtyStr) return;
-              const damQty = parseInt(damQtyStr);
-              if (isNaN(damQty) || damQty <= 0) {
-                alert("Please enter a valid positive number.");
-                return;
-              }
-
-              const reportDetails = prompt("Describe damage / defect:", "Component non-functional / burned IC pin");
-              try {
-                StorageService.reportDamagedAsset(r.id, r.componentId, damQty, reportDetails || "");
-                alert(`Reported ${damQty} pcs of '${r.componentName}' as DAMAGED. Inventory Admin notified.`);
-                this.openStudentRequestsModal();
-                if (this.callbacks.onInventoryChanged) this.callbacks.onInventoryChanged();
-              } catch (err) {
-                alert(err.message);
-              }
-            });
-          }
-
-          container.appendChild(card);
-        });
+    // --- Section context label ---
+    const sectionHeader = document.getElementById('student-req-section-header');
+    const sectionLabel  = document.getElementById('student-req-section-label');
+    const sectionLabels = {
+      all:     '',
+      issued:  '📦 Showing only actively issued & borrowed components',
+      pending: '⏳ Showing only requests awaiting Team Lead or Admin approval',
+      due:     '📅 Showing only items due within 7 days or overdue',
+    };
+    if (sectionHeader && sectionLabel) {
+      if (filter === 'all') {
+        sectionHeader.style.display = 'none';
+        sectionLabel.innerText = '';
+      } else {
+        sectionHeader.style.display = 'block';
+        sectionLabel.innerText = sectionLabels[filter] || '';
       }
     }
+
+    // --- Filter the requests ---
+    let requests;
+    if (filter === 'issued')  requests = issuedSet;
+    else if (filter === 'pending') requests = pendingSet;
+    else if (filter === 'due')     requests = dueSet;
+    else                           requests = allRequests;
+
+    if (!container) {
+      if (backdrop) backdrop.classList.remove("hidden");
+      return;
+    }
+
+    container.innerHTML = "";
+
+    if (requests.length === 0) {
+      const emptyMessages = {
+        all:     'No material requests submitted yet.',
+        issued:  'No components are currently issued to you.',
+        pending: 'No requests are pending approval right now.',
+        due:     'No items are due or overdue within the next 7 days. \u2705',
+      };
+      container.innerHTML = `
+        <div style="text-align:center; padding:40px 20px; background:var(--bg-dark); border-radius:12px; border:1px dashed var(--border-color);">
+          <div style="font-size:2.5rem; margin-bottom:12px; opacity:0.5;">${filter === 'due' ? '✅' : filter === 'issued' ? '📦' : filter === 'pending' ? '⏳' : '📋'}</div>
+          <p style="color:var(--text-muted); font-weight:600; margin:0; font-size:0.95rem;">${emptyMessages[filter] || 'Nothing here.'}</p>
+        </div>
+      `;
+      if (backdrop) backdrop.classList.remove("hidden");
+      if (window.lucide) window.lucide.createIcons();
+      return;
+    }
+
+    requests.forEach(r => {
+      const card = document.createElement("div");
+      card.className = "request-card";
+
+      let statusBadgeClass = "warning";
+      let statusLabel = r.status || "SUBMITTED";
+
+      if (r.status === "PENDING_LEAD_APPROVAL" || r.status === "SUBMITTED" || r.status === "PENDING") {
+        statusBadgeClass = "warning";
+        statusLabel = "⏳ Stage 1: Pending Team Lead Approval";
+      } else if (r.status === "PENDING_ADMIN_ISSUANCE" || r.status === "LEAD_APPROVED" || r.status === "LEAD_MODIFIED") {
+        statusBadgeClass = "info";
+        statusLabel = "📦 Stage 2: Lead Approved (Pending Admin Stock Issue)";
+      } else if (r.status === "ISSUED" || r.status === "APPROVED") {
+        statusBadgeClass = "success";
+        statusLabel = "✅ Stage 3: Issued by Admin (Inventory Updated)";
+      } else if (r.status === "REJECTED") {
+        statusBadgeClass = "danger";
+        statusLabel = "❌ Rejected";
+      } else if (r.status === "RETURNED") {
+        statusBadgeClass = "primary";
+        statusLabel = "🔄 Fully Returned";
+      } else if (r.status === "PARTIAL_RETURN") {
+        statusBadgeClass = "warning";
+        statusLabel = "🌗 Partial Return";
+      } else if (r.status === "DAMAGED") {
+        statusBadgeClass = "danger";
+        statusLabel = "⚠️ Damaged Reported";
+      }
+
+      const targetQty = r.qtyApproved || r.qtyRequested;
+      const returnedCount = r.returnedQty || 0;
+      const remainingQty = Math.max(0, targetQty - returnedCount);
+
+      const isIssuedActive = r.status === 'ISSUED' || r.status === 'APPROVED' || r.status === 'PARTIAL_RETURN';
+
+      // Compute due date badge for issued items
+      let dueDateBadgeHtml = '';
+      if (isIssuedActive && r.dueDate) {
+        const now = new Date();
+        const due = new Date(r.dueDate);
+        const diffDays = Math.ceil((due - now) / (1000 * 60 * 60 * 24));
+
+        let dueBadgeColor = '#10b981';
+        let dueBadgeBg   = 'rgba(16,185,129,0.12)';
+        let dueBadgeBdr  = 'rgba(16,185,129,0.35)';
+        let dueIcon = '📅';
+        let dueLabel = `Due in ${diffDays} days`;
+
+        if (diffDays < 0) {
+          dueBadgeColor = '#ef4444'; dueBadgeBg = 'rgba(239,68,68,0.12)'; dueBadgeBdr = 'rgba(239,68,68,0.35)';
+          dueIcon = '🚨'; dueLabel = `OVERDUE by ${Math.abs(diffDays)} day${Math.abs(diffDays) !== 1 ? 's' : ''}`;
+        } else if (diffDays === 0) {
+          dueBadgeColor = '#f97316'; dueBadgeBg = 'rgba(249,115,22,0.12)'; dueBadgeBdr = 'rgba(249,115,22,0.35)';
+          dueIcon = '⚠️'; dueLabel = 'Due TODAY';
+        } else if (diffDays <= 7) {
+          dueBadgeColor = '#f59e0b'; dueBadgeBg = 'rgba(245,158,11,0.12)'; dueBadgeBdr = 'rgba(245,158,11,0.35)';
+          dueIcon = '⏰'; dueLabel = `Due in ${diffDays} day${diffDays !== 1 ? 's' : ''}`;
+        }
+
+        dueDateBadgeHtml = `
+          <div style="display:flex; align-items:center; gap:8px; margin-top:8px; margin-bottom:2px; flex-wrap:wrap;">
+            <span style="display:inline-flex; align-items:center; gap:6px; background:${dueBadgeBg}; color:${dueBadgeColor}; border:1px solid ${dueBadgeBdr}; border-radius:8px; padding:5px 12px; font-size:0.83rem; font-weight:800;">
+              ${dueIcon} Return Due: <strong style="font-size:0.88rem;">${r.dueDate}</strong>
+              <span style="font-size:0.75rem; opacity:0.9;">(${dueLabel})</span>
+            </span>
+            ${r.issuedAt ? `<span style="font-size:0.75rem; color:var(--text-muted);">Issued: ${r.issuedAt}</span>` : ''}
+          </div>
+        `;
+      }
+
+      card.innerHTML = `
+        <div class="request-header" style="display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <strong style="font-size:1.05rem;">${r.componentName}</strong>
+            <span class="mono text-muted" style="font-size:0.8rem; margin-left:8px;">#${r.id}</span>
+          </div>
+          <span class="stock-tag ${statusBadgeClass}">${statusLabel}</span>
+        </div>
+        ${dueDateBadgeHtml}
+        <p class="request-meta" style="margin-top:6px;">
+          Qty Requested: <strong>${r.qtyRequested} pcs</strong>
+          ${r.qtyApproved && r.qtyApproved !== r.qtyRequested ? ` • Approved: <strong style="color:var(--primary);">${r.qtyApproved} pcs</strong>` : ''}
+          • Returned: <strong>${returnedCount} pcs</strong>
+          ${isIssuedActive ? ` • Outstanding: <strong style="color:var(--accent-yellow);">${remainingQty} pcs</strong>` : ''}
+        </p>
+        <p class="request-meta">Requester: <strong>${r.requesterName}</strong> (${r.role}) • Submitted: ${r.requestedAt}</p>
+        ${r.leadName ? `<p class="request-meta" style="font-size:0.75rem; color:var(--primary);">Team Lead: ${r.leadName} (${r.leadApprovedAt || 'Approved'})</p>` : ''}
+        ${r.issuedBy ? `<p class="request-meta" style="font-size:0.75rem; color:var(--accent-green);">Issued By Admin: ${r.issuedBy}</p>` : ''}
+        <p class="request-notes" style="background:var(--bg-dark); padding:8px; border-radius:6px; margin-top:6px; font-size:0.82rem;">${r.notes}</p>
+
+        ${(r.status === 'SUBMITTED' || r.status === 'PENDING') ? `
+          <div style="margin-top:10px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+            <button class="btn btn-secondary btn-sm" onclick="ModalManager.handleEditStudentPendingRequest('${r.id}'); ModalManager.openStudentRequestsModal('${filter}');" style="font-weight:700; color:#38bdf8; border-color:rgba(56,189,248,0.4);">
+              ✏ Edit Request
+            </button>
+            <button class="btn btn-danger btn-sm" onclick="ModalManager.handleCancelStudentPendingRequest('${r.id}'); ModalManager.openStudentRequestsModal('${filter}');" style="font-weight:700; background:rgba(239,68,68,0.15); color:#ef4444; border:1px solid rgba(239,68,68,0.4);">
+              🚫 Cancel Request
+            </button>
+          </div>
+        ` : ''}
+
+        ${isIssuedActive && remainingQty > 0 ? `
+          <div style="margin-top:10px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+            <button class="btn btn-secondary btn-sm btn-partial-return-item" data-req-id="${r.id}" style="border-color:var(--primary); color:var(--primary);">
+              <i data-lucide="rotate-ccw"></i> Return Item (Full or Partial)
+            </button>
+            <button class="btn btn-danger btn-sm btn-report-damage" data-req-id="${r.id}">
+              <i data-lucide="alert-triangle"></i> Report Damaged Asset
+            </button>
+          </div>
+        ` : ''}
+      `;
+
+      const returnBtn = card.querySelector(".btn-partial-return-item");
+      if (returnBtn) {
+        returnBtn.addEventListener("click", () => ModalManager.openReturnMaterialsModal(r.id));
+      }
+
+      const damageBtn = card.querySelector(".btn-report-damage");
+      if (damageBtn) {
+        damageBtn.addEventListener("click", () => {
+          const damQtyStr = prompt(`Report Damaged Asset '${r.componentName}':\nEnter quantity damaged:`, `1`);
+          if (!damQtyStr) return;
+          const damQty = parseInt(damQtyStr);
+          if (isNaN(damQty) || damQty <= 0) { alert("Please enter a valid positive number."); return; }
+          const reportDetails = prompt("Describe damage / defect:", "Component non-functional / burned IC pin");
+          try {
+            StorageService.reportDamagedAsset(r.id, r.componentId, damQty, reportDetails || "");
+            alert(`Reported ${damQty} pcs of '${r.componentName}' as DAMAGED. Inventory Admin notified.`);
+            this.openStudentRequestsModal(filter);
+            if (this.callbacks.onInventoryChanged) this.callbacks.onInventoryChanged();
+          } catch (err) { alert(err.message); }
+        });
+      }
+
+      container.appendChild(card);
+    });
 
     if (window.lucide) window.lucide.createIcons();
     if (backdrop) backdrop.classList.remove("hidden");
