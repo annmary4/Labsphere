@@ -414,7 +414,7 @@ class App {
 
     mapDrawerTrigger("drawer-btn-add-component", null, openAddCompModal);
     mapDrawerTrigger("drawer-btn-multi-item-req", "btn-multi-item-req");
-    mapDrawerTrigger("drawer-btn-notif", "btn-nav-notif");
+    mapDrawerTrigger("drawer-btn-notif", null, () => ModalManager.openNotificationModal());
     mapDrawerTrigger("drawer-btn-approvals", "btn-admin-approve");
     mapDrawerTrigger("drawer-btn-student-reqs", "btn-student-reqs");
     mapDrawerTrigger("drawer-btn-engineer-bom", "btn-engineer-bom");

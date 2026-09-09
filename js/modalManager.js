@@ -41,34 +41,42 @@ class ModalManager {
     }, 4500);
   }
 
+  static openNotificationModal() {
+    const backdrop = document.getElementById("notification-modal");
+    this.renderNotificationCenter();
+    if (backdrop) backdrop.classList.remove("hidden");
+  }
+
+  static closeNotificationModal() {
+    const backdrop = document.getElementById("notification-modal");
+    if (backdrop) backdrop.classList.add("hidden");
+  }
+
   static bindEvents() {
-    // Notification Center Dropdown & Mobile Side Panel Drawer Listener
-    const btnNotif = document.getElementById("btn-nav-notif");
+    // Notification Center Modal Listener
     const drawerBtnNotif = document.getElementById("drawer-btn-notif");
-    const notifDropdown = document.getElementById("notif-dropdown");
-    const closeNotifBtn = document.getElementById("btn-close-notif");
+    const closeNotifModal = document.getElementById("btn-close-notification-modal");
+    const notifModal = document.getElementById("notification-modal");
 
-    const toggleNotifCenter = (e) => {
-      if (e) e.stopPropagation();
-      const drawer = document.getElementById("mobile-view-drawer");
-      const drawerBackdrop = document.getElementById("mobile-drawer-backdrop");
-      if (drawer) drawer.classList.remove("is-open");
-      if (drawerBackdrop) drawerBackdrop.classList.remove("is-open");
+    if (drawerBtnNotif) {
+      drawerBtnNotif.addEventListener("click", (e) => {
+        if (e) e.stopPropagation();
+        const drawer = document.getElementById("mobile-view-drawer");
+        const drawerBackdrop = document.getElementById("mobile-drawer-backdrop");
+        if (drawer) drawer.classList.remove("is-open");
+        if (drawerBackdrop) drawerBackdrop.classList.remove("is-open");
+        this.openNotificationModal();
+      });
+    }
 
-      this.renderNotificationCenter();
-      if (notifDropdown) notifDropdown.classList.toggle("show");
-    };
+    if (closeNotifModal) {
+      closeNotifModal.addEventListener("click", () => this.closeNotificationModal());
+    }
 
-    if (btnNotif) btnNotif.addEventListener("click", toggleNotifCenter);
-    if (drawerBtnNotif) drawerBtnNotif.addEventListener("click", toggleNotifCenter);
-    if (closeNotifBtn) closeNotifBtn.addEventListener("click", (e) => {
-      if (e) e.stopPropagation();
-      if (notifDropdown) notifDropdown.classList.remove("show");
-    });
-
-    if (notifDropdown) {
-      notifDropdown.addEventListener("click", (e) => e.stopPropagation());
-      document.addEventListener("click", () => notifDropdown.classList.remove("show"));
+    if (notifModal) {
+      notifModal.addEventListener("click", (e) => {
+        if (e.target === notifModal) this.closeNotificationModal();
+      });
     }
 
     const markReadBtn = document.getElementById("btn-mark-notif-read");

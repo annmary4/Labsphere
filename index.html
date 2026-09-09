@@ -256,31 +256,6 @@
 
       <!-- Persona Action Buttons -->
       <div class="nav-actions">
-        <!-- Header notification bell hidden (notifications triggered from side panel drawer) -->
-        <button class="btn btn-icon" id="btn-nav-notif" title="Real-Time Notifications Bell"
-          style="display:none !important;">
-          <i data-lucide="bell"></i>
-          <span id="notif-unread-count" class="count-badge danger hidden">0</span>
-        </button>
-
-        <div class="dropdown-menu notif-dropdown-menu" id="notif-dropdown">
-          <div class="notif-header" style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-color); padding-bottom:10px; margin-bottom:10px;">
-            <div style="display:flex; align-items:center; gap:8px;">
-              <i data-lucide="bell" style="color:var(--primary);"></i>
-              <h3 style="margin:0; font-size:1rem; font-weight:700; color:var(--text-main);">Notifications</h3>
-            </div>
-            <div style="display:flex; align-items:center; gap:8px;">
-              <button id="btn-mark-notif-read" class="btn btn-secondary btn-sm" style="font-size:0.75rem; padding:4px 8px;">Mark All Read</button>
-              <button id="btn-close-notif" class="btn btn-icon btn-sm" style="background:rgba(255,255,255,0.08); border:none; color:var(--text-main); cursor:pointer; width:28px; height:28px; border-radius:6px; display:inline-flex; align-items:center; justify-content:center;" title="Close Notifications">
-                <i data-lucide="x" style="font-size:1rem;"></i>
-              </button>
-            </div>
-          </div>
-          <div id="notif-list" class="notif-list-wrapper" style="max-height:420px; overflow-y:auto;">
-            <!-- Rendered dynamically -->
-          </div>
-        </div>
-
         <!-- Student & General Actions -->
         <button id="btn-multi-item-req" class="btn btn-primary" title="Create Multi-Item Component Requisition"
           style="background:linear-gradient(135deg, #0284c7 0%, #2563eb 100%); font-weight:700;">
@@ -1266,6 +1241,30 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
                 <!-- Valuation rows -->
               </tbody>
             </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Real-Time Notification Center Modal -->
+    <div class="modal-backdrop hidden" id="notification-modal" style="z-index: 10050;">
+      <div class="modal-content modal-md" style="max-width: 540px; border: 2px solid #38bdf8; background: #0f172a; box-shadow: 0 25px 80px rgba(0,0,0,0.9); border-radius: 16px;">
+        <div class="modal-header" style="border-bottom: 1px solid var(--border-color); padding-bottom: 12px; display:flex; justify-content:space-between; align-items:center;">
+          <div class="modal-title-group" style="display:flex; align-items:center; gap:10px;">
+            <i data-lucide="bell" style="color:var(--primary); font-size:1.4rem;"></i>
+            <h2 style="margin:0; font-size:1.15rem; font-weight:700; color:var(--text-main);">Notifications & Return Reminders</h2>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <button id="btn-mark-notif-read" class="btn btn-secondary btn-sm" style="font-size:0.75rem; padding:4px 10px; font-weight:600;">Mark All Read</button>
+            <button class="modal-close" id="btn-close-notification-modal" title="Close Notifications Modal"><i data-lucide="x"></i></button>
+          </div>
+        </div>
+        <div class="modal-body" style="padding-top: 16px;">
+          <p class="modal-desc" style="font-size:0.82rem; color:var(--text-muted); margin-bottom:14px;">
+            Real-time status updates, inventory requisitions activity, and automated return due alerts (7 Days, 14 Days, 1 Month overdue).
+          </p>
+          <div id="notif-list" class="notif-list-wrapper" style="max-height: 440px; overflow-y: auto; padding-right: 4px;">
+            <!-- Rendered dynamically -->
           </div>
         </div>
       </div>
