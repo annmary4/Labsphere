@@ -1639,7 +1639,7 @@ class ModalManager {
   }
 
   // --- MULTI-STAGE REQUISITION & RETURNABLE ASSET TRACKING MODAL ---
-  static openStudentRequestsModal(activeTab = "all") {
+  static openStudentRequestsModal(activeTab = "auto") {
     const backdrop = document.getElementById("student-req-modal");
     if (backdrop) backdrop.classList.remove("hidden");
 
@@ -1663,7 +1663,7 @@ class ModalManager {
     if (container) {
       container.innerHTML = "";
 
-      // 1. Categorize requests for 3 Filter Sections
+      // 1. Categorize requests into 3 distinct Filter Sections
       const allRequests = requests;
       const issuedRequests = requests.filter(r => {
         const isIssued = r.status === "ISSUED" || r.status === "APPROVED" || r.status === "PARTIAL_RETURN" || r.status === "PARTIALLY_ISSUED";
@@ -1686,34 +1686,58 @@ class ModalManager {
         return false;
       });
 
-      // 2. Render 3 Filter Section Tabs
+      // Auto-select initial active section tab if 'auto' is passed
+      if (activeTab === "auto") {
+        if (issuedRequests.length > 0) activeTab = "issued";
+        else if (pendingRequests.length > 0) activeTab = "pending";
+        else if (dueDateRequests.length > 0) activeTab = "duedate";
+        else activeTab = "all";
+      }
+
+      // 2. Render 3 Distinct Filter Section Tabs
       const filterBar = document.createElement("div");
       filterBar.className = "requests-filter-bar";
-      filterBar.style.cssText = "display:flex; gap:8px; margin-bottom:16px; border-bottom:1px solid var(--border-color); padding-bottom:12px; flex-wrap:wrap; align-items:center;";
+      filterBar.style.cssText = "display:flex; gap:10px; margin-bottom:16px; border-bottom:2px solid var(--border-color); padding-bottom:12px; flex-wrap:wrap; align-items:center;";
       filterBar.innerHTML = `
-        <button class="btn btn-sm ${activeTab === 'issued' ? 'btn-primary' : 'btn-secondary'}" onclick="ModalManager.openStudentRequestsModal('issued')" style="font-weight:700; ${activeTab === 'issued' ? 'background:#10b981; border-color:#10b981; color:#0f172a;' : ''}">
-          📦 Issued Items (${issuedRequests.length})
+        <button class="btn btn-sm" onclick="ModalManager.openStudentRequestsModal('issued')" style="font-weight:800; padding:8px 14px; border-radius:8px; transition:all 0.2s ease; cursor:pointer; ${activeTab === 'issued' ? 'background:#10b981; color:#0f172a; border:2px solid #10b981; box-shadow:0 4px 12px rgba(16,185,129,0.35);' : 'background:rgba(255,255,255,0.05); color:var(--text-main); border:1px solid var(--border-color);'}">
+          📦 Section 1: Issued Items (${issuedRequests.length})
         </button>
-        <button class="btn btn-sm ${activeTab === 'pending' ? 'btn-primary' : 'btn-secondary'}" onclick="ModalManager.openStudentRequestsModal('pending')" style="font-weight:700; ${activeTab === 'pending' ? 'background:#f59e0b; border-color:#f59e0b; color:#0f172a;' : ''}">
-          ⏳ Pending Requests (${pendingRequests.length})
+        <button class="btn btn-sm" onclick="ModalManager.openStudentRequestsModal('pending')" style="font-weight:800; padding:8px 14px; border-radius:8px; transition:all 0.2s ease; cursor:pointer; ${activeTab === 'pending' ? 'background:#f59e0b; color:#0f172a; border:2px solid #f59e0b; box-shadow:0 4px 12px rgba(245,158,11,0.35);' : 'background:rgba(255,255,255,0.05); color:var(--text-main); border:1px solid var(--border-color);'}">
+          ⏳ Section 2: Pending Requests (${pendingRequests.length})
         </button>
-        <button class="btn btn-sm ${activeTab === 'duedate' ? 'btn-primary' : 'btn-secondary'}" onclick="ModalManager.openStudentRequestsModal('duedate')" style="font-weight:700; ${activeTab === 'duedate' ? 'background:#ef4444; border-color:#ef4444; color:#ffffff;' : ''}">
-          📅 Due Date / Overdue (${dueDateRequests.length})
+        <button class="btn btn-sm" onclick="ModalManager.openStudentRequestsModal('duedate')" style="font-weight:800; padding:8px 14px; border-radius:8px; transition:all 0.2s ease; cursor:pointer; ${activeTab === 'duedate' ? 'background:#ef4444; color:#ffffff; border:2px solid #ef4444; box-shadow:0 4px 12px rgba(239,68,68,0.35);' : 'background:rgba(255,255,255,0.05); color:var(--text-main); border:1px solid var(--border-color);'}">
+          📅 Section 3: Due Date / Overdue (${dueDateRequests.length})
         </button>
-        <button class="btn btn-sm ${activeTab === 'all' ? 'btn-primary' : 'btn-secondary'}" onclick="ModalManager.openStudentRequestsModal('all')" style="font-weight:700; margin-left:auto;">
-          📋 All Requests (${allRequests.length})
+        <button class="btn btn-sm" onclick="ModalManager.openStudentRequestsModal('all')" style="font-weight:800; padding:8px 12px; border-radius:8px; margin-left:auto; transition:all 0.2s ease; cursor:pointer; ${activeTab === 'all' ? 'background:var(--primary); color:#ffffff; border:2px solid var(--primary);' : 'background:rgba(255,255,255,0.05); color:var(--text-muted); border:1px solid var(--border-color);'}">
+          📋 All (${allRequests.length})
         </button>
       `;
       container.appendChild(filterBar);
 
-      // 3. Determine active display list
+      // 3. Render Active Section Header Label
+      let sectionTitleHtml = "";
+      if (activeTab === "issued") {
+        sectionTitleHtml = `<h4 style="color:#10b981; margin:0 0 14px 0; font-size:0.95rem; font-weight:800; display:flex; align-items:center; gap:8px;"><i data-lucide="package"></i> Section 1: Active Issued & Borrowed Items (${issuedRequests.length})</h4>`;
+      } else if (activeTab === "pending") {
+        sectionTitleHtml = `<h4 style="color:#f59e0b; margin:0 0 14px 0; font-size:0.95rem; font-weight:800; display:flex; align-items:center; gap:8px;"><i data-lucide="clock"></i> Section 2: Pending Approval Queue (${pendingRequests.length})</h4>`;
+      } else if (activeTab === "duedate") {
+        sectionTitleHtml = `<h4 style="color:#ef4444; margin:0 0 14px 0; font-size:0.95rem; font-weight:800; display:flex; align-items:center; gap:8px;"><i data-lucide="calendar"></i> Section 3: Return Due & Overdue Items (${dueDateRequests.length})</h4>`;
+      } else {
+        sectionTitleHtml = `<h4 style="color:var(--primary); margin:0 0 14px 0; font-size:0.95rem; font-weight:800; display:flex; align-items:center; gap:8px;"><i data-lucide="clipboard-list"></i> Complete Requisitions Log (${allRequests.length})</h4>`;
+      }
+
+      const sectionTitleEl = document.createElement("div");
+      sectionTitleEl.innerHTML = sectionTitleHtml;
+      container.appendChild(sectionTitleEl);
+
+      // 4. Determine active display list
       let displayRequests = allRequests;
       if (activeTab === "issued") displayRequests = issuedRequests;
       else if (activeTab === "pending") displayRequests = pendingRequests;
       else if (activeTab === "duedate") displayRequests = dueDateRequests;
 
       if (displayRequests.length === 0) {
-        let emptyHint = "No requests found in this category.";
+        let emptyHint = "No requests found in this section.";
         if (activeTab === "issued") emptyHint = "No items currently issued or borrowed from lab stock.";
         else if (activeTab === "pending") emptyHint = "No pending requests awaiting approval.";
         else if (activeTab === "duedate") emptyHint = "No borrowed items are currently due or overdue for return.";
