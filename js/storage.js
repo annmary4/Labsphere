@@ -142,6 +142,11 @@ class StorageService {
     }
 
     await this.pullCentralServerSync().catch(() => {});
+    try {
+      this.checkAndTriggerIssuedItemReminders();
+    } catch (e) {
+      console.warn("Automated return reminder error:", e);
+    }
   }
 
   static async pullCentralServerSync() {
@@ -324,14 +329,36 @@ class StorageService {
     return true;
   }
 
-  // --- NOTIFICATION CENTER METHODS ---
-  static getNotifications() {
+  // --- NOTIFICATION CENTER & AUTOMATED ISSUED ITEM DUE REMINDERS (7D, 14D, 1 MONTH) ---
+  static getNotifications(userFilter = null) {
     try {
       const data = localStorage.getItem(STORAGE_KEYS.NOTIFICATIONS);
       if (data) {
         const parsed = JSON.parse(data);
         if (Array.isArray(parsed)) {
-          return parsed.filter(n => n && typeof n === 'object' && n.title && n.message && n.type);
+          let list = parsed.filter(n => n && typeof n === 'object' && n.title && n.message && n.type);
+          if (userFilter) {
+            const role = userFilter.role;
+            const username = (userFilter.username || "").toLowerCase();
+            const fullName = (userFilter.fullName || "").toLowerCase();
+            const email = (userFilter.email || "").toLowerCase();
+
+            // Admin / Inventory Manager sees ALL notifications
+            if (role === "ADMIN" || isMasterAdmin(email, username)) {
+              return list;
+            }
+
+            return list.filter(n => {
+              if (!n.targetRole && !n.targetUser) return true; // Global public notification
+              if (n.targetRole && n.targetRole === role) return true;
+              if (n.targetUser) {
+                const tu = n.targetUser.toLowerCase();
+                if (tu === username || tu === fullName || username.includes(tu) || fullName.includes(tu)) return true;
+              }
+              return false;
+            });
+          }
+          return list;
         }
       }
     } catch (e) {
@@ -344,13 +371,17 @@ class StorageService {
     localStorage.setItem(STORAGE_KEYS.NOTIFICATIONS, JSON.stringify(notifs));
   }
 
-  static addNotification(type, title, message) {
+  static addNotification(type, title, message, extraOptions = {}) {
     const notifs = this.getNotifications();
     const newNotif = {
-      id: "NOTIF-" + Date.now().toString().slice(-4),
+      id: "NOTIF-" + Date.now().toString().slice(-4) + Math.floor(Math.random() * 100),
       type,
       title,
       message,
+      targetRole: extraOptions.targetRole || null,
+      targetUser: extraOptions.targetUser || null,
+      severity: extraOptions.severity || "INFO", // INFO, REMINDER, WARNING, CRITICAL
+      reqId: extraOptions.reqId || null,
       timestamp: new Date().toLocaleString(),
       read: false
     };
@@ -363,6 +394,142 @@ class StorageService {
     const notifs = this.getNotifications();
     notifs.forEach(n => n.read = true);
     this.saveNotifications(notifs);
+  }
+
+  // --- AUTOMATED ISSUED ITEM RETURN DUE NOTIFICATION ENGINE (7 DAYS, 14 DAYS, 1 MONTH) ---
+  static checkAndTriggerIssuedItemReminders() {
+    const requests = this.getRequests();
+    if (!requests || requests.length === 0) return { checked: 0, triggered: 0 };
+
+    const now = new Date();
+    let triggeredCount = 0;
+    let updatedRequests = false;
+
+    requests.forEach(req => {
+      // Active issued requests with items currently outstanding
+      const isIssued = req.status === "ISSUED" || req.status === "PARTIALLY_ISSUED" || req.status === "PARTIAL_RETURN" || req.status === "APPROVED";
+      const issuedQty = req.issuedQty || req.qtyApproved || req.qtyRequested || 0;
+      const returnedQty = req.returnedQty || 0;
+      const outstandingQty = Math.max(0, issuedQty - returnedQty);
+
+      if (isIssued && outstandingQty > 0) {
+        // Calculate days elapsed since Lab Administrator issuance date
+        const issueDateRaw = req.issueDate || req.issuedAt || req.requestedAt;
+        let issueDateObj = null;
+        if (issueDateRaw) {
+          issueDateObj = new Date(issueDateRaw);
+          if (isNaN(issueDateObj.getTime())) {
+            const parts = String(issueDateRaw).split(',');
+            issueDateObj = new Date(parts[0]);
+          }
+        }
+        if (!issueDateObj || isNaN(issueDateObj.getTime())) {
+          issueDateObj = new Date();
+        }
+
+        const diffMs = now.getTime() - issueDateObj.getTime();
+        const daysSinceIssuance = Math.max(0, Math.floor(diffMs / (1000 * 60 * 60 * 24)));
+        const issueDateDisplay = req.issueDate || (issueDateObj ? issueDateObj.toLocaleDateString() : "recently");
+
+        if (!req.remindersSent) {
+          req.remindersSent = {};
+        }
+
+        // Milestone 3: 1 Month (30+ Days) -> Notify User (Borrower)
+        if (daysSinceIssuance >= 30) {
+          const last1Month = req.remindersSent.user1Month ? new Date(req.remindersSent.user1Month) : null;
+          const daysSinceLast1Month = last1Month ? Math.floor((now - last1Month) / (1000 * 60 * 60 * 24)) : 999;
+
+          if (!req.remindersSent.user1Month || daysSinceLast1Month >= 30) {
+            this.addNotification(
+              "ISSUED_DUE_1MONTH",
+              `Overdue Notice (1 Month): ${req.componentName}`,
+              `Attention ${req.requesterName}: Your borrowed item '${req.componentName}' (${outstandingQty} pcs, Requisition #${req.id}) issued on ${issueDateDisplay} has been outstanding for over 1 month (${Math.floor(daysSinceIssuance / 30)} month(s)). Urgent return to lab stock is required.`,
+              { targetUser: req.requesterName, severity: "CRITICAL", reqId: req.id }
+            );
+            req.remindersSent.user1Month = now.toISOString();
+            req.remindersSent.user14Day = req.remindersSent.user14Day || now.toISOString();
+            req.remindersSent.user7Day = req.remindersSent.user7Day || now.toISOString();
+            req.dueNotificationStatus = "1MONTH_OVERDUE";
+            triggeredCount++;
+            updatedRequests = true;
+          }
+        }
+        // Milestone 2: 14 Days -> Notify User (Borrower)
+        else if (daysSinceIssuance >= 14) {
+          if (!req.remindersSent.user14Day) {
+            this.addNotification(
+              "ISSUED_DUE_14DAY",
+              `Return Due Notice (14 Days): ${req.componentName}`,
+              `Hello ${req.requesterName}, your borrowed item '${req.componentName}' (${outstandingQty} pcs, Requisition #${req.id}) issued on ${issueDateDisplay} has reached 14 days. Please return the item to lab stock immediately.`,
+              { targetUser: req.requesterName, severity: "WARNING", reqId: req.id }
+            );
+            req.remindersSent.user14Day = now.toISOString();
+            req.remindersSent.user7Day = req.remindersSent.user7Day || now.toISOString();
+            req.dueNotificationStatus = "14DAY_DUE";
+            triggeredCount++;
+            updatedRequests = true;
+          }
+        }
+        // Milestone 1: 7 Days -> Notify User (Borrower)
+        else if (daysSinceIssuance >= 7) {
+          if (!req.remindersSent.user7Day) {
+            this.addNotification(
+              "ISSUED_DUE_7DAY",
+              `Return Due Notice (7 Days): ${req.componentName}`,
+              `Hello ${req.requesterName}, your borrowed item '${req.componentName}' (${outstandingQty} pcs, Requisition #${req.id}) issued on ${issueDateDisplay} has crossed 7 days. Please schedule return to lab stock.`,
+              { targetUser: req.requesterName, severity: "REMINDER", reqId: req.id }
+            );
+            req.remindersSent.user7Day = now.toISOString();
+            req.dueNotificationStatus = "7DAY_DUE";
+            triggeredCount++;
+            updatedRequests = true;
+          }
+        } else {
+          req.dueNotificationStatus = "NORMAL";
+        }
+      }
+    });
+
+    if (updatedRequests) {
+      this.saveRequests(requests);
+    }
+
+    return { checked: requests.length, triggered: triggeredCount };
+  }
+
+  static getIssuedItemReturnStatus(req) {
+    if (!req) return { status: "NORMAL", days: 0, label: "N/A", color: "#6b7280" };
+
+    const isIssued = req.status === "ISSUED" || req.status === "PARTIALLY_ISSUED" || req.status === "PARTIAL_RETURN" || req.status === "APPROVED";
+    const issuedQty = req.issuedQty || req.qtyApproved || req.qtyRequested || 0;
+    const returnedQty = req.returnedQty || 0;
+    const outstandingQty = Math.max(0, issuedQty - returnedQty);
+
+    if (!isIssued || outstandingQty <= 0) {
+      return { status: "RETURNED", days: 0, label: "Returned / Cleared", color: "#6b7280" };
+    }
+
+    const issueDateRaw = req.issueDate || req.issuedAt || req.requestedAt;
+    let issueDateObj = issueDateRaw ? new Date(issueDateRaw) : new Date();
+    if (isNaN(issueDateObj.getTime())) {
+      const parts = String(issueDateRaw).split(',');
+      issueDateObj = new Date(parts[0]);
+    }
+    if (isNaN(issueDateObj.getTime())) issueDateObj = new Date();
+
+    const diffMs = new Date().getTime() - issueDateObj.getTime();
+    const days = Math.max(0, Math.floor(diffMs / (1000 * 60 * 60 * 24)));
+
+    if (days >= 30) {
+      return { status: "1MONTH_OVERDUE", days, label: `1 Month Overdue (${days} Days Issued)`, color: "#ef4444" };
+    } else if (days >= 14) {
+      return { status: "14DAY_DUE", days, label: `14+ Days Issued (${days} Days)`, color: "#f97316" };
+    } else if (days >= 7) {
+      return { status: "7DAY_DUE", days, label: `7+ Days Issued (${days} Days)`, color: "#3b82f6" };
+    } else {
+      return { status: "NORMAL", days, label: `${days} Days Since Issuance`, color: "#10b981" };
+    }
   }
 
   // --- COMPLETE, PARTIAL & MULTIPLE RETURN WORKFLOW WITH 5 CONDITIONS ---

@@ -233,7 +233,8 @@ class ModalManager {
 
   // --- NOTIFICATION CENTER RENDERER ---
   static renderNotificationCenter() {
-    const notifs = StorageService.getNotifications();
+    const session = StorageService.getSession ? StorageService.getSession() : null;
+    const notifs = StorageService.getNotifications(session);
     const list = document.getElementById("notif-list");
     const badge = document.getElementById("notif-unread-count");
     const drawerBadge = document.getElementById("drawer-notif-badge");
@@ -264,10 +265,22 @@ class ModalManager {
         notifs.forEach(n => {
           const item = document.createElement("div");
           item.className = `notif-item ${n.read ? 'read' : 'unread'}`;
+
+          let severityBadge = '';
+          if (n.severity === 'CRITICAL' || n.type === 'ISSUED_DUE_1MONTH') {
+            severityBadge = '<span style="font-size:0.65rem; background:rgba(239,68,68,0.2); color:#ef4444; border:1px solid rgba(239,68,68,0.4); padding:1px 6px; border-radius:4px; font-weight:700;">🔴 1 MONTH OVERDUE</span>';
+          } else if (n.severity === 'WARNING' || n.type === 'ISSUED_DUE_14DAY') {
+            severityBadge = '<span style="font-size:0.65rem; background:rgba(245,158,11,0.2); color:#f59e0b; border:1px solid rgba(245,158,11,0.4); padding:1px 6px; border-radius:4px; font-weight:700;">🟠 14D DUE</span>';
+          } else if (n.severity === 'REMINDER' || n.type === 'ISSUED_DUE_7DAY') {
+            severityBadge = '<span style="font-size:0.65rem; background:rgba(59,130,246,0.2); color:#3b82f6; border:1px solid rgba(59,130,246,0.4); padding:1px 6px; border-radius:4px; font-weight:700;">🔵 7D DUE</span>';
+          } else if (!n.read) {
+            severityBadge = '<span style="font-size:0.65rem; background:rgba(239,68,68,0.2); color:#ef4444; border:1px solid rgba(239,68,68,0.4); padding:1px 6px; border-radius:4px; font-weight:700;">NEW</span>';
+          }
+
           item.innerHTML = `
             <div class="notif-title" style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
               <strong>${n.title}</strong>
-              ${!n.read ? '<span style="font-size:0.65rem; background:rgba(239,68,68,0.2); color:#ef4444; border:1px solid rgba(239,68,68,0.4); padding:1px 6px; border-radius:4px; font-weight:700;">NEW</span>' : ''}
+              ${severityBadge}
             </div>
             <p class="notif-msg" style="margin:4px 0 6px 0; font-size:0.8rem; color:var(--text-muted); line-height:1.4;">${n.message}</p>
             <span class="notif-time" style="font-size:0.7rem; color:var(--primary); font-weight:600;">${n.timestamp}</span>
