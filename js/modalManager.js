@@ -59,11 +59,15 @@ class ModalManager {
 
     if (btnNotif) btnNotif.addEventListener("click", toggleNotifCenter);
     if (drawerBtnNotif) drawerBtnNotif.addEventListener("click", toggleNotifCenter);
-    if (notifDropdown) document.addEventListener("click", () => notifDropdown.classList.remove("show"));
+    if (notifDropdown) {
+      notifDropdown.addEventListener("click", (e) => e.stopPropagation());
+      document.addEventListener("click", () => notifDropdown.classList.remove("show"));
+    }
 
     const markReadBtn = document.getElementById("btn-mark-notif-read");
     if (markReadBtn) {
-      markReadBtn.addEventListener("click", () => {
+      markReadBtn.addEventListener("click", (e) => {
+        if (e) e.stopPropagation();
         StorageService.markNotificationsRead();
         this.renderNotificationCenter();
         if (this.callbacks.onInventoryChanged) this.callbacks.onInventoryChanged();

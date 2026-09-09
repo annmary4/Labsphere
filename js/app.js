@@ -723,13 +723,12 @@ class App {
       }
     }
 
-    // Notification bell is hidden from navbar header on ALL screens (desktop & mobile)
-    // It lives exclusively inside the hamburger View Navigation drawer
+    // Notification bell is active in navbar header & hamburger View Navigation drawer
     const btnNavNotif = document.getElementById("btn-nav-notif");
     if (btnNavNotif) {
+      btnNavNotif.style.removeProperty("display");
       const notifParent = btnNavNotif.closest(".dropdown");
-      if (notifParent) notifParent.style.setProperty("display", "none", "important");
-      btnNavNotif.style.setProperty("display", "none", "important");
+      if (notifParent) notifParent.style.removeProperty("display");
     }
 
     const pendingReqs = StorageService.getRequests().filter(r => r.status === "PENDING_LEAD_APPROVAL" || r.status === "PENDING_ADMIN_ISSUANCE" || r.status === "SUBMITTED" || r.status === "PENDING" || r.status === "LEAD_APPROVED" || r.status === "LEAD_MODIFIED").length;
