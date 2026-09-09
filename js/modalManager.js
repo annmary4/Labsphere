@@ -11,6 +11,7 @@ class ModalManager {
 
     try {
       this.bindEvents();
+      this.renderNotificationCenter();
       console.log('[ModalManager] bindEvents() OK');
     } catch (e) {
       console.error('[ModalManager] bindEvents() threw:', e.message, e);
@@ -41,10 +42,11 @@ class ModalManager {
   }
 
   static bindEvents() {
-    // Notification Center Dropdown & Mobile Drawer Listener
+    // Notification Center Dropdown & Mobile Side Panel Drawer Listener
     const btnNotif = document.getElementById("btn-nav-notif");
     const drawerBtnNotif = document.getElementById("drawer-btn-notif");
     const notifDropdown = document.getElementById("notif-dropdown");
+    const closeNotifBtn = document.getElementById("btn-close-notif");
 
     const toggleNotifCenter = (e) => {
       if (e) e.stopPropagation();
@@ -59,6 +61,11 @@ class ModalManager {
 
     if (btnNotif) btnNotif.addEventListener("click", toggleNotifCenter);
     if (drawerBtnNotif) drawerBtnNotif.addEventListener("click", toggleNotifCenter);
+    if (closeNotifBtn) closeNotifBtn.addEventListener("click", (e) => {
+      if (e) e.stopPropagation();
+      if (notifDropdown) notifDropdown.classList.remove("show");
+    });
+
     if (notifDropdown) {
       notifDropdown.addEventListener("click", (e) => e.stopPropagation());
       document.addEventListener("click", () => notifDropdown.classList.remove("show"));

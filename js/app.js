@@ -723,12 +723,10 @@ class App {
       }
     }
 
-    // Notification bell is active in navbar header & hamburger View Navigation drawer
+    // Header notification bell is hidden (notifications accessed via hamburger side panel)
     const btnNavNotif = document.getElementById("btn-nav-notif");
     if (btnNavNotif) {
-      btnNavNotif.style.removeProperty("display");
-      const notifParent = btnNavNotif.closest(".dropdown");
-      if (notifParent) notifParent.style.removeProperty("display");
+      btnNavNotif.style.setProperty("display", "none", "important");
     }
 
     const pendingReqs = StorageService.getRequests().filter(r => r.status === "PENDING_LEAD_APPROVAL" || r.status === "PENDING_ADMIN_ISSUANCE" || r.status === "SUBMITTED" || r.status === "PENDING" || r.status === "LEAD_APPROVED" || r.status === "LEAD_MODIFIED").length;
