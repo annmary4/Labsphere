@@ -1639,17 +1639,86 @@ class ModalManager {
   }
 
   // --- MULTI-STAGE REQUISITION & RETURNABLE ASSET TRACKING MODAL ---
-  static openStudentRequestsModal() {
+  static openStudentRequestsModal(activeTab = "issued") {
     const backdrop = document.getElementById("student-req-modal");
     const container = document.getElementById("student-requests-container");
-    const requests = StorageService.getRequests();
+    let requests = StorageService.getRequests();
+
+    // Filter by logged-in user if student/lead
+    const session = StorageService.getSession();
+    if (session && session.role !== "ADMIN") {
+      const username = (session.username || "").toLowerCase();
+      const fullName = (session.fullName || "").toLowerCase();
+      requests = requests.filter(r => {
+        const reqUser = (r.requesterName || "").toLowerCase();
+        return reqUser === username || reqUser === fullName || username.includes(reqUser) || fullName.includes(reqUser);
+      });
+    }
 
     if (container) {
       container.innerHTML = "";
-      if (requests.length === 0) {
-        container.innerHTML = `<p class="empty-hint">No material requests submitted yet.</p>`;
+
+      // 1. Categorize requests for 3 Filter Sections
+      const allRequests = requests;
+      const issuedRequests = requests.filter(r => {
+        const isIssued = r.status === "ISSUED" || r.status === "APPROVED" || r.status === "PARTIAL_RETURN" || r.status === "PARTIALLY_ISSUED";
+        const issuedQty = r.issuedQty || r.qtyApproved || r.qtyRequested || 0;
+        const returnedQty = r.returnedQty || 0;
+        return isIssued && (issuedQty - returnedQty) > 0;
+      });
+
+      const pendingRequests = requests.filter(r => {
+        return r.status === "PENDING_LEAD_APPROVAL" || r.status === "SUBMITTED" || r.status === "PENDING" || 
+               r.status === "PENDING_ADMIN_ISSUANCE" || r.status === "LEAD_APPROVED" || r.status === "LEAD_MODIFIED";
+      });
+
+      const dueDateRequests = requests.filter(r => {
+        const isIssued = r.status === "ISSUED" || r.status === "APPROVED" || r.status === "PARTIAL_RETURN" || r.status === "PARTIALLY_ISSUED";
+        if (!isIssued) return false;
+        const returnStatus = StorageService.getIssuedItemReturnStatus ? StorageService.getIssuedItemReturnStatus(r) : null;
+        if (returnStatus && returnStatus.days >= 7) return true;
+        if (r.dueNotificationStatus && r.dueNotificationStatus !== "NORMAL") return true;
+        return false;
+      });
+
+      // 2. Render 3 Filter Section Tabs
+      const filterBar = document.createElement("div");
+      filterBar.className = "requests-filter-bar";
+      filterBar.style.cssText = "display:flex; gap:8px; margin-bottom:16px; border-bottom:1px solid var(--border-color); padding-bottom:12px; flex-wrap:wrap; align-items:center;";
+      filterBar.innerHTML = `
+        <button class="btn btn-sm ${activeTab === 'issued' ? 'btn-primary' : 'btn-secondary'}" onclick="ModalManager.openStudentRequestsModal('issued')" style="font-weight:700; ${activeTab === 'issued' ? 'background:#10b981; border-color:#10b981; color:#0f172a;' : ''}">
+          📦 Issued Items (${issuedRequests.length})
+        </button>
+        <button class="btn btn-sm ${activeTab === 'pending' ? 'btn-primary' : 'btn-secondary'}" onclick="ModalManager.openStudentRequestsModal('pending')" style="font-weight:700; ${activeTab === 'pending' ? 'background:#f59e0b; border-color:#f59e0b; color:#0f172a;' : ''}">
+          ⏳ Pending Requests (${pendingRequests.length})
+        </button>
+        <button class="btn btn-sm ${activeTab === 'duedate' ? 'btn-primary' : 'btn-secondary'}" onclick="ModalManager.openStudentRequestsModal('duedate')" style="font-weight:700; ${activeTab === 'duedate' ? 'background:#ef4444; border-color:#ef4444; color:#ffffff;' : ''}">
+          📅 Due Date / Overdue (${dueDateRequests.length})
+        </button>
+        <button class="btn btn-sm ${activeTab === 'all' ? 'btn-primary' : 'btn-secondary'}" onclick="ModalManager.openStudentRequestsModal('all')" style="font-weight:700; margin-left:auto;">
+          📋 All Requests (${allRequests.length})
+        </button>
+      `;
+      container.appendChild(filterBar);
+
+      // 3. Determine active display list
+      let displayRequests = allRequests;
+      if (activeTab === "issued") displayRequests = issuedRequests;
+      else if (activeTab === "pending") displayRequests = pendingRequests;
+      else if (activeTab === "duedate") displayRequests = dueDateRequests;
+
+      if (displayRequests.length === 0) {
+        let emptyHint = "No requests found in this category.";
+        if (activeTab === "issued") emptyHint = "No items currently issued or borrowed from lab stock.";
+        else if (activeTab === "pending") emptyHint = "No pending requests awaiting approval.";
+        else if (activeTab === "duedate") emptyHint = "No borrowed items are currently due or overdue for return.";
+
+        const emptyEl = document.createElement("div");
+        emptyEl.style.cssText = "padding:32px 16px; text-align:center; color:var(--text-muted); background:rgba(255,255,255,0.02); border:1px dashed var(--border-color); border-radius:10px; margin-top:10px;";
+        emptyEl.innerHTML = `<i data-lucide="check-circle-2" style="font-size:2rem; color:var(--primary); margin-bottom:8px; display:inline-block; opacity:0.6;"></i><h4 style="margin:0 0 4px 0; color:var(--text-main); font-weight:700;">${emptyHint}</h4>`;
+        container.appendChild(emptyEl);
       } else {
-        requests.forEach(r => {
+        displayRequests.forEach(r => {
           const card = document.createElement("div");
           card.className = "request-card";
 
@@ -1742,10 +1811,10 @@ class ModalManager {
             
             ${(r.status === 'SUBMITTED' || r.status === 'PENDING') ? `
               <div style="margin-top:10px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-                <button class="btn btn-secondary btn-sm" onclick="ModalManager.handleEditStudentPendingRequest('${r.id}'); ModalManager.openStudentRequestsModal();" style="font-weight:700; color:#38bdf8; border-color:rgba(56,189,248,0.4);">
+                <button class="btn btn-secondary btn-sm" onclick="ModalManager.handleEditStudentPendingRequest('${r.id}'); ModalManager.openStudentRequestsModal('${activeTab}');" style="font-weight:700; color:#38bdf8; border-color:rgba(56,189,248,0.4);">
                   ✏ Edit Request
                 </button>
-                <button class="btn btn-danger btn-sm" onclick="ModalManager.handleCancelStudentPendingRequest('${r.id}'); ModalManager.openStudentRequestsModal();" style="font-weight:700; background:rgba(239,68,68,0.15); color:#ef4444; border:1px solid rgba(239,68,68,0.4);">
+                <button class="btn btn-danger btn-sm" onclick="ModalManager.handleCancelStudentPendingRequest('${r.id}'); ModalManager.openStudentRequestsModal('${activeTab}');" style="font-weight:700; background:rgba(239,68,68,0.15); color:#ef4444; border:1px solid rgba(239,68,68,0.4);">
                   🚫 Cancel Request
                 </button>
               </div>
@@ -1785,7 +1854,7 @@ class ModalManager {
               try {
                 StorageService.reportDamagedAsset(r.id, r.componentId, damQty, reportDetails || "");
                 alert(`Reported ${damQty} pcs of '${r.componentName}' as DAMAGED. Inventory Admin notified.`);
-                this.openStudentRequestsModal();
+                this.openStudentRequestsModal(activeTab);
                 if (this.callbacks.onInventoryChanged) this.callbacks.onInventoryChanged();
               } catch (err) {
                 alert(err.message);
