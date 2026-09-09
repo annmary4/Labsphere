@@ -262,7 +262,7 @@
           <i data-lucide="shopping-bag"></i> Multi-Item Request <span id="req-cart-count-badge"
             class="count-badge hidden" style="background:#f59e0b; color:#0f172a; margin-left:4px;">0</span>
         </button>
-        <button id="btn-student-reqs" class="btn btn-secondary" title="My Component Requests & Issued Items">
+        <button id="btn-student-reqs" class="btn btn-secondary" onclick="ModalManager.openStudentRequestsModal('all');" title="My Component Requests & Issued Items">
           <i data-lucide="clipboard-list"></i> My Requests
         </button>
 
@@ -424,7 +424,7 @@
           </div>
         </button>
 
-        <button class="drawer-menu-item" id="drawer-btn-student-reqs">
+        <button class="drawer-menu-item" id="drawer-btn-student-reqs" onclick="ModalManager.openStudentRequestsModal('all');">
           <i data-lucide="clipboard-list" style="font-size:1.2rem; color:var(--primary);"></i>
           <div style="display:flex; flex-direction:column; text-align:left;">
             <span style="font-weight:700;">My Requests</span>

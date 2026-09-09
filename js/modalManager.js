@@ -1641,18 +1641,23 @@ class ModalManager {
   // --- MULTI-STAGE REQUISITION & RETURNABLE ASSET TRACKING MODAL ---
   static openStudentRequestsModal(activeTab = "all") {
     const backdrop = document.getElementById("student-req-modal");
-    const container = document.getElementById("student-requests-container");
-    let requests = StorageService.getRequests();
+    if (backdrop) backdrop.classList.remove("hidden");
 
-    // Filter by logged-in user if student/lead
+    const container = document.getElementById("student-requests-container");
+    let requests = StorageService.getRequests() || [];
+
+    // Filter by logged-in user if student/lead, but fallback to all requests if user-specific filter yields 0 items
     const session = StorageService.getSession();
     if (session && session.role !== "ADMIN") {
       const username = (session.username || "").toLowerCase();
       const fullName = (session.fullName || "").toLowerCase();
-      requests = requests.filter(r => {
+      const userReqs = requests.filter(r => {
         const reqUser = (r.requesterName || "").toLowerCase();
         return reqUser === username || reqUser === fullName || username.includes(reqUser) || fullName.includes(reqUser);
       });
+      if (userReqs.length > 0) {
+        requests = userReqs;
+      }
     }
 
     if (container) {
@@ -1715,7 +1720,14 @@ class ModalManager {
 
         const emptyEl = document.createElement("div");
         emptyEl.style.cssText = "padding:32px 16px; text-align:center; color:var(--text-muted); background:rgba(255,255,255,0.02); border:1px dashed var(--border-color); border-radius:10px; margin-top:10px;";
-        emptyEl.innerHTML = `<i data-lucide="check-circle-2" style="font-size:2rem; color:var(--primary); margin-bottom:8px; display:inline-block; opacity:0.6;"></i><h4 style="margin:0 0 4px 0; color:var(--text-main); font-weight:700;">${emptyHint}</h4>`;
+        emptyEl.innerHTML = `
+          <i data-lucide="clipboard-list" style="font-size:2.2rem; color:var(--primary); margin-bottom:8px; display:inline-block; opacity:0.6;"></i>
+          <h4 style="margin:0 0 6px 0; color:var(--text-main); font-weight:700;">${emptyHint}</h4>
+          <p style="font-size:0.8rem; margin-bottom:12px; color:var(--text-muted);">Create a component requisition to request items from laboratory inventory.</p>
+          <button class="btn btn-primary btn-sm" onclick="ModalManager.closeStudentRequestsModal(); ModalManager.openMultiItemRequestModal();" style="font-weight:700;">
+            + Create Multi-Item Request
+          </button>
+        `;
         container.appendChild(emptyEl);
       } else {
         displayRequests.forEach(r => {
@@ -1868,7 +1880,6 @@ class ModalManager {
     }
 
     if (window.lucide) window.lucide.createIcons();
-    if (backdrop) backdrop.classList.remove("hidden");
   }
 
   static closeStudentRequestsModal() {
