@@ -1639,7 +1639,7 @@ class ModalManager {
   }
 
   // --- MULTI-STAGE REQUISITION & RETURNABLE ASSET TRACKING MODAL ---
-  static openStudentRequestsModal(activeTab = "issued") {
+  static openStudentRequestsModal(activeTab = "all") {
     const backdrop = document.getElementById("student-req-modal");
     const container = document.getElementById("student-requests-container");
     let requests = StorageService.getRequests();
