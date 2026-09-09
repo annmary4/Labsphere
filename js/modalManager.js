@@ -424,15 +424,10 @@ class ModalManager {
         statusBadge = `<span class="stock-tag danger">DISABLED</span>`;
       }
 
-      const isVerified = u.isVerified !== false;
-      const verifyBadge = isVerified 
-        ? `<span style="display:inline-block; font-size:0.7rem; color:#38bdf8; background:rgba(56,189,248,0.1); border:1px solid rgba(56,189,248,0.25); padding:1px 6px; border-radius:4px; margin-left:4px;" title="Email Verified">✅ Verified</span>`
-        : `<span style="display:inline-block; font-size:0.7rem; color:#f59e0b; background:rgba(245,158,11,0.1); border:1px solid rgba(245,158,11,0.25); padding:1px 6px; border-radius:4px; margin-left:4px;" title="Pending Secret Code Verification">⏳ Pending Code</span>`;
-
       tr.innerHTML = `
         <td>
           <strong>${u.fullName}</strong><br>
-          <span class="mono text-muted" style="font-size:0.75rem;">@${u.username}</span> ${verifyBadge}
+          <span class="mono text-muted" style="font-size:0.75rem;">@${u.username}</span>
         </td>
         <td>${u.email}</td>
         <td>
@@ -504,14 +499,7 @@ class ModalManager {
 
     try {
       const newUser = StorageService.createUser(username, email, password, role, fullName);
-      StorageService.dispatchEmailNotification({
-        to: newUser.email,
-        recipientName: newUser.fullName,
-        subject: `[LabSphere] Your Account Credentials & Access`,
-        type: "ACCOUNT_CREATED",
-        messageBody: `Hello ${newUser.fullName},\n\nAn administrator has created your LabSphere account (${newUser.username}) with role: ${newUser.role}.\nYou can now sign in at the LabSphere laboratory portal using your registered credentials.\n\nBest regards,\nLabSphere Laboratory Administration`
-      });
-      alert(`Success! Created user account '${newUser.fullName}' (${newUser.email}) with role ${newUser.role}. An email notification has been dispatched to ${newUser.email}.`);
+      alert(`Success! Created user account '${newUser.fullName}' (${newUser.email}) with role ${newUser.role}.`);
       document.getElementById("create-user-form").reset();
       this.renderUsersTable();
     } catch (err) {
