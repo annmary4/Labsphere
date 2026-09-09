@@ -1162,7 +1162,7 @@
         <div class="modal-body">
           <div
             style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
-            <p class="modal-desc" style="margin:0;">Track status of submitted checkout requests and return borrowed
+            <p class="modal-desc" id="student-req-modal-desc" style="margin:0;">Track status of submitted checkout requests and return borrowed
               items back to laboratory stock.</p>
             <button class="btn btn-primary btn-sm"
               onclick="ModalManager.closeStudentRequestsModal(); ModalManager.openMultiItemRequestModal();"
@@ -2505,7 +2505,7 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/Labsphere/sw.js?v=13305_due_date_and_30d_overdue', { scope: '/Labsphere/' })
+        navigator.serviceWorker.register('/Labsphere/sw.js?v=13306_user_specific_requests', { scope: '/Labsphere/' })
           .then(reg => {
             console.log('[LabSphere PWA] Service Worker registered:', reg.scope);
             if (reg.update) reg.update();

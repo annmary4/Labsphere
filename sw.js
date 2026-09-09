@@ -2,18 +2,18 @@
    LabSphere Service Worker - Offline Cache & PWA Support
    ============================================================ */
 
-const CACHE_NAME = 'labsphere-v13305_due_date_and_30d_overdue';
+const CACHE_NAME = 'labsphere-v13306_user_specific_requests';
 const ASSETS_TO_CACHE = [
   '/Labsphere/',
   '/Labsphere/index.html',
-  '/Labsphere/css/styles.css?v=13305_due_date_and_30d_overdue',
-  '/Labsphere/js/app.js?v=13305_due_date_and_30d_overdue',
-  '/Labsphere/js/types.js?v=13305_due_date_and_30d_overdue',
-  '/Labsphere/js/initialData.js?v=13305_due_date_and_30d_overdue',
-  '/Labsphere/js/storage.js?v=13305_due_date_and_30d_overdue',
-  '/Labsphere/js/rackViewer.js?v=13305_due_date_and_30d_overdue',
-  '/Labsphere/js/componentsView.js?v=13305_due_date_and_30d_overdue',
-  '/Labsphere/js/modalManager.js?v=13305_due_date_and_30d_overdue',
+  '/Labsphere/css/styles.css?v=13306_user_specific_requests',
+  '/Labsphere/js/app.js?v=13306_user_specific_requests',
+  '/Labsphere/js/types.js?v=13306_user_specific_requests',
+  '/Labsphere/js/initialData.js?v=13306_user_specific_requests',
+  '/Labsphere/js/storage.js?v=13306_user_specific_requests',
+  '/Labsphere/js/rackViewer.js?v=13306_user_specific_requests',
+  '/Labsphere/js/componentsView.js?v=13306_user_specific_requests',
+  '/Labsphere/js/modalManager.js?v=13306_user_specific_requests',
   '/Labsphere/icons/icon-192.png',
   '/Labsphere/icons/icon-512.png',
   '/Labsphere/manifest.json'

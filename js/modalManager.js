@@ -1696,7 +1696,15 @@ class ModalManager {
   static openStudentRequestsModal(filter = 'all') {
     const backdrop = document.getElementById("student-req-modal");
     const container = document.getElementById("student-requests-container");
-    const allRequests = StorageService.getRequests();
+    const session = StorageService.getCurrentSession();
+    const allRequests = StorageService.getUserRequests(session);
+    const userDisplayName = session ? (session.fullName || session.username) : 'My Account';
+
+    // Update modal description with logged-in user's identity
+    const modalDesc = document.getElementById('student-req-modal-desc');
+    if (modalDesc) {
+      modalDesc.innerHTML = `Showing requisitions and borrowed laboratory assets for: <strong style="color:#38bdf8;">👤 ${userDisplayName}</strong>`;
+    }
 
     const todayDate = new Date();
     todayDate.setHours(0, 0, 0, 0);
@@ -1797,20 +1805,15 @@ class ModalManager {
     const sectionHeader = document.getElementById('student-req-section-header');
     const sectionLabel  = document.getElementById('student-req-section-label');
     const sectionLabels = {
-      all:     '',
-      issued:  '📦 Showing only actively issued & borrowed components',
-      pending: '⏳ Showing only requests awaiting Team Lead or Admin approval',
-      due:     '📅 Showing issued components with active return due dates & remaining days before overdue (within 30-day limit)',
-      overdue: '🚨 Showing issued components that exceeded the 30-day loan time limit',
+      all:     `📋 Viewing all requisitions for ${userDisplayName}`,
+      issued:  `📦 Showing only issued & borrowed components for ${userDisplayName}`,
+      pending: `⏳ Showing only pending approval requests for ${userDisplayName}`,
+      due:     `📅 Showing your active issued components & remaining days before overdue (within 30-day limit)`,
+      overdue: `🚨 Showing your issued components that exceeded the 30-day loan time limit`,
     };
     if (sectionHeader && sectionLabel) {
-      if (filter === 'all') {
-        sectionHeader.style.display = 'none';
-        sectionLabel.innerText = '';
-      } else {
-        sectionHeader.style.display = 'block';
-        sectionLabel.innerText = sectionLabels[filter] || '';
-      }
+      sectionHeader.style.display = 'block';
+      sectionLabel.innerHTML = sectionLabels[filter] || `Viewing requisitions for: <strong style="color:var(--primary);">${userDisplayName}</strong>`;
     }
 
     // --- Filter the requests ---
@@ -1830,11 +1833,11 @@ class ModalManager {
 
     if (requests.length === 0) {
       const emptyMessages = {
-        all:     'No material requests submitted yet.',
-        issued:  'No components are currently issued to you.',
-        pending: 'No requests are pending approval right now.',
-        due:     'No active issued components within the loan period. ✅',
-        overdue: 'No components have exceeded the 30-day time limit! All returns are within schedule. 🎉',
+        all:     `No material requests submitted by ${userDisplayName} yet.`,
+        issued:  `No components are currently issued to ${userDisplayName}.`,
+        pending: `You have no requests pending approval right now.`,
+        due:     `None of your issued components are currently due for return. ✅`,
+        overdue: `None of your components have exceeded the 30-day time limit! All returns are within schedule. 🎉`,
       };
       const emptyIcons = {
         all:     '📋',
@@ -4787,13 +4790,16 @@ ModalManager.renderStudentRequisitionsStatusList = function() {
   const badgeCount = document.getElementById("student-my-req-count");
   if (!container) return;
 
-  const requests = StorageService.getRequests();
+  const session = StorageService.getCurrentSession();
+  const requests = StorageService.getUserRequests(session);
+  const userName = session ? (session.fullName || session.username) : "you";
+
   if (badgeCount) badgeCount.innerText = requests.length;
 
   if (requests.length === 0) {
     container.innerHTML = `
       <div style="text-align:center; padding:30px; background:var(--bg-dark); border-radius:10px; border:1px solid var(--border-color);">
-        <p style="color:var(--text-muted); font-weight:600; margin:0;">No material requisitions submitted yet.</p>
+        <p style="color:var(--text-muted); font-weight:600; margin:0;">No material requisitions submitted by ${userName} yet.</p>
         <button class="btn btn-primary btn-sm" onclick="ModalManager.switchStudentReqTab('create')" style="margin-top:12px; font-weight:700;">
           ➕ Search & Add Components Now
         </button>
@@ -4916,7 +4922,8 @@ ModalManager.openMultiItemRequestModal = function(initialComponentId = null, tar
   this.handleReqInventorySearch("");
   this.renderRequisitionCart();
 
-  const reqs = StorageService.getRequests();
+  const session = StorageService.getCurrentSession();
+  const reqs = StorageService.getUserRequests(session);
   const badgeCount = document.getElementById("student-my-req-count");
   if (badgeCount) badgeCount.innerText = reqs.length;
 

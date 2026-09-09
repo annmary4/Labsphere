@@ -1280,6 +1280,57 @@ class StorageService {
     localStorage.setItem(STORAGE_KEYS.REQUESTS, JSON.stringify(requests));
   }
 
+  static isUserRequest(r, session) {
+    if (!r) return false;
+    if (!session) return true;
+
+    // 1. Direct match by requesterUsername
+    if (r.requesterUsername && session.username &&
+        r.requesterUsername.trim().toLowerCase() === session.username.trim().toLowerCase()) {
+      return true;
+    }
+
+    // 2. Direct match by requesterEmail
+    if (r.requesterEmail && session.email &&
+        r.requesterEmail.trim().toLowerCase() === session.email.trim().toLowerCase()) {
+      return true;
+    }
+
+    // 3. Direct match by requesterId / userId
+    if (r.requesterId && (session.userId || session.id) &&
+        (r.requesterId === session.userId || r.requesterId === session.id)) {
+      return true;
+    }
+
+    // 4. Match by requesterName against full name, username, or email
+    if (r.requesterName) {
+      const reqName = r.requesterName.trim().toLowerCase();
+      const sessFullName = (session.fullName || "").trim().toLowerCase();
+      const sessUsername = (session.username || "").trim().toLowerCase();
+      const sessEmail = (session.email || "").trim().toLowerCase();
+
+      if (sessFullName && reqName === sessFullName) return true;
+      if (sessUsername && reqName === sessUsername) return true;
+      if (sessEmail && reqName === sessEmail) return true;
+
+      if (sessFullName && sessFullName.length >= 3 && (reqName.includes(sessFullName) || sessFullName.includes(reqName))) {
+        return true;
+      }
+      if (sessUsername && sessUsername.length >= 3 && (reqName.includes(sessUsername) || sessUsername.includes(reqName))) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  static getUserRequests(session = null) {
+    const currentSession = session || this.getCurrentSession();
+    const all = this.getRequests();
+    if (!currentSession) return all;
+    return all.filter(r => this.isUserRequest(r, currentSession));
+  }
+
   static submitComponentRequest(componentId, qtyRequested, requesterName, notes = "", projectId = null, assignedLeadName = "Anson") {
     const components = this.getComponents();
     const comp = components.find(c => c.id === componentId);
@@ -1295,6 +1346,9 @@ class StorageService {
       componentId: comp.id,
       componentName: comp.name,
       requesterName: requesterName || (session ? session.fullName : "Project Member"),
+      requesterUsername: session ? (session.username || "") : "",
+      requesterEmail: session ? (session.email || "") : "",
+      requesterId: session ? (session.userId || session.id || "") : "",
       role: USER_ROLES[currentRole] || "Project Member",
       projectId: projectId || null,
       assignedLeadName: assignedLeadName || "Anson",
@@ -1451,6 +1505,9 @@ class StorageService {
         componentId: comp.id,
         componentName: comp.name,
         requesterName: name,
+        requesterUsername: session ? (session.username || "") : "",
+        requesterEmail: session ? (session.email || "") : "",
+        requesterId: session ? (session.userId || session.id || "") : "",
         role: USER_ROLES[currentRole] || "Project Member",
         projectId: projectId || null,
         projectName: projectName || "General",
