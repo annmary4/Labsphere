@@ -1737,6 +1737,55 @@ class ModalManager {
           const returnedCount = r.returnedQty || 0;
           const remainingQty = Math.max(0, targetQty - returnedCount);
 
+          const isIssuedActive = r.status === 'ISSUED' || r.status === 'APPROVED' || r.status === 'PARTIAL_RETURN';
+
+          // Compute due date badge for issued items
+          let dueDateBadgeHtml = '';
+          if (isIssuedActive && r.dueDate) {
+            const now = new Date();
+            const due = new Date(r.dueDate);
+            const diffMs = due - now;
+            const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+
+            let dueBadgeColor = '#10b981';   // green - on time
+            let dueBadgeBg   = 'rgba(16,185,129,0.12)';
+            let dueBadgeBdr  = 'rgba(16,185,129,0.35)';
+            let dueIcon = '📅';
+            let dueLabel = '';
+
+            if (diffDays < 0) {
+              dueBadgeColor = '#ef4444';
+              dueBadgeBg   = 'rgba(239,68,68,0.12)';
+              dueBadgeBdr  = 'rgba(239,68,68,0.35)';
+              dueIcon = '🚨';
+              dueLabel = `OVERDUE by ${Math.abs(diffDays)} day${Math.abs(diffDays) !== 1 ? 's' : ''}`;
+            } else if (diffDays === 0) {
+              dueBadgeColor = '#f97316';
+              dueBadgeBg   = 'rgba(249,115,22,0.12)';
+              dueBadgeBdr  = 'rgba(249,115,22,0.35)';
+              dueIcon = '⚠️';
+              dueLabel = 'Due TODAY';
+            } else if (diffDays <= 7) {
+              dueBadgeColor = '#f59e0b';
+              dueBadgeBg   = 'rgba(245,158,11,0.12)';
+              dueBadgeBdr  = 'rgba(245,158,11,0.35)';
+              dueIcon = '⏰';
+              dueLabel = `Due in ${diffDays} day${diffDays !== 1 ? 's' : ''}`;
+            } else {
+              dueLabel = `Due in ${diffDays} days`;
+            }
+
+            dueDateBadgeHtml = `
+              <div style="display:flex; align-items:center; gap:8px; margin-top:8px; margin-bottom:2px; flex-wrap:wrap;">
+                <span style="display:inline-flex; align-items:center; gap:6px; background:${dueBadgeBg}; color:${dueBadgeColor}; border:1px solid ${dueBadgeBdr}; border-radius:8px; padding:5px 12px; font-size:0.83rem; font-weight:800;">
+                  ${dueIcon} Return Due: <strong style="font-size:0.88rem;">${r.dueDate}</strong>
+                  ${dueLabel ? `<span style="font-size:0.75rem; opacity:0.9;">(${dueLabel})</span>` : ''}
+                </span>
+                ${r.issuedAt ? `<span style="font-size:0.75rem; color:var(--text-muted);">Issued: ${r.issuedAt}</span>` : ''}
+              </div>
+            `;
+          }
+
           card.innerHTML = `
             <div class="request-header" style="display:flex; justify-content:space-between; align-items:center;">
               <div>
@@ -1745,15 +1794,16 @@ class ModalManager {
               </div>
               <span class="stock-tag ${statusBadgeClass}">${statusLabel}</span>
             </div>
+            ${dueDateBadgeHtml}
             <p class="request-meta" style="margin-top:6px;">
               Qty Requested: <strong>${r.qtyRequested} pcs</strong>
               ${r.qtyApproved && r.qtyApproved !== r.qtyRequested ? ` • Approved: <strong style="color:var(--primary);">${r.qtyApproved} pcs</strong>` : ''}
               • Returned: <strong>${returnedCount} pcs</strong>
               ${r.status === 'ISSUED' || r.status === 'PARTIAL_RETURN' ? ` • Outstanding: <strong class="primary-text" style="color:var(--accent-yellow);">${remainingQty} pcs</strong>` : ''}
             </p>
-            <p class="request-meta">Requester: <strong>${r.requesterName}</strong> (${r.role}) • Date: ${r.requestedAt} ${r.dueDate ? `• Due: ${r.dueDate}` : ''}</p>
+            <p class="request-meta">Requester: <strong>${r.requesterName}</strong> (${r.role}) • Submitted: ${r.requestedAt}</p>
             ${r.leadName ? `<p class="request-meta" style="font-size:0.75rem; color:var(--primary);">Team Lead: ${r.leadName} (${r.leadApprovedAt || 'Approved'})</p>` : ''}
-            ${r.issuedBy ? `<p class="request-meta" style="font-size:0.75rem; color:var(--accent-green);">Issued By Admin: ${r.issuedBy} (${r.issuedAt || 'Issued'})</p>` : ''}
+            ${r.issuedBy ? `<p class="request-meta" style="font-size:0.75rem; color:var(--accent-green);">Issued By Admin: ${r.issuedBy}</p>` : ''}
             <p class="request-notes" style="background:var(--bg-dark); padding:8px; border-radius:6px; margin-top:6px; font-size:0.82rem;">${r.notes}</p>
             
             ${(r.status === 'SUBMITTED' || r.status === 'PENDING') ? `

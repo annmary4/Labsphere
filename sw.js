@@ -2,18 +2,18 @@
    LabSphere Service Worker - Offline Cache & PWA Support
    ============================================================ */
 
-const CACHE_NAME = 'labsphere-v13302_notification_center_modal';
+const CACHE_NAME = 'labsphere-v13303_due_date_badge';
 const ASSETS_TO_CACHE = [
   '/Labsphere/',
   '/Labsphere/index.html',
-  '/Labsphere/css/styles.css?v=13302_notification_center_modal',
-  '/Labsphere/js/app.js?v=13302_notification_center_modal',
-  '/Labsphere/js/types.js?v=13302_notification_center_modal',
-  '/Labsphere/js/initialData.js?v=13302_notification_center_modal',
-  '/Labsphere/js/storage.js?v=13302_notification_center_modal',
-  '/Labsphere/js/rackViewer.js?v=13302_notification_center_modal',
-  '/Labsphere/js/componentsView.js?v=13302_notification_center_modal',
-  '/Labsphere/js/modalManager.js?v=13302_notification_center_modal',
+  '/Labsphere/css/styles.css?v=13303_due_date_badge',
+  '/Labsphere/js/app.js?v=13303_due_date_badge',
+  '/Labsphere/js/types.js?v=13303_due_date_badge',
+  '/Labsphere/js/initialData.js?v=13303_due_date_badge',
+  '/Labsphere/js/storage.js?v=13303_due_date_badge',
+  '/Labsphere/js/rackViewer.js?v=13303_due_date_badge',
+  '/Labsphere/js/componentsView.js?v=13303_due_date_badge',
+  '/Labsphere/js/modalManager.js?v=13303_due_date_badge',
   '/Labsphere/icons/icon-192.png',
   '/Labsphere/icons/icon-512.png',
   '/Labsphere/manifest.json'
