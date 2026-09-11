@@ -2,18 +2,18 @@
    LabSphere Service Worker - Offline Cache & PWA Support
    ============================================================ */
 
-const CACHE_NAME = 'labsphere-v13321_remove_csv_section2';
+const CACHE_NAME = 'labsphere-v13322_exec_report_in_drawer';
 const ASSETS_TO_CACHE = [
   '/Labsphere/',
   '/Labsphere/index.html',
-  '/Labsphere/css/styles.css?v=13321_remove_csv_section2',
-  '/Labsphere/js/app.js?v=13321_remove_csv_section2',
-  '/Labsphere/js/types.js?v=13321_remove_csv_section2',
-  '/Labsphere/js/initialData.js?v=13321_remove_csv_section2',
-  '/Labsphere/js/storage.js?v=13321_remove_csv_section2',
-  '/Labsphere/js/rackViewer.js?v=13321_remove_csv_section2',
-  '/Labsphere/js/componentsView.js?v=13321_remove_csv_section2',
-  '/Labsphere/js/modalManager.js?v=13321_remove_csv_section2',
+  '/Labsphere/css/styles.css?v=13322_exec_report_in_drawer',
+  '/Labsphere/js/app.js?v=13322_exec_report_in_drawer',
+  '/Labsphere/js/types.js?v=13322_exec_report_in_drawer',
+  '/Labsphere/js/initialData.js?v=13322_exec_report_in_drawer',
+  '/Labsphere/js/storage.js?v=13322_exec_report_in_drawer',
+  '/Labsphere/js/rackViewer.js?v=13322_exec_report_in_drawer',
+  '/Labsphere/js/componentsView.js?v=13322_exec_report_in_drawer',
+  '/Labsphere/js/modalManager.js?v=13322_exec_report_in_drawer',
   '/Labsphere/icons/icon-192.png',
   '/Labsphere/icons/icon-512.png',
   '/Labsphere/manifest.json'

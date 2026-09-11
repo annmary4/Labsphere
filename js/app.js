@@ -423,7 +423,7 @@ class App {
     mapDrawerTrigger("drawer-btn-student-reqs", "btn-student-reqs");
     mapDrawerTrigger("drawer-btn-engineer-bom", "btn-engineer-bom");
     mapDrawerTrigger("drawer-btn-projects-mgr", null, () => ModalManager.openProjectModal());
-    mapDrawerTrigger("drawer-btn-mgmt-dashboard", "btn-mgmt-dashboard");
+    mapDrawerTrigger("drawer-btn-mgmt-dashboard", null, () => ModalManager.openManagementModal());
     mapDrawerTrigger("drawer-btn-print-inventory-sheet", null, () => {
       if (typeof openPrintableInventorySheet === "function") openPrintableInventorySheet();
     });
@@ -641,7 +641,6 @@ class App {
     }
 
     const headerAdminButtons = [
-      document.getElementById("btn-mgmt-dashboard"),
       document.getElementById("btn-audit-log"),
       document.getElementById("btn-procurement-insights")
     ];
@@ -655,6 +654,12 @@ class App {
         }
       }
     });
+
+    // Executive Report is exclusively accessible inside the hamburger panel (never in the front page header)
+    const btnMgmtHeader = document.getElementById("btn-mgmt-dashboard");
+    if (btnMgmtHeader) {
+      btnMgmtHeader.style.setProperty("display", "none", "important");
+    }
 
     // "Multi-Item Request" header button: ONLY for Student / Intern role on desktop.
     // For all other roles (Team Lead, Lab Maintainer/Engineer, Management, Admin), it is available exclusively in the hamburger drawer panel.
