@@ -156,7 +156,15 @@ class ModalManager {
 
     if (closeBtn) closeBtn.addEventListener("click", () => this.closeComponentModal());
     if (doneBtn) doneBtn.addEventListener("click", () => this.closeComponentModal());
-    if (cancelEditBtn) cancelEditBtn.addEventListener("click", () => this.toggleEditMode(false));
+    if (cancelEditBtn) {
+      cancelEditBtn.addEventListener("click", () => {
+        if (!this.currentComponent) {
+          this.closeComponentModal();
+        } else {
+          this.toggleEditMode(false);
+        }
+      });
+    }
 
     if (backdrop) {
       backdrop.addEventListener("click", (e) => {
@@ -643,8 +651,11 @@ class ModalManager {
     if (printCompQrBtn) printCompQrBtn.style.display = isAdmin ? "inline-flex" : "none";
     if (editBtn) editBtn.style.display = isAdmin ? "inline-flex" : "none";
     if (moveBtn) moveBtn.style.display = isAdmin ? "inline-flex" : "none";
-    if (deleteBtn) deleteBtn.style.display = isAdmin ? "inline-flex" : "none";
+    const tabView = document.getElementById("modal-tab-view");
+    if (tabView) tabView.style.setProperty("display", "inline-block");
     if (tabEdit) tabEdit.style.display = isAdmin ? "inline-block" : "none";
+    const deleteEditBtn = document.getElementById("btn-delete-component-edit");
+    if (deleteEditBtn) deleteEditBtn.style.removeProperty("display");
     if (qtyControls) qtyControls.style.display = isAdmin ? "flex" : "none";
     if (minusBtn) minusBtn.style.display = isAdmin ? "inline-block" : "none";
     if (plusBtn) plusBtn.style.display = isAdmin ? "inline-block" : "none";
@@ -845,6 +856,11 @@ class ModalManager {
   }
 
   static openAddComponentModal(defaultRackId = 1, defaultShelfId = 1, defaultBoxId = "") {
+    if (!StorageService.isRole("ADMIN")) {
+      alert("Access Restricted: Only Lab Administrators can add new components.");
+      return;
+    }
+
     this.currentComponent = null;
 
     const form = document.getElementById("component-form");
@@ -852,20 +868,85 @@ class ModalManager {
 
     const setVal = (id, v) => { const el = document.getElementById(id); if (el) el.value = v; };
     setVal("form-comp-id", "");
-    setVal("form-rack", defaultRackId);
-    setVal("form-shelf", defaultShelfId);
-    setVal("form-box", defaultBoxId || `BOX A-001`);
+    setVal("form-lab-name", "Main Robotics & Embedded Systems Lab");
+    setVal("form-room-name", (Number(defaultRackId) === 2 ? "Room 102 - Storage Bay" : "Room 101 - Prototyping Hall"));
+    setVal("form-rack", defaultRackId || 1);
+    setVal("form-shelf", defaultShelfId || 1);
+    setVal("form-box", defaultBoxId || "BOX A-001");
+    setVal("form-stack-layer", "Layer 1 (Top Compartment Bin #A)");
+    setVal("form-category", "Microcontrollers & Dev Boards");
+    setVal("form-state", "AVAILABLE");
+    setVal("form-quantity", 1);
+    setVal("form-min-qty", 1);
+    setVal("form-unit-price", 450);
+    setVal("form-lead-time", 3);
+    setVal("form-name", "");
+    setVal("form-part-number", "");
+    setVal("form-manufacturer", "");
+    setVal("form-barcode", `8901234${Date.now().toString().slice(-6)}`);
+    setVal("form-image-url", "");
+    setVal("form-datasheet-url", "");
+    setVal("form-purpose", "");
+    setVal("form-specs", "");
+    setVal("form-tags", "");
+    setVal("form-compat", "");
+    setVal("form-alternatives", "");
+    setVal("form-vendor-name", "Robu.in / Lab Vendor");
+    setVal("form-vendor-sku", "");
+    setVal("form-vendor-url", "https://robu.in/");
 
     const modalTitle = document.getElementById("modal-title");
-    if (modalTitle) modalTitle.innerText = "Add New Component";
+    if (modalTitle) modalTitle.innerText = "Register New Lab Component";
 
     this.toggleEditMode(true);
 
-    const backdrop = document.getElementById("component-modal");
+    // Hide tabs and delete button when creating a new component
+    const tabView = document.getElementById("modal-tab-view");
+    const tabEdit = document.getElementById("modal-tab-edit");
+    const deleteEditBtn = document.getElementById("btn-delete-component-edit");
+    if (tabView) tabView.style.setProperty("display", "none", "important");
+    if (tabEdit) tabEdit.style.setProperty("display", "none", "important");
+    if (deleteEditBtn) deleteEditBtn.style.setProperty("display", "none", "important");
+
+    let backdrop = document.getElementById("component-modal");
     if (backdrop) {
+      if (backdrop.parentNode !== document.body) {
+        document.body.appendChild(backdrop);
+      }
       backdrop.classList.remove("hidden");
-      backdrop.style.display = "flex";
+      backdrop.style.cssText = "display:flex !important; position:fixed !important; inset:0 !important; width:100vw !important; height:100vh !important; z-index:9999999 !important; background:rgba(15,23,42,0.9) !important; backdrop-filter:blur(6px) !important; align-items:center !important; justify-content:center !important; visibility:visible !important; opacity:1 !important;";
+
+      backdrop.onclick = (e) => {
+        if (e.target === backdrop) {
+          ModalManager.closeComponentModal();
+        }
+      };
+
+      const closeBtn = backdrop.querySelector("#btn-close-component-modal") || document.getElementById("btn-close-component-modal");
+      if (closeBtn) {
+        closeBtn.onclick = (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          ModalManager.closeComponentModal();
+        };
+      }
     }
+
+    const cancelEditBtn = document.getElementById("btn-cancel-edit");
+    if (cancelEditBtn) {
+      cancelEditBtn.onclick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        ModalManager.closeComponentModal();
+      };
+    }
+
+    if (window.lucide) window.lucide.createIcons();
+
+    setTimeout(() => {
+      const nameInput = document.getElementById("form-name");
+      if (nameInput) nameInput.focus();
+    }, 100);
   }
 
   static toggleEditMode(edit) {
@@ -891,10 +972,10 @@ class ModalManager {
     const tabEdit = document.getElementById("modal-tab-edit");
 
     if (edit) {
-      if (viewContainer) { viewContainer.classList.add("hidden"); viewContainer.style.display = "none"; }
-      if (formContainer) { formContainer.classList.remove("hidden"); formContainer.style.display = "block"; }
-      if (viewFooter) { viewFooter.classList.add("hidden"); viewFooter.style.display = "none"; }
-      if (formFooter) { formFooter.classList.remove("hidden"); formFooter.style.display = "flex"; }
+      if (viewContainer) { viewContainer.classList.add("hidden"); viewContainer.style.setProperty("display", "none", "important"); }
+      if (formContainer) { formContainer.classList.remove("hidden"); formContainer.style.setProperty("display", "block", "important"); }
+      if (viewFooter) { viewFooter.classList.add("hidden"); viewFooter.style.setProperty("display", "none", "important"); }
+      if (formFooter) { formFooter.classList.remove("hidden"); formFooter.style.setProperty("display", "flex", "important"); }
 
       if (tabView) { tabView.style.background = "transparent"; tabView.style.color = "var(--text-muted)"; }
       if (tabEdit) { tabEdit.style.background = "#0ea5e9"; tabEdit.style.color = "white"; }
@@ -904,13 +985,14 @@ class ModalManager {
         this.populateFormWithComponent(this.currentComponent);
       }
     } else {
-      if (viewContainer) { viewContainer.classList.remove("hidden"); viewContainer.style.display = "block"; }
-      if (formContainer) { formContainer.classList.add("hidden"); formContainer.style.display = "none"; }
-      if (viewFooter) { viewFooter.classList.remove("hidden"); viewFooter.style.display = "flex"; }
-      if (formFooter) { formFooter.classList.add("hidden"); formFooter.style.display = "none"; }
+      if (viewContainer) { viewContainer.classList.remove("hidden"); viewContainer.style.setProperty("display", "block", "important"); }
+      if (formContainer) { formContainer.classList.add("hidden"); formContainer.style.setProperty("display", "none", "important"); }
+      if (viewFooter) { viewFooter.classList.remove("hidden"); viewFooter.style.setProperty("display", "flex", "important"); }
+      if (formFooter) { formFooter.classList.add("hidden"); formFooter.style.setProperty("display", "none", "important"); }
 
-      if (tabView) { tabView.style.background = "#0284c7"; tabView.style.color = "white"; }
-      if (tabEdit) { tabEdit.style.background = "transparent"; tabEdit.style.color = "var(--text-muted)"; }
+      const isAdmin = StorageService.isRole("ADMIN");
+      if (tabView) { tabView.style.setProperty("display", "inline-block"); tabView.style.background = "#0284c7"; tabView.style.color = "white"; }
+      if (tabEdit) { tabEdit.style.setProperty("display", isAdmin ? "inline-block" : "none"); tabEdit.style.background = "transparent"; tabEdit.style.color = "var(--text-muted)"; }
 
       if (this.currentComponent && modalTitle) {
         modalTitle.innerText = `View Info: ${this.currentComponent.name}`;
@@ -1394,7 +1476,7 @@ class ModalManager {
         );
 
         this.currentComponent = newComp;
-        const msg = `Success: SUCCESS: Item '${name}' has been added successfully to ${boxId}!`;
+        const msg = `SUCCESS: Item '${name}' has been added successfully to ${boxId}!`;
         alert(msg);
         ModalManager.showToast(msg, "success");
       }
@@ -1403,6 +1485,9 @@ class ModalManager {
 
       if (this.callbacks.onInventoryChanged) {
         this.callbacks.onInventoryChanged();
+      }
+      if (window.app && typeof window.app.refreshApp === "function") {
+        window.app.refreshApp();
       }
     } catch (err) {
       alert(`Save Failed: ${err.message}`);
@@ -4361,6 +4446,11 @@ window.openComponentEditDialog = function (compId) {
 };
 
 window.openEditModal = window.openComponentEditDialog;
+window.openAddComponentModal = function (rackId, shelfId, boxId) {
+  if (window.ModalManager && window.ModalManager.openAddComponentModal) {
+    window.ModalManager.openAddComponentModal(rackId, shelfId, boxId);
+  }
+};
 window.closeComponentModal = function () {
   if (window.ModalManager && window.ModalManager.closeComponentModal) {
     window.ModalManager.closeComponentModal();

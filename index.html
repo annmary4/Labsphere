@@ -290,6 +290,11 @@
         </button>
 
         <!-- Admin Actions -->
+        <button id="btn-add-component" class="btn btn-primary" title="Register New Component or Material"
+          onclick="if(window.openAddComponentModal) window.openAddComponentModal(); else if(window.ModalManager) window.ModalManager.openAddComponentModal();"
+          style="background:linear-gradient(135deg, #0284c7 0%, #2563eb 100%); font-weight:700;">
+          <i data-lucide="plus"></i> Add Item
+        </button>
         <button id="btn-user-manager" class="btn btn-secondary" title="Administrator User Management">
           <i data-lucide="users"></i> Users
         </button>
@@ -348,6 +353,12 @@
               </div>
 
               <div class="user-popover-actions" style="display:flex; flex-direction:column; gap:6px;">
+                <button id="popover-btn-add-component" class="btn btn-primary btn-sm"
+                  title="Register New Component or Material"
+                  onclick="if(window.openAddComponentModal) window.openAddComponentModal(); else if(window.ModalManager) window.ModalManager.openAddComponentModal();"
+                  style="width:100%; display:flex; justify-content:center; align-items:center; gap:6px; background:#0ea5e9; color:white; font-weight:700;">
+                  <i data-lucide="plus"></i> Add Item
+                </button>
                 <button id="popover-btn-user-manager" class="btn btn-secondary btn-sm"
                   title="Administrator User Management & Accounts"
                   style="width:100%; display:flex; justify-content:center; align-items:center; gap:6px;">
@@ -382,7 +393,8 @@
       </div>
       <div class="drawer-menu-list">
         <!-- FIRST ITEM: Add Item Blue Box -->
-        <button class="drawer-menu-item drawer-btn-blue-primary" id="drawer-btn-add-component">
+        <button class="drawer-menu-item drawer-btn-blue-primary" id="drawer-btn-add-component"
+          onclick="if(window.openAddComponentModal) window.openAddComponentModal(); else if(window.ModalManager) window.ModalManager.openAddComponentModal();">
           <i data-lucide="plus" style="font-size:1.3rem; color:#ffffff;"></i>
           <div style="display:flex; flex-direction:column; text-align:left;">
             <span style="font-weight:800; font-size:0.98rem; color:#ffffff;">Add Item</span>
@@ -1972,13 +1984,13 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
   </div>
 
   <!-- JavaScript App Logic with Cache Busters -->
-  <script src="js/types.js?v=13315_admin_only_print_qr"></script>
-  <script src="js/initialData.js?v=13315_admin_only_print_qr"></script>
-  <script src="js/storage.js?v=13315_admin_only_print_qr"></script>
-  <script src="js/rackViewer.js?v=13315_admin_only_print_qr"></script>
-  <script src="js/componentsView.js?v=13315_admin_only_print_qr"></script>
-  <script src="js/modalManager.js?v=13315_admin_only_print_qr"></script>
-  <script src="js/app.js?v=13315_admin_only_print_qr"></script>
+  <script src="js/types.js?v=13316_admin_add_item_fix"></script>
+  <script src="js/initialData.js?v=13316_admin_add_item_fix"></script>
+  <script src="js/storage.js?v=13316_admin_add_item_fix"></script>
+  <script src="js/rackViewer.js?v=13316_admin_add_item_fix"></script>
+  <script src="js/componentsView.js?v=13316_admin_add_item_fix"></script>
+  <script src="js/modalManager.js?v=13316_admin_add_item_fix"></script>
+  <script src="js/app.js?v=13316_admin_add_item_fix"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       if (window.lucide) {
@@ -2258,7 +2270,7 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/Labsphere/sw.js?v=13315_admin_only_print_qr', { scope: '/Labsphere/' })
+        navigator.serviceWorker.register('/Labsphere/sw.js?v=13316_admin_add_item_fix', { scope: '/Labsphere/' })
           .then(reg => {
             console.log('[LabSphere PWA] Service Worker registered:', reg.scope);
             if (reg.update) reg.update();
