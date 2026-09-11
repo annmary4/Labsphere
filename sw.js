@@ -2,18 +2,18 @@
    LabSphere Service Worker - Offline Cache & PWA Support
    ============================================================ */
 
-const CACHE_NAME = 'labsphere-v13320_csv_ledger_export';
+const CACHE_NAME = 'labsphere-v13321_remove_csv_section2';
 const ASSETS_TO_CACHE = [
   '/Labsphere/',
   '/Labsphere/index.html',
-  '/Labsphere/css/styles.css?v=13320_csv_ledger_export',
-  '/Labsphere/js/app.js?v=13320_csv_ledger_export',
-  '/Labsphere/js/types.js?v=13320_csv_ledger_export',
-  '/Labsphere/js/initialData.js?v=13320_csv_ledger_export',
-  '/Labsphere/js/storage.js?v=13320_csv_ledger_export',
-  '/Labsphere/js/rackViewer.js?v=13320_csv_ledger_export',
-  '/Labsphere/js/componentsView.js?v=13320_csv_ledger_export',
-  '/Labsphere/js/modalManager.js?v=13320_csv_ledger_export',
+  '/Labsphere/css/styles.css?v=13321_remove_csv_section2',
+  '/Labsphere/js/app.js?v=13321_remove_csv_section2',
+  '/Labsphere/js/types.js?v=13321_remove_csv_section2',
+  '/Labsphere/js/initialData.js?v=13321_remove_csv_section2',
+  '/Labsphere/js/storage.js?v=13321_remove_csv_section2',
+  '/Labsphere/js/rackViewer.js?v=13321_remove_csv_section2',
+  '/Labsphere/js/componentsView.js?v=13321_remove_csv_section2',
+  '/Labsphere/js/modalManager.js?v=13321_remove_csv_section2',
   '/Labsphere/icons/icon-192.png',
   '/Labsphere/icons/icon-512.png',
   '/Labsphere/manifest.json'

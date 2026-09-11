@@ -5035,7 +5035,7 @@ ModalManager.openCsvExportModal = function(initialTimeframe = 'monthly') {
           <!-- Timeframe Tabs -->
           <div>
             <label style="display:block; font-size:0.8rem; text-transform:uppercase; letter-spacing:0.06em; color:#94a3b8; font-weight:700; margin-bottom:10px;">
-              1. Select Export Timeframe
+              Select Export Timeframe
             </label>
             <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:8px;">
               <button type="button" class="csv-tab-btn" data-timeframe="daily" onclick="ModalManager.setCsvExportTimeframe('daily')" style="padding:10px 14px; border-radius:10px; font-weight:700; font-size:0.86rem; cursor:pointer; border:1px solid rgba(255,255,255,0.12); background:rgba(255,255,255,0.04); color:#cbd5e1; display:flex; align-items:center; justify-content:center; gap:8px; transition:all 0.2s;">
@@ -5153,35 +5153,12 @@ ModalManager.openCsvExportModal = function(initialTimeframe = 'monthly') {
             </div>
           </div>
 
-          <!-- Included Export Fields Specification Badges -->
-          <div>
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-              <label style="font-size:0.8rem; text-transform:uppercase; letter-spacing:0.06em; color:#94a3b8; font-weight:700;">
-                2. Export CSV Columns (11 Standardized Ledger Fields)
-              </label>
-              <span style="font-size:0.75rem; color:#38bdf8; font-weight:600;">✓ Fully Schema-Compliant</span>
-            </div>
-            <div style="display:flex; flex-wrap:wrap; gap:6px; background:rgba(15,23,42,0.4); padding:10px 14px; border-radius:10px; border:1px solid rgba(255,255,255,0.06);">
-              <span style="background:rgba(56,189,248,0.12); color:#38bdf8; border:1px solid rgba(56,189,248,0.3); padding:4px 9px; border-radius:6px; font-size:0.76rem; font-weight:700;">1. Date</span>
-              <span style="background:rgba(56,189,248,0.12); color:#38bdf8; border:1px solid rgba(56,189,248,0.3); padding:4px 9px; border-radius:6px; font-size:0.76rem; font-weight:700;">2. Project</span>
-              <span style="background:rgba(56,189,248,0.12); color:#38bdf8; border:1px solid rgba(56,189,248,0.3); padding:4px 9px; border-radius:6px; font-size:0.76rem; font-weight:700;">3. Component</span>
-              <span style="background:rgba(56,189,248,0.12); color:#38bdf8; border:1px solid rgba(56,189,248,0.3); padding:4px 9px; border-radius:6px; font-size:0.76rem; font-weight:700;">4. Category</span>
-              <span style="background:rgba(56,189,248,0.12); color:#38bdf8; border:1px solid rgba(56,189,248,0.3); padding:4px 9px; border-radius:6px; font-size:0.76rem; font-weight:700;">5. Quantity</span>
-              <span style="background:rgba(168,85,247,0.15); color:#c084fc; border:1px solid rgba(168,85,247,0.3); padding:4px 9px; border-radius:6px; font-size:0.76rem; font-weight:700;">6. Requested By</span>
-              <span style="background:rgba(168,85,247,0.15); color:#c084fc; border:1px solid rgba(168,85,247,0.3); padding:4px 9px; border-radius:6px; font-size:0.76rem; font-weight:700;">7. Approved By</span>
-              <span style="background:rgba(168,85,247,0.15); color:#c084fc; border:1px solid rgba(168,85,247,0.3); padding:4px 9px; border-radius:6px; font-size:0.76rem; font-weight:700;">8. Issued By</span>
-              <span style="background:rgba(34,197,94,0.15); color:#4ade80; border:1px solid rgba(34,197,94,0.3); padding:4px 9px; border-radius:6px; font-size:0.76rem; font-weight:700;">9. Returned</span>
-              <span style="background:rgba(239,68,68,0.15); color:#f87171; border:1px solid rgba(239,68,68,0.3); padding:4px 9px; border-radius:6px; font-size:0.76rem; font-weight:700;">10. Damaged</span>
-              <span style="background:rgba(234,179,8,0.15); color:#facc15; border:1px solid rgba(234,179,8,0.3); padding:4px 9px; border-radius:6px; font-size:0.76rem; font-weight:700;">11. Outstanding</span>
-            </div>
-          </div>
-
           <!-- Live Record Preview Table -->
           <div>
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
               <div style="display:flex; align-items:center; gap:10px;">
                 <label style="font-size:0.8rem; text-transform:uppercase; letter-spacing:0.06em; color:#94a3b8; font-weight:700;">
-                  3. Live Data Preview
+                  Live Data Preview
                 </label>
                 <span id="csv-preview-badge" style="background:rgba(56,189,248,0.15); color:#38bdf8; border:1px solid rgba(56,189,248,0.3); font-size:0.75rem; font-weight:700; padding:2px 10px; border-radius:12px;">
                   Calculating...
@@ -5193,7 +5170,7 @@ ModalManager.openCsvExportModal = function(initialTimeframe = 'monthly') {
             </div>
 
             <!-- Preview Container -->
-            <div id="csv-preview-table-container" style="background:rgba(15,23,42,0.9); border:1px solid rgba(255,255,255,0.1); border-radius:10px; max-height:280px; overflow:auto;">
+            <div id="csv-preview-table-container" style="background:rgba(15,23,42,0.9); border:1px solid rgba(255,255,255,0.1); border-radius:10px; max-height:380px; overflow:auto;">
               <!-- Table rendered dynamically -->
             </div>
           </div>
