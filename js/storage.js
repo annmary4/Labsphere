@@ -1414,6 +1414,207 @@ class StorageService {
     localStorage.setItem(STORAGE_KEYS.REQUESTS, JSON.stringify(requests));
   }
 
+  // --- CSV EXPORT & LEDGER REPORTING ENGINE ---
+  static getLedgerRecords(filterOptions = {}) {
+    let requests = this.getRequests();
+    if ((!requests || requests.length === 0) && typeof INITIAL_REQUESTS !== "undefined" && INITIAL_REQUESTS.length > 0) {
+      requests = INITIAL_REQUESTS;
+    }
+
+    const components = this.getComponents();
+    const compMap = new Map();
+    components.forEach(c => compMap.set(c.id, c));
+
+    const timeframe = (filterOptions.timeframe || 'all').toLowerCase();
+    const refDate = filterOptions.referenceDate ? new Date(filterOptions.referenceDate) : new Date();
+
+    let rangeStart = null;
+    let rangeEnd = null;
+
+    if (timeframe === 'daily') {
+      const day = filterOptions.date ? new Date(filterOptions.date) : new Date();
+      rangeStart = new Date(day.getFullYear(), day.getMonth(), day.getDate(), 0, 0, 0, 0);
+      rangeEnd = new Date(day.getFullYear(), day.getMonth(), day.getDate(), 23, 59, 59, 999);
+    } else if (timeframe === 'weekly') {
+      rangeEnd = new Date(refDate.getFullYear(), refDate.getMonth(), refDate.getDate(), 23, 59, 59, 999);
+      rangeStart = new Date(rangeEnd);
+      rangeStart.setDate(rangeStart.getDate() - 6);
+      rangeStart.setHours(0, 0, 0, 0);
+    } else if (timeframe === 'monthly') {
+      if (filterOptions.monthYear) {
+        const [yr, mo] = filterOptions.monthYear.split('-').map(Number);
+        rangeStart = new Date(yr, mo - 1, 1, 0, 0, 0, 0);
+        rangeEnd = new Date(yr, mo, 0, 23, 59, 59, 999);
+      } else {
+        rangeStart = new Date(refDate.getFullYear(), refDate.getMonth(), 1, 0, 0, 0, 0);
+        rangeEnd = new Date(refDate.getFullYear(), refDate.getMonth() + 1, 0, 23, 59, 59, 999);
+      }
+    } else if (timeframe === 'quarterly') {
+      const qtr = parseInt(filterOptions.quarter) || (Math.floor(refDate.getMonth() / 3) + 1);
+      const yr = parseInt(filterOptions.year) || refDate.getFullYear();
+      const startMo = (qtr - 1) * 3;
+      rangeStart = new Date(yr, startMo, 1, 0, 0, 0, 0);
+      rangeEnd = new Date(yr, startMo + 3, 0, 23, 59, 59, 999);
+    } else if (timeframe === 'custom') {
+      if (filterOptions.startDate) {
+        rangeStart = new Date(filterOptions.startDate + 'T00:00:00');
+      }
+      if (filterOptions.endDate) {
+        rangeEnd = new Date(filterOptions.endDate + 'T23:59:59.999');
+      }
+    }
+
+    const records = [];
+
+    requests.forEach(req => {
+      // Determine record date
+      let recDateStr = req.issueDate || req.requestedAt || req.createdAt || req.timestamp;
+      let recDate = null;
+      if (recDateStr) {
+        const parsed = new Date(recDateStr);
+        if (!isNaN(parsed.getTime())) recDate = parsed;
+      }
+      if (!recDate) recDate = new Date();
+
+      // Check range filter
+      if (rangeStart && recDate < rangeStart) return;
+      if (rangeEnd && recDate > rangeEnd) return;
+
+      const comp = compMap.get(req.componentId);
+      const compName = req.componentName || (comp ? comp.name : 'Unknown Component');
+      const category = comp ? (comp.category || 'General') : (req.category || 'General');
+
+      const qty = parseInt(req.qtyApproved || req.qtyRequested || req.quantity || 1) || 1;
+      const returned = parseInt(req.returnedQty || 0) || 0;
+      const damaged = parseInt(req.damagedQty || 0) || 0;
+
+      let outstanding = 0;
+      const isIssued = req.status === 'ISSUED' || req.status === 'APPROVED' || req.status === 'PARTIALLY_ISSUED';
+      if (isIssued) {
+        const issuedQty = parseInt(req.issuedQty || req.qtyApproved || req.qtyRequested || 0) || 0;
+        outstanding = Math.max(0, issuedQty - returned - damaged);
+      }
+
+      let approvedBy = req.leadName || req.assignedLeadName || '';
+      if (!approvedBy) {
+        if (req.status === 'PENDING_ADMIN_ISSUANCE' || req.status === 'LEAD_APPROVED' || req.status === 'ISSUED') {
+          approvedBy = 'Team Lead';
+        } else if (req.status === 'REJECTED') {
+          approvedBy = 'Rejected';
+        } else {
+          approvedBy = 'Pending Approval';
+        }
+      }
+
+      let issuedBy = req.issuedBy || '';
+      if (!issuedBy) {
+        if (req.status === 'ISSUED') {
+          issuedBy = 'Lab Administrator';
+        } else if (req.status === 'PARTIALLY_ISSUED') {
+          issuedBy = 'Partial / Pending';
+        } else {
+          issuedBy = 'Pending Issuance';
+        }
+      }
+
+      const formattedDate = recDate.toISOString().slice(0, 10);
+
+      records.push({
+        id: req.id,
+        date: formattedDate,
+        project: req.projectName || 'General / Unassigned',
+        component: compName,
+        category: category,
+        quantity: qty,
+        requestedBy: req.requesterName || 'Student',
+        approvedBy: approvedBy,
+        issuedBy: issuedBy,
+        returned: returned,
+        damaged: damaged,
+        outstanding: outstanding,
+        rawDate: recDate,
+        status: req.status
+      });
+    });
+
+    records.sort((a, b) => b.rawDate.getTime() - a.rawDate.getTime());
+
+    return {
+      records,
+      timeframe,
+      rangeStart: rangeStart ? rangeStart.toISOString().slice(0, 10) : 'All',
+      rangeEnd: rangeEnd ? rangeEnd.toISOString().slice(0, 10) : 'All'
+    };
+  }
+
+  static generateLedgerCSV(filterOptions = {}) {
+    const { records, timeframe, rangeStart, rangeEnd } = this.getLedgerRecords(filterOptions);
+
+    const headers = [
+      "Date",
+      "Project",
+      "Component",
+      "Category",
+      "Quantity",
+      "Requested By",
+      "Approved By",
+      "Issued By",
+      "Returned",
+      "Damaged",
+      "Outstanding"
+    ];
+
+    const escapeCSV = (val) => {
+      if (val === null || val === undefined) return '""';
+      const str = String(val).replace(/"/g, '""');
+      return `"${str}"`;
+    };
+
+    let csv = headers.map(escapeCSV).join(",") + "\r\n";
+
+    records.forEach(r => {
+      const row = [
+        r.date,
+        r.project,
+        r.component,
+        r.category,
+        r.quantity,
+        r.requestedBy,
+        r.approvedBy,
+        r.issuedBy,
+        r.returned,
+        r.damaged,
+        r.outstanding
+      ];
+      csv += row.map(escapeCSV).join(",") + "\r\n";
+    });
+
+    const filename = `LabSphere_Ledger_${timeframe.toUpperCase()}_${rangeStart}_to_${rangeEnd}.csv`;
+
+    return {
+      csv,
+      recordCount: records.length,
+      timeframe,
+      rangeStart,
+      rangeEnd,
+      filename
+    };
+  }
+
+  static downloadLedgerCSV(filterOptions = {}) {
+    const result = this.generateLedgerCSV(filterOptions);
+    const blob = new Blob(["\uFEFF" + result.csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = result.filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    return result;
+  }
+
   static isUserRequest(r, session) {
     if (!r) return false;
     if (!session) return true;

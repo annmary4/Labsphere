@@ -4879,15 +4879,18 @@ ModalManager.openPrintableInventorySheet = function() {
               <p style="margin:2px 0 0 0; font-size:0.8rem; color:#94a3b8;">Generate and print official hardware inventory datasheets with quantities and rates</p>
             </div>
           </div>
-          <div style="display:flex; gap:10px;">
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
             <button class="btn btn-primary" onclick="window.triggerInventoryPrint()" style="background:#0284c7; color:#fff; font-weight:600; padding:10px 18px; border-radius:8px; display:inline-flex; align-items:center; gap:8px; cursor:pointer; border:none; box-shadow:0 4px 14px rgba(2,132,199,0.4);">
               <i data-lucide="printer" style="width:18px; height:18px;"></i> Print / Save as PDF
             </button>
+            <button class="btn btn-secondary" onclick="ModalManager.openCsvExportModal()" title="Export Requisition & Issuance Ledger CSV by Daily, Weekly, Monthly, Quarterly, Custom" style="padding:10px 16px; border-radius:8px; display:inline-flex; align-items:center; gap:8px; cursor:pointer; background:rgba(56,189,248,0.15); color:#38bdf8; border:1px solid rgba(56,189,248,0.35); font-weight:700;">
+              <i data-lucide="file-spreadsheet" style="width:18px; height:18px;"></i> Ledger CSV Export
+            </button>
             <button class="btn btn-secondary" onclick="ModalManager.exportInventoryCSV()" style="padding:10px 16px; border-radius:8px; display:inline-flex; align-items:center; gap:8px; cursor:pointer; background:rgba(255,255,255,0.08); color:#f8fafc; border:1px solid rgba(255,255,255,0.15);">
-              <i data-lucide="download" style="width:18px; height:18px;"></i> Export CSV
+              <i data-lucide="download" style="width:18px; height:18px;"></i> Inventory Stock CSV
             </button>
             <button class="btn btn-secondary" onclick="document.getElementById('printable-sheet-modal').remove()" style="padding:10px 16px; border-radius:8px; cursor:pointer; background:rgba(255,255,255,0.08); color:#94a3b8; border:1px solid rgba(255,255,255,0.15);">
-              X Close
+              ✕ Close
             </button>
           </div>
         </div>
@@ -4983,6 +4986,412 @@ ModalManager.exportInventoryCSV = function() {
   link.remove();
 };
 
+ModalManager.openCsvExportModal = function(initialTimeframe = 'monthly') {
+  let modal = document.getElementById("csv-export-modal");
+  if (modal) modal.remove();
+
+  this._activeCsvTimeframe = initialTimeframe || 'monthly';
+
+  // Default values
+  const now = new Date();
+  const todayStr = now.toISOString().slice(0, 10);
+  const currentMonthStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  const currentYear = now.getFullYear();
+  const currentQuarter = Math.floor(now.getMonth() / 3) + 1;
+
+  // Compute 30 days ago for default custom range
+  const past30 = new Date(now);
+  past30.setDate(past30.getDate() - 30);
+  const past30Str = past30.toISOString().slice(0, 10);
+
+  const modalHtml = `
+    <div id="csv-export-modal" class="modal-overlay show" style="position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:999999; display:flex; align-items:center; justify-content:center; background:rgba(15,23,42,0.92); backdrop-filter:blur(14px); padding:20px;">
+      <div class="modal-container csv-export-container" style="max-width:1150px; width:100%; max-height:92vh; display:flex; flex-direction:column; background:#0b1329; border:1px solid rgba(56,189,248,0.35); border-radius:18px; box-shadow:0 25px 60px -15px rgba(0,0,0,0.85); overflow:hidden;">
+        
+        <!-- Header -->
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:22px 28px; border-bottom:1px solid rgba(255,255,255,0.1); background:linear-gradient(90deg, rgba(15,23,42,0.95), rgba(30,41,59,0.7));">
+          <div style="display:flex; align-items:center; gap:14px;">
+            <div style="background:rgba(56,189,248,0.15); border:1px solid rgba(56,189,248,0.4); border-radius:12px; width:44px; height:44px; display:flex; align-items:center; justify-content:center; color:#38bdf8;">
+              <i data-lucide="file-spreadsheet" style="width:24px; height:24px;"></i>
+            </div>
+            <div>
+              <h2 style="margin:0; font-size:1.35rem; font-weight:800; color:#f8fafc; letter-spacing:0.3px; display:flex; align-items:center; gap:10px;">
+                CSV Export Center
+                <span style="font-size:0.75rem; background:rgba(56,189,248,0.18); color:#38bdf8; border:1px solid rgba(56,189,248,0.35); padding:2px 10px; border-radius:12px; font-weight:700;">Requisition & Ledger</span>
+              </h2>
+              <p style="margin:4px 0 0 0; font-size:0.82rem; color:#94a3b8;">
+                Export laboratory requisition, approval & issuance records filtered by timeframe with all 11 standardized tracking columns
+              </p>
+            </div>
+          </div>
+          <button type="button" class="btn-close-csv-modal" onclick="ModalManager.closeCsvExportModal()" style="background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15); color:#94a3b8; width:36px; height:36px; border-radius:10px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:1.1rem; transition:all 0.2s;" onmouseover="this.style.color='#f8fafc'; this.style.background='rgba(255,255,255,0.12)';" onmouseout="this.style.color='#94a3b8'; this.style.background='rgba(255,255,255,0.06)';">
+            ✕
+          </button>
+        </div>
+
+        <!-- Scrollable Modal Body -->
+        <div style="padding:22px 28px; overflow-y:auto; flex-grow:1; display:flex; flex-direction:column; gap:20px;">
+          
+          <!-- Timeframe Tabs -->
+          <div>
+            <label style="display:block; font-size:0.8rem; text-transform:uppercase; letter-spacing:0.06em; color:#94a3b8; font-weight:700; margin-bottom:10px;">
+              1. Select Export Timeframe
+            </label>
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:8px;">
+              <button type="button" class="csv-tab-btn" data-timeframe="daily" onclick="ModalManager.setCsvExportTimeframe('daily')" style="padding:10px 14px; border-radius:10px; font-weight:700; font-size:0.86rem; cursor:pointer; border:1px solid rgba(255,255,255,0.12); background:rgba(255,255,255,0.04); color:#cbd5e1; display:flex; align-items:center; justify-content:center; gap:8px; transition:all 0.2s;">
+                <i data-lucide="calendar" style="width:16px; height:16px;"></i> Daily
+              </button>
+              <button type="button" class="csv-tab-btn" data-timeframe="weekly" onclick="ModalManager.setCsvExportTimeframe('weekly')" style="padding:10px 14px; border-radius:10px; font-weight:700; font-size:0.86rem; cursor:pointer; border:1px solid rgba(255,255,255,0.12); background:rgba(255,255,255,0.04); color:#cbd5e1; display:flex; align-items:center; justify-content:center; gap:8px; transition:all 0.2s;">
+                <i data-lucide="calendar-range" style="width:16px; height:16px;"></i> Weekly
+              </button>
+              <button type="button" class="csv-tab-btn" data-timeframe="monthly" onclick="ModalManager.setCsvExportTimeframe('monthly')" style="padding:10px 14px; border-radius:10px; font-weight:700; font-size:0.86rem; cursor:pointer; border:1px solid rgba(255,255,255,0.12); background:rgba(255,255,255,0.04); color:#cbd5e1; display:flex; align-items:center; justify-content:center; gap:8px; transition:all 0.2s;">
+                <i data-lucide="calendar-days" style="width:16px; height:16px;"></i> Monthly
+              </button>
+              <button type="button" class="csv-tab-btn" data-timeframe="quarterly" onclick="ModalManager.setCsvExportTimeframe('quarterly')" style="padding:10px 14px; border-radius:10px; font-weight:700; font-size:0.86rem; cursor:pointer; border:1px solid rgba(255,255,255,0.12); background:rgba(255,255,255,0.04); color:#cbd5e1; display:flex; align-items:center; justify-content:center; gap:8px; transition:all 0.2s;">
+                <i data-lucide="pie-chart" style="width:16px; height:16px;"></i> Quarterly
+              </button>
+              <button type="button" class="csv-tab-btn" data-timeframe="custom" onclick="ModalManager.setCsvExportTimeframe('custom')" style="padding:10px 14px; border-radius:10px; font-weight:700; font-size:0.86rem; cursor:pointer; border:1px solid rgba(255,255,255,0.12); background:rgba(255,255,255,0.04); color:#cbd5e1; display:flex; align-items:center; justify-content:center; gap:8px; transition:all 0.2s;">
+                <i data-lucide="sliders" style="width:16px; height:16px;"></i> Custom Range
+              </button>
+              <button type="button" class="csv-tab-btn" data-timeframe="all" onclick="ModalManager.setCsvExportTimeframe('all')" style="padding:10px 14px; border-radius:10px; font-weight:700; font-size:0.86rem; cursor:pointer; border:1px solid rgba(255,255,255,0.12); background:rgba(255,255,255,0.04); color:#cbd5e1; display:flex; align-items:center; justify-content:center; gap:8px; transition:all 0.2s;">
+                <i data-lucide="database" style="width:16px; height:16px;"></i> All Records
+              </button>
+            </div>
+          </div>
+
+          <!-- Timeframe Specific Input Controls Bar -->
+          <div id="csv-timeframe-controls-wrapper" style="background:rgba(15,23,42,0.7); border:1px solid rgba(56,189,248,0.2); border-radius:12px; padding:16px 20px;">
+            <!-- Daily control -->
+            <div class="csv-control-panel" id="csv-panel-daily" style="display:none;">
+              <div style="display:flex; flex-wrap:wrap; align-items:center; gap:16px;">
+                <div style="flex-grow:1; min-width:240px;">
+                  <label style="display:block; font-size:0.8rem; font-weight:700; color:#38bdf8; margin-bottom:6px;">Select Specific Day:</label>
+                  <input type="date" id="csv-input-daily-date" value="${todayStr}" onchange="ModalManager.refreshCsvExportPreview()" style="width:100%; background:#0f172a; border:1px solid rgba(56,189,248,0.4); color:#f8fafc; padding:8px 14px; border-radius:8px; font-family:monospace; font-size:0.9rem;" />
+                </div>
+                <div style="color:#94a3b8; font-size:0.82rem; padding-top:16px;">
+                  ℹ️ Exports all requisitions, approvals, and issuances timestamped on this calendar date.
+                </div>
+              </div>
+            </div>
+
+            <!-- Weekly control -->
+            <div class="csv-control-panel" id="csv-panel-weekly" style="display:none;">
+              <div style="display:flex; flex-wrap:wrap; align-items:center; gap:16px;">
+                <div style="flex-grow:1; min-width:240px;">
+                  <label style="display:block; font-size:0.8rem; font-weight:700; color:#38bdf8; margin-bottom:6px;">Reference Week Ending Date:</label>
+                  <input type="date" id="csv-input-weekly-end" value="${todayStr}" onchange="ModalManager.refreshCsvExportPreview()" style="width:100%; background:#0f172a; border:1px solid rgba(56,189,248,0.4); color:#f8fafc; padding:8px 14px; border-radius:8px; font-family:monospace; font-size:0.9rem;" />
+                </div>
+                <div style="color:#94a3b8; font-size:0.82rem; padding-top:16px;">
+                  ℹ️ Automatically captures the 7-day rolling window ending on the selected reference date.
+                </div>
+              </div>
+            </div>
+
+            <!-- Monthly control -->
+            <div class="csv-control-panel" id="csv-panel-monthly" style="display:none;">
+              <div style="display:flex; flex-wrap:wrap; align-items:center; gap:16px;">
+                <div style="flex-grow:1; min-width:240px;">
+                  <label style="display:block; font-size:0.8rem; font-weight:700; color:#38bdf8; margin-bottom:6px;">Select Calendar Month:</label>
+                  <input type="month" id="csv-input-month" value="${currentMonthStr}" onchange="ModalManager.refreshCsvExportPreview()" style="width:100%; background:#0f172a; border:1px solid rgba(56,189,248,0.4); color:#f8fafc; padding:8px 14px; border-radius:8px; font-family:monospace; font-size:0.9rem;" />
+                </div>
+                <div style="color:#94a3b8; font-size:0.82rem; padding-top:16px;">
+                  ℹ️ Exports the entire calendar month from the 1st to the final day of the selected month.
+                </div>
+              </div>
+            </div>
+
+            <!-- Quarterly control -->
+            <div class="csv-control-panel" id="csv-panel-quarterly" style="display:none;">
+              <div style="display:flex; flex-wrap:wrap; align-items:center; gap:16px;">
+                <div style="min-width:180px;">
+                  <label style="display:block; font-size:0.8rem; font-weight:700; color:#38bdf8; margin-bottom:6px;">Select Fiscal Quarter:</label>
+                  <select id="csv-input-quarter" onchange="ModalManager.refreshCsvExportPreview()" style="width:100%; background:#0f172a; border:1px solid rgba(56,189,248,0.4); color:#f8fafc; padding:9px 14px; border-radius:8px; font-size:0.9rem;">
+                    <option value="1" ${currentQuarter === 1 ? 'selected' : ''}>Q1 (January - March)</option>
+                    <option value="2" ${currentQuarter === 2 ? 'selected' : ''}>Q2 (April - June)</option>
+                    <option value="3" ${currentQuarter === 3 ? 'selected' : ''}>Q3 (July - September)</option>
+                    <option value="4" ${currentQuarter === 4 ? 'selected' : ''}>Q4 (October - December)</option>
+                  </select>
+                </div>
+                <div style="min-width:140px;">
+                  <label style="display:block; font-size:0.8rem; font-weight:700; color:#38bdf8; margin-bottom:6px;">Calendar Year:</label>
+                  <select id="csv-input-qyear" onchange="ModalManager.refreshCsvExportPreview()" style="width:100%; background:#0f172a; border:1px solid rgba(56,189,248,0.4); color:#f8fafc; padding:9px 14px; border-radius:8px; font-size:0.9rem;">
+                    <option value="2027" ${currentYear === 2027 ? 'selected' : ''}>2027</option>
+                    <option value="2026" ${currentYear === 2026 ? 'selected' : ''}>2026</option>
+                    <option value="2025" ${currentYear === 2025 ? 'selected' : ''}>2025</option>
+                    <option value="2024" ${currentYear === 2024 ? 'selected' : ''}>2024</option>
+                  </select>
+                </div>
+                <div style="color:#94a3b8; font-size:0.82rem; padding-top:16px;">
+                  ℹ️ Aggregates all laboratory transactions across the selected 3-month fiscal block.
+                </div>
+              </div>
+            </div>
+
+            <!-- Custom Range control -->
+            <div class="csv-control-panel" id="csv-panel-custom" style="display:none;">
+              <div style="display:flex; flex-wrap:wrap; align-items:center; gap:16px;">
+                <div style="min-width:180px; flex-grow:1;">
+                  <label style="display:block; font-size:0.8rem; font-weight:700; color:#38bdf8; margin-bottom:6px;">Start Date (From):</label>
+                  <input type="date" id="csv-input-custom-start" value="${past30Str}" onchange="ModalManager.refreshCsvExportPreview()" style="width:100%; background:#0f172a; border:1px solid rgba(56,189,248,0.4); color:#f8fafc; padding:8px 14px; border-radius:8px; font-family:monospace; font-size:0.9rem;" />
+                </div>
+                <div style="min-width:180px; flex-grow:1;">
+                  <label style="display:block; font-size:0.8rem; font-weight:700; color:#38bdf8; margin-bottom:6px;">End Date (To):</label>
+                  <input type="date" id="csv-input-custom-end" value="${todayStr}" onchange="ModalManager.refreshCsvExportPreview()" style="width:100%; background:#0f172a; border:1px solid rgba(56,189,248,0.4); color:#f8fafc; padding:8px 14px; border-radius:8px; font-family:monospace; font-size:0.9rem;" />
+                </div>
+                <div style="color:#94a3b8; font-size:0.82rem; padding-top:16px;">
+                  ℹ️ Inclusive range filter between the chosen start and end dates.
+                </div>
+              </div>
+            </div>
+
+            <!-- All Records control -->
+            <div class="csv-control-panel" id="csv-panel-all" style="display:none;">
+              <div style="display:flex; align-items:center; gap:12px; color:#38bdf8; font-weight:600; font-size:0.88rem;">
+                <i data-lucide="database" style="width:18px; height:18px;"></i>
+                <span>Exporting Complete Ledger History without date constraints (All recorded laboratory transactions).</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Included Export Fields Specification Badges -->
+          <div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <label style="font-size:0.8rem; text-transform:uppercase; letter-spacing:0.06em; color:#94a3b8; font-weight:700;">
+                2. Export CSV Columns (11 Standardized Ledger Fields)
+              </label>
+              <span style="font-size:0.75rem; color:#38bdf8; font-weight:600;">✓ Fully Schema-Compliant</span>
+            </div>
+            <div style="display:flex; flex-wrap:wrap; gap:6px; background:rgba(15,23,42,0.4); padding:10px 14px; border-radius:10px; border:1px solid rgba(255,255,255,0.06);">
+              <span style="background:rgba(56,189,248,0.12); color:#38bdf8; border:1px solid rgba(56,189,248,0.3); padding:4px 9px; border-radius:6px; font-size:0.76rem; font-weight:700;">1. Date</span>
+              <span style="background:rgba(56,189,248,0.12); color:#38bdf8; border:1px solid rgba(56,189,248,0.3); padding:4px 9px; border-radius:6px; font-size:0.76rem; font-weight:700;">2. Project</span>
+              <span style="background:rgba(56,189,248,0.12); color:#38bdf8; border:1px solid rgba(56,189,248,0.3); padding:4px 9px; border-radius:6px; font-size:0.76rem; font-weight:700;">3. Component</span>
+              <span style="background:rgba(56,189,248,0.12); color:#38bdf8; border:1px solid rgba(56,189,248,0.3); padding:4px 9px; border-radius:6px; font-size:0.76rem; font-weight:700;">4. Category</span>
+              <span style="background:rgba(56,189,248,0.12); color:#38bdf8; border:1px solid rgba(56,189,248,0.3); padding:4px 9px; border-radius:6px; font-size:0.76rem; font-weight:700;">5. Quantity</span>
+              <span style="background:rgba(168,85,247,0.15); color:#c084fc; border:1px solid rgba(168,85,247,0.3); padding:4px 9px; border-radius:6px; font-size:0.76rem; font-weight:700;">6. Requested By</span>
+              <span style="background:rgba(168,85,247,0.15); color:#c084fc; border:1px solid rgba(168,85,247,0.3); padding:4px 9px; border-radius:6px; font-size:0.76rem; font-weight:700;">7. Approved By</span>
+              <span style="background:rgba(168,85,247,0.15); color:#c084fc; border:1px solid rgba(168,85,247,0.3); padding:4px 9px; border-radius:6px; font-size:0.76rem; font-weight:700;">8. Issued By</span>
+              <span style="background:rgba(34,197,94,0.15); color:#4ade80; border:1px solid rgba(34,197,94,0.3); padding:4px 9px; border-radius:6px; font-size:0.76rem; font-weight:700;">9. Returned</span>
+              <span style="background:rgba(239,68,68,0.15); color:#f87171; border:1px solid rgba(239,68,68,0.3); padding:4px 9px; border-radius:6px; font-size:0.76rem; font-weight:700;">10. Damaged</span>
+              <span style="background:rgba(234,179,8,0.15); color:#facc15; border:1px solid rgba(234,179,8,0.3); padding:4px 9px; border-radius:6px; font-size:0.76rem; font-weight:700;">11. Outstanding</span>
+            </div>
+          </div>
+
+          <!-- Live Record Preview Table -->
+          <div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+              <div style="display:flex; align-items:center; gap:10px;">
+                <label style="font-size:0.8rem; text-transform:uppercase; letter-spacing:0.06em; color:#94a3b8; font-weight:700;">
+                  3. Live Data Preview
+                </label>
+                <span id="csv-preview-badge" style="background:rgba(56,189,248,0.15); color:#38bdf8; border:1px solid rgba(56,189,248,0.3); font-size:0.75rem; font-weight:700; padding:2px 10px; border-radius:12px;">
+                  Calculating...
+                </span>
+              </div>
+              <div id="csv-preview-daterange" style="font-size:0.78rem; font-family:monospace; color:#94a3b8;">
+                Range: -
+              </div>
+            </div>
+
+            <!-- Preview Container -->
+            <div id="csv-preview-table-container" style="background:rgba(15,23,42,0.9); border:1px solid rgba(255,255,255,0.1); border-radius:10px; max-height:280px; overflow:auto;">
+              <!-- Table rendered dynamically -->
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Footer Action Bar -->
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:18px 28px; border-top:1px solid rgba(255,255,255,0.1); background:rgba(15,23,42,0.95);">
+          <div style="display:flex; align-items:center; gap:8px; font-size:0.78rem; color:#64748b;">
+            <i data-lucide="info" style="width:16px; height:16px; color:#38bdf8;"></i>
+            <span>UTF-8 BOM Encoded • Native Excel, Numbers, and Google Sheets compatibility</span>
+          </div>
+          <div style="display:flex; gap:12px;">
+            <button type="button" class="btn btn-secondary" onclick="ModalManager.closeCsvExportModal()" style="padding:10px 18px; border-radius:8px; background:rgba(255,255,255,0.06); color:#cbd5e1; border:1px solid rgba(255,255,255,0.12); cursor:pointer;">
+              Cancel
+            </button>
+            <button type="button" id="btn-trigger-csv-download" class="btn btn-primary" onclick="ModalManager.executeCsvDownload()" style="padding:10px 22px; border-radius:8px; font-weight:700; background:linear-gradient(135deg, #0284c7 0%, #2563eb 100%); color:#fff; border:none; box-shadow:0 4px 14px rgba(2,132,199,0.4); display:flex; align-items:center; gap:8px; cursor:pointer;">
+              <i data-lucide="download" style="width:18px; height:18px;"></i>
+              <span id="btn-csv-download-label">Download CSV</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  `;
+
+  document.body.insertAdjacentHTML("beforeend", modalHtml);
+  this.setCsvExportTimeframe(this._activeCsvTimeframe);
+  if (window.lucide) window.lucide.createIcons();
+};
+
+ModalManager.closeCsvExportModal = function() {
+  const modal = document.getElementById("csv-export-modal");
+  if (modal) modal.remove();
+};
+
+ModalManager.setCsvExportTimeframe = function(timeframe) {
+  this._activeCsvTimeframe = timeframe;
+
+  // Update tab buttons active styling
+  const tabBtns = document.querySelectorAll(".csv-tab-btn");
+  tabBtns.forEach(btn => {
+    const tf = btn.getAttribute("data-timeframe");
+    if (tf === timeframe) {
+      btn.style.background = "linear-gradient(135deg, rgba(2,132,199,0.35) 0%, rgba(37,99,235,0.35) 100%)";
+      btn.style.borderColor = "#38bdf8";
+      btn.style.color = "#38bdf8";
+      btn.style.boxShadow = "0 0 12px rgba(56,189,248,0.25)";
+    } else {
+      btn.style.background = "rgba(255,255,255,0.04)";
+      btn.style.borderColor = "rgba(255,255,255,0.12)";
+      btn.style.color = "#cbd5e1";
+      btn.style.boxShadow = "none";
+    }
+  });
+
+  // Hide all panels, show active panel
+  const panels = document.querySelectorAll(".csv-control-panel");
+  panels.forEach(p => p.style.display = "none");
+
+  const activePanel = document.getElementById(`csv-panel-${timeframe}`);
+  if (activePanel) activePanel.style.display = "block";
+
+  this.refreshCsvExportPreview();
+};
+
+ModalManager.getCsvFilterOptions = function() {
+  const timeframe = this._activeCsvTimeframe || 'monthly';
+  const options = { timeframe };
+
+  if (timeframe === 'daily') {
+    const input = document.getElementById("csv-input-daily-date");
+    options.date = input ? input.value : new Date().toISOString().slice(0, 10);
+  } else if (timeframe === 'weekly') {
+    const input = document.getElementById("csv-input-weekly-end");
+    options.referenceDate = input ? input.value : new Date().toISOString().slice(0, 10);
+  } else if (timeframe === 'monthly') {
+    const input = document.getElementById("csv-input-month");
+    options.monthYear = input ? input.value : `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}`;
+  } else if (timeframe === 'quarterly') {
+    const qInput = document.getElementById("csv-input-quarter");
+    const yInput = document.getElementById("csv-input-qyear");
+    options.quarter = qInput ? qInput.value : 1;
+    options.year = yInput ? yInput.value : new Date().getFullYear();
+  } else if (timeframe === 'custom') {
+    const startInput = document.getElementById("csv-input-custom-start");
+    const endInput = document.getElementById("csv-input-custom-end");
+    options.startDate = startInput ? startInput.value : '';
+    options.endDate = endInput ? endInput.value : '';
+  }
+
+  return options;
+};
+
+ModalManager.refreshCsvExportPreview = function() {
+  const options = this.getCsvFilterOptions();
+  const { records, rangeStart, rangeEnd, timeframe } = StorageService.getLedgerRecords(options);
+
+  const countBadge = document.getElementById("csv-preview-badge");
+  const daterangeEl = document.getElementById("csv-preview-daterange");
+  const container = document.getElementById("csv-preview-table-container");
+  const downloadBtnLabel = document.getElementById("btn-csv-download-label");
+
+  if (countBadge) {
+    countBadge.innerText = `${records.length} Matching Records`;
+    countBadge.style.background = records.length > 0 ? "rgba(34,197,94,0.15)" : "rgba(239,68,68,0.15)";
+    countBadge.style.color = records.length > 0 ? "#4ade80" : "#f87171";
+    countBadge.style.borderColor = records.length > 0 ? "rgba(34,197,94,0.3)" : "rgba(239,68,68,0.3)";
+  }
+
+  if (daterangeEl) {
+    daterangeEl.innerText = `Range: ${rangeStart}  to  ${rangeEnd}`;
+  }
+
+  if (downloadBtnLabel) {
+    downloadBtnLabel.innerText = `Download ${timeframe.toUpperCase()} CSV (${records.length})`;
+  }
+
+  if (!container) return;
+
+  if (records.length === 0) {
+    container.innerHTML = `
+      <div style="padding:36px 20px; text-align:center; color:#94a3b8;">
+        <i data-lucide="inbox" style="width:36px; height:36px; margin:0 auto 12px; display:block; opacity:0.6;"></i>
+        <div style="font-weight:700; font-size:0.95rem; color:#e2e8f0; margin-bottom:6px;">No Ledger Records Found for this Timeframe</div>
+        <p style="font-size:0.82rem; margin:0 0 14px 0; color:#64748b;">Try adjusting the date, selecting Monthly/Quarterly, or view All Records.</p>
+        <button type="button" class="btn btn-secondary" onclick="ModalManager.setCsvExportTimeframe('all')" style="padding:6px 14px; font-size:0.8rem; border-radius:6px; cursor:pointer;">Switch to All Records</button>
+      </div>
+    `;
+    if (window.lucide) window.lucide.createIcons();
+    return;
+  }
+
+  let rowsHtml = "";
+  records.slice(0, 50).forEach((r) => {
+    rowsHtml += `
+      <tr style="border-bottom:1px solid rgba(255,255,255,0.06); font-size:0.82rem;">
+        <td style="padding:8px 10px; font-family:monospace; color:#cbd5e1; white-space:nowrap;">${r.date}</td>
+        <td style="padding:8px 10px; color:#f8fafc; font-weight:600; white-space:nowrap;">${r.project}</td>
+        <td style="padding:8px 10px; color:#38bdf8; font-weight:600;">${r.component}</td>
+        <td style="padding:8px 10px;"><span style="background:rgba(255,255,255,0.06); color:#94a3b8; padding:2px 6px; border-radius:4px; font-size:0.75rem;">${r.category}</span></td>
+        <td style="padding:8px 10px; text-align:right; font-weight:700; color:#f8fafc;">${r.quantity}</td>
+        <td style="padding:8px 10px; color:#e2e8f0;">${r.requestedBy}</td>
+        <td style="padding:8px 10px; color:#cbd5e1;"><span style="color:#c084fc;">${r.approvedBy}</span></td>
+        <td style="padding:8px 10px; color:#cbd5e1;">${r.issuedBy}</td>
+        <td style="padding:8px 10px; text-align:right; color:#4ade80; font-weight:700;">${r.returned}</td>
+        <td style="padding:8px 10px; text-align:right; color:${r.damaged > 0 ? '#f87171' : '#64748b'}; font-weight:700;">${r.damaged}</td>
+        <td style="padding:8px 10px; text-align:right; color:${r.outstanding > 0 ? '#facc15' : '#64748b'}; font-weight:700;">${r.outstanding}</td>
+      </tr>
+    `;
+  });
+
+  const overflowNotice = records.length > 50 
+    ? `<div style="padding:8px 12px; background:rgba(30,41,59,0.8); font-size:0.75rem; color:#94a3b8; text-align:center; border-top:1px solid rgba(255,255,255,0.08);">Showing first 50 records in preview. All ${records.length} records will be exported to the CSV file.</div>` 
+    : '';
+
+  container.innerHTML = `
+    <table style="width:100%; border-collapse:collapse; text-align:left;">
+      <thead>
+        <tr style="background:rgba(30,41,59,0.9); border-bottom:2px solid rgba(56,189,248,0.4); font-size:0.75rem; text-transform:uppercase; letter-spacing:0.04em; color:#94a3b8; position:sticky; top:0; z-index:10;">
+          <th style="padding:10px 10px;">Date</th>
+          <th style="padding:10px 10px;">Project</th>
+          <th style="padding:10px 10px;">Component</th>
+          <th style="padding:10px 10px;">Category</th>
+          <th style="padding:10px 10px; text-align:right;">Quantity</th>
+          <th style="padding:10px 10px;">Requested By</th>
+          <th style="padding:10px 10px;">Approved By</th>
+          <th style="padding:10px 10px;">Issued By</th>
+          <th style="padding:10px 10px; text-align:right;">Returned</th>
+          <th style="padding:10px 10px; text-align:right;">Damaged</th>
+          <th style="padding:10px 10px; text-align:right;">Outstanding</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${rowsHtml}
+      </tbody>
+    </table>
+    ${overflowNotice}
+  `;
+
+  if (window.lucide) window.lucide.createIcons();
+};
+
+ModalManager.executeCsvDownload = function() {
+  const options = this.getCsvFilterOptions();
+  try {
+    const result = StorageService.downloadLedgerCSV(options);
+    this.showToast(`Exported ${result.recordCount} records to CSV (${result.filename})`, "success");
+  } catch (err) {
+    alert("Export failed: " + err.message);
+  }
+};
+
+window.openCsvExportModal = function(timeframe) {
+  ModalManager.openCsvExportModal(timeframe);
+};
+
 window.openPrintableInventorySheet = function() {
   ModalManager.openPrintableInventorySheet();
 };
@@ -5001,6 +5410,8 @@ document.addEventListener("keydown", (e) => {
     if (window.closeBoxInspectorModal) window.closeBoxInspectorModal();
     const sheetModal = document.getElementById("printable-sheet-modal");
     if (sheetModal) sheetModal.remove();
+    const csvModal = document.getElementById("csv-export-modal");
+    if (csvModal) csvModal.remove();
     const directEdit = document.getElementById("direct-edit-dialog");
     if (directEdit) directEdit.remove();
     if (ModalManager.closeMultiItemRequestModal) ModalManager.closeMultiItemRequestModal();
