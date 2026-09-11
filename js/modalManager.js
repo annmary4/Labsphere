@@ -5382,12 +5382,15 @@ ModalManager.handleSubmitMultiItemRequisition = function() {
 
 ModalManager.updateReqNavbarCartBadge = function() {
   const badge = document.getElementById("req-cart-count-badge");
-  if (!badge) return;
+  const drawerBadge = document.getElementById("drawer-req-cart-count-badge");
   const count = this._requisitionState ? this._requisitionState.items.length : 0;
-  badge.innerText = count;
-  if (count > 0) {
-    badge.classList.remove("hidden");
-  } else {
-    badge.classList.add("hidden");
-  }
+  [badge, drawerBadge].forEach(b => {
+    if (!b) return;
+    b.innerText = count;
+    if (count > 0) {
+      b.classList.remove("hidden");
+    } else {
+      b.classList.add("hidden");
+    }
+  });
 };

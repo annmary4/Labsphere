@@ -416,7 +416,7 @@ class App {
     };
 
     mapDrawerTrigger("drawer-btn-add-component", null, openAddCompModal);
-    mapDrawerTrigger("drawer-btn-multi-item-req", "btn-multi-item-req");
+    mapDrawerTrigger("drawer-btn-multi-item-req", null, () => ModalManager.openMultiItemRequestModal());
     mapDrawerTrigger("drawer-btn-notif", "btn-nav-notif");
     mapDrawerTrigger("drawer-btn-approvals", "btn-admin-approve");
     mapDrawerTrigger("drawer-btn-student-reqs", "btn-student-reqs");
@@ -655,14 +655,16 @@ class App {
       }
     });
 
-    // "Multi-Item Request" & "My Requests" header buttons: ONLY for non-Admin / Student / Requisition Requester roles
+    // "Multi-Item Request" header button: ONLY for Student / Intern role on desktop.
+    // For all other roles (Team Lead, Lab Maintainer/Engineer, Management, Admin), it is available exclusively in the hamburger drawer panel.
+    const isStudent = StorageService.isRole("STUDENT");
     const btnMultiItemReqHeader = document.getElementById("btn-multi-item-req");
     const btnStudentReqsHeader = document.getElementById("btn-student-reqs");
     if (btnMultiItemReqHeader) {
-      if (isAdmin) {
-        btnMultiItemReqHeader.style.setProperty("display", "none", "important");
-      } else if (!isMobile) {
+      if (isStudent && !isMobile) {
         btnMultiItemReqHeader.style.setProperty("display", "inline-flex", "important");
+      } else {
+        btnMultiItemReqHeader.style.setProperty("display", "none", "important");
       }
     }
     if (btnStudentReqsHeader) {
