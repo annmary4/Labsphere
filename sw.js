@@ -2,18 +2,18 @@
    LabSphere Service Worker - Offline Cache & PWA Support
    ============================================================ */
 
-const CACHE_NAME = 'labsphere-v13314_admin_only_edit_move_box';
+const CACHE_NAME = 'labsphere-v13315_admin_only_print_qr';
 const ASSETS_TO_CACHE = [
   '/Labsphere/',
   '/Labsphere/index.html',
-  '/Labsphere/css/styles.css?v=13314_admin_only_edit_move_box',
-  '/Labsphere/js/app.js?v=13314_admin_only_edit_move_box',
-  '/Labsphere/js/types.js?v=13314_admin_only_edit_move_box',
-  '/Labsphere/js/initialData.js?v=13314_admin_only_edit_move_box',
-  '/Labsphere/js/storage.js?v=13314_admin_only_edit_move_box',
-  '/Labsphere/js/rackViewer.js?v=13314_admin_only_edit_move_box',
-  '/Labsphere/js/componentsView.js?v=13314_admin_only_edit_move_box',
-  '/Labsphere/js/modalManager.js?v=13314_admin_only_edit_move_box',
+  '/Labsphere/css/styles.css?v=13315_admin_only_print_qr',
+  '/Labsphere/js/app.js?v=13315_admin_only_print_qr',
+  '/Labsphere/js/types.js?v=13315_admin_only_print_qr',
+  '/Labsphere/js/initialData.js?v=13315_admin_only_print_qr',
+  '/Labsphere/js/storage.js?v=13315_admin_only_print_qr',
+  '/Labsphere/js/rackViewer.js?v=13315_admin_only_print_qr',
+  '/Labsphere/js/componentsView.js?v=13315_admin_only_print_qr',
+  '/Labsphere/js/modalManager.js?v=13315_admin_only_print_qr',
   '/Labsphere/icons/icon-192.png',
   '/Labsphere/icons/icon-512.png',
   '/Labsphere/manifest.json'

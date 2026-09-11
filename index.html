@@ -969,7 +969,7 @@
             <button id="btn-request-component" class="btn btn-warning">
               <i data-lucide="hand-metal"></i> Request Checkout
             </button>
-            <button id="btn-print-comp-qr" class="btn btn-secondary" title="Print QR Code Label with Component Name">
+            <button id="btn-print-comp-qr" class="btn btn-secondary" title="Print QR Code Label with Component Name" style="display:none;">
               <i data-lucide="printer"></i> Print QR Label
             </button>
             <button id="btn-move-box-component" class="btn btn-secondary" style="display:none;">
@@ -1475,7 +1475,7 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
         </div>
         <div class="modal-footer" style="display:flex; justify-content:space-between; align-items:center;">
           <button id="btn-batch-print-boxes" class="btn btn-secondary" onclick="ModalManager.printBatchBoxQrSheet()"
-            style="border-color:var(--success); color:var(--success);">
+            style="display:none; border-color:var(--success); color:var(--success);">
             <i data-lucide="printer"></i> Print Batch Print All Box QR Labels (16 Per Page)
           </button>
           <button class="btn btn-primary" id="btn-close-box-mgr">Close</button>
@@ -1972,13 +1972,13 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
   </div>
 
   <!-- JavaScript App Logic with Cache Busters -->
-  <script src="js/types.js?v=13314_admin_only_edit_move_box"></script>
-  <script src="js/initialData.js?v=13314_admin_only_edit_move_box"></script>
-  <script src="js/storage.js?v=13314_admin_only_edit_move_box"></script>
-  <script src="js/rackViewer.js?v=13314_admin_only_edit_move_box"></script>
-  <script src="js/componentsView.js?v=13314_admin_only_edit_move_box"></script>
-  <script src="js/modalManager.js?v=13314_admin_only_edit_move_box"></script>
-  <script src="js/app.js?v=13314_admin_only_edit_move_box"></script>
+  <script src="js/types.js?v=13315_admin_only_print_qr"></script>
+  <script src="js/initialData.js?v=13315_admin_only_print_qr"></script>
+  <script src="js/storage.js?v=13315_admin_only_print_qr"></script>
+  <script src="js/rackViewer.js?v=13315_admin_only_print_qr"></script>
+  <script src="js/componentsView.js?v=13315_admin_only_print_qr"></script>
+  <script src="js/modalManager.js?v=13315_admin_only_print_qr"></script>
+  <script src="js/app.js?v=13315_admin_only_print_qr"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       if (window.lucide) {
@@ -2032,6 +2032,10 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
     }
 
     async function printShelfBoxQR(rackIdInput, shelfIdInput) {
+      if (!StorageService.isRole("ADMIN")) {
+        alert("Access Restricted: Only Lab Administrators can print Shelf QR label sheets.");
+        return;
+      }
       const targetRack = parseInt(rackIdInput) || 1;
       const targetShelf = _parseShelfId(shelfIdInput);
       const shelfChar = String.fromCharCode(64 + targetShelf);
@@ -2118,6 +2122,10 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
       window.ModalManager.parseShelfId = _parseShelfId;
       window.ModalManager.printBatchShelfComponentQrSheet = printShelfBoxQR;
       window.ModalManager.openShelfQrSelectorPrompt = function () {
+        if (!StorageService.isRole("ADMIN")) {
+          alert("Access Restricted: Only Lab Administrators can print Shelf QR label sheets.");
+          return;
+        }
         const shelf = prompt('Enter Shelf letter (A-E) or ALL:', 'A');
         if (!shelf) return;
         const clean = shelf.trim().toUpperCase();
@@ -2250,7 +2258,7 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/Labsphere/sw.js?v=13314_admin_only_edit_move_box', { scope: '/Labsphere/' })
+        navigator.serviceWorker.register('/Labsphere/sw.js?v=13315_admin_only_print_qr', { scope: '/Labsphere/' })
           .then(reg => {
             console.log('[LabSphere PWA] Service Worker registered:', reg.scope);
             if (reg.update) reg.update();

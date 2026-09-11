@@ -164,9 +164,10 @@ class RackViewer {
               </div>
               <div style="display:flex; align-items:center; gap:6px;">
                 <span class="shelf-count text-muted" style="font-size:0.7rem;">${shelfBoxes.length} Boxes • ${totalItemsInShelf} Items</span>
+                ${StorageService.isRole("ADMIN") ? `
                 <button class="btn btn-secondary btn-sm btn-print-shelf-qr" data-rack="${rack.id}" data-shelf="${shelfNum}" style="padding:2px 8px; font-size:0.7rem;" title="Print QR Labels for all components on ${shelfNameLabel}">
-                  <i data-lucide="printer"></i> Print Print Shelf QR
-                </button>
+                  <i data-lucide="printer"></i> Print Shelf QR
+                </button>` : ''}
                 ${isShelfSelected ? '<span class="active-dot" title="Active Selected Shelf"></span>' : ''}
               </div>
             </div>
@@ -271,6 +272,10 @@ class RackViewer {
       rackCard.querySelectorAll(".btn-print-shelf-qr").forEach(btn => {
         btn.addEventListener("click", (e) => {
           e.stopPropagation();
+          if (!StorageService.isRole("ADMIN")) {
+            alert("Access Restricted: Only Lab Administrators can print Shelf QR label sheets.");
+            return;
+          }
           const rId = Number(btn.getAttribute("data-rack"));
           const sId = Number(btn.getAttribute("data-shelf"));
           if (window.ModalManager && window.ModalManager.printBatchShelfComponentQrSheet) {

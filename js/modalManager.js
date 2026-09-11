@@ -170,6 +170,10 @@ class ModalManager {
     const printCompQrBtn = document.getElementById("btn-print-comp-qr");
     if (printCompQrBtn) {
       printCompQrBtn.addEventListener("click", () => {
+        if (!StorageService.isRole("ADMIN")) {
+          alert("Access Restricted: Only Lab Administrators can print QR code labels.");
+          return;
+        }
         if (this.currentComponent) this.printComponentQrCode(this.currentComponent.id);
       });
     }
@@ -630,11 +634,13 @@ class ModalManager {
     const editBtn = document.getElementById("btn-edit-component");
     const moveBtn = document.getElementById("btn-move-box-component");
     const deleteBtn = document.getElementById("btn-delete-component");
+    const printCompQrBtn = document.getElementById("btn-print-comp-qr");
     const tabEdit = document.getElementById("modal-tab-edit");
     const qtyControls = document.getElementById("insp-qty-controls-group");
     const minusBtn = document.getElementById("insp-qty-minus");
     const plusBtn = document.getElementById("insp-qty-plus");
 
+    if (printCompQrBtn) printCompQrBtn.style.display = isAdmin ? "inline-flex" : "none";
     if (editBtn) editBtn.style.display = isAdmin ? "inline-flex" : "none";
     if (moveBtn) moveBtn.style.display = isAdmin ? "inline-flex" : "none";
     if (deleteBtn) deleteBtn.style.display = isAdmin ? "inline-flex" : "none";
@@ -1162,8 +1168,10 @@ class ModalManager {
     const editBtn = document.getElementById("btn-edit-component");
     const moveBtn = document.getElementById("btn-move-box-component");
     const deleteBtn = document.getElementById("btn-delete-component");
+    const printCompQrBtn = document.getElementById("btn-print-comp-qr");
     const tabEdit = document.getElementById("modal-tab-edit");
 
+    if (printCompQrBtn) printCompQrBtn.style.display = isAdmin ? "inline-flex" : "none";
     if (editBtn) editBtn.style.display = isAdmin ? "inline-flex" : "none";
     if (moveBtn) moveBtn.style.display = isAdmin ? "inline-flex" : "none";
     if (deleteBtn) deleteBtn.style.display = isAdmin ? "inline-flex" : "none";
@@ -2883,6 +2891,10 @@ class ModalManager {
 
   static openBoxModal() {
     this.renderBoxList();
+    const batchBtn = document.getElementById("btn-batch-print-boxes");
+    if (batchBtn) {
+      batchBtn.style.display = StorageService.isRole("ADMIN") ? "inline-flex" : "none";
+    }
     const backdrop = document.getElementById("box-manager-modal");
     if (backdrop) backdrop.classList.remove("hidden");
   }
@@ -3049,6 +3061,7 @@ class ModalManager {
           <button class="btn btn-primary btn-sm btn-inspect-box" title="Inspect all components inside this box side-by-side">
             <i data-lucide="eye"></i> Inspect Box (${boxComponents.length})
           </button>
+          ${StorageService.isRole("ADMIN") ? `
           <button class="btn btn-secondary btn-sm btn-print-box-qr" title="Print QR Code Sticker for this Box">
             <i data-lucide="printer"></i> Print Box QR
           </button>
@@ -3057,7 +3070,7 @@ class ModalManager {
           </button>
           <button class="btn btn-secondary btn-sm btn-swap-box" title="Swap box contents with another box">
             <i data-lucide="arrow-left-right"></i> Swap Box
-          </button>
+          </button>` : ''}
         </div>
       `;
 
@@ -3072,22 +3085,31 @@ class ModalManager {
         this.openBoxInspectorModal(box.id, boxComponents);
       });
 
-      card.querySelector(".btn-print-box-qr").addEventListener("click", () => {
-        let hostOrigin = window.location.origin;
-        if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
-          hostOrigin = `http://192.168.82.40:${window.location.port || 3000}`;
-        }
-        const qrTargetUrl = `${hostOrigin}${window.location.pathname}?box=${encodeURIComponent(box.id)}`;
-        this.printBoxQrCode(box.id, encodeURIComponent(qrTargetUrl));
-      });
+      const printBoxQrBtn = card.querySelector(".btn-print-box-qr");
+      if (printBoxQrBtn) {
+        printBoxQrBtn.addEventListener("click", () => {
+          let hostOrigin = window.location.origin;
+          if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
+            hostOrigin = `http://192.168.82.40:${window.location.port || 3000}`;
+          }
+          const qrTargetUrl = `${hostOrigin}${window.location.pathname}?box=${encodeURIComponent(box.id)}`;
+          this.printBoxQrCode(box.id, encodeURIComponent(qrTargetUrl));
+        });
+      }
 
-      card.querySelector(".btn-edit-box-id").addEventListener("click", () => {
-        this.handleRenameOrRelocateBox(box.id);
-      });
+      const editBoxIdBtn = card.querySelector(".btn-edit-box-id");
+      if (editBoxIdBtn) {
+        editBoxIdBtn.addEventListener("click", () => {
+          this.handleRenameOrRelocateBox(box.id);
+        });
+      }
 
-      card.querySelector(".btn-swap-box").addEventListener("click", () => {
-        this.handleSwapBoxContents(box.id);
-      });
+      const swapBoxBtn = card.querySelector(".btn-swap-box");
+      if (swapBoxBtn) {
+        swapBoxBtn.addEventListener("click", () => {
+          this.handleSwapBoxContents(box.id);
+        });
+      }
 
       container.appendChild(card);
     });
@@ -3190,9 +3212,10 @@ class ModalManager {
             <img src="${qrImgUrl}" alt="${cleanBoxId} QR Code" style="width:54px; height:54px; border-radius:4px; background:#fff; padding:2px;" />
             <div>
               <div style="font-size:0.75rem; font-weight:700; color:var(--success);">Mobile Scan with Phone Camera</div>
+              ${StorageService.isRole("ADMIN") ? `
               <button class="btn btn-secondary btn-sm" onclick="ModalManager.printBoxQrCode('${cleanBoxId}', '${encodeURIComponent(qrTargetUrl)}')" style="margin-top:4px; font-size:0.7rem; padding:2px 8px;">
                 <i data-lucide="printer"></i> Print QR Label
-              </button>
+              </button>` : ''}
             </div>
           </div>
         </div>
@@ -3339,6 +3362,10 @@ class ModalManager {
   }
 
   static printBoxQrCode(boxIdInput, encodedQrUrl) {
+    if (!StorageService.isRole("ADMIN")) {
+      alert("Access Restricted: Only Lab Administrators can print Box QR labels.");
+      return;
+    }
     const cleanBoxId = (boxIdInput || "").trim().toUpperCase();
     let hostOrigin = window.location.origin;
     if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
@@ -3389,6 +3416,10 @@ class ModalManager {
   }
 
   static printComponentQrCode(componentId) {
+    if (!StorageService.isRole("ADMIN")) {
+      alert("Access Restricted: Only Lab Administrators can print Component QR labels.");
+      return;
+    }
     const components = StorageService.getComponents();
     const c = components.find(item => item.id === componentId);
     if (!c) return;
@@ -3432,6 +3463,10 @@ class ModalManager {
   }
 
   static printBatchBoxQrSheet() {
+    if (!StorageService.isRole("ADMIN")) {
+      alert("Access Restricted: Only Lab Administrators can batch print Box QR sheets.");
+      return;
+    }
     const boxes = StorageService.getBoxes();
     const components = StorageService.getComponents();
 
@@ -3586,6 +3621,10 @@ class ModalManager {
   }
 
   static printBatchShelfComponentQrSheet(rackIdInput, shelfIdInput) {
+    if (!StorageService.isRole("ADMIN")) {
+      alert("Access Restricted: Only Lab Administrators can print Shelf QR label sheets.");
+      return;
+    }
     const targetRack = parseInt(rackIdInput) || 1;
     const targetShelf = this.parseShelfId(shelfIdInput);
     const shelfChar = String.fromCharCode(64 + targetShelf);
@@ -3758,6 +3797,10 @@ class ModalManager {
   }
 
   static openShelfQrSelectorPrompt() {
+    if (!StorageService.isRole("ADMIN")) {
+      alert("Access Restricted: Only Lab Administrators can print Shelf QR label sheets.");
+      return;
+    }
     const shelfStr = prompt(
       "Rack PRINT SHELF BOX QR STICKERS (16/Page):\n\n" +
       "Enter Target Shelf Letter or Number:\n" +

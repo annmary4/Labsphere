@@ -228,9 +228,11 @@ class ComponentsView {
           <button class="btn btn-secondary btn-sm btn-inspect-direct" data-id="${c.id}" onclick="event.stopPropagation(); window.openViewModal('${c.id}');" title="View info for ${c.name}" style="padding:4px 8px; font-size:0.7rem; cursor:pointer;">
             View Info
           </button>
-          <button class="btn btn-secondary btn-sm btn-print-qr-direct" data-id="${c.id}" onclick="event.stopPropagation(); if (window.ModalManager && window.ModalManager.printBoxQrCode) window.ModalManager.printBoxQrCode('${c.boxId}');" title="Print Box QR Code Label for ${c.boxId}" style="padding:4px 8px; font-size:0.7rem; cursor:pointer;">
-            <i data-lucide="printer"></i> Box QR
-          </button>
+          ${StorageService.isRole("ADMIN") ? `
+            <button class="btn btn-secondary btn-sm btn-print-qr-direct" data-id="${c.id}" onclick="event.stopPropagation(); if (window.ModalManager && window.ModalManager.printBoxQrCode) window.ModalManager.printBoxQrCode('${c.boxId}');" title="Print Box QR Code Label for ${c.boxId}" style="padding:4px 8px; font-size:0.7rem; cursor:pointer;">
+              <i data-lucide="printer"></i> Box QR
+            </button>
+          ` : ''}
         </div>
       `;
 
@@ -402,12 +404,15 @@ class ComponentsView {
         });
       }
 
-      card.querySelector(".btn-print-qr-direct").addEventListener("click", (e) => {
-        e.stopPropagation();
-        if (window.ModalManager && window.ModalManager.printBoxQrCode) {
-          window.ModalManager.printBoxQrCode(c.boxId);
-        }
-      });
+      const printQrBtn = card.querySelector(".btn-print-qr-direct");
+      if (printQrBtn) {
+        printQrBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          if (window.ModalManager && window.ModalManager.printBoxQrCode) {
+            window.ModalManager.printBoxQrCode(c.boxId);
+          }
+        });
+      }
 
       card.addEventListener("click", () => {
         if (StorageService.isRole("ADMIN") && window.openComponentEditDialog) {
@@ -469,17 +474,21 @@ class ComponentsView {
               </button>
             ` : ''}
             ${c.datasheetUrl ? `<a href="${c.datasheetUrl}" target="_blank" class="btn btn-secondary btn-sm" title="View PDF Datasheet"><i data-lucide="file-text"></i> PDF</a>` : ''}
-            <button class="btn btn-secondary btn-sm btn-print-table-qr" title="Print Box QR Label for ${c.boxId}">
-              <i data-lucide="printer"></i> Box QR
-            </button>
             ${StorageService.isRole("ADMIN") ? `
+              <button class="btn btn-secondary btn-sm btn-print-table-qr" title="Print Box QR Label for ${c.boxId}">
+                <i data-lucide="printer"></i> Box QR
+              </button>
               <button class="btn btn-secondary btn-sm btn-delete-table-row" style="border-color:var(--danger); color:var(--danger);" title="Delete ${c.name}">
                 <i data-lucide="trash-2"></i> Delete
               </button>
               <button class="btn btn-primary btn-sm btn-inspect-row" style="background:#0ea5e9; color:white; border:none; font-weight:700;">
                 Edit Details
               </button>
-            ` : ''}
+            ` : `
+              <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation(); window.openViewModal('${c.id}');" title="View info for ${c.name}">
+                View Info
+              </button>
+            `}
           </div>
         </td>
       `;
