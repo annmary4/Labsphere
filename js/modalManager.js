@@ -2169,13 +2169,15 @@ class ModalManager {
             </p>
 
             ${(isLeadPending || isAdminPending || isPartiallyIssued) ? `
-              <div class="approval-actions" style="display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap;">
-                <button class="btn btn-secondary btn-suggest-alt" data-id="${r.id}" style="font-weight:700; color:#38bdf8; border-color:rgba(56,189,248,0.4);" title="Suggest compatible alternative component from stock">
-                  💡 Suggest Alternative
-                </button>
-                <button class="btn btn-danger btn-lead-reject" data-id="${r.id}" style="font-weight:700;" title="Reject request if stock or project justification unavailable">
-                  ❌ Reject
-                </button>
+              <div class="approval-actions" style="display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap; align-items:center;">
+                ${(isLeadPending || isAdmin) ? `
+                  <button class="btn btn-secondary btn-suggest-alt" data-id="${r.id}" style="font-weight:700; color:#38bdf8; border-color:rgba(56,189,248,0.4);" title="Suggest compatible alternative component from stock">
+                    💡 Suggest Alternative
+                  </button>
+                  <button class="btn btn-danger btn-lead-reject" data-id="${r.id}" style="font-weight:700;" title="Reject request if stock or project justification unavailable">
+                    ❌ Reject
+                  </button>
+                ` : ''}
                 ${isLeadPending ? `
                   <button class="btn btn-primary btn-team-lead-approve" data-id="${r.id}" style="background:linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); color:white; font-weight:800; border:none; box-shadow:0 2px 8px rgba(14,165,233,0.4);" title="Team Lead: Approve requisition & forward to Lab Administrator for inventory issuance">
                     ✅ Team Lead: Approve & Send to Admin
@@ -2696,6 +2698,11 @@ class ModalManager {
     const components = StorageService.getComponents();
     const req = requests.find(r => r.id === requestId);
     if (!req) return;
+
+    if ((req.status === "PENDING_ADMIN_ISSUANCE" || req.status === "LEAD_APPROVED" || req.status === "LEAD_MODIFIED") && !StorageService.isRole("ADMIN")) {
+      alert("This requisition has already been approved and forwarded to the Lab Administrator. Only the Lab Administrator can suggest alternative components.");
+      return;
+    }
 
     const reqComp = components.find(c => c.id === req.componentId);
     const reqCat = reqComp ? reqComp.category : null;

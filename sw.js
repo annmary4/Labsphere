@@ -2,18 +2,18 @@
    LabSphere Service Worker - Offline Cache & PWA Support
    ============================================================ */
 
-const CACHE_NAME = 'labsphere-v13310_multi_req_drawer_only';
+const CACHE_NAME = 'labsphere-v13311_admin_queue_action_restriction';
 const ASSETS_TO_CACHE = [
   '/Labsphere/',
   '/Labsphere/index.html',
-  '/Labsphere/css/styles.css?v=13310_multi_req_drawer_only',
-  '/Labsphere/js/app.js?v=13310_multi_req_drawer_only',
-  '/Labsphere/js/types.js?v=13310_multi_req_drawer_only',
-  '/Labsphere/js/initialData.js?v=13310_multi_req_drawer_only',
-  '/Labsphere/js/storage.js?v=13310_multi_req_drawer_only',
-  '/Labsphere/js/rackViewer.js?v=13310_multi_req_drawer_only',
-  '/Labsphere/js/componentsView.js?v=13310_multi_req_drawer_only',
-  '/Labsphere/js/modalManager.js?v=13310_multi_req_drawer_only',
+  '/Labsphere/css/styles.css?v=13311_admin_queue_action_restriction',
+  '/Labsphere/js/app.js?v=13311_admin_queue_action_restriction',
+  '/Labsphere/js/types.js?v=13311_admin_queue_action_restriction',
+  '/Labsphere/js/initialData.js?v=13311_admin_queue_action_restriction',
+  '/Labsphere/js/storage.js?v=13311_admin_queue_action_restriction',
+  '/Labsphere/js/rackViewer.js?v=13311_admin_queue_action_restriction',
+  '/Labsphere/js/componentsView.js?v=13311_admin_queue_action_restriction',
+  '/Labsphere/js/modalManager.js?v=13311_admin_queue_action_restriction',
   '/Labsphere/icons/icon-192.png',
   '/Labsphere/icons/icon-512.png',
   '/Labsphere/manifest.json'

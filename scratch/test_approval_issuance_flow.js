@@ -66,6 +66,27 @@ if (!blocked) {
 }
 console.log(" -> ✅ Access Denied enforced: Team Lead cannot issue materials!");
 
+// Step 4b: Team Lead attempts to reject or suggest alternative for item in Admin queue -> MUST BE BLOCKED
+console.log("\n[STEP 4b] Team Lead attempts to reject or suggest alternative for Lead-approved item in Admin queue...");
+let rejectBlocked = false;
+try {
+  StorageService.reviewLeadRequest(req.id, 0, 'Anson', 'REJECT', 'Late cancellation');
+} catch (err) {
+  rejectBlocked = true;
+  console.log(` -> Correctly blocked reject with error: "${err.message}"`);
+}
+if (!rejectBlocked) throw new Error("Step 4b Failed: Team Lead should not be able to reject request pending Admin issuance.");
+
+let altBlocked = false;
+try {
+  StorageService.suggestAlternativeComponent(req.id, 'COMP-002');
+} catch (err) {
+  altBlocked = true;
+  console.log(` -> Correctly blocked suggest-alt with error: "${err.message}"`);
+}
+if (!altBlocked) throw new Error("Step 4b Failed: Team Lead should not be able to suggest alternative for request pending Admin issuance.");
+console.log(" -> ✅ Access Denied enforced: Team Lead cannot reject or suggest alternatives once forwarded to Admin!");
+
 // Step 5: Lab Administrator logs in
 console.log("\n[STEP 5] Lab Administrator logs in...");
 const adminSession = StorageService.login('lab administrator', '123');

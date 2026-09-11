@@ -1561,6 +1561,10 @@ class StorageService {
     const numApprovedQty = Math.max(0, parseInt(qtyApproved) || 0);
 
     if (decision === "REJECT") {
+      if ((req.status === "PENDING_ADMIN_ISSUANCE" || req.status === "LEAD_APPROVED" || req.status === "LEAD_MODIFIED") && !this.isRole("ADMIN")) {
+        throw new Error("Access Denied: Requisition has already been approved by Team Lead and forwarded to the Lab Administrator. Only the Lab Administrator can reject or update it.");
+      }
+
       // Release reserved stock if request was previously approved
       if (req.status === "LEAD_APPROVED" || req.status === "LEAD_MODIFIED" || req.status === "APPROVED") {
         const components = this.getComponents();
@@ -1775,6 +1779,10 @@ class StorageService {
 
     const altComp = components.find(c => c.id === altComponentId);
     if (!altComp) throw new Error("Alternative component not found!");
+
+    if ((req.status === "PENDING_ADMIN_ISSUANCE" || req.status === "LEAD_APPROVED" || req.status === "LEAD_MODIFIED") && !this.isRole("ADMIN")) {
+      throw new Error("Access Denied: Requisition has already been approved by Team Lead and forwarded to the Lab Administrator. Only the Lab Administrator can suggest alternatives.");
+    }
 
     const session = this.getCurrentSession();
     const adminName = session ? session.fullName : "Lab Administrator";
