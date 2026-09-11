@@ -730,7 +730,7 @@
               Edit Details Form
             </button>
           </div>
-          <button class="modal-close" id="btn-close-component-modal" onclick="ModalManager.closeComponentModal()" title="Close Window"><i data-lucide="x"></i></button>
+          <button class="modal-close" id="btn-close-component-modal" onclick="if(window.closeComponentModal) window.closeComponentModal(); else if(window.ModalManager) window.ModalManager.closeComponentModal();" title="Close Window"><i data-lucide="x"></i></button>
         </div>
 
         <div class="modal-body">
@@ -982,7 +982,7 @@
             <button id="btn-edit-component" class="btn btn-secondary">
               <i data-lucide="edit"></i> Edit Details
             </button>
-            <button id="btn-close-view" class="btn btn-primary" onclick="ModalManager.closeComponentModal()">Done</button>
+            <button id="btn-close-view" class="btn btn-primary" onclick="if(window.closeComponentModal) window.closeComponentModal(); else if(window.ModalManager) window.ModalManager.closeComponentModal();">Done</button>
           </div>
 
           <div id="modal-form-footer" class="footer-actions hidden">
@@ -1972,13 +1972,13 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
   </div>
 
   <!-- JavaScript App Logic with Cache Busters -->
-  <script src="js/types.js?v=13312_fix_view_modal_close"></script>
-  <script src="js/initialData.js?v=13312_fix_view_modal_close"></script>
-  <script src="js/storage.js?v=13312_fix_view_modal_close"></script>
-  <script src="js/rackViewer.js?v=13312_fix_view_modal_close"></script>
-  <script src="js/componentsView.js?v=13312_fix_view_modal_close"></script>
-  <script src="js/modalManager.js?v=13312_fix_view_modal_close"></script>
-  <script src="js/app.js?v=13312_fix_view_modal_close"></script>
+  <script src="js/types.js?v=13313_resolve_duplicate_close_override"></script>
+  <script src="js/initialData.js?v=13313_resolve_duplicate_close_override"></script>
+  <script src="js/storage.js?v=13313_resolve_duplicate_close_override"></script>
+  <script src="js/rackViewer.js?v=13313_resolve_duplicate_close_override"></script>
+  <script src="js/componentsView.js?v=13313_resolve_duplicate_close_override"></script>
+  <script src="js/modalManager.js?v=13313_resolve_duplicate_close_override"></script>
+  <script src="js/app.js?v=13313_resolve_duplicate_close_override"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       if (window.lucide) {
@@ -2250,7 +2250,7 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/Labsphere/sw.js?v=13312_fix_view_modal_close', { scope: '/Labsphere/' })
+        navigator.serviceWorker.register('/Labsphere/sw.js?v=13313_resolve_duplicate_close_override', { scope: '/Labsphere/' })
           .then(reg => {
             console.log('[LabSphere PWA] Service Worker registered:', reg.scope);
             if (reg.update) reg.update();

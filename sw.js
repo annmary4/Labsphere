@@ -2,18 +2,18 @@
    LabSphere Service Worker - Offline Cache & PWA Support
    ============================================================ */
 
-const CACHE_NAME = 'labsphere-v13312_fix_view_modal_close';
+const CACHE_NAME = 'labsphere-v13313_resolve_duplicate_close_override';
 const ASSETS_TO_CACHE = [
   '/Labsphere/',
   '/Labsphere/index.html',
-  '/Labsphere/css/styles.css?v=13312_fix_view_modal_close',
-  '/Labsphere/js/app.js?v=13312_fix_view_modal_close',
-  '/Labsphere/js/types.js?v=13312_fix_view_modal_close',
-  '/Labsphere/js/initialData.js?v=13312_fix_view_modal_close',
-  '/Labsphere/js/storage.js?v=13312_fix_view_modal_close',
-  '/Labsphere/js/rackViewer.js?v=13312_fix_view_modal_close',
-  '/Labsphere/js/componentsView.js?v=13312_fix_view_modal_close',
-  '/Labsphere/js/modalManager.js?v=13312_fix_view_modal_close',
+  '/Labsphere/css/styles.css?v=13313_resolve_duplicate_close_override',
+  '/Labsphere/js/app.js?v=13313_resolve_duplicate_close_override',
+  '/Labsphere/js/types.js?v=13313_resolve_duplicate_close_override',
+  '/Labsphere/js/initialData.js?v=13313_resolve_duplicate_close_override',
+  '/Labsphere/js/storage.js?v=13313_resolve_duplicate_close_override',
+  '/Labsphere/js/rackViewer.js?v=13313_resolve_duplicate_close_override',
+  '/Labsphere/js/componentsView.js?v=13313_resolve_duplicate_close_override',
+  '/Labsphere/js/modalManager.js?v=13313_resolve_duplicate_close_override',
   '/Labsphere/icons/icon-192.png',
   '/Labsphere/icons/icon-512.png',
   '/Labsphere/manifest.json'

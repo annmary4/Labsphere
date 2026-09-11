@@ -1485,11 +1485,6 @@ class ModalManager {
     }
   }
 
-  static closeComponentModal() {
-    const backdrop = document.getElementById("component-modal");
-    if (backdrop) backdrop.classList.add("hidden");
-  }
-
   static openLoginModal() {
     const backdrop = document.getElementById("login-modal");
     if (backdrop) backdrop.classList.remove("hidden");
@@ -5420,6 +5415,27 @@ ModalManager.updateReqNavbarCartBadge = function() {
   });
 };
 
+ModalManager.closeComponentModal = function () {
+  const backdrops = document.querySelectorAll("#component-modal, .component-modal-backdrop");
+  backdrops.forEach(backdrop => {
+    backdrop.classList.add("hidden");
+    backdrop.style.cssText = "display:none !important; visibility:hidden !important; opacity:0 !important; z-index:-1 !important;";
+  });
+  const directEdit = document.getElementById("direct-edit-dialog");
+  if (directEdit) {
+    directEdit.remove();
+  }
+};
+
 if (typeof window !== "undefined") {
   window.ModalManager = ModalManager;
+  window.closeComponentModal = ModalManager.closeComponentModal;
+
+  // Global ESC key listener to close component modal
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      ModalManager.closeComponentModal();
+    }
+  });
 }
+
