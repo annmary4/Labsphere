@@ -4883,12 +4883,14 @@ ModalManager.openPrintableInventorySheet = function() {
             <button class="btn btn-primary" onclick="window.triggerInventoryPrint()" style="background:#0284c7; color:#fff; font-weight:600; padding:10px 18px; border-radius:8px; display:inline-flex; align-items:center; gap:8px; cursor:pointer; border:none; box-shadow:0 4px 14px rgba(2,132,199,0.4);">
               <i data-lucide="printer" style="width:18px; height:18px;"></i> Print / Save as PDF
             </button>
+            ${StorageService.isRole("ADMIN") ? `
             <button class="btn btn-secondary" onclick="ModalManager.openCsvExportModal()" title="Export Requisition & Issuance Ledger CSV by Daily, Weekly, Monthly, Quarterly, Custom" style="padding:10px 16px; border-radius:8px; display:inline-flex; align-items:center; gap:8px; cursor:pointer; background:rgba(56,189,248,0.15); color:#38bdf8; border:1px solid rgba(56,189,248,0.35); font-weight:700;">
               <i data-lucide="file-spreadsheet" style="width:18px; height:18px;"></i> Ledger CSV Export
             </button>
             <button class="btn btn-secondary" onclick="ModalManager.exportInventoryCSV()" style="padding:10px 16px; border-radius:8px; display:inline-flex; align-items:center; gap:8px; cursor:pointer; background:rgba(255,255,255,0.08); color:#f8fafc; border:1px solid rgba(255,255,255,0.15);">
               <i data-lucide="download" style="width:18px; height:18px;"></i> Inventory Stock CSV
             </button>
+            ` : ''}
             <button class="btn btn-secondary" onclick="document.getElementById('printable-sheet-modal').remove()" style="padding:10px 16px; border-radius:8px; cursor:pointer; background:rgba(255,255,255,0.08); color:#94a3b8; border:1px solid rgba(255,255,255,0.15);">
               ✕ Close
             </button>
@@ -4962,6 +4964,10 @@ ModalManager.openPrintableInventorySheet = function() {
 };
 
 ModalManager.exportInventoryCSV = function() {
+  if (!StorageService.isRole("ADMIN")) {
+    alert("Access Restricted: Only Lab Administrators can export inventory CSV.");
+    return;
+  }
   const components = StorageService.getComponents();
   let csvContent = "data:text/csv;charset=utf-8,#,Component Name,Component ID,Part Number,Category,Location,Quantity,Unit Rate (INR),Total Value (INR)\n";
 
@@ -4987,6 +4993,10 @@ ModalManager.exportInventoryCSV = function() {
 };
 
 ModalManager.openCsvExportModal = function(initialTimeframe = 'monthly') {
+  if (!StorageService.isRole("ADMIN")) {
+    alert("Access Restricted: CSV Ledger Export is strictly reserved for the Lab Administrator.");
+    return;
+  }
   let modal = document.getElementById("csv-export-modal");
   if (modal) modal.remove();
 
@@ -5356,6 +5366,10 @@ ModalManager.refreshCsvExportPreview = function() {
 };
 
 ModalManager.executeCsvDownload = function() {
+  if (!StorageService.isRole("ADMIN")) {
+    alert("Access Restricted: Only Lab Administrators can export and download CSV records.");
+    return;
+  }
   const options = this.getCsvFilterOptions();
   try {
     const result = StorageService.downloadLedgerCSV(options);

@@ -1602,6 +1602,10 @@ class StorageService {
   }
 
   static downloadLedgerCSV(filterOptions = {}) {
+    if (!this.isRole("ADMIN")) {
+      alert("Access Restricted: Only Lab Administrators can export and download CSV ledger records.");
+      return null;
+    }
     const result = this.generateLedgerCSV(filterOptions);
     const blob = new Blob(["\uFEFF" + result.csv], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);

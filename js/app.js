@@ -429,6 +429,7 @@ class App {
     });
     mapDrawerTrigger("drawer-btn-audit-log", "btn-audit-log");
     mapDrawerTrigger("drawer-btn-procurement-insights", "btn-procurement-insights");
+    mapDrawerTrigger("drawer-btn-export-csv", null, () => ModalManager.openCsvExportModal());
 
     // Fallback if btn-add-component is in DOM
     const btnAdd = document.getElementById("btn-add-component");
@@ -642,7 +643,8 @@ class App {
 
     const headerAdminButtons = [
       document.getElementById("btn-audit-log"),
-      document.getElementById("btn-procurement-insights")
+      document.getElementById("btn-procurement-insights"),
+      document.getElementById("btn-export-ledger-csv")
     ];
 
     headerAdminButtons.forEach(el => {
@@ -703,7 +705,8 @@ class App {
       document.getElementById("drawer-btn-mgmt-dashboard"),
       document.getElementById("drawer-btn-audit-log"),
       document.getElementById("drawer-btn-procurement-insights"),
-      document.getElementById("drawer-btn-add-component")
+      document.getElementById("drawer-btn-add-component"),
+      document.getElementById("drawer-btn-export-csv")
     ];
 
     drawerAdminElements.forEach(el => {
