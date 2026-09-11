@@ -430,17 +430,9 @@ class App {
     mapDrawerTrigger("drawer-btn-audit-log", "btn-audit-log");
     mapDrawerTrigger("drawer-btn-procurement-insights", "btn-procurement-insights");
 
-    // Add Component Button triggers (Navbar, Drawer & Popover)
+    // Fallback if btn-add-component is in DOM
     const btnAdd = document.getElementById("btn-add-component");
     if (btnAdd) btnAdd.addEventListener("click", openAddCompModal);
-    const popoverBtnAdd = document.getElementById("popover-btn-add-component");
-    if (popoverBtnAdd) {
-      popoverBtnAdd.addEventListener("click", () => {
-        const popover = document.getElementById("user-profile-popover");
-        if (popover) popover.classList.add("hidden");
-        openAddCompModal();
-      });
-    }
 
     // PERSONA SPECIFIC BUTTONS:
     const btnMultiItemReq = document.getElementById("btn-multi-item-req");
@@ -649,7 +641,6 @@ class App {
     }
 
     const headerAdminButtons = [
-      document.getElementById("btn-add-component"),
       document.getElementById("btn-mgmt-dashboard"),
       document.getElementById("btn-audit-log"),
       document.getElementById("btn-procurement-insights")
@@ -701,9 +692,8 @@ class App {
       }
     }
 
-    // Drawer & popover items (shown inside hamburger menu & popover for Admin)
+    // Drawer items (shown inside hamburger menu for Admin)
     const drawerAdminElements = [
-      document.getElementById("popover-btn-add-component"),
       document.getElementById("popover-btn-user-manager"),
       document.getElementById("drawer-btn-mgmt-dashboard"),
       document.getElementById("drawer-btn-audit-log"),

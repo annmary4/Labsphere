@@ -2,18 +2,18 @@
    LabSphere Service Worker - Offline Cache & PWA Support
    ============================================================ */
 
-const CACHE_NAME = 'labsphere-v13317_admin_add_comp_close_only';
+const CACHE_NAME = 'labsphere-v13318_add_item_hamburger_only';
 const ASSETS_TO_CACHE = [
   '/Labsphere/',
   '/Labsphere/index.html',
-  '/Labsphere/css/styles.css?v=13317_admin_add_comp_close_only',
-  '/Labsphere/js/app.js?v=13317_admin_add_comp_close_only',
-  '/Labsphere/js/types.js?v=13317_admin_add_comp_close_only',
-  '/Labsphere/js/initialData.js?v=13317_admin_add_comp_close_only',
-  '/Labsphere/js/storage.js?v=13317_admin_add_comp_close_only',
-  '/Labsphere/js/rackViewer.js?v=13317_admin_add_comp_close_only',
-  '/Labsphere/js/componentsView.js?v=13317_admin_add_comp_close_only',
-  '/Labsphere/js/modalManager.js?v=13317_admin_add_comp_close_only',
+  '/Labsphere/css/styles.css?v=13318_add_item_hamburger_only',
+  '/Labsphere/js/app.js?v=13318_add_item_hamburger_only',
+  '/Labsphere/js/types.js?v=13318_add_item_hamburger_only',
+  '/Labsphere/js/initialData.js?v=13318_add_item_hamburger_only',
+  '/Labsphere/js/storage.js?v=13318_add_item_hamburger_only',
+  '/Labsphere/js/rackViewer.js?v=13318_add_item_hamburger_only',
+  '/Labsphere/js/componentsView.js?v=13318_add_item_hamburger_only',
+  '/Labsphere/js/modalManager.js?v=13318_add_item_hamburger_only',
   '/Labsphere/icons/icon-192.png',
   '/Labsphere/icons/icon-512.png',
   '/Labsphere/manifest.json'
