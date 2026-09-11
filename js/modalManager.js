@@ -158,7 +158,7 @@ class ModalManager {
     if (doneBtn) doneBtn.addEventListener("click", () => this.closeComponentModal());
     if (cancelEditBtn) {
       cancelEditBtn.addEventListener("click", () => {
-        if (!this.currentComponent) {
+        if (!this.currentComponent || this.isAddComponentMode) {
           this.closeComponentModal();
         } else {
           this.toggleEditMode(false);
@@ -168,7 +168,10 @@ class ModalManager {
 
     if (backdrop) {
       backdrop.addEventListener("click", (e) => {
-        if (e.target === backdrop) this.closeComponentModal();
+        if (e.target === backdrop) {
+          if (this.isAddComponentMode) return; // Add component window shall close ONLY when clicked on the close button
+          this.closeComponentModal();
+        }
       });
     }
 
@@ -576,6 +579,7 @@ class ModalManager {
   // --- INSPECTOR MODAL ---
   static openComponentInspector(component, startInEditMode = false) {
     if (!component) return;
+    this.isAddComponentMode = false;
 
     if (typeof component === "string") {
       const comps = StorageService.getComponents();
@@ -685,6 +689,11 @@ class ModalManager {
   }
 
   static closeComponentModal() {
+    this.isAddComponentMode = false;
+    const cancelEditBtn = document.getElementById("btn-cancel-edit");
+    if (cancelEditBtn) {
+      cancelEditBtn.innerText = "Cancel";
+    }
     const backdrops = document.querySelectorAll("#component-modal, .component-modal-backdrop");
     backdrops.forEach(backdrop => {
       backdrop.classList.add("hidden");
@@ -862,6 +871,7 @@ class ModalManager {
     }
 
     this.currentComponent = null;
+    this.isAddComponentMode = true;
 
     const form = document.getElementById("component-form");
     if (form) form.reset();
@@ -916,10 +926,9 @@ class ModalManager {
       backdrop.classList.remove("hidden");
       backdrop.style.cssText = "display:flex !important; position:fixed !important; inset:0 !important; width:100vw !important; height:100vh !important; z-index:9999999 !important; background:rgba(15,23,42,0.9) !important; backdrop-filter:blur(6px) !important; align-items:center !important; justify-content:center !important; visibility:visible !important; opacity:1 !important;";
 
+      // In Add Component mode, clicking on the dark backdrop should NOT close the window
       backdrop.onclick = (e) => {
-        if (e.target === backdrop) {
-          ModalManager.closeComponentModal();
-        }
+        // Ignored: window shall close ONLY when clicked on the close button
       };
 
       const closeBtn = backdrop.querySelector("#btn-close-component-modal") || document.getElementById("btn-close-component-modal");
@@ -934,6 +943,7 @@ class ModalManager {
 
     const cancelEditBtn = document.getElementById("btn-cancel-edit");
     if (cancelEditBtn) {
+      cancelEditBtn.innerText = "Close";
       cancelEditBtn.onclick = (e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -5621,6 +5631,9 @@ if (typeof window !== "undefined") {
   // Global ESC key listener to close component modal
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
+      if (ModalManager.isAddComponentMode) {
+        return; // Add Component window shall close ONLY when clicked on the close button
+      }
       ModalManager.closeComponentModal();
     }
   });
