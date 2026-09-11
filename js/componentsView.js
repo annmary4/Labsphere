@@ -156,7 +156,7 @@ class ComponentsView {
       card.className = "component-card";
       card.setAttribute("data-comp-id", c.id);
       card.style.cursor = "pointer";
-      card.title = `Click to view or edit details for ${c.name}`;
+      card.title = StorageService.isRole("ADMIN") ? `Click to view or edit details for ${c.name}` : `Click to view info for ${c.name}`;
 
       let stockTagClass = "IN_STOCK";
       let stockLabel = "AVAILABLE";
@@ -410,10 +410,12 @@ class ComponentsView {
       });
 
       card.addEventListener("click", () => {
-        if (window.openComponentEditDialog) {
+        if (StorageService.isRole("ADMIN") && window.openComponentEditDialog) {
           window.openComponentEditDialog(c.id);
         } else if (onComponentClick) {
           onComponentClick(c);
+        } else if (window.ModalManager && window.ModalManager.openComponentInspector) {
+          window.ModalManager.openComponentInspector(c, false);
         }
       });
 

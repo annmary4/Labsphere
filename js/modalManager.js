@@ -175,13 +175,22 @@ class ModalManager {
     }
 
     const moveBoxBtn = document.getElementById("btn-move-box-component");
-    if (moveBoxBtn) moveBoxBtn.addEventListener("click", () => this.handleMoveComponentToBox());
+    if (moveBoxBtn) {
+      moveBoxBtn.addEventListener("click", () => {
+        if (!StorageService.isRole("ADMIN")) {
+          alert("Access Restricted: Only Lab Administrators can move components to another box.");
+          return;
+        }
+        this.handleMoveComponentToBox();
+      });
+    }
 
     const editBtn = document.getElementById("btn-edit-component");
     if (editBtn) {
       editBtn.addEventListener("click", () => {
         if (!StorageService.isRole("ADMIN")) {
-          StorageService.setRole("ADMIN");
+          alert("Access Restricted: Only Lab Administrators can edit component details.");
+          return;
         }
         this.toggleEditMode(true);
       });
@@ -617,12 +626,22 @@ class ModalManager {
       console.error("[ModalManager] renderInspectorData error:", e);
     }
 
-    const deleteBtn = document.getElementById("btn-delete-component");
-    const qtyControls = document.getElementById("insp-qty-controls-group");
     const isAdmin = StorageService.isRole("ADMIN");
+    const editBtn = document.getElementById("btn-edit-component");
+    const moveBtn = document.getElementById("btn-move-box-component");
+    const deleteBtn = document.getElementById("btn-delete-component");
+    const tabEdit = document.getElementById("modal-tab-edit");
+    const qtyControls = document.getElementById("insp-qty-controls-group");
+    const minusBtn = document.getElementById("insp-qty-minus");
+    const plusBtn = document.getElementById("insp-qty-plus");
 
-    if (deleteBtn) deleteBtn.style.display = isAdmin ? "inline-block" : "none";
+    if (editBtn) editBtn.style.display = isAdmin ? "inline-flex" : "none";
+    if (moveBtn) moveBtn.style.display = isAdmin ? "inline-flex" : "none";
+    if (deleteBtn) deleteBtn.style.display = isAdmin ? "inline-flex" : "none";
+    if (tabEdit) tabEdit.style.display = isAdmin ? "inline-block" : "none";
     if (qtyControls) qtyControls.style.display = isAdmin ? "flex" : "none";
+    if (minusBtn) minusBtn.style.display = isAdmin ? "inline-block" : "none";
+    if (plusBtn) plusBtn.style.display = isAdmin ? "inline-block" : "none";
 
     try {
       this.toggleEditMode(startInEditMode && isAdmin);
@@ -632,6 +651,11 @@ class ModalManager {
   }
 
   static openComponentEditor(component) {
+    if (!StorageService.isRole("ADMIN")) {
+      alert("Access Restricted: Only Lab Administrators can edit component details.");
+      this.openComponentInspector(component, false);
+      return;
+    }
     if (typeof component === "object" && component.id) {
       component = component.id;
     }
@@ -839,6 +863,10 @@ class ModalManager {
   }
 
   static toggleEditMode(edit) {
+    if (edit && !StorageService.isRole("ADMIN")) {
+      alert("Access Restricted: Only Lab Administrators can edit component details.");
+      edit = false;
+    }
     this.isEditMode = edit;
 
     if (edit && this.currentComponent && window.openComponentEditDialog) {
@@ -1124,19 +1152,22 @@ class ModalManager {
       });
     }
 
-    // ALWAYS DISPLAY ALL IN-MODAL FEATURE BUTTONS
+    // Admin-only controls
+    const isAdmin = StorageService.isRole("ADMIN");
     const minusBtn = document.getElementById("insp-qty-minus");
     const plusBtn = document.getElementById("insp-qty-plus");
-    if (minusBtn) minusBtn.style.display = "inline-block";
-    if (plusBtn) plusBtn.style.display = "inline-block";
+    if (minusBtn) minusBtn.style.display = isAdmin ? "inline-block" : "none";
+    if (plusBtn) plusBtn.style.display = isAdmin ? "inline-block" : "none";
 
     const editBtn = document.getElementById("btn-edit-component");
     const moveBtn = document.getElementById("btn-move-box-component");
     const deleteBtn = document.getElementById("btn-delete-component");
+    const tabEdit = document.getElementById("modal-tab-edit");
 
-    if (editBtn) editBtn.style.display = "inline-flex";
-    if (moveBtn) moveBtn.style.display = "inline-flex";
-    if (deleteBtn) deleteBtn.style.display = "inline-flex";
+    if (editBtn) editBtn.style.display = isAdmin ? "inline-flex" : "none";
+    if (moveBtn) moveBtn.style.display = isAdmin ? "inline-flex" : "none";
+    if (deleteBtn) deleteBtn.style.display = isAdmin ? "inline-flex" : "none";
+    if (tabEdit) tabEdit.style.display = isAdmin ? "inline-block" : "none";
 
     if (window.lucide) window.lucide.createIcons();
   }
@@ -1435,8 +1466,11 @@ class ModalManager {
   }
 
   static handleMoveComponentToBox() {
+    if (!StorageService.isRole("ADMIN")) {
+      alert("Access Restricted: Only Lab Administrators can move components to another box.");
+      return;
+    }
     if (!this.currentComponent) return;
-    StorageService.setRole("ADMIN");
     const comp = this.currentComponent;
 
     const targetBoxStr = prompt(`Relocate Component '${comp.name}':\n\nCurrent Box: ${comp.boxId}\nEnter target Box ID to move '${comp.name}' into (e.g. BOX A-006, BOX B-001):`, "");
@@ -2861,8 +2895,8 @@ class ModalManager {
   static handleMoveComponentToBox() {
     if (!this.currentComponent) return;
 
-    if (StorageService.isRole("STUDENT")) {
-      alert("Students/Interns have View & Request permissions. Switch role to Admin to transfer components.");
+    if (!StorageService.isRole("ADMIN")) {
+      alert("Access Restricted: Only Lab Administrators can move or relocate components between boxes.");
       return;
     }
 
@@ -3220,55 +3254,71 @@ class ModalManager {
               <strong>Purpose:</strong> ${c.purpose || 'Standard electronic component.'}
             </div>
 
-            <div style="margin-top:auto; display:grid; grid-template-columns:1fr 1fr; gap:6px; padding-top:8px; border-top:1px solid var(--border-color);">
-              <button class="btn btn-primary btn-sm btn-edit-comp-item" onclick="event.stopPropagation(); if (window.closeBoxInspectorModal) window.closeBoxInspectorModal(); window.openComponentEditDialog('${c.id}');" style="font-weight:700;" title="Edit Name, Quantity, Price, Location">
-                Edit Details
-              </button>
-              <button class="btn btn-secondary btn-sm btn-move-comp-item" onclick="event.stopPropagation(); if (window.openMoveBoxDialog) window.openMoveBoxDialog('${c.id}');" title="Move this component to another box">
-                Box Move Item
-              </button>
-              <button class="btn btn-secondary btn-sm btn-inspect-comp-item" title="View Full Technical Passport">
+            <div style="margin-top:auto; display:grid; grid-template-columns:${StorageService.isRole('ADMIN') ? '1fr 1fr' : '1fr'}; gap:6px; padding-top:8px; border-top:1px solid var(--border-color);">
+              ${StorageService.isRole("ADMIN") ? `
+                <button class="btn btn-primary btn-sm btn-edit-comp-item" onclick="event.stopPropagation(); if (window.closeBoxInspectorModal) window.closeBoxInspectorModal(); window.openComponentEditDialog('${c.id}');" style="font-weight:700;" title="Edit Name, Quantity, Price, Location">
+                  Edit Details
+                </button>
+                <button class="btn btn-secondary btn-sm btn-move-comp-item" onclick="event.stopPropagation(); if (window.openMoveBoxDialog) window.openMoveBoxDialog('${c.id}');" title="Move this component to another box">
+                  Box Move Item
+                </button>
+              ` : ''}
+              <button class="btn btn-secondary btn-sm btn-inspect-comp-item" title="View Full Technical Passport" style="${StorageService.isRole('ADMIN') ? '' : 'width:100%; text-align:center;'}">
                 View Passport Info
               </button>
-              <button class="btn btn-secondary btn-sm btn-delete-comp-item" style="border-color:var(--danger); color:var(--danger);" title="Delete this component entry permanently">
-                Delete Delete
-              </button>
+              ${StorageService.isRole("ADMIN") ? `
+                <button class="btn btn-secondary btn-sm btn-delete-comp-item" style="border-color:var(--danger); color:var(--danger);" title="Delete this component entry permanently">
+                  Delete
+                </button>
+              ` : ''}
             </div>
           `;
 
-          card.querySelector(".btn-edit-comp-item").addEventListener("click", (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            ModalManager.closeBoxInspectorModal();
-            if (window.openComponentEditDialog) {
-              window.openComponentEditDialog(c.id);
-            }
-          });
-
-          card.querySelector(".btn-move-comp-item").addEventListener("click", (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            if (window.openMoveBoxDialog) {
-              window.openMoveBoxDialog(c.id);
-            }
-          });
-
-          card.querySelector(".btn-inspect-comp-item").addEventListener("click", () => {
-            ModalManager.closeBoxInspectorModal();
-            ModalManager.openComponentInspector(c);
-          });
-
-          card.querySelector(".btn-delete-comp-item").addEventListener("click", () => {
-            if (confirm(`Are you sure you want to permanently delete '${c.name}' (${c.boxId}) from inventory?`)) {
-              StorageService.setRole("ADMIN");
-              StorageService.deleteComponent(c.id);
-              const msg = `Delete Successfully deleted '${c.name}'!`;
-              alert(msg);
-              ModalManager.showToast(msg, "success");
+          const editCompBtn = card.querySelector(".btn-edit-comp-item");
+          if (editCompBtn) {
+            editCompBtn.addEventListener("click", (e) => {
+              e.preventDefault();
+              e.stopPropagation();
               ModalManager.closeBoxInspectorModal();
-              if (ModalManager.callbacks.onInventoryChanged) ModalManager.callbacks.onInventoryChanged();
-            }
-          });
+              if (window.openComponentEditDialog) {
+                window.openComponentEditDialog(c.id);
+              }
+            });
+          }
+
+          const moveCompBtn = card.querySelector(".btn-move-comp-item");
+          if (moveCompBtn) {
+            moveCompBtn.addEventListener("click", (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (window.openMoveBoxDialog) {
+                window.openMoveBoxDialog(c.id);
+              }
+            });
+          }
+
+          const inspCompBtn = card.querySelector(".btn-inspect-comp-item");
+          if (inspCompBtn) {
+            inspCompBtn.addEventListener("click", () => {
+              ModalManager.closeBoxInspectorModal();
+              ModalManager.openComponentInspector(c);
+            });
+          }
+
+          const delCompBtn = card.querySelector(".btn-delete-comp-item");
+          if (delCompBtn) {
+            delCompBtn.addEventListener("click", () => {
+              if (confirm(`Are you sure you want to permanently delete '${c.name}' (${c.boxId}) from inventory?`)) {
+                StorageService.setRole("ADMIN");
+                StorageService.deleteComponent(c.id);
+                const msg = `Delete Successfully deleted '${c.name}'!`;
+                alert(msg);
+                ModalManager.showToast(msg, "success");
+                ModalManager.closeBoxInspectorModal();
+                if (ModalManager.callbacks.onInventoryChanged) ModalManager.callbacks.onInventoryChanged();
+              }
+            });
+          }
 
           cardsContainer.appendChild(card);
         });
@@ -4274,6 +4324,11 @@ window.closeComponentModal = function () {
   }
 };
 window.openMoveBoxDialog = function (compId) {
+  if (!StorageService.isRole("ADMIN")) {
+    alert("Access Restricted: Only Lab Administrators can move or relocate components to another box.");
+    return;
+  }
+
   if (document.body.classList.contains("qr-scan-mode")) {
     alert("ℹ️ Read-Only QR View: Relocating box items is disabled when viewing via QR code scan.");
     return;
@@ -4299,7 +4354,6 @@ window.openMoveBoxDialog = function (compId) {
 
   const newBoxId = targetBox.trim().toUpperCase();
   try {
-    StorageService.setRole("ADMIN");
     StorageService.moveSingleComponentToBox(c.id, newBoxId);
 
     if (window.closeBoxInspectorModal) window.closeBoxInspectorModal();

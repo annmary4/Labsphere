@@ -641,6 +641,9 @@ class StorageService {
   }
 
   static moveSingleComponentToBox(componentId, targetBoxIdInput) {
+    if (!this.isRole("ADMIN")) {
+      throw new Error("Access Denied: Only Lab Administrators can move components to another box.");
+    }
     const components = this.getComponents();
     const cleanBoxId = targetBoxIdInput.trim().toUpperCase();
     const comp = components.find(c => c.id === componentId);
@@ -678,6 +681,9 @@ class StorageService {
   }
 
   static moveComponentToBox(componentId, targetBoxIdInput) {
+    if (!this.isRole("ADMIN")) {
+      throw new Error("Access Denied: Only Lab Administrators can move components to another box.");
+    }
     const components = this.getComponents();
     const comp = components.find(c => c.id === componentId);
     
@@ -765,6 +771,9 @@ class StorageService {
   }
 
   static renameOrMoveBox(oldBoxId, newBoxIdInput, newRackId, newShelfId) {
+    if (!this.isRole("ADMIN")) {
+      throw new Error("Access Denied: Only Lab Administrators can rename or move boxes.");
+    }
     const cleanOldId = oldBoxId.trim().toUpperCase();
     const newBoxId = newBoxIdInput.trim().toUpperCase();
 

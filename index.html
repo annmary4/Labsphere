@@ -726,7 +726,7 @@
               View Info
             </button>
             <button id="modal-tab-edit" class="btn btn-sm btn-primary" onclick="ModalManager.toggleEditMode(true)"
-              style="padding:4px 12px; font-size:0.8rem; font-weight:700; background:transparent; color:var(--text-muted); border:1px solid var(--border-color);">
+              style="padding:4px 12px; font-size:0.8rem; font-weight:700; background:transparent; color:var(--text-muted); border:1px solid var(--border-color); display:none;">
               Edit Details Form
             </button>
           </div>
@@ -972,14 +972,14 @@
             <button id="btn-print-comp-qr" class="btn btn-secondary" title="Print QR Code Label with Component Name">
               <i data-lucide="printer"></i> Print QR Label
             </button>
-            <button id="btn-move-box-component" class="btn btn-secondary">
+            <button id="btn-move-box-component" class="btn btn-secondary" style="display:none;">
               <i data-lucide="box"></i> Move Box
             </button>
-            <button id="btn-delete-component" class="btn btn-danger">
+            <button id="btn-delete-component" class="btn btn-danger" style="display:none;">
               <i data-lucide="trash-2"></i> Delete
             </button>
             <div class="spacer"></div>
-            <button id="btn-edit-component" class="btn btn-secondary">
+            <button id="btn-edit-component" class="btn btn-secondary" style="display:none;">
               <i data-lucide="edit"></i> Edit Details
             </button>
             <button id="btn-close-view" class="btn btn-primary" onclick="if(window.closeComponentModal) window.closeComponentModal(); else if(window.ModalManager) window.ModalManager.closeComponentModal();">Done</button>
@@ -1972,13 +1972,13 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
   </div>
 
   <!-- JavaScript App Logic with Cache Busters -->
-  <script src="js/types.js?v=13313_resolve_duplicate_close_override"></script>
-  <script src="js/initialData.js?v=13313_resolve_duplicate_close_override"></script>
-  <script src="js/storage.js?v=13313_resolve_duplicate_close_override"></script>
-  <script src="js/rackViewer.js?v=13313_resolve_duplicate_close_override"></script>
-  <script src="js/componentsView.js?v=13313_resolve_duplicate_close_override"></script>
-  <script src="js/modalManager.js?v=13313_resolve_duplicate_close_override"></script>
-  <script src="js/app.js?v=13313_resolve_duplicate_close_override"></script>
+  <script src="js/types.js?v=13314_admin_only_edit_move_box"></script>
+  <script src="js/initialData.js?v=13314_admin_only_edit_move_box"></script>
+  <script src="js/storage.js?v=13314_admin_only_edit_move_box"></script>
+  <script src="js/rackViewer.js?v=13314_admin_only_edit_move_box"></script>
+  <script src="js/componentsView.js?v=13314_admin_only_edit_move_box"></script>
+  <script src="js/modalManager.js?v=13314_admin_only_edit_move_box"></script>
+  <script src="js/app.js?v=13314_admin_only_edit_move_box"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       if (window.lucide) {
@@ -2250,7 +2250,7 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/Labsphere/sw.js?v=13313_resolve_duplicate_close_override', { scope: '/Labsphere/' })
+        navigator.serviceWorker.register('/Labsphere/sw.js?v=13314_admin_only_edit_move_box', { scope: '/Labsphere/' })
           .then(reg => {
             console.log('[LabSphere PWA] Service Worker registered:', reg.scope);
             if (reg.update) reg.update();
