@@ -735,7 +735,12 @@ class App {
       btnNavNotif.style.setProperty("display", "none", "important");
     }
 
-    const pendingReqs = StorageService.getRequests().filter(r => r.status === "PENDING_LEAD_APPROVAL" || r.status === "PENDING_ADMIN_ISSUANCE" || r.status === "SUBMITTED" || r.status === "PENDING" || r.status === "LEAD_APPROVED" || r.status === "LEAD_MODIFIED").length;
+    let pendingReqs = 0;
+    if (isAdmin) {
+      pendingReqs = StorageService.getRequests().filter(r => r.status === "PENDING_ADMIN_ISSUANCE" || r.status === "LEAD_APPROVED" || r.status === "LEAD_MODIFIED" || r.status === "PARTIALLY_ISSUED").length;
+    } else {
+      pendingReqs = StorageService.getRequests().filter(r => r.status === "PENDING_LEAD_APPROVAL" || r.status === "SUBMITTED" || r.status === "PENDING").length;
+    }
     const apprBadge = document.getElementById("admin-approval-count");
     const drawerApprBadge = document.getElementById("drawer-approvals-badge");
 

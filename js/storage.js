@@ -1655,6 +1655,10 @@ class StorageService {
       customDate = options.issueDate || null;
     }
 
+    if (!this.isRole("ADMIN")) {
+      throw new Error("Access Denied: Material issuance and physical stock deduction are strictly restricted to the Lab Administrator.");
+    }
+
     const requests = this.getRequests();
     const components = this.getComponents();
     const req = requests.find(r => r.id === requestId);

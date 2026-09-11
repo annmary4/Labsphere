@@ -2,18 +2,18 @@
    LabSphere Service Worker - Offline Cache & PWA Support
    ============================================================ */
 
-const CACHE_NAME = 'labsphere-v13308_clean_state';
+const CACHE_NAME = 'labsphere-v13309_lead_admin_role_separation';
 const ASSETS_TO_CACHE = [
   '/Labsphere/',
   '/Labsphere/index.html',
-  '/Labsphere/css/styles.css?v=13308_clean_state',
-  '/Labsphere/js/app.js?v=13308_clean_state',
-  '/Labsphere/js/types.js?v=13308_clean_state',
-  '/Labsphere/js/initialData.js?v=13308_clean_state',
-  '/Labsphere/js/storage.js?v=13308_clean_state',
-  '/Labsphere/js/rackViewer.js?v=13308_clean_state',
-  '/Labsphere/js/componentsView.js?v=13308_clean_state',
-  '/Labsphere/js/modalManager.js?v=13308_clean_state',
+  '/Labsphere/css/styles.css?v=13309_lead_admin_role_separation',
+  '/Labsphere/js/app.js?v=13309_lead_admin_role_separation',
+  '/Labsphere/js/types.js?v=13309_lead_admin_role_separation',
+  '/Labsphere/js/initialData.js?v=13309_lead_admin_role_separation',
+  '/Labsphere/js/storage.js?v=13309_lead_admin_role_separation',
+  '/Labsphere/js/rackViewer.js?v=13309_lead_admin_role_separation',
+  '/Labsphere/js/componentsView.js?v=13309_lead_admin_role_separation',
+  '/Labsphere/js/modalManager.js?v=13309_lead_admin_role_separation',
   '/Labsphere/icons/icon-192.png',
   '/Labsphere/icons/icon-512.png',
   '/Labsphere/manifest.json'

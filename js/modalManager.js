@@ -2083,6 +2083,7 @@ class ModalManager {
         `;
       } else {
         const components = StorageService.getComponents();
+        const isAdmin = StorageService.isRole("ADMIN");
 
         displayRequests.forEach(r => {
           const card = document.createElement("div");
@@ -2180,11 +2181,15 @@ class ModalManager {
                     ✅ Team Lead: Approve & Send to Admin
                   </button>
                 ` : ''}
-                ${(isAdminPending || isPartiallyIssued) ? `
+                ${(isAdminPending || isPartiallyIssued) ? (isAdmin ? `
                   <button class="btn btn-success btn-admin-direct-issue" data-id="${r.id}" style="background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:white; font-weight:800; border:none; box-shadow:0 2px 8px rgba(16,185,129,0.4);" title="Lab Administrator: Configure & Issue physical stock (Full / Partial Quantity, Date, Admin Name)">
                     📦 Admin: Issue Materials & Update Stock
                   </button>
-                ` : ''}
+                ` : `
+                  <div style="font-size:0.8rem; font-weight:700; color:#38bdf8; background:rgba(56,189,248,0.1); border:1px solid rgba(56,189,248,0.3); border-radius:6px; padding:6px 12px; display:inline-flex; align-items:center; gap:6px;">
+                    ⏳ Forwarded to Lab Administrator for physical stock issuance (Admin Action Required)
+                  </div>
+                `) : ''}
               </div>
             ` : ''}
           `;
@@ -2233,7 +2238,7 @@ class ModalManager {
               try {
                 StorageService.reviewLeadRequest(r.id, appQty, reviewer, "APPROVE");
                 alert(`Success! Requisition #${r.id} approved by Team Lead (${reviewer}) and forwarded to Lab Administrator for inventory issuance.`);
-                this.openAdminApprovalModal("admin_issuance");
+                this.openAdminApprovalModal(isAdmin ? "admin_issuance" : "pending");
                 if (this.callbacks.onInventoryChanged) this.callbacks.onInventoryChanged();
               } catch (err) {
                 alert(err.message);
@@ -2260,6 +2265,10 @@ class ModalManager {
 
   // --- INVENTORY ADMIN MATERIAL ISSUANCE DIALOG (FULL / PARTIAL, DATE, ISSUED BY, AUTO-STOCK UPDATE) ---
   static openIssueMaterialsModal(requestId) {
+    if (!StorageService.isRole("ADMIN")) {
+      alert("Access Restricted: Material issuance and physical stock deduction are strictly reserved for the Lab Administrator.");
+      return;
+    }
     const requests = StorageService.getRequests();
     const components = StorageService.getComponents();
     const req = requests.find(r => r.id === requestId);
