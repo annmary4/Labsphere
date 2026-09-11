@@ -592,3 +592,10 @@ window.addToRequisitionCart = function(componentId) {
   }
 };
 
+window.openViewModal = function(componentId) {
+  if (window.ModalManager && window.ModalManager.openComponentInspector) {
+    window.ModalManager.openComponentInspector(componentId, false);
+  }
+};
+
+

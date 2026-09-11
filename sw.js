@@ -2,18 +2,18 @@
    LabSphere Service Worker - Offline Cache & PWA Support
    ============================================================ */
 
-const CACHE_NAME = 'labsphere-v13311_admin_queue_action_restriction';
+const CACHE_NAME = 'labsphere-v13312_fix_view_modal_close';
 const ASSETS_TO_CACHE = [
   '/Labsphere/',
   '/Labsphere/index.html',
-  '/Labsphere/css/styles.css?v=13311_admin_queue_action_restriction',
-  '/Labsphere/js/app.js?v=13311_admin_queue_action_restriction',
-  '/Labsphere/js/types.js?v=13311_admin_queue_action_restriction',
-  '/Labsphere/js/initialData.js?v=13311_admin_queue_action_restriction',
-  '/Labsphere/js/storage.js?v=13311_admin_queue_action_restriction',
-  '/Labsphere/js/rackViewer.js?v=13311_admin_queue_action_restriction',
-  '/Labsphere/js/componentsView.js?v=13311_admin_queue_action_restriction',
-  '/Labsphere/js/modalManager.js?v=13311_admin_queue_action_restriction',
+  '/Labsphere/css/styles.css?v=13312_fix_view_modal_close',
+  '/Labsphere/js/app.js?v=13312_fix_view_modal_close',
+  '/Labsphere/js/types.js?v=13312_fix_view_modal_close',
+  '/Labsphere/js/initialData.js?v=13312_fix_view_modal_close',
+  '/Labsphere/js/storage.js?v=13312_fix_view_modal_close',
+  '/Labsphere/js/rackViewer.js?v=13312_fix_view_modal_close',
+  '/Labsphere/js/componentsView.js?v=13312_fix_view_modal_close',
+  '/Labsphere/js/modalManager.js?v=13312_fix_view_modal_close',
   '/Labsphere/icons/icon-192.png',
   '/Labsphere/icons/icon-512.png',
   '/Labsphere/manifest.json'

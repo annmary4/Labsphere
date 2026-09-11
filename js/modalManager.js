@@ -591,6 +591,24 @@ class ModalManager {
           ModalManager.closeComponentModal();
         }
       };
+
+      // Actively bind close (X) and done buttons to ensure immediate closing
+      const closeBtn = backdrop.querySelector("#btn-close-component-modal") || document.getElementById("btn-close-component-modal");
+      if (closeBtn) {
+        closeBtn.onclick = (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          ModalManager.closeComponentModal();
+        };
+      }
+      const doneBtn = backdrop.querySelector("#btn-close-view") || document.getElementById("btn-close-view");
+      if (doneBtn) {
+        doneBtn.onclick = (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          ModalManager.closeComponentModal();
+        };
+      }
     }
 
     try {
@@ -626,11 +644,11 @@ class ModalManager {
   }
 
   static closeComponentModal() {
-    const backdrop = document.getElementById("component-modal");
-    if (backdrop) {
+    const backdrops = document.querySelectorAll("#component-modal, .component-modal-backdrop");
+    backdrops.forEach(backdrop => {
       backdrop.classList.add("hidden");
       backdrop.style.cssText = "display:none !important; visibility:hidden !important; opacity:0 !important; z-index:-1 !important;";
-    }
+    });
     const directEdit = document.getElementById("direct-edit-dialog");
     if (directEdit) {
       directEdit.remove();
@@ -5401,3 +5419,7 @@ ModalManager.updateReqNavbarCartBadge = function() {
     }
   });
 };
+
+if (typeof window !== "undefined") {
+  window.ModalManager = ModalManager;
+}

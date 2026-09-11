@@ -720,7 +720,17 @@
             <i data-lucide="cpu" id="modal-icon"></i>
             <h2 id="modal-title">Component Details</h2>
           </div>
-          <button class="modal-close" id="btn-close-component-modal"><i data-lucide="x"></i></button>
+          <div style="display:flex; gap:8px; margin-left:auto; margin-right:16px;">
+            <button id="modal-tab-view" class="btn btn-sm btn-secondary" onclick="ModalManager.toggleEditMode(false)"
+              style="padding:4px 12px; font-size:0.8rem; font-weight:700; background:#0284c7; color:white;">
+              View Info
+            </button>
+            <button id="modal-tab-edit" class="btn btn-sm btn-primary" onclick="ModalManager.toggleEditMode(true)"
+              style="padding:4px 12px; font-size:0.8rem; font-weight:700; background:transparent; color:var(--text-muted); border:1px solid var(--border-color);">
+              Edit Details Form
+            </button>
+          </div>
+          <button class="modal-close" id="btn-close-component-modal" onclick="ModalManager.closeComponentModal()" title="Close Window"><i data-lucide="x"></i></button>
         </div>
 
         <div class="modal-body">
@@ -972,7 +982,7 @@
             <button id="btn-edit-component" class="btn btn-secondary">
               <i data-lucide="edit"></i> Edit Details
             </button>
-            <button id="btn-close-view" class="btn btn-primary">Done</button>
+            <button id="btn-close-view" class="btn btn-primary" onclick="ModalManager.closeComponentModal()">Done</button>
           </div>
 
           <div id="modal-form-footer" class="footer-actions hidden">
@@ -1473,272 +1483,6 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
       </div>
     </div>
 
-    <!-- Modal: Component Inspector & Add/Edit Form Modal -->
-    <div class="modal-backdrop hidden" id="component-modal">
-      <div class="modal-content modal-lg">
-        <div class="modal-header">
-          <div class="modal-title-group">
-            <i data-lucide="cpu"></i>
-            <h2 id="modal-title">Component Details</h2>
-          </div>
-          <div style="display:flex; gap:8px; margin-left:auto; margin-right:16px;">
-            <button id="modal-tab-view" class="btn btn-sm btn-secondary" onclick="ModalManager.toggleEditMode(false)"
-              style="padding:4px 12px; font-size:0.8rem; font-weight:700;">
-              View Info
-            </button>
-            <button id="modal-tab-edit" class="btn btn-sm btn-primary" onclick="ModalManager.toggleEditMode(true)"
-              style="padding:4px 12px; font-size:0.8rem; font-weight:700; background:#0ea5e9; color:white; border:none;">
-              Edit Details Form
-            </button>
-          </div>
-          <button class="modal-close" onclick="ModalManager.closeComponentModal()"
-            style="cursor:pointer; background:none; border:none; color:white; font-size:1.6rem; font-weight:800; padding:4px 12px; line-height:1;"
-            title="Close Window">&times;</button>
-        </div>
-
-        <div class="modal-body">
-          <!-- View / Read-Only Inspector Mode -->
-          <div id="modal-view-mode">
-            <div class="inspector-top-banner"
-              style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
-              <div>
-                <h3 id="insp-name" style="margin:0; font-size:1.25rem; color:var(--text-main);">Component Name</h3>
-                <span id="insp-part-number" class="mono text-muted" style="font-size:0.85rem;">PN: N/A</span>
-              </div>
-              <span id="insp-category" class="badge"
-                style="background:var(--primary); color:#0f172a; font-weight:700; padding:4px 10px; border-radius:6px;">Category</span>
-            </div>
-
-            <div class="inspector-location-path" id="insp-location-path"
-              style="font-size:0.85rem; color:var(--primary); font-weight:600; background:var(--bg-dark); padding:8px 12px; border-radius:8px; border:1px solid var(--border-color); margin-bottom:14px;">
-              <!-- Location Breadcrumb -->
-            </div>
-
-            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:12px; margin-bottom:14px;">
-              <div
-                style="background:var(--bg-dark); padding:10px; border-radius:8px; border:1px solid var(--border-color);">
-                <small class="text-muted" style="display:block;">Physical Box ID</small>
-                <strong id="insp-box-id" class="mono" style="font-size:1rem; color:var(--text-main);">BOX A-001</strong>
-              </div>
-              <div
-                style="background:var(--bg-dark); padding:10px; border-radius:8px; border:1px solid var(--border-color);">
-                <small class="text-muted" style="display:block;">Current Stock Qty</small>
-                <strong style="font-size:1rem; color:var(--success);"><span id="insp-quantity">0</span> <span
-                    id="insp-unit">pcs</span></strong>
-              </div>
-              <div
-                style="background:var(--bg-dark); padding:10px; border-radius:8px; border:1px solid var(--border-color);">
-                <small class="text-muted" style="display:block;">Min Reorder Threshold</small>
-                <strong id="insp-min-qty" class="mono" style="font-size:1rem; color:var(--warning);">1 pcs</strong>
-              </div>
-            </div>
-
-            <div style="margin-bottom:12px;">
-              <h4 style="margin:0 0 4px 0; font-size:0.85rem; color:var(--text-muted);">Purpose / Application:</h4>
-              <p id="insp-purpose" style="margin:0; font-size:0.9rem; color:var(--text-main);">Purpose description.</p>
-            </div>
-
-            <div style="margin-bottom:12px;">
-              <h4 style="margin:0 0 4px 0; font-size:0.85rem; color:var(--text-muted);">Technical Specifications:</h4>
-              <p id="insp-specs"
-                style="margin:0; font-size:0.85rem; color:var(--text-main); font-family:monospace; background:var(--bg-dark); padding:8px; border-radius:6px;">
-                Specs.</p>
-            </div>
-
-            <div style="font-size:0.75rem; color:var(--text-muted);">
-              Last Catalog Update: <span id="insp-updated">2026-07-29</span>
-            </div>
-          </div>
-
-          <!-- Form Edit Mode -->
-          <form id="component-form" class="hidden"
-            onsubmit="event.preventDefault(); ModalManager.handleSaveComponent();">
-            <input type="hidden" id="form-comp-id" />
-
-            <div class="form-row">
-              <div class="form-group col-6">
-                <label>Component Name *</label>
-                <input type="text" id="form-name" placeholder="e.g. Arduino Nano" required />
-              </div>
-              <div class="form-group col-6">
-                <label>Part Number / SKU</label>
-                <input type="text" id="form-part-number" placeholder="e.g. ATMEGA328P-NANO" />
-              </div>
-            </div>
-
-            <div class="form-row">
-              <div class="form-group col-4">
-                <label>Manufacturer</label>
-                <input type="text" id="form-manufacturer" placeholder="e.g. Microchip / Arduino" />
-              </div>
-              <div class="form-group col-4">
-                <label>Barcode / Serial ID</label>
-                <input type="text" id="form-barcode" placeholder="Barcode ID" />
-              </div>
-              <div class="form-group col-4">
-                <label>Category *</label>
-                <select id="form-category" required>
-                  <option value="Microcontrollers & Dev Boards">Microcontrollers & Dev Boards</option>
-                  <option value="Sensors & Modules">Sensors & Modules</option>
-                  <option value="Power & Energy">Power & Energy</option>
-                  <option value="Connectors & Cabling">Connectors & Cabling</option>
-                  <option value="Passive Components">Passive Components</option>
-                  <option value="Switches & Controls">Switches & Controls</option>
-                  <option value="Wireless & Comms">Wireless & Comms</option>
-                  <option value="Hardware & Tools">Hardware & Tools</option>
-                  <option value="Actuators & Motors">Actuators & Motors</option>
-                  <option value="Displays & Indicators">Displays & Indicators</option>
-                  <option value="IC & Semiconductors">IC & Semiconductors</option>
-                  <option value="Prototyping & Breadboards">Prototyping & Breadboards</option>
-                  <option value="Robotics & Mechanical Parts">Robotics & Mechanical Parts</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="form-row">
-              <div class="form-group col-3">
-                <label>Rack # (1 or 2)</label>
-                <input type="number" id="form-rack" min="1" max="2" value="1" required />
-              </div>
-              <div class="form-group col-3">
-                <label>Shelf # (1 to 6)</label>
-                <input type="number" id="form-shelf" min="1" max="6" value="1" required />
-              </div>
-              <div class="form-group col-3">
-                <label>Box ID *</label>
-                <input type="text" id="form-box" placeholder="BOX A-001" required />
-              </div>
-              <div class="form-group col-3">
-                <label>Stack Layer / Sub-location</label>
-                <input type="text" id="form-stack-layer" placeholder="Layer 1 (Top Tray)" />
-              </div>
-            </div>
-
-            <div class="form-row">
-              <div class="form-group col-3">
-                <label>Quantity *</label>
-                <input type="number" id="form-quantity" min="0" value="1" required />
-              </div>
-              <div class="form-group col-3">
-                <label>Min Reorder Qty</label>
-                <input type="number" id="form-min-qty" min="0" value="1" />
-              </div>
-              <div class="form-group col-3">
-                <label>Unit Price (₹)</label>
-                <input type="number" id="form-unit-price" min="0" value="450" />
-              </div>
-              <div class="form-group col-3">
-                <label>Inventory State</label>
-                <select id="form-state">
-                  <option value="AVAILABLE">AVAILABLE</option>
-                  <option value="ISSUED">ISSUED</option>
-                  <option value="RESERVED">RESERVED</option>
-                  <option value="DAMAGED">DAMAGED</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="form-row">
-              <div class="form-group col-6">
-                <label>Image URL</label>
-                <input type="url" id="form-image-url" placeholder="https://..." />
-              </div>
-              <div class="form-group col-6">
-                <label>Datasheet PDF URL</label>
-                <input type="url" id="form-datasheet-url" placeholder="https://..." />
-              </div>
-            </div>
-
-            <div class="form-row">
-              <div class="form-group col-6">
-                <label>Purpose / Description</label>
-                <textarea id="form-purpose" rows="2" placeholder="Brief lab application..."></textarea>
-              </div>
-              <div class="form-group col-6">
-                <label>Technical Specifications</label>
-                <textarea id="form-specs" rows="2" placeholder="Operating voltage, pinouts, clock speed..."></textarea>
-              </div>
-            </div>
-
-            <div class="form-row">
-              <div class="form-group col-4">
-                <label>Compatible Components (comma separated)</label>
-                <input type="text" id="form-compat" placeholder="Breadboard, Arduino Shields" />
-              </div>
-              <div class="form-group col-4">
-                <label>Alternative Part Numbers</label>
-                <input type="text" id="form-alternatives" placeholder="COMP-002, COMP-005" />
-              </div>
-              <div class="form-group col-4">
-                <label>Search Tags</label>
-                <input type="text" id="form-tags" placeholder="arduino, microcontroller, 8-bit" />
-              </div>
-            </div>
-
-            <div class="form-row" style="background:var(--bg-dark); padding:10px; border-radius:8px; margin-top:8px;">
-              <div class="form-group col-3">
-                <label>Vendor Name</label>
-                <input type="text" id="form-vendor-name" placeholder="Robu.in / Vendor" />
-              </div>
-              <div class="form-group col-3">
-                <label>Vendor SKU</label>
-                <input type="text" id="form-vendor-sku" placeholder="SKU-1234" />
-              </div>
-              <div class="form-group col-3">
-                <label>Vendor URL</label>
-                <input type="url" id="form-vendor-url" placeholder="https://..." />
-              </div>
-              <div class="form-group col-3">
-                <label>Lead Time (Days)</label>
-                <input type="number" id="form-lead-time" value="3" />
-              </div>
-            </div>
-
-            <input type="hidden" id="form-lab-name" value="Main Robotics & Embedded Systems Lab" />
-            <input type="hidden" id="form-room-name" value="Room 101 - Prototyping Hall" />
-          </form>
-        </div>
-
-        <!-- Read-Only View Footer -->
-        <div class="modal-footer" id="modal-view-footer">
-          <div style="display:flex; gap:6px; flex-wrap:wrap;">
-            <button class="btn btn-secondary" onclick="ModalManager.toggleEditMode(true)">
-              <i data-lucide="edit-3"></i> Edit Details
-            </button>
-            <button class="btn btn-secondary" onclick="ModalManager.handleMoveComponentToBox()">
-              <i data-lucide="move"></i> Relocate Box
-            </button>
-            <button class="btn btn-secondary" onclick="ModalManager.adjustQuantity(1)" title="Add 1 Unit">
-              <i data-lucide="plus"></i> Qty
-            </button>
-            <button class="btn btn-secondary" onclick="ModalManager.adjustQuantity(-1)" title="Remove 1 Unit">
-              <i data-lucide="minus"></i> Qty
-            </button>
-          </div>
-          <div style="display:flex; gap:6px; flex-wrap:wrap;">
-            <button class="btn btn-secondary" onclick="ModalManager.handleStudentRequest()"
-              style="border-color:var(--primary); color:var(--primary);">
-              <i data-lucide="shopping-bag"></i> Checkout / Request
-            </button>
-            <button class="btn btn-secondary" onclick="ModalManager.handleDeleteComponent()"
-              style="border-color:var(--danger); color:var(--danger);">
-              <i data-lucide="trash-2"></i> Delete
-            </button>
-            <button class="btn btn-primary" onclick="ModalManager.closeComponentModal()">Close</button>
-          </div>
-        </div>
-
-        <!-- Form Edit Footer -->
-        <div class="modal-footer hidden" id="modal-form-footer">
-          <button class="btn btn-secondary" onclick="ModalManager.closeComponentModal()">Cancel / Exit</button>
-          <button class="btn btn-primary" onclick="ModalManager.handleSaveComponent()"
-            style="background:#0ea5e9; color:white; font-weight:800; padding:8px 20px;">
-            <i data-lucide="check"></i> Save Component Details
-          </button>
-        </div>
-      </div>
-    </div>
-
     <!-- Modal: Multi-Component Physical Box Inspector Modal -->
     <div class="modal-backdrop hidden" id="box-inspector-modal">
       <div class="modal-content modal-xl">
@@ -2228,13 +1972,13 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
   </div>
 
   <!-- JavaScript App Logic with Cache Busters -->
-  <script src="js/types.js?v=13311_admin_queue_action_restriction"></script>
-  <script src="js/initialData.js?v=13311_admin_queue_action_restriction"></script>
-  <script src="js/storage.js?v=13311_admin_queue_action_restriction"></script>
-  <script src="js/rackViewer.js?v=13311_admin_queue_action_restriction"></script>
-  <script src="js/componentsView.js?v=13311_admin_queue_action_restriction"></script>
-  <script src="js/modalManager.js?v=13311_admin_queue_action_restriction"></script>
-  <script src="js/app.js?v=13311_admin_queue_action_restriction"></script>
+  <script src="js/types.js?v=13312_fix_view_modal_close"></script>
+  <script src="js/initialData.js?v=13312_fix_view_modal_close"></script>
+  <script src="js/storage.js?v=13312_fix_view_modal_close"></script>
+  <script src="js/rackViewer.js?v=13312_fix_view_modal_close"></script>
+  <script src="js/componentsView.js?v=13312_fix_view_modal_close"></script>
+  <script src="js/modalManager.js?v=13312_fix_view_modal_close"></script>
+  <script src="js/app.js?v=13312_fix_view_modal_close"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       if (window.lucide) {
@@ -2506,7 +2250,7 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/Labsphere/sw.js?v=13308_clean_state', { scope: '/Labsphere/' })
+        navigator.serviceWorker.register('/Labsphere/sw.js?v=13312_fix_view_modal_close', { scope: '/Labsphere/' })
           .then(reg => {
             console.log('[LabSphere PWA] Service Worker registered:', reg.scope);
             if (reg.update) reg.update();
