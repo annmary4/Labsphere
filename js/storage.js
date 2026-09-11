@@ -344,15 +344,16 @@ class StorageService {
     localStorage.setItem(STORAGE_KEYS.NOTIFICATIONS, JSON.stringify(notifs));
   }
 
-  static addNotification(type, title, message) {
+  static addNotification(type, title, message, metadata = {}) {
     const notifs = this.getNotifications();
     const newNotif = {
-      id: "NOTIF-" + Date.now().toString().slice(-4),
+      id: "NOTIF-" + Date.now().toString().slice(-4) + Math.floor(Math.random() * 100),
       type,
       title,
       message,
       timestamp: new Date().toLocaleString(),
-      read: false
+      read: false,
+      ...metadata
     };
     notifs.unshift(newNotif);
     this.saveNotifications(notifs);
@@ -488,10 +489,25 @@ class StorageService {
         comp.inventoryState = "DAMAGED";
         this.saveComponents(components);
 
+        req.damagedQty = (req.damagedQty || 0) + qtyToReturn;
+        req.damageReport = notes || "Returned in DAMAGED condition";
+        req.replacementStatus = "PENDING";
+        this.saveRequests(requests);
+
         this.addNotification(
-          "RETURNED_ITEM",
-          `Alert: Damaged Component Returned: ${comp.name}`,
-          `${actorName} returned ${qtyToReturn} pcs of ${comp.name} in DAMAGED condition. ${notes}`
+          "DAMAGED_ITEM",
+          `Alert: Damaged Material Returned (${comp.name})`,
+          `${actorName} returned ${qtyToReturn} pcs of ${comp.name} in DAMAGED condition. Notes: ${notes || 'N/A'}. Lab Administrator replacement option available.`,
+          {
+            actionType: "DAMAGED_REPLACEMENT",
+            requestId: req.id,
+            componentId: comp.id,
+            componentName: comp.name,
+            quantity: qtyToReturn,
+            requesterName: actorName,
+            damageReport: notes || "",
+            replacementStatus: "PENDING"
+          }
         );
 
         this.logTransaction(
@@ -583,7 +599,8 @@ class StorageService {
     if (req) {
       req.damagedQty = (req.damagedQty || 0) + numDamaged;
       req.damageReport = damageReport || "Damaged item reported";
-      req.notes += ` [Damaged reported: ${numDamaged} pcs - ${damageReport}]`;
+      req.notes = (req.notes || "") + ` [Damaged reported: ${numDamaged} pcs - ${damageReport}]`;
+      req.replacementStatus = "PENDING";
       this.saveRequests(requests);
     }
 
@@ -593,9 +610,19 @@ class StorageService {
     }
 
     this.addNotification(
-      "RETURNED_ITEM",
+      "DAMAGED_ITEM",
       `Alert: Damaged Material Reported (${compName})`,
-      `${numDamaged} unit(s) of ${compName} reported DAMAGED. Description: ${damageReport || 'No description provided'}.`
+      `${numDamaged} unit(s) of ${compName} reported DAMAGED by ${req ? req.requesterName : 'User'}. Description: ${damageReport || 'No description provided'}. Lab Administrator replacement option available.`,
+      {
+        actionType: "DAMAGED_REPLACEMENT",
+        requestId: req ? req.id : requestId,
+        componentId: compId,
+        componentName: compName,
+        quantity: numDamaged,
+        requesterName: req ? req.requesterName : "User",
+        damageReport: damageReport || "",
+        replacementStatus: "PENDING"
+      }
     );
 
     this.logTransaction(
@@ -609,6 +636,104 @@ class StorageService {
     );
 
     return true;
+  }
+
+  // --- ALLOW REPLACEMENT FOR DAMAGED ITEM (LAB ADMINISTRATOR ONLY) ---
+  static allowReplacement(requestId, componentId, replacementQty, options = {}) {
+    if (!this.isRole("ADMIN")) {
+      throw new Error("Access Restricted: Only the Lab Administrator can approve and issue item replacements.");
+    }
+
+    const requests = this.getRequests();
+    const components = this.getComponents();
+    const req = requests.find(r => r.id === requestId);
+    const comp = components.find(c => c.id === (componentId || (req ? req.componentId : null)));
+
+    if (!comp) {
+      throw new Error("Component not found in inventory!");
+    }
+
+    const repQty = parseInt(replacementQty);
+    if (isNaN(repQty) || repQty <= 0) {
+      throw new Error("Invalid replacement quantity specified.");
+    }
+
+    if (comp.quantity < repQty) {
+      throw new Error(`Insufficient inventory stock! Box has ${comp.quantity} pcs, cannot issue ${repQty} replacement pcs.`);
+    }
+
+    const session = this.getCurrentSession();
+    const adminName = options.adminName || (session ? session.fullName : "Lab Administrator");
+    const replacementDate = options.replacementDate || new Date().toISOString().slice(0, 10);
+    const adminNotes = options.notes || "";
+    const prevStock = comp.quantity;
+
+    // Deduct stock from inventory
+    comp.quantity -= repQty;
+    if (comp.quantity === 0) {
+      comp.status = "OUT_OF_STOCK";
+    }
+    this.saveComponents(components);
+
+    // Update request replacement state
+    if (req) {
+      req.replacementStatus = "REPLACED";
+      req.replacementQty = (req.replacementQty || 0) + repQty;
+      req.replacedBy = adminName;
+      req.replacementDate = replacementDate;
+      req.notes = (req.notes || "") + ` [REPLACEMENT ISSUED: ${repQty} pcs by ${adminName} on ${replacementDate}${adminNotes ? ' - ' + adminNotes : ''}]`;
+      this.saveRequests(requests);
+    }
+
+    // Update notification metadata so it reflects replaced status
+    const notifs = this.getNotifications();
+    let updatedNotif = false;
+    notifs.forEach(n => {
+      if ((requestId && n.requestId === requestId) || (n.actionType === "DAMAGED_REPLACEMENT" && n.componentId === comp.id && n.replacementStatus === "PENDING")) {
+        n.replacementStatus = "REPLACED";
+        n.replacedBy = adminName;
+        n.replacementQty = repQty;
+        n.replacementDate = replacementDate;
+        updatedNotif = true;
+      }
+    });
+    if (updatedNotif) {
+      this.saveNotifications(notifs);
+    }
+
+    // Log transaction
+    this.logTransaction(
+      comp.id,
+      comp.name,
+      "ITEM_REPLACEMENT_ISSUED",
+      -repQty,
+      prevStock,
+      comp.quantity,
+      `Replacement issued by ${adminName}: ${repQty} pcs of ${comp.name} issued to replace damaged item (Req #${requestId || 'N/A'}). Stock updated from ${prevStock} to ${comp.quantity}.`
+    );
+
+    // Notify requester and lab users
+    this.addNotification(
+      "REPLACEMENT_APPROVED",
+      `Replacement Issued: ${comp.name}`,
+      `Lab Administrator (${adminName}) has approved and issued a replacement (${repQty} pcs) for your damaged ${comp.name}. You may collect it from Box ${comp.boxId || 'N/A'}.`,
+      {
+        actionType: "REPLACEMENT_CONFIRMATION",
+        requestId: req ? req.id : requestId,
+        componentId: comp.id,
+        quantity: repQty,
+        adminName
+      }
+    );
+
+    return {
+      success: true,
+      component: comp,
+      replacementQty: repQty,
+      remainingStock: comp.quantity,
+      adminName,
+      replacementDate
+    };
   }
 
   // --- BOX TRANSFER & CONTENTS SWAP METHODS ---

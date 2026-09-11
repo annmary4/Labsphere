@@ -4874,5 +4874,9 @@ const INITIAL_PROJECTS = [
     bom: ["Arduino Uno R3", "Servo Motor SG90", "LDR Light Sensors"],
     createdAt: "2026-08-10"
   }
+];
+
 const INITIAL_REQUESTS = [];
+const INITIAL_TRANSACTIONS = [];
+
 

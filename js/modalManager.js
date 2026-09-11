@@ -309,13 +309,36 @@ class ModalManager {
         notifs.forEach(n => {
           const item = document.createElement("div");
           item.className = `notif-item ${n.read ? 'read' : 'unread'}`;
+
+          let actionBtnHtml = '';
+          if (n.actionType === 'DAMAGED_REPLACEMENT' && StorageService.isRole('ADMIN')) {
+            if (n.replacementStatus === 'REPLACED') {
+              actionBtnHtml = `
+                <div style="margin-top:6px;">
+                  <span class="badge" style="background:rgba(16,185,129,0.15); color:#10b981; border:1px solid rgba(16,185,129,0.3); font-size:0.7rem; font-weight:700; padding:2px 6px; border-radius:4px; display:inline-flex; align-items:center; gap:4px;">
+                    ✅ Replacement Issued (${n.replacementQty || n.quantity || 1} pcs)
+                  </span>
+                </div>`;
+            } else {
+              actionBtnHtml = `
+                <div style="margin-top:6px;">
+                  <button class="btn btn-sm btn-success" onclick="event.stopPropagation(); ModalManager.openAllowReplacementModal('${n.requestId || ''}', '${n.componentId || ''}', ${n.quantity || 1})" style="font-size:0.75rem; padding:3px 8px; background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:white; border:none; border-radius:4px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:4px;">
+                    🔄 Allow Replacement
+                  </button>
+                </div>`;
+            }
+          }
+
           item.innerHTML = `
             <div class="notif-title" style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
               <strong>${n.title}</strong>
               ${!n.read ? '<span style="font-size:0.65rem; background:rgba(239,68,68,0.2); color:#ef4444; border:1px solid rgba(239,68,68,0.4); padding:1px 6px; border-radius:4px; font-weight:700;">NEW</span>' : ''}
             </div>
             <p class="notif-msg" style="margin:4px 0 6px 0; font-size:0.8rem; color:var(--text-muted); line-height:1.4;">${n.message}</p>
-            <span class="notif-time" style="font-size:0.7rem; color:var(--primary); font-weight:600;">${n.timestamp}</span>
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:4px;">
+              <span class="notif-time" style="font-size:0.7rem; color:var(--primary); font-weight:600;">${n.timestamp}</span>
+            </div>
+            ${actionBtnHtml}
           `;
           list.appendChild(item);
         });
@@ -361,6 +384,25 @@ class ModalManager {
           else if (n.type && n.type.includes('CANCEL')) { icon = '🚫'; iconColor = '#94a3b8'; }
           else if (n.type && n.type.includes('DAMAGE')) { icon = '⚠️'; iconColor = '#f97316'; }
 
+          let actionBtnHtml = '';
+          if (n.actionType === 'DAMAGED_REPLACEMENT' && StorageService.isRole('ADMIN')) {
+            if (n.replacementStatus === 'REPLACED') {
+              actionBtnHtml = `
+                <div style="margin-top:8px;">
+                  <span class="badge" style="background:rgba(16,185,129,0.15); color:#10b981; border:1px solid rgba(16,185,129,0.3); font-size:0.78rem; font-weight:700; padding:4px 10px; border-radius:6px; display:inline-flex; align-items:center; gap:5px;">
+                    ✅ Replacement Issued (${n.replacementQty || n.quantity || 1} pcs) by ${n.replacedBy || 'Admin'}
+                  </span>
+                </div>`;
+            } else {
+              actionBtnHtml = `
+                <div style="margin-top:8px;">
+                  <button class="btn btn-sm btn-success" onclick="ModalManager.openAllowReplacementModal('${n.requestId || ''}', '${n.componentId || ''}', ${n.quantity || 1})" style="font-size:0.8rem; padding:5px 12px; background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:white; border:none; border-radius:6px; font-weight:800; cursor:pointer; box-shadow:0 2px 6px rgba(16,185,129,0.3); display:inline-flex; align-items:center; gap:6px;">
+                    🔄 Allow Replacement
+                  </button>
+                </div>`;
+            }
+          }
+
           return `
             <div style="display:flex; gap:14px; padding:16px 20px; border-bottom:1px solid var(--border-color); background:${ !n.read ? 'rgba(56,189,248,0.04)' : 'transparent'}; transition:background 0.2s;">
               <div style="font-size:1.6rem; flex-shrink:0; margin-top:2px;">${icon}</div>
@@ -370,7 +412,10 @@ class ModalManager {
                   ${!n.read ? '<span style="font-size:0.65rem; background:rgba(239,68,68,0.18); color:#ef4444; border:1px solid rgba(239,68,68,0.35); padding:2px 7px; border-radius:4px; font-weight:800; flex-shrink:0;">NEW</span>' : ''}
                 </div>
                 <p style="margin:0 0 6px 0; font-size:0.83rem; color:var(--text-muted); line-height:1.5;">${n.message}</p>
-                <span style="font-size:0.72rem; color:${iconColor}; font-weight:600;">${n.timestamp}</span>
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
+                  <span style="font-size:0.72rem; color:${iconColor}; font-weight:600;">${n.timestamp}</span>
+                </div>
+                ${actionBtnHtml}
               </div>
             </div>
           `;
@@ -2181,6 +2226,7 @@ class ModalManager {
 
     const leadQueueRequests = allRequests.filter(r => r.status === "PENDING_LEAD_APPROVAL" || r.status === "SUBMITTED" || r.status === "PENDING");
     const adminIssuanceRequests = allRequests.filter(r => r.status === "PENDING_ADMIN_ISSUANCE" || r.status === "LEAD_APPROVED" || r.status === "LEAD_MODIFIED");
+    const damagedRequests = allRequests.filter(r => (r.damagedQty && r.damagedQty > 0) || r.replacementStatus === "PENDING" || r.replacementStatus === "REPLACED");
     const issuedRequests = allRequests.filter(r => r.status === "ISSUED" || r.status === "APPROVED");
     const rejectedRequests = allRequests.filter(r => r.status === "REJECTED");
 
@@ -2194,6 +2240,7 @@ class ModalManager {
 
     let displayRequests = leadQueueRequests;
     if (activeTab === "admin_issuance") displayRequests = adminIssuanceRequests;
+    else if (activeTab === "damaged") displayRequests = damagedRequests;
     else if (activeTab === "issued") displayRequests = issuedRequests;
     else if (activeTab === "all") displayRequests = allRequests;
     else if (activeTab === "rejected") displayRequests = rejectedRequests;
@@ -2213,8 +2260,11 @@ class ModalManager {
           <button class="btn btn-sm ${activeTab === 'pending' || activeTab === 'lead_queue' ? 'btn-primary' : 'btn-secondary'}" onclick="ModalManager.openAdminApprovalModal('pending')" style="font-weight:700;">
             ⏳ 1. Team Lead Approval Queue (${leadQueueRequests.length})
           </button>
-          <button class="btn btn-sm ${activeTab === 'admin_issuance' ? 'btn-primary' : 'btn-secondary'}" onclick="ModalManager.openAdminApprovalModal('admin_issuance')" style="font-weight:700; background:${activeTab === 'admin_issuance' ? '#10b981' : ''};">
+          <button class="btn btn-sm ${activeTab === 'admin_issuance' ? 'btn-primary' : 'btn-secondary'}" onclick="ModalManager.openAdminApprovalModal('admin_issuance')" style="font-weight:700; ${activeTab === 'admin_issuance' ? 'background:#10b981;' : ''}">
             📦 2. Admin Issuance Queue (${adminIssuanceRequests.length})
+          </button>
+          <button class="btn btn-sm ${activeTab === 'damaged' ? 'btn-primary' : 'btn-secondary'}" onclick="ModalManager.openAdminApprovalModal('damaged')" style="font-weight:700; ${activeTab === 'damaged' ? 'background:#ef4444; border-color:#ef4444;' : ''}">
+            ⚠️ Damaged Replacements (${damagedRequests.length})
           </button>
           <button class="btn btn-sm ${activeTab === 'issued' ? 'btn-primary' : 'btn-secondary'}" onclick="ModalManager.openAdminApprovalModal('issued')" style="font-weight:700;">
             ✅ Issued Stock (${issuedRequests.length})
@@ -2228,7 +2278,7 @@ class ModalManager {
       if (displayRequests.length === 0) {
         container.innerHTML += `
           <p class="empty-hint" style="text-align:center; padding:24px; color:var(--text-muted); font-weight:600; background:rgba(255,255,255,0.02); border-radius:8px;">
-            ${(activeTab === 'pending' || activeTab === 'lead_queue') ? '✅ No pending requisitions awaiting Team Lead approval right now.' : (activeTab === 'admin_issuance' ? '✅ No Lead-approved requisitions awaiting Admin stock issuance right now.' : 'No requisitions found under this filter.')}
+            ${(activeTab === 'pending' || activeTab === 'lead_queue') ? '✅ No pending requisitions awaiting Team Lead approval right now.' : (activeTab === 'admin_issuance' ? '✅ No Lead-approved requisitions awaiting Admin stock issuance right now.' : (activeTab === 'damaged' ? '✅ No damaged item reports or replacement requests pending.' : 'No requisitions found under this filter.'))}
           </p>
         `;
       } else {
@@ -2245,9 +2295,12 @@ class ModalManager {
           const isIssued = r.status === "ISSUED" || r.status === "APPROVED";
           const isPartiallyIssued = r.status === "PARTIALLY_ISSUED";
           const isRejected = r.status === "REJECTED";
+          const hasDamaged = (r.damagedQty && r.damagedQty > 0) || r.replacementStatus === "PENDING" || r.replacementStatus === "REPLACED";
 
           let statusBadgeHtml = '<span class="stock-tag warning" style="font-weight:800; font-size:0.8rem;">⏳ Stage 1: Pending Team Lead Approval</span>';
-          if (isAdminPending) statusBadgeHtml = '<span class="stock-tag info" style="font-weight:800; font-size:0.8rem; background:#0ea5e9; color:white;">📦 Stage 2: Lead Approved (Pending Admin Issue)</span>';
+          if (r.replacementStatus === "REPLACED") statusBadgeHtml = `<span class="stock-tag success" style="font-weight:800; font-size:0.8rem; background:#10b981; color:white;">✅ Replacement Issued (${r.replacementQty || r.damagedQty || 1} pcs) by ${r.replacedBy || 'Admin'}</span>`;
+          else if (r.replacementStatus === "PENDING" || (r.damagedQty && r.damagedQty > 0 && activeTab === "damaged")) statusBadgeHtml = `<span class="stock-tag danger" style="font-weight:800; font-size:0.8rem; background:#ef4444; color:white;">⚠️ Damaged Asset (${r.damagedQty || 1} pcs) - Replacement Option Available</span>`;
+          else if (isAdminPending) statusBadgeHtml = '<span class="stock-tag info" style="font-weight:800; font-size:0.8rem; background:#0ea5e9; color:white;">📦 Stage 2: Lead Approved (Pending Admin Issue)</span>';
           else if (isIssued) statusBadgeHtml = `<span class="stock-tag success" style="font-weight:800; font-size:0.8rem;">✅ Stage 3: Issued (${r.issuedQty || r.qtyRequested} pcs) by ${r.issuedBy || 'Admin'} on ${r.issueDate || 'Today'}</span>`;
           else if (isPartiallyIssued) statusBadgeHtml = `<span class="stock-tag warning" style="font-weight:800; font-size:0.8rem; background:#f59e0b; color:#0f172a;">🟡 Partial Issued (${r.issuedQty || 0}/${r.qtyRequested} pcs) by ${r.issuedBy || 'Admin'} on ${r.issueDate || 'Today'}</span>`;
           else if (isRejected) statusBadgeHtml = '<span class="stock-tag danger" style="font-weight:800; font-size:0.8rem;">❌ Rejected</span>';
@@ -2312,14 +2365,36 @@ class ModalManager {
                   <span class="text-muted">Issued By Admin:</span> <strong style="color:#10b981;">${r.issuedBy}</strong> (${r.issueDate || 'N/A'})
                 </div>
               ` : ''}
+
+              ${hasDamaged ? `
+                <div style="grid-column: 1 / -1; background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.3); border-radius: 8px; padding: 10px 14px; margin-top: 4px;">
+                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                    <span style="font-size:0.82rem; font-weight:800; color:#ef4444; text-transform:uppercase; letter-spacing:0.5px;">⚠️ Damaged Asset Report</span>
+                    <span class="badge" style="background:rgba(239,68,68,0.2); color:#ef4444; border:1px solid rgba(239,68,68,0.4); font-weight:800; font-size:0.75rem;">${r.damagedQty || 1} pcs reported damaged</span>
+                  </div>
+                  <div style="font-size:0.82rem; color:var(--text-muted); line-height:1.4;">
+                    <strong>Reported Issue:</strong> <span style="color:#fca5a5;">${r.damageReport || 'Damage reported'}</span>
+                  </div>
+                  ${r.replacementStatus === 'REPLACED' ? `
+                    <div style="margin-top:6px; font-size:0.8rem; color:#10b981; font-weight:700;">
+                      ✅ Replacement of ${r.replacementQty || r.damagedQty || 1} pcs authorized by ${r.replacedBy || 'Admin'} on ${r.replacementDate || 'N/A'}.
+                    </div>
+                  ` : ''}
+                </div>
+              ` : ''}
             </div>
 
             <p class="approval-notes" style="font-size:0.82rem; background:rgba(255,255,255,0.04); padding:8px 12px; border-radius:6px; margin-bottom:12px; color:var(--text-muted);">
               📝 Notes / Purpose: <span style="color:var(--text-main);">${r.notes}</span>
             </p>
 
-            ${(isLeadPending || isAdminPending || isPartiallyIssued) ? `
+            ${(isLeadPending || isAdminPending || isPartiallyIssued || (hasDamaged && r.replacementStatus !== 'REPLACED' && isAdmin)) ? `
               <div class="approval-actions" style="display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap; align-items:center;">
+                ${(hasDamaged && r.replacementStatus !== 'REPLACED' && isAdmin) ? `
+                  <button class="btn btn-success btn-allow-replacement-action" data-id="${r.id}" style="background:linear-gradient(135deg, #10b981 0%, #059669 100%); color:white; font-weight:800; border:none; box-shadow:0 2px 8px rgba(16,185,129,0.4); cursor:pointer;" title="Lab Administrator: Allow replacement for damaged item">
+                    🔄 Allow Replacement (${r.damagedQty || 1} pcs)
+                  </button>
+                ` : ''}
                 ${(isLeadPending || isAdmin) ? `
                   <button class="btn btn-secondary btn-suggest-alt" data-id="${r.id}" style="font-weight:700; color:#38bdf8; border-color:rgba(56,189,248,0.4);" title="Suggest compatible alternative component from stock">
                     💡 Suggest Alternative
@@ -2406,6 +2481,14 @@ class ModalManager {
             });
           }
 
+          // Lab Admin Allow Damaged Item Replacement Listener
+          const btnAllowDamagedReplace = card.querySelector(".btn-allow-replacement-action");
+          if (btnAllowDamagedReplace) {
+            btnAllowDamagedReplace.addEventListener("click", () => {
+              ModalManager.openAllowReplacementModal(r.id, r.componentId, r.damagedQty || 1);
+            });
+          }
+
           container.appendChild(card);
         });
       }
@@ -2413,6 +2496,233 @@ class ModalManager {
 
     if (window.lucide) window.lucide.createIcons();
     if (backdrop) backdrop.classList.remove("hidden");
+  }
+
+  // --- LAB ADMINISTRATOR ALLOW DAMAGED PRODUCT REPLACEMENT MODAL ---
+  static openAllowReplacementModal(requestId, componentId, defaultQty = 1) {
+    if (!StorageService.isRole("ADMIN")) {
+      alert("Access Restricted: Only the Lab Administrator can authorize and issue replacements for damaged items.");
+      return;
+    }
+
+    const requests = StorageService.getRequests();
+    const components = StorageService.getComponents();
+    const req = requests.find(r => r.id === requestId);
+    const comp = components.find(c => c.id === (componentId || (req ? req.componentId : null)));
+
+    if (!comp && !req) {
+      alert("Component or requisition record not found.");
+      return;
+    }
+
+    const compName = comp ? comp.name : (req ? req.componentName : "Unknown Component");
+    const compId = comp ? comp.id : (req ? req.componentId : "N/A");
+    const availStock = comp ? comp.quantity : 0;
+    const damagedCount = (req && req.damagedQty) ? req.damagedQty : (parseInt(defaultQty) || 1);
+    const requesterName = req ? req.requesterName : "User";
+    const damageDesc = (req && req.damageReport) ? req.damageReport : "Damaged asset reported";
+
+    const oldModal = document.getElementById("allow-replacement-dialog");
+    if (oldModal) oldModal.remove();
+
+    const session = StorageService.getCurrentSession();
+    const defaultAdmin = session ? session.fullName : "Lab Administrator";
+    const defaultDate = new Date().toISOString().slice(0, 10);
+
+    const isSufficient = availStock >= 1;
+
+    const backdrop = document.createElement("div");
+    backdrop.id = "allow-replacement-dialog";
+    backdrop.style.cssText = `
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.82);
+      backdrop-filter: blur(8px);
+      z-index: 11000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      animation: fadeIn 0.2s ease-out;
+    `;
+
+    backdrop.innerHTML = `
+      <div style="background: #1e293b; border: 1px solid rgba(16, 185, 129, 0.4); border-radius: 16px; width: 100%; max-width: 540px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.6), 0 0 20px rgba(16,185,129,0.2); overflow: hidden; color: #f8fafc; font-family: inherit;">
+        
+        <!-- Header -->
+        <div style="background: linear-gradient(135deg, rgba(16,185,129,0.2) 0%, rgba(5,150,105,0.1) 100%); border-bottom: 1px solid rgba(16,185,129,0.3); padding: 18px 22px; display: flex; justify-content: space-between; align-items: center;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="background: #10b981; color: white; width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+              🔄
+            </div>
+            <div>
+              <h3 style="margin: 0; font-size: 1.15rem; font-weight: 800; color: #f8fafc; letter-spacing: -0.01em;">
+                Allow Product Replacement
+              </h3>
+              <span style="font-size: 0.78rem; color: #a7f3d0; font-weight: 600;">
+                Lab Administrator Authority • Physical Stock Issuance
+              </span>
+            </div>
+          </div>
+          <button id="close-rep-x" style="background: none; border: none; color: #94a3b8; font-size: 1.4rem; cursor: pointer; padding: 4px 8px; border-radius: 6px; line-height: 1;">&times;</button>
+        </div>
+
+        <!-- Content Body -->
+        <div style="padding: 22px; max-height: 75vh; overflow-y: auto; display: flex; flex-direction: column; gap: 16px;">
+          
+          <!-- Reported Damage Context Box -->
+          <div style="background: #0f172a; border: 1px solid rgba(239,68,68,0.3); border-radius: 12px; padding: 14px 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+              <div>
+                <span style="font-size: 0.72rem; text-transform: uppercase; font-weight: 800; color: #ef4444; letter-spacing: 0.5px;">Damaged Item Reported</span>
+                <h4 style="margin: 2px 0 0 0; font-size: 1.05rem; font-weight: 700; color: #f8fafc;">${compName}</h4>
+                <span style="font-size: 0.75rem; color: #94a3b8;" class="mono">${compId} ${req ? '• Req #' + req.id : ''}</span>
+              </div>
+              <span class="badge" style="background: rgba(239,68,68,0.2); color: #ef4444; border: 1px solid rgba(239,68,68,0.4); font-size: 0.8rem; font-weight: 800; padding: 3px 8px; border-radius: 6px;">
+                ${damagedCount} Damaged
+              </span>
+            </div>
+            <div style="font-size: 0.82rem; color: #cbd5e1; margin-top: 6px; line-height: 1.4;">
+              <span style="color: #94a3b8;">Reported By:</span> <strong>${requesterName}</strong><br>
+              <span style="color: #94a3b8;">Reported Issue:</span> <span style="color: #fca5a5;">${damageDesc}</span>
+            </div>
+          </div>
+
+          <!-- Inventory Stock Verification Box -->
+          <div style="background: #0f172a; border: 1px solid ${isSufficient ? 'rgba(16,185,129,0.35)' : 'rgba(239,68,68,0.35)'}; border-radius: 12px; padding: 14px 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <span style="font-size: 0.72rem; text-transform: uppercase; font-weight: 800; color: #38bdf8; letter-spacing: 0.5px;">Physical Inventory Status</span>
+                <div style="font-size: 0.85rem; color: #cbd5e1; margin-top: 2px;">
+                  Box: <strong style="color:#f8fafc;">${comp ? (comp.boxId || 'Unassigned') : 'N/A'}</strong> • Shelf: <strong style="color:#f8fafc;">${comp ? (comp.shelfId || '1') : 'N/A'}</strong>
+                </div>
+              </div>
+              <div style="text-align: right;">
+                <span style="font-size: 1.25rem; font-weight: 800; color: ${availStock > 0 ? '#10b981' : '#ef4444'};">
+                  ${availStock}
+                </span>
+                <span style="font-size: 0.75rem; color: #94a3b8; display: block;">pcs available</span>
+              </div>
+            </div>
+            ${!isSufficient ? `
+              <div style="margin-top: 8px; font-size: 0.78rem; color: #ef4444; font-weight: 600;">
+                ⚠️ Warning: No inventory stock currently available for this component to issue replacement.
+              </div>
+            ` : ''}
+          </div>
+
+          <!-- Form Inputs -->
+          <div>
+            <label style="display: block; font-size: 0.82rem; font-weight: 700; color: #cbd5e1; margin-bottom: 6px;">
+              Quantity to Replace:
+            </label>
+            <input type="number" id="rep-qty-input" min="1" max="${Math.max(1, availStock)}" value="${Math.min(damagedCount, Math.max(1, availStock))}" style="width: 100%; padding: 10px 14px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: #f8fafc; font-weight: 700; font-size: 1rem; box-sizing: border-box;" ${!isSufficient ? 'disabled' : ''} />
+            <span style="font-size: 0.75rem; color: #94a3b8; margin-top: 4px; display: block;">
+              Allow replacement up to physical inventory limit (${availStock} pcs in stock).
+            </span>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div>
+              <label style="display: block; font-size: 0.82rem; font-weight: 700; color: #cbd5e1; margin-bottom: 6px;">
+                Replacement Date:
+              </label>
+              <input type="date" id="rep-date-input" value="${defaultDate}" style="width: 100%; padding: 9px 12px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: #f8fafc; font-size: 0.85rem; font-weight: 600; box-sizing: border-box;" />
+            </div>
+            <div>
+              <label style="display: block; font-size: 0.82rem; font-weight: 700; color: #cbd5e1; margin-bottom: 6px;">
+                Lab Administrator:
+              </label>
+              <input type="text" id="rep-admin-input" value="${defaultAdmin}" placeholder="Admin Name" style="width: 100%; padding: 9px 12px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: #f8fafc; font-size: 0.85rem; font-weight: 600; box-sizing: border-box;" />
+            </div>
+          </div>
+
+          <div>
+            <label style="display: block; font-size: 0.82rem; font-weight: 700; color: #cbd5e1; margin-bottom: 6px;">
+              Admin Notes / Justification (optional):
+            </label>
+            <input type="text" id="rep-notes-input" placeholder="E.g. Approved replacement, damaged unit retained for disposal" style="width: 100%; padding: 9px 12px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: #f8fafc; font-size: 0.85rem; box-sizing: border-box;" />
+          </div>
+
+        </div>
+
+        <!-- Footer Actions -->
+        <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid #334155; padding: 16px 22px; background: #1e293b;">
+          <button id="cancel-rep-dialog" style="padding: 10px 18px; background: #334155; color: #cbd5e1; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; transition: background 0.2s;">
+            Cancel
+          </button>
+          <button id="confirm-rep-dialog" style="padding: 10px 22px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; border-radius: 8px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 12px rgba(16,185,129,0.4); display: flex; align-items: center; gap: 8px; transition: transform 0.1s;" ${!isSufficient ? 'disabled style="opacity:0.5; cursor:not-allowed;"' : ''}>
+            <span>🔄 Allow & Issue Replacement</span>
+          </button>
+        </div>
+
+      </div>
+    `;
+
+    document.body.appendChild(backdrop);
+
+    const closeBtn = backdrop.querySelector("#close-rep-x");
+    const cancelBtn = backdrop.querySelector("#cancel-rep-dialog");
+    const confirmBtn = backdrop.querySelector("#confirm-rep-dialog");
+
+    const closeDialog = () => backdrop.remove();
+    if (closeBtn) closeBtn.addEventListener("click", closeDialog);
+    if (cancelBtn) cancelBtn.addEventListener("click", closeDialog);
+    backdrop.addEventListener("click", (e) => {
+      if (e.target === backdrop) closeDialog();
+    });
+
+    if (confirmBtn && isSufficient) {
+      confirmBtn.addEventListener("click", () => {
+        const qtyField = backdrop.querySelector("#rep-qty-input");
+        const dateField = backdrop.querySelector("#rep-date-input");
+        const adminField = backdrop.querySelector("#rep-admin-input");
+        const notesField = backdrop.querySelector("#rep-notes-input");
+
+        const repQty = parseInt(qtyField ? qtyField.value : "1");
+        if (isNaN(repQty) || repQty <= 0) {
+          alert("Please specify a valid positive replacement quantity.");
+          return;
+        }
+
+        if (repQty > availStock) {
+          alert(`Cannot issue ${repQty} replacement pcs! Only ${availStock} pcs are physically available in inventory.`);
+          return;
+        }
+
+        const replacementDate = dateField ? dateField.value : new Date().toISOString().slice(0, 10);
+        const adminName = adminField && adminField.value.trim() ? adminField.value.trim() : "Lab Administrator";
+        const notes = notesField ? notesField.value.trim() : "";
+
+        try {
+          StorageService.allowReplacement(requestId, componentId, repQty, {
+            adminName,
+            replacementDate,
+            notes,
+            requesterName
+          });
+
+          alert(`Success! Lab Administrator (${adminName}) has approved and issued a replacement of ${repQty} unit(s) of '${compName}'.\n\nPhysical inventory stock deducted automatically.`);
+          closeDialog();
+          
+          // Refresh open views and notifications
+          ModalManager.renderNotificationCenter();
+          const notifModal = document.getElementById("notif-center-modal");
+          if (notifModal && !notifModal.classList.contains("hidden")) {
+            ModalManager.openNotificationCenterModal();
+          }
+          const apprModal = document.getElementById("admin-appr-modal");
+          if (apprModal && !apprModal.classList.contains("hidden")) {
+            ModalManager.openAdminApprovalModal("damaged");
+          }
+          if (ModalManager.callbacks.onInventoryChanged) {
+            ModalManager.callbacks.onInventoryChanged();
+          }
+        } catch (err) {
+          alert("Replacement Error: " + err.message);
+        }
+      });
+    }
   }
 
   // --- INVENTORY ADMIN MATERIAL ISSUANCE DIALOG (FULL / PARTIAL, DATE, ISSUED BY, AUTO-STOCK UPDATE) ---
