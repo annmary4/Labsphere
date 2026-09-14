@@ -800,29 +800,47 @@ class StorageService {
   }
 
   // --- BOX TRANSFER & CONTENTS SWAP METHODS ---
-  static ensureBoxExists(boxIdInput) {
+  static ensureBoxExists(boxIdInput, rackIdInput, shelfIdInput) {
+    if (!boxIdInput) return null;
     const boxes = this.getBoxes();
     const cleanId = boxIdInput.trim().toUpperCase();
-    let box = boxes.find(b => b.id === cleanId);
+    let box = boxes.find(b => (b.id || "").trim().toUpperCase() === cleanId);
 
     if (!box) {
-      let shelfId = 1;
-      const match = cleanId.match(/BOX\s+([A-Z])/i);
-      if (match) {
-        const letter = match[1].toUpperCase();
-        shelfId = letter.charCodeAt(0) - 64;
-        if (shelfId < 1 || shelfId > 6) shelfId = 1;
+      let shelfId = (shelfIdInput !== undefined && shelfIdInput !== null) ? Number(shelfIdInput) : 1;
+      let rackId = (rackIdInput !== undefined && rackIdInput !== null) ? Number(rackIdInput) : 1;
+
+      if (!shelfIdInput) {
+        const match = cleanId.match(/BOX\s+([A-Z])/i);
+        if (match) {
+          const letter = match[1].toUpperCase();
+          shelfId = letter.charCodeAt(0) - 64;
+          if (shelfId < 1 || shelfId > 6) shelfId = 1;
+        }
       }
 
       box = {
         id: cleanId,
-        rackId: 1,
+        rackId: rackId,
         shelfId: shelfId,
         label: `${cleanId}: Storage Footprint`
       };
 
       boxes.push(box);
       this.saveBoxes(boxes);
+    } else if (rackIdInput !== undefined || shelfIdInput !== undefined) {
+      let updated = false;
+      if (rackIdInput !== undefined && rackIdInput !== null && Number(rackIdInput) !== box.rackId) {
+        box.rackId = Number(rackIdInput);
+        updated = true;
+      }
+      if (shelfIdInput !== undefined && shelfIdInput !== null && Number(shelfIdInput) !== box.shelfId) {
+        box.shelfId = Number(shelfIdInput);
+        updated = true;
+      }
+      if (updated) {
+        this.saveBoxes(boxes);
+      }
     }
 
     return box;
@@ -837,7 +855,7 @@ class StorageService {
     const comp = components.find(c => c.id === componentId);
 
     if (!comp) throw new Error("Component not found.");
-    if (comp.boxId === cleanBoxId) throw new Error(`Component '${comp.name}' is already stored inside ${cleanBoxId}.`);
+    if ((comp.boxId || "").trim().toUpperCase() === cleanBoxId) throw new Error(`Component '${comp.name}' is already stored inside ${cleanBoxId}.`);
 
     const prevBoxId = comp.boxId;
     const targetBox = this.ensureBoxExists(cleanBoxId);
@@ -845,6 +863,7 @@ class StorageService {
     comp.boxId = targetBox.id;
     comp.rackId = targetBox.rackId;
     comp.shelfId = targetBox.shelfId;
+    comp._userModified = true;
     comp.lastUpdated = new Date().toISOString().slice(0, 10);
 
     this.saveComponents(components);

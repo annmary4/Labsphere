@@ -117,15 +117,30 @@ class RackViewer {
           if (isBoxSelected) pillClass += " selected";
           if (isHighlighted) pillClass += " search-highlight";
 
+          const totalUnitsInBox = boxComponents.reduce((sum, c) => sum + (Number(c.quantity) || 0), 0);
+          const typeCount = boxComponents.length;
+          let boxBadgeHtml = "";
+          if (typeCount === 0) {
+            boxBadgeHtml = `<span style="background:rgba(148,163,184,0.15); color:var(--text-muted); padding:1px 6px; border-radius:4px; font-size:0.65rem; font-weight:700;">Empty</span>`;
+          } else if (typeCount === 1) {
+            boxBadgeHtml = `<span style="background:rgba(56,189,248,0.15); color:var(--primary); padding:1px 6px; border-radius:4px; font-size:0.65rem; font-weight:700;">${totalUnitsInBox} ${totalUnitsInBox === 1 ? 'Unit' : 'Units'}</span>`;
+          } else {
+            boxBadgeHtml = `<span style="background:rgba(56,189,248,0.15); color:var(--primary); padding:1px 6px; border-radius:4px; font-size:0.65rem; font-weight:700;" title="${typeCount} component types, ${totalUnitsInBox} total units in stock">${typeCount} Types • ${totalUnitsInBox} pcs</span>`;
+          }
+
           const itemsListHtml = boxComponents.length > 0
-            ? boxComponents.map(c => `<div style="font-size:0.75rem; color:var(--text-main); font-weight:600; display:flex; align-items:center; gap:4px;">• ${c.name}</div>`).join('')
+            ? boxComponents.map(c => `
+                <div style="font-size:0.75rem; color:var(--text-main); font-weight:600; display:flex; justify-content:space-between; align-items:center; gap:6px;">
+                  <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:170px;" title="${c.name}">• ${c.name}</span>
+                  <span style="color:#38bdf8; font-family:var(--font-mono); font-size:0.7rem; font-weight:700; white-space:nowrap;">${c.quantity} ${c.unit || 'pcs'}</span>
+                </div>`).join('')
             : `<div style="font-size:0.7rem; color:var(--text-muted); font-style:italic;">Empty Box</div>`;
 
           boxesPillsHtml += `
-            <div class="${pillClass}" data-box-id="${box.id}" data-rack-id="${rack.id}" data-shelf-id="${shelfNum}" title="${box.id}: ${compNames || 'Empty Box'}" style="cursor:pointer; display:inline-flex; flex-direction:column; background:var(--bg-dark); border:1px solid var(--border-color); padding:8px 12px; border-radius:8px; gap:4px; min-width:140px; margin-right:8px; margin-bottom:8px; transition:all 0.2s;">
-              <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-color); padding-bottom:4px; margin-bottom:2px;">
-                <span style="font-weight:800; color:var(--primary); font-size:0.8rem;">Box ${box.id}</span>
-                <span style="background:rgba(56,189,248,0.15); color:var(--primary); padding:1px 6px; border-radius:4px; font-size:0.65rem; font-weight:700;">${boxComponents.length} ${boxComponents.length === 1 ? 'Item' : 'Items'}</span>
+            <div class="${pillClass}" data-box-id="${box.id}" data-rack-id="${rack.id}" data-shelf-id="${shelfNum}" title="${box.id}: ${compNames || 'Empty Box'}" style="cursor:pointer; display:inline-flex; flex-direction:column; background:var(--bg-dark); border:1px solid var(--border-color); padding:8px 12px; border-radius:8px; gap:4px; min-width:145px; margin-right:8px; margin-bottom:8px; transition:all 0.2s;">
+              <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-color); padding-bottom:4px; margin-bottom:2px; gap:8px;">
+                <span style="font-weight:800; color:var(--primary); font-size:0.8rem; white-space:nowrap;">Box ${box.id}</span>
+                ${boxBadgeHtml}
               </div>
               <div style="display:flex; flex-direction:column; gap:3px;">
                 ${itemsListHtml}
@@ -137,7 +152,7 @@ class RackViewer {
         const shelfLetter = String.fromCharCode(64 + shelfNum);
         const shelfNameLabel = `Shelf ${shelfLetter}`;
         const shelfComps = activeComps.filter(c => Number(c.rackId) === rackIdNum && Number(c.shelfId) === shelfNum);
-        const totalItemsInShelf = shelfComps.length;
+        const totalUnitsInShelf = shelfComps.reduce((sum, c) => sum + (Number(c.quantity) || 0), 0);
 
         let shelfCompsHtml = "";
         if (shelfComps.length > 0) {
@@ -163,7 +178,7 @@ class RackViewer {
                 <span class="shelf-letter font-bold" style="font-size:0.85rem; color:var(--text-main);">Rack ${shelfNameLabel}</span>
               </div>
               <div style="display:flex; align-items:center; gap:6px;">
-                <span class="shelf-count text-muted" style="font-size:0.7rem;">${shelfBoxes.length} Boxes • ${totalItemsInShelf} Items</span>
+                <span class="shelf-count text-muted" style="font-size:0.7rem;">${shelfBoxes.length} Boxes • ${totalUnitsInShelf} Units (${shelfComps.length} Types)</span>
                 ${StorageService.isRole("ADMIN") ? `
                 <button class="btn btn-secondary btn-sm btn-print-shelf-qr" data-rack="${rack.id}" data-shelf="${shelfNum}" style="padding:2px 8px; font-size:0.7rem;" title="Print QR Labels for all components on ${shelfNameLabel}">
                   <i data-lucide="printer"></i> Print Shelf QR
@@ -179,7 +194,8 @@ class RackViewer {
         `;
       }
 
-      const totalRackItems = activeComps.filter(c => Number(c.rackId) === rackIdNum).length;
+      const totalRackUnits = activeComps.filter(c => Number(c.rackId) === rackIdNum).reduce((sum, c) => sum + (Number(c.quantity) || 0), 0);
+      const totalRackTypes = activeComps.filter(c => Number(c.rackId) === rackIdNum).length;
 
       rackCard.innerHTML = `
         <div class="rack-cabinet-header rack-accordion-trigger" title="Click to ${isExpanded ? 'collapse' : 'expand'} ${rack.name}" style="cursor:pointer; user-select:none; ${isExpanded ? 'padding-bottom:12px; margin-bottom:14px; border-bottom:2px solid var(--border-color);' : 'padding-bottom:0; margin-bottom:0; border-bottom:none;'}">
@@ -196,7 +212,7 @@ class RackViewer {
             </div>
           </div>
           <div style="display:flex; align-items:center; gap:8px;">
-            <span class="layout-badge" style="background:var(--primary); color:#0f172a; font-weight:700;">${totalRackItems} Items</span>
+            <span class="layout-badge" style="background:var(--primary); color:#0f172a; font-weight:700;">${totalRackUnits} Units (${totalRackTypes} Types)</span>
             <span class="layout-badge">${rack.shelvesCount || 5} Shelves</span>
             <span class="expand-status-badge" style="font-size:0.7rem; color:var(--primary); background:rgba(56,189,248,0.1); padding:2px 8px; border-radius:4px; border:1px solid rgba(56,189,248,0.25);">
               ${isExpanded ? 'Expanded' : 'Click to Expand'}

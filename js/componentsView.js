@@ -182,9 +182,13 @@ class ComponentsView {
       }
 
       const imgSrc = this.getAccurateImageForComponent(c);
-      const manufacturer = c.manufacturer || "Lab Component Vendor";
-      const siblingComps = components.filter(x => x.boxId === c.boxId);
-      const boxBadgeText = siblingComps.length > 1 ? `${c.boxId} (${siblingComps.length} items)` : c.boxId;
+      const cleanBoxId = (c.boxId || "").trim().toUpperCase();
+      const siblingComps = components.filter(x => (x.boxId || "").trim().toUpperCase() === cleanBoxId && cleanBoxId !== "");
+      let boxBadgeText = c.boxId || "Unassigned";
+      if (siblingComps.length > 1) {
+        const totalBoxUnits = siblingComps.reduce((sum, x) => sum + (Number(x.quantity) || 0), 0);
+        boxBadgeText = `${c.boxId} (${siblingComps.length} types • ${totalBoxUnits} pcs)`;
+      }
 
       card.innerHTML = `
         <div class="card-image-wrap" style="width:100%; height:120px; border-radius:8px; overflow:hidden; margin-bottom:10px; background:#0f172a; position:relative;">
