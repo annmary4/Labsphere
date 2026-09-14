@@ -760,12 +760,10 @@ class ModalManager {
 
     if (!backdrop || !container) return;
 
-    const totalUnits = components.reduce((sum, c) => sum + (Number(c.quantity) || 0), 0);
     const typeCount = components.length;
-    let unitsLabel = typeCount === 1 ? `${totalUnits} ${totalUnits === 1 ? 'Unit' : 'Units'}` : `${typeCount} Types • ${totalUnits} Total Units`;
+    let unitsLabel = typeCount > 1 ? ` (${typeCount} Components)` : '';
 
-    const allNamesStr = components.map(c => `${c.name} (${c.quantity} ${c.unit || 'pcs'})`).join(" + ");
-    if (titleEl) titleEl.innerText = `Box ${boxId}: ${components.map(c => c.name).join(" + ")} (${unitsLabel})`;
+    if (titleEl) titleEl.innerText = `Box ${boxId}: ${components.map(c => c.name).join(" + ")}${unitsLabel}`;
 
     if (components.length > 0) {
       const c = components[0];
@@ -774,7 +772,7 @@ class ModalManager {
       if (pathEl) pathEl.innerText = `Location ${lab} › ${room} › Rack ${c.rackId} › Shelf ${String.fromCharCode(64 + Number(c.shelfId))} › ${boxId}`;
     }
 
-    if (descEl) descEl.innerText = `This physical box (${boxId}) contains ${typeCount} component type(s) totaling ${totalUnits} physical unit(s): [ ${allNamesStr} ]. All items inside are displayed side-by-side below:`;
+    if (descEl) descEl.innerText = `This physical box (${boxId}) contains ${typeCount} component(s): [ ${components.map(c => c.name).join(" + ")} ]. All items inside are displayed side-by-side below:`;
 
     container.innerHTML = "";
     const isAdmin = StorageService.isRole("ADMIN");
@@ -1117,11 +1115,10 @@ class ModalManager {
         }
       }
 
-      const totalBoxUnits = boxComps.reduce((sum, item) => sum + (Number(item.quantity) || 0), 0);
-      let switcherHtml = `<span class="text-muted" style="font-weight:600;">Box ${c.boxId} (${boxComps.length} Types • ${totalBoxUnits} Total Units):</span>`;
+      let switcherHtml = `<span class="text-muted" style="font-weight:600;">Box ${c.boxId} (${boxComps.length} Components):</span>`;
       boxComps.forEach(item => {
         const activeStyle = item.id === c.id ? "background:var(--primary); color:#0f172a; font-weight:700;" : "background:var(--bg-card); color:var(--text-main);";
-        switcherHtml += `<button class="btn btn-sm btn-switch-box-item" data-comp-id="${item.id}" style="padding:2px 8px; border-radius:4px; font-size:0.7rem; cursor:pointer; ${activeStyle}">${item.name} (${item.quantity} ${item.unit || 'pcs'})</button>`;
+        switcherHtml += `<button class="btn btn-sm btn-switch-box-item" data-comp-id="${item.id}" style="padding:2px 8px; border-radius:4px; font-size:0.7rem; cursor:pointer; ${activeStyle}">${item.name}</button>`;
       });
       boxSwitcher.innerHTML = switcherHtml;
       boxSwitcher.classList.remove("hidden");
@@ -3612,20 +3609,17 @@ class ModalManager {
     const qrTargetUrl = `${hostOrigin}${window.location.pathname}?comp=${encodeURIComponent(mainCompId)}&box=${encodeURIComponent(cleanBoxId)}`;
     const qrImgUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(qrTargetUrl)}`;
 
-    const totalBoxUnits = components.reduce((sum, c) => sum + (Number(c.quantity) || 0), 0);
     const typeCount = components.length;
 
     let unitsSummaryText = "";
     if (typeCount === 0) {
-      unitsSummaryText = "Empty Box (0 Units)";
-    } else if (typeCount === 1) {
-      unitsSummaryText = `${totalBoxUnits} ${totalBoxUnits === 1 ? 'Unit' : 'Units'} (${components[0].name})`;
-    } else {
-      unitsSummaryText = `${typeCount} Types • ${totalBoxUnits} Total Units`;
+      unitsSummaryText = "Empty Box";
+    } else if (typeCount > 1) {
+      unitsSummaryText = `${typeCount} Components`;
     }
 
     if (titleEl) {
-      titleEl.innerHTML = `Box Physical Storage Footprint: <span class="mono" style="color:var(--primary); font-weight:800;">${cleanBoxId}</span> <span style="font-size:0.85rem; color:var(--text-muted); font-weight:600; margin-left:8px;">(${unitsSummaryText})</span>`;
+      titleEl.innerHTML = `Box Physical Storage Footprint: <span class="mono" style="color:var(--primary); font-weight:800;">${cleanBoxId}</span>${unitsSummaryText ? ` <span style="font-size:0.85rem; color:var(--text-muted); font-weight:600; margin-left:8px;">(${unitsSummaryText})</span>` : ''}`;
     }
 
     if (pathEl) {
@@ -3636,7 +3630,7 @@ class ModalManager {
               Location Rack ${rackId} > Shelf ${shelfChar} (Shelf ${shelfId}) > Box ${cleanBoxId}
             </div>
             <div style="font-size:0.8rem; color:var(--text-muted); margin-top:2px;">
-              Main Robotics & Embedded Systems Lab • Room 101 • <strong style="color:var(--text-main);">${totalBoxUnits} Physical Units</strong> (${typeCount} Component ${typeCount === 1 ? 'Type' : 'Types'})
+              Main Robotics & Embedded Systems Lab • Room 101 • <strong style="color:var(--text-main);">${typeCount} Component${typeCount === 1 ? '' : 's'} Stored</strong>
             </div>
           </div>
 

@@ -117,15 +117,12 @@ class RackViewer {
           if (isBoxSelected) pillClass += " selected";
           if (isHighlighted) pillClass += " search-highlight";
 
-          const totalUnitsInBox = boxComponents.reduce((sum, c) => sum + (Number(c.quantity) || 0), 0);
           const typeCount = boxComponents.length;
           let boxBadgeHtml = "";
           if (typeCount === 0) {
             boxBadgeHtml = `<span style="background:rgba(148,163,184,0.15); color:var(--text-muted); padding:1px 6px; border-radius:4px; font-size:0.65rem; font-weight:700;">Empty</span>`;
-          } else if (typeCount === 1) {
-            boxBadgeHtml = `<span style="background:rgba(56,189,248,0.15); color:var(--primary); padding:1px 6px; border-radius:4px; font-size:0.65rem; font-weight:700;">${totalUnitsInBox} ${totalUnitsInBox === 1 ? 'Unit' : 'Units'}</span>`;
-          } else {
-            boxBadgeHtml = `<span style="background:rgba(56,189,248,0.15); color:var(--primary); padding:1px 6px; border-radius:4px; font-size:0.65rem; font-weight:700;" title="${typeCount} component types, ${totalUnitsInBox} total units in stock">${typeCount} Types • ${totalUnitsInBox} pcs</span>`;
+          } else if (typeCount > 1) {
+            boxBadgeHtml = `<span style="background:rgba(56,189,248,0.15); color:var(--primary); padding:1px 6px; border-radius:4px; font-size:0.65rem; font-weight:700;">${typeCount} Components</span>`;
           }
 
           const itemsListHtml = boxComponents.length > 0
@@ -178,7 +175,7 @@ class RackViewer {
                 <span class="shelf-letter font-bold" style="font-size:0.85rem; color:var(--text-main);">Rack ${shelfNameLabel}</span>
               </div>
               <div style="display:flex; align-items:center; gap:6px;">
-                <span class="shelf-count text-muted" style="font-size:0.7rem;">${shelfBoxes.length} Boxes • ${totalUnitsInShelf} Units (${shelfComps.length} Types)</span>
+                <span class="shelf-count text-muted" style="font-size:0.7rem;">${shelfBoxes.length} Boxes • ${shelfComps.length} Components</span>
                 ${StorageService.isRole("ADMIN") ? `
                 <button class="btn btn-secondary btn-sm btn-print-shelf-qr" data-rack="${rack.id}" data-shelf="${shelfNum}" style="padding:2px 8px; font-size:0.7rem;" title="Print QR Labels for all components on ${shelfNameLabel}">
                   <i data-lucide="printer"></i> Print Shelf QR
@@ -194,7 +191,6 @@ class RackViewer {
         `;
       }
 
-      const totalRackUnits = activeComps.filter(c => Number(c.rackId) === rackIdNum).reduce((sum, c) => sum + (Number(c.quantity) || 0), 0);
       const totalRackTypes = activeComps.filter(c => Number(c.rackId) === rackIdNum).length;
 
       rackCard.innerHTML = `
@@ -212,7 +208,7 @@ class RackViewer {
             </div>
           </div>
           <div style="display:flex; align-items:center; gap:8px;">
-            <span class="layout-badge" style="background:var(--primary); color:#0f172a; font-weight:700;">${totalRackUnits} Units (${totalRackTypes} Types)</span>
+            <span class="layout-badge" style="background:var(--primary); color:#0f172a; font-weight:700;">${totalRackTypes} Components</span>
             <span class="layout-badge">${rack.shelvesCount || 5} Shelves</span>
             <span class="expand-status-badge" style="font-size:0.7rem; color:var(--primary); background:rgba(56,189,248,0.1); padding:2px 8px; border-radius:4px; border:1px solid rgba(56,189,248,0.25);">
               ${isExpanded ? 'Expanded' : 'Click to Expand'}

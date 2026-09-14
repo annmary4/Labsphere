@@ -187,8 +187,7 @@ class ComponentsView {
       const siblingComps = components.filter(x => (x.boxId || "").trim().toUpperCase() === cleanBoxId && cleanBoxId !== "");
       let boxBadgeText = c.boxId || "Unassigned";
       if (siblingComps.length > 1) {
-        const totalBoxUnits = siblingComps.reduce((sum, x) => sum + (Number(x.quantity) || 0), 0);
-        boxBadgeText = `${c.boxId} (${siblingComps.length} types • ${totalBoxUnits} pcs)`;
+        boxBadgeText = `${c.boxId} (${siblingComps.length} Components)`;
       }
 
       card.innerHTML = `
