@@ -157,6 +157,21 @@ class StorageService {
         localStorage.setItem(STORAGE_KEYS.COMPONENTS, JSON.stringify(INITIAL_COMPONENTS));
         localStorage.setItem(STORAGE_KEYS.COMPONENTS + "_backup", JSON.stringify(INITIAL_COMPONENTS));
       }
+    } else {
+      let compsUpdated = false;
+      comps.forEach(c => {
+        if (c.id === "COMP-0689" && c.boxId === "BOX A-001") {
+          c.boxId = "BOX A-002";
+          compsUpdated = true;
+        }
+        if (c.id === "COMP-5194" && c.boxId === "BOX A-002") {
+          c.boxId = "BOX A-006";
+          compsUpdated = true;
+        }
+      });
+      if (compsUpdated) {
+        this.saveComponents(comps);
+      }
     }
 
     await this.pullCentralServerSync().catch(() => {});

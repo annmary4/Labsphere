@@ -3589,8 +3589,13 @@ class ModalManager {
     const allComponents = StorageService.getComponents();
     const allBoxes = StorageService.getBoxes();
 
-    const components = allComponents.filter(c => (c.boxId || "").trim().toUpperCase() === cleanBoxId);
-    const box = allBoxes.find(b => (b.id || "").trim().toUpperCase() === cleanBoxId);
+    let components = [];
+    if (passedComponents && Array.isArray(passedComponents) && passedComponents.length > 0) {
+      components = passedComponents;
+    } else {
+      components = allComponents.filter(c => (c.boxId || "").trim().toUpperCase() === cleanBoxId);
+    }
+    const box = allBoxes.find(b => (b.id || "").trim().toUpperCase() === cleanBoxId && (!components[0] || Number(b.rackId) === Number(components[0].rackId))) || allBoxes.find(b => (b.id || "").trim().toUpperCase() === cleanBoxId);
 
     const titleEl = document.getElementById("box-insp-modal-title");
     const pathEl = document.getElementById("box-insp-location-path");
