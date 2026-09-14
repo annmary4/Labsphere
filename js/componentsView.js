@@ -182,6 +182,7 @@ class ComponentsView {
       }
 
       const imgSrc = this.getAccurateImageForComponent(c);
+      const manufacturer = c.manufacturer || "Lab Component Vendor";
       const cleanBoxId = (c.boxId || "").trim().toUpperCase();
       const siblingComps = components.filter(x => (x.boxId || "").trim().toUpperCase() === cleanBoxId && cleanBoxId !== "");
       let boxBadgeText = c.boxId || "Unassigned";

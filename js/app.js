@@ -975,14 +975,14 @@ class App {
     }
 
     components.sort((a, b) => {
-      if (this.currentSort === "name-asc") return a.name.localeCompare(b.name);
+      if (this.currentSort === "name-asc") return (a.name || "").localeCompare(b.name || "");
       if (this.currentSort === "location-asc") {
-        if (a.rackId !== b.rackId) return a.rackId - b.rackId;
-        if (a.shelfId !== b.shelfId) return a.shelfId - b.shelfId;
-        return a.boxId.localeCompare(b.boxId);
+        if (a.rackId !== b.rackId) return (Number(a.rackId) || 0) - (Number(b.rackId) || 0);
+        if (a.shelfId !== b.shelfId) return (Number(a.shelfId) || 0) - (Number(b.shelfId) || 0);
+        return (a.boxId || "").localeCompare(b.boxId || "");
       }
-      if (this.currentSort === "qty-desc") return b.quantity - a.quantity;
-      if (this.currentSort === "qty-asc") return a.quantity - b.quantity;
+      if (this.currentSort === "qty-desc") return (Number(b.quantity) || 0) - (Number(a.quantity) || 0);
+      if (this.currentSort === "qty-asc") return (Number(a.quantity) || 0) - (Number(b.quantity) || 0);
       return 0;
     });
 
