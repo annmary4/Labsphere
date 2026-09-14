@@ -1403,8 +1403,10 @@ class ModalManager {
       const stackLayer = getVal("form-stack-layer", "Layer 1 (Top Compartment)");
       const inventoryState = getVal("form-state", "AVAILABLE");
       const category = getVal("form-category", "Microcontrollers & Dev Boards");
-      const quantity = Number(getVal("form-quantity", "1")) || 1;
-      const minQuantity = Number(getVal("form-min-qty", "1")) || 1;
+      const rawQty = getVal("form-quantity");
+      const quantity = rawQty !== "" && !isNaN(Number(rawQty)) ? Math.max(0, Number(rawQty)) : 1;
+      const rawMinQty = getVal("form-min-qty");
+      const minQuantity = rawMinQty !== "" && !isNaN(Number(rawMinQty)) ? Math.max(0, Number(rawMinQty)) : 1;
       const unitPrice = Number(getVal("form-unit-price", "450")) || 450;
       const barcode = getVal("form-barcode", `8901234${Date.now().toString().slice(-6)}`);
       const imageUrl = getVal("form-image-url", "https://images.unsplash.com/photo-1553406830-ef2513450d76?w=400&q=80");
@@ -1456,6 +1458,7 @@ class ModalManager {
           existing.alternatives = alternatives;
           existing.tags = tags;
           existing.supplierInfo = supplierInfo;
+          existing._userModified = true;
           existing.lastUpdated = new Date().toISOString().slice(0, 10);
 
           // Synchronize box location
@@ -1563,6 +1566,7 @@ class ModalManager {
       if (prev === newQty) return;
 
       target.quantity = newQty;
+      target._userModified = true;
       target.lastUpdated = new Date().toISOString().slice(0, 10);
       StorageService.saveComponents(components);
 
@@ -4731,9 +4735,12 @@ window.openComponentEditDialog = function (compId) {
         const prevQty = target.quantity;
         target.name = document.getElementById("dedit-name").value.trim() || target.name;
         target.partNumber = document.getElementById("dedit-part-no").value.trim();
-        target.quantity = Number(document.getElementById("dedit-qty").value) || 0;
-        target.unitPrice = Number(document.getElementById("dedit-price").value) || 0;
-        target.minQuantity = Number(document.getElementById("dedit-min-qty").value) || 1;
+        const rawQty = document.getElementById("dedit-qty").value;
+        target.quantity = rawQty !== "" && !isNaN(Number(rawQty)) ? Math.max(0, Number(rawQty)) : 0;
+        const rawPrice = document.getElementById("dedit-price").value;
+        target.unitPrice = rawPrice !== "" && !isNaN(Number(rawPrice)) ? Math.max(0, Number(rawPrice)) : 0;
+        const rawMin = document.getElementById("dedit-min-qty").value;
+        target.minQuantity = rawMin !== "" && !isNaN(Number(rawMin)) ? Math.max(0, Number(rawMin)) : 1;
 
         const newBox = (document.getElementById("dedit-box").value.trim() || target.boxId).toUpperCase();
         const newRack = Number(document.getElementById("dedit-rack").value) || 1;
@@ -4748,6 +4755,7 @@ window.openComponentEditDialog = function (compId) {
         target.manufacturer = document.getElementById("dedit-mfg").value.trim();
         target.purpose = document.getElementById("dedit-purpose").value.trim();
         target.specifications = document.getElementById("dedit-specs").value.trim();
+        target._userModified = true;
         target.lastUpdated = new Date().toISOString().slice(0, 10);
 
         StorageService.ensureBoxExists(newBox, newRack, newShelf);

@@ -349,6 +349,7 @@ class ComponentsView {
           if (target) {
             target.imageUrl = finalUrl;
             target.customImage = true;
+            target._userModified = true;
             target.lastUpdated = new Date().toISOString().slice(0, 10);
             StorageService.saveComponents(comps);
           }
@@ -363,6 +364,8 @@ class ComponentsView {
           if (target) {
             target.imageUrl = '';
             target.customImage = false;
+            target._userModified = true;
+            target.lastUpdated = new Date().toISOString().slice(0, 10);
             StorageService.saveComponents(comps);
           }
           popover.remove();

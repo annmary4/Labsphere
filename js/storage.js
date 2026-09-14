@@ -2,7 +2,7 @@
  * LabSphere Storage Service - Complete 59-Component Catalog (v35)
  */
 
-const CURRENT_VERSION = "v10600_registered_users_strict_filter";
+const CURRENT_VERSION = "v10610_persist_component_edits";
 
 const STORAGE_KEYS = {
   VERSION: "labsphere_version_v10250",
@@ -111,33 +111,51 @@ class StorageService {
     // Preserve active login session across desktop/mobile mode switches & refreshes (logout only occurs on explicit Logout click)
 
     if (localStorage.getItem(STORAGE_KEYS.VERSION) !== CURRENT_VERSION) {
-      if (typeof INITIAL_COMPONENTS !== "undefined" && INITIAL_COMPONENTS.length > 0) {
-        localStorage.setItem(STORAGE_KEYS.COMPONENTS, JSON.stringify(INITIAL_COMPONENTS));
+      // PRESERVE existing components and any user edits (quantities, details, new items)
+      const existingComps = this.getComponents();
+      if (!existingComps || existingComps.length === 0) {
+        if (typeof INITIAL_COMPONENTS !== "undefined" && INITIAL_COMPONENTS.length > 0) {
+          localStorage.setItem(STORAGE_KEYS.COMPONENTS, JSON.stringify(INITIAL_COMPONENTS));
+          localStorage.setItem(STORAGE_KEYS.COMPONENTS + "_backup", JSON.stringify(INITIAL_COMPONENTS));
+        }
+      } else if (typeof INITIAL_COMPONENTS !== "undefined" && Array.isArray(INITIAL_COMPONENTS)) {
+        let modified = false;
+        INITIAL_COMPONENTS.forEach(ic => {
+          if (!existingComps.some(ec => ec.id === ic.id)) {
+            existingComps.push(ic);
+            modified = true;
+          }
+        });
+        if (modified) {
+          this.saveComponents(existingComps);
+        }
       }
-      if (typeof INITIAL_BOXES !== "undefined" && INITIAL_BOXES.length > 0) {
+
+      if (!localStorage.getItem(STORAGE_KEYS.BOXES) && typeof INITIAL_BOXES !== "undefined" && INITIAL_BOXES.length > 0) {
         localStorage.setItem(STORAGE_KEYS.BOXES, JSON.stringify(INITIAL_BOXES));
       }
-      if (typeof INITIAL_RACKS !== "undefined" && INITIAL_RACKS.length > 0) {
+      if (!localStorage.getItem(STORAGE_KEYS.RACKS) && typeof INITIAL_RACKS !== "undefined" && INITIAL_RACKS.length > 0) {
         localStorage.setItem(STORAGE_KEYS.RACKS, JSON.stringify(INITIAL_RACKS));
       }
       // Preserve all registered user accounts on version updates
       const existingUsers = this.getUsers();
       this.saveUsers(existingUsers);
 
-      if (typeof INITIAL_PROJECTS !== "undefined") {
+      if (!localStorage.getItem(STORAGE_KEYS.PROJECTS) && typeof INITIAL_PROJECTS !== "undefined") {
         this.saveProjects(INITIAL_PROJECTS);
       }
-      if (typeof INITIAL_REQUESTS !== "undefined") {
+      if (!localStorage.getItem(STORAGE_KEYS.REQUESTS) && typeof INITIAL_REQUESTS !== "undefined") {
         this.saveRequests(INITIAL_REQUESTS);
       }
       localStorage.setItem(STORAGE_KEYS.VERSION, CURRENT_VERSION);
     }
 
-    // Always ensure full 59 component catalog is loaded
+    // Always ensure catalog has initial items if localStorage was completely empty
     const comps = this.getComponents();
-    if (!comps || comps.length < 50) {
+    if (!comps || comps.length === 0) {
       if (typeof INITIAL_COMPONENTS !== "undefined" && INITIAL_COMPONENTS.length > 0) {
         localStorage.setItem(STORAGE_KEYS.COMPONENTS, JSON.stringify(INITIAL_COMPONENTS));
+        localStorage.setItem(STORAGE_KEYS.COMPONENTS + "_backup", JSON.stringify(INITIAL_COMPONENTS));
       }
     }
 
@@ -190,37 +208,75 @@ class StorageService {
         }).catch(() => {});
       }
 
+      // 2. Query live central sync server if one is actively running
       let res = await fetch("api/db?t=" + Date.now()).catch(() => null);
       if (!res || !res.ok) {
-        res = await fetch("data/db.json?t=" + Date.now()).catch(() => null);
+        res = await fetch("/api/db?t=" + Date.now()).catch(() => null);
       }
-      if (!res || !res.ok) {
-        res = await fetch("./data/db.json?t=" + Date.now()).catch(() => null);
-      }
+
+      // ONLY process database sync if an actual live server API responded!
+      // Do NOT fetch static data/db.json fallback, as that would overwrite user edits on static sites like GitHub Pages!
       if (res && res.ok) {
         const data = await res.json();
         if (data && typeof data === "object") {
           console.log("Central Server Master DB fetched successfully.");
           if (data.components && Array.isArray(data.components) && data.components.length > 0) {
-            // Preserve local custom image URLs so server sync doesn't overwrite local edits
+            const localData = localStorage.getItem(STORAGE_KEYS.COMPONENTS);
+            let localComps = [];
             try {
-              const localData = localStorage.getItem(STORAGE_KEYS.COMPONENTS);
-              if (localData) {
-                const localComps = JSON.parse(localData);
-                if (Array.isArray(localComps)) {
-                  const localImgMap = new Map();
-                  localComps.forEach(lc => {
-                    if (lc.id && lc.imageUrl) localImgMap.set(lc.id, lc.imageUrl);
-                  });
-                  data.components.forEach(sc => {
-                    if (!sc.imageUrl && localImgMap.has(sc.id)) {
-                      sc.imageUrl = localImgMap.get(sc.id);
-                    }
-                  });
-                }
-              }
+              if (localData) localComps = JSON.parse(localData);
             } catch (err) {}
-            localStorage.setItem(STORAGE_KEYS.COMPONENTS, JSON.stringify(data.components));
+
+            if (Array.isArray(localComps) && localComps.length > 0) {
+              const localMap = new Map();
+              localComps.forEach(lc => { if (lc && lc.id) localMap.set(lc.id, lc); });
+
+              let localHasNewerEdits = false;
+              data.components.forEach(sc => {
+                const lc = localMap.get(sc.id);
+                if (lc) {
+                  // If local component was explicitly updated or has equal/newer timestamp, preserve local quantity & details
+                  if (lc._userModified || (lc.lastUpdated && (!sc.lastUpdated || lc.lastUpdated >= sc.lastUpdated))) {
+                    if (lc.quantity !== sc.quantity || lc.unitPrice !== sc.unitPrice || lc.name !== sc.name) {
+                      localHasNewerEdits = true;
+                    }
+                    sc.quantity = lc.quantity;
+                    sc.unitPrice = lc.unitPrice;
+                    sc.minQuantity = lc.minQuantity;
+                    sc.name = lc.name;
+                    sc.boxId = lc.boxId;
+                    sc.rackId = lc.rackId;
+                    sc.shelfId = lc.shelfId;
+                    sc.stackLayer = lc.stackLayer;
+                    sc.specifications = lc.specifications;
+                    sc.purpose = lc.purpose;
+                    sc.category = lc.category;
+                    sc.manufacturer = lc.manufacturer;
+                    sc.partNumber = lc.partNumber;
+                    sc.imageUrl = lc.imageUrl || sc.imageUrl;
+                    sc.customImage = lc.customImage || sc.customImage;
+                    sc.inventoryState = lc.inventoryState || sc.inventoryState;
+                    sc.lastUpdated = lc.lastUpdated;
+                    sc._userModified = true;
+                  }
+                }
+              });
+
+              // Retain any locally added components that the server doesn't have
+              localComps.forEach(lc => {
+                if (lc && lc.id && !data.components.some(sc => sc.id === lc.id)) {
+                  data.components.push(lc);
+                  localHasNewerEdits = true;
+                }
+              });
+
+              if (localHasNewerEdits) {
+                setTimeout(() => this.pushCentralServerSync(), 500);
+              }
+            }
+
+            safeSetItem(STORAGE_KEYS.COMPONENTS, JSON.stringify(data.components));
+            safeSetItem(STORAGE_KEYS.COMPONENTS + "_backup", JSON.stringify(data.components));
           }
           if (data.boxes && Array.isArray(data.boxes)) localStorage.setItem(STORAGE_KEYS.BOXES, JSON.stringify(data.boxes));
           if (data.racks && Array.isArray(data.racks)) localStorage.setItem(STORAGE_KEYS.RACKS, JSON.stringify(data.racks));
@@ -276,10 +332,17 @@ class StorageService {
         notifications: this.getNotifications(),
         securityLogs: this.getSecurityLogs()
       };
-      await fetch("/api/db", {
+
+      await fetch("api/db", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(masterData)
+      }).catch(async () => {
+        return fetch("/api/db", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(masterData)
+        });
       });
     } catch (e) {}
   }
@@ -2253,10 +2316,22 @@ class StorageService {
       }
     } catch (e) {}
 
+    try {
+      const backupData = localStorage.getItem(STORAGE_KEYS.COMPONENTS + "_backup");
+      if (backupData) {
+        const parsedBackup = JSON.parse(backupData);
+        if (Array.isArray(parsedBackup) && parsedBackup.length > 0) {
+          localStorage.setItem(STORAGE_KEYS.COMPONENTS, backupData);
+          return cleanMojibakeDeep(parsedBackup);
+        }
+      }
+    } catch (e) {}
+
     if (typeof INITIAL_COMPONENTS !== "undefined" && Array.isArray(INITIAL_COMPONENTS) && INITIAL_COMPONENTS.length > 0) {
       const cleanedInitial = cleanMojibakeDeep(INITIAL_COMPONENTS);
       try {
         localStorage.setItem(STORAGE_KEYS.COMPONENTS, JSON.stringify(cleanedInitial));
+        localStorage.setItem(STORAGE_KEYS.COMPONENTS + "_backup", JSON.stringify(cleanedInitial));
       } catch (e) {}
       return cleanedInitial;
     }
@@ -2265,6 +2340,7 @@ class StorageService {
 
   static saveComponents(components) {
     safeSetItem(STORAGE_KEYS.COMPONENTS, JSON.stringify(components));
+    safeSetItem(STORAGE_KEYS.COMPONENTS + "_backup", JSON.stringify(components));
     this.pushCentralServerSync();
   }
 
