@@ -2094,12 +2094,16 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
         const pageBoxes = activeBoxes.slice(p * LABELS_PER_PAGE, (p + 1) * LABELS_PER_PAGE);
         const cardsHtml = pageBoxes.map(box => {
           const bid = (box.id || '').trim().toUpperCase();
-          const boxComps = allComponents.filter(c => (c.boxId || '').trim().toUpperCase() === bid);
+          const boxComps = allComponents.filter(c => 
+            (c.boxId || '').trim().toUpperCase() === bid &&
+            (parseInt(c.rackId) || 1) === targetRack &&
+            _parseShelfId(c.shelfId) === targetShelf
+          );
           boxComps.sort((a, b) => (a.name || '').localeCompare(b.name || '', undefined, { numeric: true, sensitivity: 'base' }));
           const compLinesHtml = boxComps.length
             ? boxComps.map(c => `<div class="comp-line">• ${c.name}</div>`).join('')
             : `<div class="comp-line">Empty (${bid})</div>`;
-          const qrUrl = `${hostOrigin}${window.location.pathname}?box=${encodeURIComponent(bid)}`;
+          const qrUrl = `${hostOrigin}${window.location.pathname}?box=${encodeURIComponent(bid)}&rack=${targetRack}&shelf=${targetShelf}`;
           const qrImg = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrUrl)}`;
           return `
             <div class="sticker-card">

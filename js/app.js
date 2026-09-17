@@ -55,6 +55,8 @@ class App {
       const urlParams = new URLSearchParams(window.location.search);
       let boxParam = urlParams.get("box") || urlParams.get("boxId");
       let compParam = urlParams.get("comp") || urlParams.get("compId") || urlParams.get("id") || urlParams.get("q");
+      let rackParam = urlParams.get("rack") || urlParams.get("rackId") || urlParams.get("r");
+      let shelfParam = urlParams.get("shelf") || urlParams.get("shelfId") || urlParams.get("s");
       const hashStr = window.location.hash.replace("#", "");
 
       if (!boxParam && hashStr.startsWith("box=")) {
@@ -67,10 +69,11 @@ class App {
       const allComponents = StorageService.getComponents();
       const allBoxes = StorageService.getBoxes();
 
-      // If user scanned CP2102, CP2104, or SERIAL inside box parameter
-      if (boxParam && (boxParam.toUpperCase().includes("CP2102") || boxParam.toUpperCase().includes("CP2104") || boxParam.toUpperCase().includes("SERIAL") || boxParam.toUpperCase().includes("CONVERTER"))) {
-        compParam = boxParam;
-        boxParam = null;
+      let targetRack = rackParam ? parseInt(rackParam, 10) : null;
+      let targetShelf = null;
+      if (shelfParam) {
+        const s = String(shelfParam).trim().toUpperCase();
+        targetShelf = /^[A-Z]$/.test(s) ? s.charCodeAt(0) - 64 : parseInt(s, 10);
       }
 
       if (compParam || boxParam) {
@@ -81,12 +84,11 @@ class App {
         const cleanQuery = decodeURIComponent(compParam).trim().toUpperCase();
         console.log("Mobile QR Scan Searching Component:", cleanQuery);
 
-        const comp = allComponents.find(c => 
-          (c.name || "").trim().toUpperCase().includes(cleanQuery) ||
-          (c.id || "").trim().toUpperCase() === cleanQuery ||
-          (c.partNumber || "").trim().toUpperCase().includes(cleanQuery) ||
-          (c.barcode || "").trim().toUpperCase() === cleanQuery
-        );
+        const comp = allComponents.find(c => (c.id || "").trim().toUpperCase() === cleanQuery) ||
+          allComponents.find(c => (c.barcode || "").trim().toUpperCase() === cleanQuery) ||
+          allComponents.find(c => (c.partNumber || "").trim().toUpperCase() === cleanQuery) ||
+          allComponents.find(c => (c.name || "").trim().toUpperCase() === cleanQuery) ||
+          allComponents.find(c => (c.name || "").trim().toUpperCase().includes(cleanQuery));
 
         if (comp) {
           const cleanBoxId = (comp.boxId || "").trim().toUpperCase();
@@ -95,7 +97,11 @@ class App {
           this.selectedShelfId = comp.shelfId;
           this.refreshApp();
 
-          const boxComps = allComponents.filter(c => (c.boxId || "").trim().toUpperCase() === cleanBoxId);
+          const boxComps = allComponents.filter(c => 
+            (c.boxId || "").trim().toUpperCase() === cleanBoxId &&
+            Number(c.rackId) === Number(comp.rackId) &&
+            Number(c.shelfId) === Number(comp.shelfId)
+          );
           
           setTimeout(() => {
             if (boxComps.length > 1) {
@@ -110,12 +116,22 @@ class App {
 
       if (boxParam) {
         const cleanBoxId = decodeURIComponent(boxParam).trim().toUpperCase();
-        console.log("Mobile QR Scan Detected Box Parameter:", cleanBoxId);
+        console.log("Mobile QR Scan Detected Box Parameter:", cleanBoxId, "Rack:", targetRack, "Shelf:", targetShelf);
 
         let targetBoxId = cleanBoxId;
 
-        // 1. STRICT EXACT MATCH FIRST
-        let matchingComps = allComponents.filter(c => (c.boxId || "").trim().toUpperCase() === cleanBoxId);
+        // 1. STRICT EXACT MATCH, SCOPED TO RACK & SHELF IF PROVIDED IN QR URL
+        let matchingComps = allComponents.filter(c => {
+          if ((c.boxId || "").trim().toUpperCase() !== cleanBoxId) return false;
+          if (targetRack && Number(c.rackId) !== targetRack) return false;
+          if (targetShelf && Number(c.shelfId) !== targetShelf) return false;
+          return true;
+        });
+
+        // If no comps matched with rack/shelf filter, fall back to boxId match across catalog
+        if (matchingComps.length === 0) {
+          matchingComps = allComponents.filter(c => (c.boxId || "").trim().toUpperCase() === cleanBoxId);
+        }
 
         // 2. Normalized Hyphen/Space Match (e.g. BOX A014 -> BOX A-014 or BOX A015 -> BOX A-015)
         if (matchingComps.length === 0) {
@@ -131,7 +147,11 @@ class App {
           const exactBox = allBoxes.find(b => {
             const normB = (b.id || "").trim().toUpperCase().replace(/\s+/g, "").replace(/-/g, "");
             const targetNorm = cleanBoxId.replace(/\s+/g, "").replace(/-/g, "");
-            return normB === targetNorm || (b.id || "").trim().toUpperCase() === cleanBoxId;
+            const isMatch = normB === targetNorm || (b.id || "").trim().toUpperCase() === cleanBoxId;
+            if (!isMatch) return false;
+            if (targetRack && Number(b.rackId) !== targetRack) return false;
+            if (targetShelf && Number(b.shelfId) !== targetShelf) return false;
+            return true;
           });
           if (exactBox) {
             targetBoxId = exactBox.id;
@@ -139,46 +159,27 @@ class App {
           }
         }
 
-        // 4. Numeric Extract Match (e.g. "15" or "BOX 15" -> matches "BOX A-015" or "BOX D-015")
-        if (matchingComps.length === 0) {
-          const numMatch = cleanBoxId.match(/\d+/);
-          if (numMatch) {
-            const numStr = numMatch[0];
-            const paddedNum = numStr.padStart(3, '0'); // e.g. "15" -> "015"
+        const effectiveRackId = targetRack || (matchingComps[0] ? matchingComps[0].rackId : 1);
+        const effectiveShelfId = targetShelf || (matchingComps[0] ? matchingComps[0].shelfId : 1);
 
-            const matchedBox = allBoxes.find(b => 
-              (b.id || "").toUpperCase().includes(`-${paddedNum}`) ||
-              (b.id || "").toUpperCase().includes(`-${numStr}`) ||
-              (b.id || "").toUpperCase().includes(numStr)
-            );
+        const box = allBoxes.find(b => 
+          (b.id || "").trim().toUpperCase() === targetBoxId &&
+          Number(b.rackId) === Number(effectiveRackId) &&
+          Number(b.shelfId) === Number(effectiveShelfId)
+        ) || allBoxes.find(b => (b.id || "").trim().toUpperCase() === targetBoxId) ||
+          StorageService.ensureBoxExists(targetBoxId, effectiveRackId, effectiveShelfId);
 
-            if (matchedBox) {
-              targetBoxId = matchedBox.id;
-              matchingComps = allComponents.filter(c => (c.boxId || "").trim().toUpperCase() === (matchedBox.id || "").trim().toUpperCase());
-            }
-
-            if (matchingComps.length === 0) {
-              const comp = allComponents.find(c => 
-                (c.id || "").toUpperCase().includes(`-${paddedNum}`) ||
-                (c.id || "").toUpperCase().includes(`-${numStr}`)
-              );
-              if (comp) {
-                targetBoxId = comp.boxId;
-                matchingComps = allComponents.filter(c => (c.boxId || "").trim().toUpperCase() === (comp.boxId || "").trim().toUpperCase());
-              }
-            }
-          }
-        }
-
-        // Ensure box exists in storage registry
-        const box = StorageService.ensureBoxExists(targetBoxId);
         this.selectedBoxId = box.id;
         this.selectedRackId = box.rackId;
         this.selectedShelfId = box.shelfId;
         this.refreshApp();
 
         setTimeout(() => {
-          ModalManager.openBoxInspectorModal(box.id, matchingComps);
+          if (matchingComps.length === 1) {
+            ModalManager.openComponentInspector(matchingComps[0]);
+          } else {
+            ModalManager.openBoxInspectorModal(box.id, matchingComps);
+          }
         }, 150);
       }
     } catch (e) {

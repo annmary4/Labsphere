@@ -447,20 +447,73 @@ class ModalManager {
   }
 
   static handleScanBarcode() {
-    const code = document.getElementById("qr-input-code").value.trim();
-    if (!code) {
+    const rawCode = document.getElementById("qr-input-code").value.trim();
+    if (!rawCode) {
       alert("Please scan or enter a Barcode / QR Code / Component ID.");
       return;
     }
 
+    let code = rawCode;
+    // If user scanned a full LabSphere URL: e.g. http://.../?box=BOX%20A-001&rack=1&shelf=1
+    if (code.includes("?") || code.includes("box=") || code.includes("comp=")) {
+      try {
+        const queryStr = code.includes("?") ? code.split("?")[1] : code;
+        const params = new URLSearchParams(queryStr);
+        const box = params.get("box") || params.get("boxId");
+        const comp = params.get("comp") || params.get("compId") || params.get("id");
+        const rack = params.get("rack") || params.get("rackId") || params.get("r");
+        const shelf = params.get("shelf") || params.get("shelfId") || params.get("s");
+
+        this.closeScanQrModal();
+        if (comp) {
+          const target = StorageService.getComponents().find(c => (c.id || "").toUpperCase() === comp.toUpperCase()) ||
+                         StorageService.getComponentByBarcode(comp);
+          if (target) {
+            this.openComponentInspector(target);
+            return;
+          }
+        }
+        if (box) {
+          const allComps = StorageService.getComponents();
+          const cleanBox = decodeURIComponent(box).trim().toUpperCase();
+          const matched = allComps.filter(c => 
+            (c.boxId || "").trim().toUpperCase() === cleanBox &&
+            (!rack || Number(c.rackId) === Number(rack)) &&
+            (!shelf || Number(c.shelfId) === Number(shelf))
+          );
+          if (matched.length === 1) {
+            this.openComponentInspector(matched[0]);
+            return;
+          } else if (matched.length > 1) {
+            this.openBoxInspectorModal(cleanBox, matched);
+            return;
+          }
+        }
+      } catch (e) {}
+    }
+
+    // Direct Barcode / Component ID match
     const comp = StorageService.getComponentByBarcode(code);
-    if (!comp) {
-      alert(`No component found matching Barcode / QR Code '${code}'.`);
+    if (comp) {
+      this.closeScanQrModal();
+      this.openComponentInspector(comp);
       return;
     }
 
-    this.closeScanQrModal();
-    this.openComponentInspector(comp);
+    // Direct Box ID match (e.g. BOX A-001)
+    const cleanBox = code.toUpperCase();
+    const boxComps = StorageService.getComponents().filter(c => (c.boxId || "").trim().toUpperCase() === cleanBox);
+    if (boxComps.length > 0) {
+      this.closeScanQrModal();
+      if (boxComps.length === 1) {
+        this.openComponentInspector(boxComps[0]);
+      } else {
+        this.openBoxInspectorModal(cleanBox, boxComps);
+      }
+      return;
+    }
+
+    alert(`No component found matching Barcode / QR Code '${rawCode}'.`);
   }
 
   // --- ADMINISTRATOR USER MANAGEMENT MODAL ---
@@ -3595,14 +3648,14 @@ class ModalManager {
     } else {
       components = allComponents.filter(c => (c.boxId || "").trim().toUpperCase() === cleanBoxId);
     }
-    const box = allBoxes.find(b => (b.id || "").trim().toUpperCase() === cleanBoxId && (!components[0] || Number(b.rackId) === Number(components[0].rackId))) || allBoxes.find(b => (b.id || "").trim().toUpperCase() === cleanBoxId);
+    const box = allBoxes.find(b => (b.id || "").trim().toUpperCase() === cleanBoxId && (!components[0] || (Number(b.rackId) === Number(components[0].rackId) && Number(b.shelfId) === Number(components[0].shelfId)))) || allBoxes.find(b => (b.id || "").trim().toUpperCase() === cleanBoxId);
 
     const titleEl = document.getElementById("box-insp-modal-title");
     const pathEl = document.getElementById("box-insp-location-path");
     const cardsContainer = document.getElementById("box-insp-cards-container");
 
-    const rackId = box ? box.rackId : (components[0] ? components[0].rackId : 1);
-    const shelfId = box ? box.shelfId : (components[0] ? components[0].shelfId : 1);
+    const rackId = components[0] ? components[0].rackId : (box ? box.rackId : 1);
+    const shelfId = components[0] ? components[0].shelfId : (box ? box.shelfId : 1);
     const shelfChar = String.fromCharCode(64 + Number(shelfId));
 
     let hostOrigin = window.location.origin;
@@ -3611,7 +3664,7 @@ class ModalManager {
     }
 
     const mainCompId = components[0] ? components[0].id : cleanBoxId;
-    const qrTargetUrl = `${hostOrigin}${window.location.pathname}?comp=${encodeURIComponent(mainCompId)}&box=${encodeURIComponent(cleanBoxId)}`;
+    const qrTargetUrl = `${hostOrigin}${window.location.pathname}?box=${encodeURIComponent(cleanBoxId)}&rack=${rackId}&shelf=${shelfId}`;
     const qrImgUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(qrTargetUrl)}`;
 
     const typeCount = components.length;
@@ -3805,12 +3858,12 @@ class ModalManager {
     const components = StorageService.getComponents().filter(c => (c.boxId || "").trim().toUpperCase() === cleanBoxId);
     const box = StorageService.getBoxes().find(b => (b.id || "").trim().toUpperCase() === cleanBoxId);
     const mainCompId = components[0] ? components[0].id : cleanBoxId;
-
-    const targetUrl = encodedQrUrl ? decodeURIComponent(encodedQrUrl) : `${hostOrigin}${window.location.pathname}?comp=${encodeURIComponent(mainCompId)}&box=${encodeURIComponent(cleanBoxId)}`;
-    const qrImg = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(targetUrl)}`;
-    const rackId = box ? box.rackId : (components[0] ? components[0].rackId : 1);
-    const shelfId = box ? box.shelfId : (components[0] ? components[0].shelfId : 1);
+    const rackId = components[0] ? components[0].rackId : (box ? box.rackId : 1);
+    const shelfId = components[0] ? components[0].shelfId : (box ? box.shelfId : 1);
     const shelfChar = String.fromCharCode(64 + Number(shelfId));
+
+    const targetUrl = encodedQrUrl ? decodeURIComponent(encodedQrUrl) : `${hostOrigin}${window.location.pathname}?box=${encodeURIComponent(cleanBoxId)}&rack=${rackId}&shelf=${shelfId}`;
+    const qrImg = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(targetUrl)}`;
 
     let compNamesHtml = components.map(c => `<div class="comp-title-line">• ${c.name}</div>`).join("");
     if (!compNamesHtml) compNamesHtml = `<div class="comp-title-line">Box ${cleanBoxId}</div>`;
@@ -4125,12 +4178,16 @@ class ModalManager {
 
       let cardsHtml = pageBoxes.map(box => {
         const cleanBoxId = (box.id || "").trim().toUpperCase();
-        const boxComps = allComponents.filter(c => (c.boxId || "").trim().toUpperCase() === cleanBoxId);
+        const boxComps = allComponents.filter(c => 
+          (c.boxId || "").trim().toUpperCase() === cleanBoxId &&
+          (parseInt(c.rackId) || 1) === targetRack &&
+          this.parseShelfId(c.shelfId) === targetShelf
+        );
         boxComps.sort((a, b) => (a.name || "").localeCompare(b.name || "", undefined, { numeric: true, sensitivity: "base" }));
         let compLinesHtml = boxComps.map(c => `<div class="comp-line">• ${c.name}</div>`).join("");
         if (!compLinesHtml) compLinesHtml = `<div class="comp-line">Empty Box (${cleanBoxId})</div>`;
 
-        const qrTargetUrl = `${hostOrigin}${window.location.pathname}?box=${encodeURIComponent(cleanBoxId)}`;
+        const qrTargetUrl = `${hostOrigin}${window.location.pathname}?box=${encodeURIComponent(cleanBoxId)}&rack=${targetRack}&shelf=${targetShelf}`;
         const qrImgUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrTargetUrl)}`;
 
         return `
