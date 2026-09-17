@@ -78,6 +78,16 @@ class App {
 
       if (compParam || boxParam) {
         document.body.classList.add("qr-scan-mode");
+        window.__isGuestMode = true;
+        const splash = document.getElementById("labsphere-splash");
+        if (splash) {
+          splash.style.display = "none";
+          splash.remove();
+        }
+        const loginScreen = document.getElementById("login-screen");
+        if (loginScreen) loginScreen.style.display = "none";
+        const mainApp = document.getElementById("app");
+        if (mainApp) mainApp.style.display = "block";
       }
 
       if (compParam) {
@@ -579,7 +589,16 @@ class App {
     const mainApp = document.getElementById("app");
     const session = StorageService.getCurrentSession();
 
-    if (!session) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const hashStr = window.location.hash.replace("#", "");
+    const isQrScan = urlParams.has("box") || urlParams.has("boxId") || 
+                     urlParams.has("comp") || urlParams.has("compId") || 
+                     urlParams.has("id") || urlParams.has("q") ||
+                     hashStr.startsWith("box=") || hashStr.startsWith("comp=") ||
+                     document.body.classList.contains("qr-scan-mode") ||
+                     window.__isGuestMode;
+
+    if (!session && !isQrScan) {
       if (loginScreen) loginScreen.style.display = "flex";
       if (mainApp) mainApp.style.display = "none";
       if (window.lucide) window.lucide.createIcons();
@@ -588,6 +607,70 @@ class App {
 
     if (loginScreen) loginScreen.style.display = "none";
     if (mainApp) mainApp.style.display = "block";
+
+    // Public Guest / QR Scan Viewer Mode (Unauthenticated)
+    if (!session) {
+      const roleBadge = document.getElementById("rbac-role-badge");
+      const userChip = document.getElementById("user-profile-name");
+      const userDesig = document.getElementById("user-profile-designation");
+
+      if (roleBadge) {
+        roleBadge.innerText = "Public Guest View";
+        roleBadge.className = "role-badge role-guest";
+      }
+      if (userDesig) {
+        userDesig.innerText = "Public Visitor (Read-Only)";
+      }
+      if (userChip) {
+        userChip.innerText = "Guest Visitor";
+        userChip.title = "Public Guest - Scanned QR code component passport is accessible to everyone!";
+      }
+
+      const btnLogout = document.getElementById("btn-nav-logout");
+      if (btnLogout) {
+        btnLogout.style.display = "none";
+      }
+
+      const btnLogin = document.getElementById("btn-nav-login");
+      if (btnLogin) {
+        btnLogin.style.display = "inline-flex";
+        btnLogin.onclick = () => {
+          if (loginScreen) loginScreen.style.display = "flex";
+        };
+      }
+
+      // Hide all administrative and edit actions for guests
+      const btnAdminApproveHeader = document.getElementById("btn-admin-approve");
+      if (btnAdminApproveHeader) btnAdminApproveHeader.style.setProperty("display", "none", "important");
+
+      const headerAdminButtons = [
+        document.getElementById("btn-audit-log"),
+        document.getElementById("btn-procurement-insights"),
+        document.getElementById("btn-export-ledger-csv")
+      ];
+      headerAdminButtons.forEach(el => {
+        if (el) el.style.setProperty("display", "none", "important");
+      });
+
+      const btnAddComp = document.getElementById("btn-add-component");
+      if (btnAddComp) btnAddComp.style.display = "none";
+      const btnUserMgr = document.getElementById("btn-user-manager");
+      if (btnUserMgr) btnUserMgr.style.display = "none";
+      const popoverUserMgr = document.getElementById("popover-btn-user-manager");
+      if (popoverUserMgr) popoverUserMgr.style.display = "none";
+      const btnMultiItemReqHeader = document.getElementById("btn-multi-item-req");
+      if (btnMultiItemReqHeader) btnMultiItemReqHeader.style.setProperty("display", "none", "important");
+      const btnStudentReqsHeader = document.getElementById("btn-student-reqs");
+      if (btnStudentReqsHeader) btnStudentReqsHeader.style.setProperty("display", "none", "important");
+
+      if (window.lucide) window.lucide.createIcons();
+      return;
+    }
+
+    const btnLogin = document.getElementById("btn-nav-login");
+    if (btnLogin) {
+      btnLogin.style.display = "none";
+    }
 
     const roleKey = StorageService.getRole();
     const roleBadge = document.getElementById("rbac-role-badge");

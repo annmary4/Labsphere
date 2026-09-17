@@ -1436,7 +1436,7 @@ class StorageService {
 
   static getRole() {
     const session = this.getCurrentSession();
-    return session ? session.role : "ADMIN";
+    return session ? session.role : "GUEST";
   }
 
   static setRole(roleKey) {

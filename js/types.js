@@ -7,7 +7,8 @@ const USER_ROLES = {
   TEAM_LEAD: "Team Lead (Approve Student Requisitions)",
   ENGINEER: "Lab Engineer / Maintainer",
   ADMIN: "Lab Administrator (Fulfill & Issue Stock)",
-  MANAGEMENT: "Research Lead (Reports & BOM)"
+  MANAGEMENT: "Research Lead (Reports & BOM)",
+  GUEST: "Public Guest (QR Scan & Catalog Viewer)"
 };
 
 /**

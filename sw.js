@@ -2,18 +2,18 @@
    LabSphere Service Worker - Offline Cache & PWA Support
    ============================================================ */
 
-const CACHE_NAME = 'labsphere-v13400_qr_shelf_b_text_readable';
+const CACHE_NAME = 'labsphere-v13410_public_qr_guest_access';
 const ASSETS_TO_CACHE = [
   '/Labsphere/',
   '/Labsphere/index.html',
   '/Labsphere/css/styles.css?v=13370_box_a001_single_item',
-  '/Labsphere/js/app.js?v=13370_box_a001_single_item',
-  '/Labsphere/js/types.js?v=13370_box_a001_single_item',
-  '/Labsphere/js/initialData.js?v=13370_box_a001_single_item',
-  '/Labsphere/js/storage.js?v=13370_box_a001_single_item',
-  '/Labsphere/js/rackViewer.js?v=13370_box_a001_single_item',
-  '/Labsphere/js/componentsView.js?v=13370_box_a001_single_item',
-  '/Labsphere/js/modalManager.js?v=13400_qr_shelf_b_text_readable',
+  '/Labsphere/js/app.js?v=13410_public_qr_guest_access',
+  '/Labsphere/js/types.js?v=13410_public_qr_guest_access',
+  '/Labsphere/js/initialData.js?v=13410_public_qr_guest_access',
+  '/Labsphere/js/storage.js?v=13410_public_qr_guest_access',
+  '/Labsphere/js/rackViewer.js?v=13410_public_qr_guest_access',
+  '/Labsphere/js/componentsView.js?v=13410_public_qr_guest_access',
+  '/Labsphere/js/modalManager.js?v=13410_public_qr_guest_access',
   '/Labsphere/icons/icon-192.png',
   '/Labsphere/icons/icon-512.png',
   '/Labsphere/manifest.json'

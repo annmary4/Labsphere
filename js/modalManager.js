@@ -955,15 +955,24 @@ class ModalManager {
     });
 
     if (window.lucide) window.lucide.createIcons();
+    if (backdrop.parentNode !== document.body) {
+      document.body.appendChild(backdrop);
+    }
     backdrop.classList.remove("hidden");
-    backdrop.style.display = "flex";
+    backdrop.style.cssText = "display:flex !important; position:fixed !important; inset:0 !important; width:100vw !important; height:100vh !important; z-index:9999999 !important; background:rgba(15,23,42,0.9) !important; backdrop-filter:blur(6px) !important; align-items:center !important; justify-content:center !important; visibility:visible !important; opacity:1 !important;";
+
+    backdrop.onclick = (e) => {
+      if (e.target === backdrop) {
+        ModalManager.closeBoxInspectorModal();
+      }
+    };
   }
 
   static closeBoxInspectorModal() {
     const backdrop = document.getElementById("box-inspector-modal");
     if (backdrop) {
       backdrop.classList.add("hidden");
-      backdrop.style.display = "none";
+      backdrop.style.cssText = "display:none !important; visibility:hidden !important; opacity:0 !important; z-index:-1 !important;";
     }
   }
 
@@ -3556,11 +3565,8 @@ class ModalManager {
       const printBoxQrBtn = card.querySelector(".btn-print-box-qr");
       if (printBoxQrBtn) {
         printBoxQrBtn.addEventListener("click", () => {
-          let hostOrigin = window.location.origin;
-          if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
-            hostOrigin = `http://192.168.81.89:${window.location.port || 3000}`;
-          }
-          const qrTargetUrl = `${hostOrigin}${window.location.pathname}?box=${encodeURIComponent(box.id)}`;
+          const baseUrl = ModalManager.getPublicLabBaseUrl();
+          const qrTargetUrl = `${baseUrl}/?box=${encodeURIComponent(box.id)}`;
           this.printBoxQrCode(box.id, encodeURIComponent(qrTargetUrl));
         });
       }
@@ -3658,13 +3664,9 @@ class ModalManager {
     const shelfId = components[0] ? components[0].shelfId : (box ? box.shelfId : 1);
     const shelfChar = String.fromCharCode(64 + Number(shelfId));
 
-    let hostOrigin = window.location.origin;
-    if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
-      hostOrigin = `http://192.168.81.89:${window.location.port || 3000}`;
-    }
-
+    const baseUrl = ModalManager.getPublicLabBaseUrl();
     const mainCompId = components[0] ? components[0].id : cleanBoxId;
-    const qrTargetUrl = `${hostOrigin}${window.location.pathname}?box=${encodeURIComponent(cleanBoxId)}&rack=${rackId}&shelf=${shelfId}`;
+    const qrTargetUrl = `${baseUrl}/?box=${encodeURIComponent(cleanBoxId)}&rack=${rackId}&shelf=${shelfId}`;
     const qrImgUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(qrTargetUrl)}`;
 
     const typeCount = components.length;
@@ -3845,16 +3847,29 @@ class ModalManager {
     }
   }
 
+  static getPublicLabBaseUrl() {
+    try {
+      const origin = window.location.origin;
+      const hostname = window.location.hostname;
+      // If hosted on GitHub Pages or custom public domain:
+      if (origin && origin.includes("annmary4.github.io")) {
+        return "https://annmary4.github.io/Labsphere";
+      }
+      if (hostname && !["localhost", "127.0.0.1"].includes(hostname) && !hostname.startsWith("192.168.") && !hostname.startsWith("10.") && !hostname.startsWith("172.")) {
+        return `${origin}${window.location.pathname.replace(/\/+$/, "")}`;
+      }
+    } catch (e) {}
+    // Canonical public deployment URL accessible to anyone on any phone/network
+    return "https://annmary4.github.io/Labsphere";
+  }
+
   static printBoxQrCode(boxIdInput, encodedQrUrl) {
     if (!StorageService.isRole("ADMIN")) {
       alert("Access Restricted: Only Lab Administrators can print Box QR labels.");
       return;
     }
     const cleanBoxId = (boxIdInput || "").trim().toUpperCase();
-    let hostOrigin = window.location.origin;
-    if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
-      hostOrigin = `http://192.168.81.89:${window.location.port || 3000}`;
-    }
+    const baseUrl = ModalManager.getPublicLabBaseUrl();
     const components = StorageService.getComponents().filter(c => (c.boxId || "").trim().toUpperCase() === cleanBoxId);
     const box = StorageService.getBoxes().find(b => (b.id || "").trim().toUpperCase() === cleanBoxId);
     const mainCompId = components[0] ? components[0].id : cleanBoxId;
@@ -3862,7 +3877,7 @@ class ModalManager {
     const shelfId = components[0] ? components[0].shelfId : (box ? box.shelfId : 1);
     const shelfChar = String.fromCharCode(64 + Number(shelfId));
 
-    const targetUrl = encodedQrUrl ? decodeURIComponent(encodedQrUrl) : `${hostOrigin}${window.location.pathname}?box=${encodeURIComponent(cleanBoxId)}&rack=${rackId}&shelf=${shelfId}`;
+    const targetUrl = encodedQrUrl ? decodeURIComponent(encodedQrUrl) : `${baseUrl}/?box=${encodeURIComponent(cleanBoxId)}&rack=${rackId}&shelf=${shelfId}`;
     const qrImg = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(targetUrl)}`;
 
     let compNamesHtml = components.map(c => `<div class="comp-title-line">• ${c.name}</div>`).join("");
@@ -3908,12 +3923,8 @@ class ModalManager {
     const c = components.find(item => item.id === componentId);
     if (!c) return;
 
-    let hostOrigin = window.location.origin;
-    if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
-      hostOrigin = `http://192.168.81.89:${window.location.port || 3000}`;
-    }
-
-    const qrTargetUrl = `${hostOrigin}${window.location.pathname}?comp=${encodeURIComponent(c.id)}`;
+    const baseUrl = ModalManager.getPublicLabBaseUrl();
+    const qrTargetUrl = `${baseUrl}/?comp=${encodeURIComponent(c.id)}`;
     const qrImg = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(qrTargetUrl)}`;
 
     const shelfChar = String.fromCharCode(64 + Number(c.shelfId || 1));
@@ -3971,10 +3982,7 @@ class ModalManager {
       return idA.localeCompare(idB, undefined, { numeric: true, sensitivity: "base" });
     });
 
-    let hostOrigin = window.location.origin;
-    if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
-      hostOrigin = `http://192.168.81.89:${window.location.port || 3000}`;
-    }
+    const baseUrl = ModalManager.getPublicLabBaseUrl();
 
     let pagesHtml = "";
     const LABELS_PER_PAGE = 17;
@@ -3997,7 +4005,9 @@ class ModalManager {
           compLinesHtml = boxComps.map(c => `<div class="comp-line multi">• ${c.name}</div>`).join("");
         }
 
-        const qrTargetUrl = `${hostOrigin}${window.location.pathname}?box=${encodeURIComponent(cleanBoxId)}`;
+        const primaryCompId = boxComps[0] ? boxComps[0].id : "";
+        const compQuery = primaryCompId ? `&comp=${encodeURIComponent(primaryCompId)}` : "";
+        const qrTargetUrl = `${baseUrl}/?box=${encodeURIComponent(cleanBoxId)}${compQuery}`;
         const qrImgUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrTargetUrl)}`;
 
         return `
@@ -4203,10 +4213,7 @@ class ModalManager {
       return idA.localeCompare(idB, undefined, { numeric: true, sensitivity: "base" });
     });
 
-    let hostOrigin = window.location.origin;
-    if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
-      hostOrigin = `http://192.168.81.89:${window.location.port || 3000}`;
-    }
+    const baseUrl = ModalManager.getPublicLabBaseUrl();
 
     let pagesHtml = "";
     const LABELS_PER_PAGE = 17;
@@ -4235,7 +4242,7 @@ class ModalManager {
 
         const primaryCompId = boxComps[0] ? boxComps[0].id : "";
         const compQuery = primaryCompId ? `&comp=${encodeURIComponent(primaryCompId)}` : "";
-        const qrTargetUrl = `${hostOrigin}${window.location.pathname}?box=${encodeURIComponent(cleanBoxId)}&rack=${targetRack}&shelf=${targetShelf}${compQuery}`;
+        const qrTargetUrl = `${baseUrl}/?box=${encodeURIComponent(cleanBoxId)}&rack=${targetRack}&shelf=${targetShelf}${compQuery}`;
         const qrImgUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrTargetUrl)}`;
 
         return `

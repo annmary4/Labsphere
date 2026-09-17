@@ -213,6 +213,15 @@
         </div>
       </div>
 
+      <div style="margin-top: 16px; text-align: center; border-top: 1px solid var(--border-color); padding-top: 14px;">
+        <button type="button" class="btn btn-secondary btn-block" onclick="enterGuestPublicMode()" style="display:flex; align-items:center; justify-content:center; gap:8px; font-weight:700; width:100%; padding:10px 16px; background:rgba(255,255,255,0.06); border:1px solid var(--border-color); border-radius:8px; color:var(--text-main); cursor:pointer;">
+          <i data-lucide="globe"></i> Explore Catalog as Public Guest
+        </button>
+        <p style="font-size:0.75rem; color:var(--text-muted); margin-top:6px; margin-bottom:0;">
+          Instant access: View lab inventory, component photos, pinouts & locations without signing in.
+        </p>
+      </div>
+
       <div class="login-card-footer">
         <span><i data-lucide="shield-check"></i> Encrypted Laboratory Authentication Portal</span>
       </div>
@@ -1984,28 +1993,50 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
   </div>
 
   <!-- JavaScript App Logic with Cache Busters -->
-  <script src="js/types.js?v=13370_box_a001_single_item"></script>
-  <script src="js/initialData.js?v=13370_box_a001_single_item"></script>
-  <script src="js/storage.js?v=13370_box_a001_single_item"></script>
-  <script src="js/rackViewer.js?v=13370_box_a001_single_item"></script>
-  <script src="js/componentsView.js?v=13370_box_a001_single_item"></script>
-  <script src="js/modalManager.js?v=13400_qr_shelf_b_text_readable"></script>
-  <script src="js/app.js?v=13370_box_a001_single_item"></script>
+  <script src="js/types.js?v=13410_public_qr_guest_access"></script>
+  <script src="js/initialData.js?v=13410_public_qr_guest_access"></script>
+  <script src="js/storage.js?v=13410_public_qr_guest_access"></script>
+  <script src="js/rackViewer.js?v=13410_public_qr_guest_access"></script>
+  <script src="js/componentsView.js?v=13410_public_qr_guest_access"></script>
+  <script src="js/modalManager.js?v=13410_public_qr_guest_access"></script>
+  <script src="js/app.js?v=13410_public_qr_guest_access"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       if (window.lucide) {
         window.lucide.createIcons();
       }
 
-      // ---- Splash Screen Dismiss ----
-      // Show the splash for 2.3 seconds then fade it out and remove it
+      // Check if arriving via QR scan or direct item link (?box=... or ?comp=... or #box=...)
+      const urlParams = new URLSearchParams(window.location.search);
+      const hashStr = window.location.hash.replace('#', '');
+      const isQrArrival = urlParams.has('box') || urlParams.has('boxId') || 
+                          urlParams.has('comp') || urlParams.has('compId') || 
+                          urlParams.has('id') || urlParams.has('q') ||
+                          hashStr.startsWith('box=') || hashStr.startsWith('comp=');
+
       const splash = document.getElementById('labsphere-splash');
-      if (splash) {
-        setTimeout(() => {
-          splash.classList.add('splash-hidden');
-          // Remove from DOM after fade-out transition completes (0.7s)
-          setTimeout(() => splash.remove(), 750);
-        }, 2300);
+      const loginScreen = document.getElementById('login-screen');
+      const mainApp = document.getElementById('app');
+
+      if (isQrArrival) {
+        window.__isGuestMode = true;
+        document.body.classList.add('qr-scan-mode');
+        // Dismiss splash screen immediately for instant access
+        if (splash) {
+          splash.style.display = 'none';
+          splash.remove();
+        }
+        // Hide login screen immediately so it never blocks the guest
+        if (loginScreen) loginScreen.style.display = 'none';
+        if (mainApp) mainApp.style.display = 'block';
+      } else {
+        // Normal splash for root landing
+        if (splash) {
+          setTimeout(() => {
+            splash.classList.add('splash-hidden');
+            setTimeout(() => splash.remove(), 750);
+          }, 2300);
+        }
       }
 
       // Automatically bypass login screen if user is already logged in (e.g. switching to Desktop Site mode or refreshing)
@@ -2029,18 +2060,18 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
       return isNaN(n) ? 1 : n;
     }
 
-    // Cache the server's LAN IP (fetched once from /api/network-ip)
-    let _serverLanUrl = null;
-    async function _getServerLanUrl() {
-      if (_serverLanUrl) return _serverLanUrl;
+    function _getPublicLabBaseUrl() {
       try {
-        const r = await fetch('/api/network-ip');
-        const d = await r.json();
-        _serverLanUrl = d.serverUrl || window.location.origin;
-      } catch (e) {
-        _serverLanUrl = window.location.origin;
-      }
-      return _serverLanUrl;
+        const origin = window.location.origin;
+        const hostname = window.location.hostname;
+        if (origin && origin.includes("annmary4.github.io")) {
+          return "https://annmary4.github.io/Labsphere";
+        }
+        if (hostname && !["localhost", "127.0.0.1"].includes(hostname) && !hostname.startsWith("192.168.") && !hostname.startsWith("10.") && !hostname.startsWith("172.")) {
+          return `${origin}${window.location.pathname.replace(/\/+$/, "")}`;
+        }
+      } catch (e) {}
+      return "https://annmary4.github.io/Labsphere";
     }
 
     async function printShelfBoxQR(rackIdInput, shelfIdInput) {
@@ -2083,8 +2114,8 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
         return idA.localeCompare(idB, undefined, { numeric: true, sensitivity: 'base' });
       });
 
-      // Fetch real LAN IP from server so QR codes work on mobile devices
-      const hostOrigin = await _getServerLanUrl();
+      // Use canonical public URL so QR labels work for anyone on mobile devices
+      const baseUrl = _getPublicLabBaseUrl();
 
       const LABELS_PER_PAGE = 17;
       const totalPages = Math.ceil(activeBoxes.length / LABELS_PER_PAGE);
@@ -2112,7 +2143,7 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
 
           const primaryCompId = boxComps[0] ? boxComps[0].id : '';
           const compQuery = primaryCompId ? `&comp=${encodeURIComponent(primaryCompId)}` : '';
-          const qrUrl = `${hostOrigin}${window.location.pathname}?box=${encodeURIComponent(bid)}&rack=${targetRack}&shelf=${targetShelf}${compQuery}`;
+          const qrUrl = `${baseUrl}/?box=${encodeURIComponent(bid)}&rack=${targetRack}&shelf=${targetShelf}${compQuery}`;
           const qrImg = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrUrl)}`;
           return `
             <div class="sticker-card">
@@ -2209,6 +2240,23 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
       if (window.lucide) window.lucide.createIcons();
     }
 
+    function enterGuestPublicMode() {
+      window.__isGuestMode = true;
+      document.body.classList.add('qr-scan-mode');
+      const loginScreen = document.getElementById('login-screen');
+      const mainApp = document.getElementById('app');
+      if (loginScreen) loginScreen.style.display = 'none';
+      if (mainApp) mainApp.style.display = 'block';
+      if (window.app) {
+        window.app.updateAuthUI();
+        window.app.refreshApp();
+      }
+      if (window.lucide) window.lucide.createIcons();
+      if (window.ModalManager && window.ModalManager.showToast) {
+        window.ModalManager.showToast('Entered Public Guest Mode. You can browse and inspect all components freely.', 'info');
+      }
+    }
+
     function loginWithRole(roleKey) {
       const users = StorageService.getUsers();
       const user = users.find(u => u.role === roleKey) || users[0];
@@ -2294,7 +2342,7 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/Labsphere/sw.js?v=13370_box_a001_single_item', { scope: '/Labsphere/' })
+        navigator.serviceWorker.register('/Labsphere/sw.js?v=13410_public_qr_guest_access', { scope: '/Labsphere/' })
           .then(reg => {
             console.log('[LabSphere PWA] Service Worker registered:', reg.scope);
             if (reg.update) reg.update();
