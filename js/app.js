@@ -321,7 +321,16 @@ class App {
         </svg>
       `);
       imgEl.setAttribute("referrerpolicy", "no-referrer");
-      imgEl.src = c.imageUrl || fallbackSvg;
+
+      const resolveCompImg = (url) => {
+        if (!url) return fallbackSvg;
+        if (url.startsWith("data:") || url.startsWith("http://") || url.startsWith("https://")) return url;
+        const cleanPath = url.replace(/^\.?\/+/, "");
+        const isGitHubPages = typeof window !== "undefined" && window.location && window.location.pathname.startsWith("/Labsphere");
+        return (isGitHubPages ? "/Labsphere/" : "./") + cleanPath;
+      };
+
+      imgEl.src = resolveCompImg(c.imageUrl);
       imgEl.onerror = () => { imgEl.src = fallbackSvg; };
     }
 

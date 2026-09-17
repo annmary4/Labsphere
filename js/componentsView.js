@@ -41,6 +41,18 @@ class ComponentsView {
     if (window.lucide) window.lucide.createIcons();
   }
 
+  static resolveImageUrl(url) {
+    if (!url || typeof url !== "string") return "";
+    const clean = url.trim();
+    if (!clean) return "";
+    if (clean.startsWith("data:") || clean.startsWith("http://") || clean.startsWith("https://")) {
+      return clean;
+    }
+    const pathPart = clean.replace(/^\.?\/+/, "");
+    const isGitHubPages = typeof window !== "undefined" && window.location && window.location.pathname.startsWith("/Labsphere");
+    return (isGitHubPages ? "/Labsphere/" : "./") + pathPart;
+  }
+
   static cleanImageUrl(rawUrl) {
     if (!rawUrl || typeof rawUrl !== "string") return "";
     let url = rawUrl.trim();
@@ -77,11 +89,11 @@ class ComponentsView {
     }
 
     if (customImage && defaultUrl) {
-      return defaultUrl;
+      return this.resolveImageUrl(defaultUrl);
     }
 
     if (defaultUrl && (defaultUrl.startsWith("data:image/") || !defaultUrl.includes("images.unsplash.com"))) {
-      return defaultUrl;
+      return this.resolveImageUrl(defaultUrl);
     }
 
     const n = name.toLowerCase();
@@ -460,7 +472,7 @@ class ComponentsView {
         stockLabel = "Low Stock";
       }
 
-      const imgSrc = c.imageUrl || "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&q=80";
+      const imgSrc = this.getAccurateImageForComponent(c);
       const manufacturer = c.manufacturer || "Lab Vendor";
 
       tr.innerHTML = `
