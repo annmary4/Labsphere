@@ -3878,7 +3878,7 @@ class ModalManager {
             .label-box { border: 3px solid #0f172a; border-radius: 16px; padding: 20px; display: inline-block; width: 100%; max-width: 320px; box-sizing: border-box; background: #fff; }
             .comp-name-container { display: flex; flex-direction: column; gap: 4px; margin-bottom: 8px; text-align: center; }
             .comp-title-line { font-size: 16px; font-weight: 800; color: #0f172a; line-height: 1.2; word-break: break-word; }
-            .box-tag { font-size: 13px; font-weight: 700; font-family: monospace; color: #0284c7; margin-bottom: 12px; }
+            .box-tag { font-size: 16px; font-weight: 800; font-family: monospace; color: #000000; margin-bottom: 12px; }
             img { width: 220px; height: 220px; border: 1px solid #cbd5e1; border-radius: 8px; padding: 4px; background: #fff; }
           </style>
         </head>
@@ -3927,7 +3927,7 @@ class ModalManager {
             body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; text-align: center; padding: 20px; color: #0f172a; background: #fff; }
             .label-box { border: 3px solid #0f172a; border-radius: 16px; padding: 20px; display: inline-block; width: 100%; max-width: 320px; box-sizing: border-box; background: #fff; }
             .comp-name { font-size: 22px; font-weight: 800; color: #0f172a; margin-bottom: 6px; line-height: 1.2; }
-            .box-tag { font-size: 13px; font-weight: 700; font-family: monospace; color: #0284c7; margin-bottom: 12px; }
+            .box-tag { font-size: 16px; font-weight: 800; font-family: monospace; color: #000000; margin-bottom: 12px; }
             img { width: 220px; height: 220px; border: 1px solid #cbd5e1; border-radius: 8px; padding: 4px; background: #fff; }
           </style>
         </head>
@@ -4084,10 +4084,10 @@ class ModalManager {
               text-overflow: ellipsis;
             }
             .box-id-badge {
-              font-size: 10px;
+              font-size: 12px;
               font-weight: 800;
               font-family: monospace;
-              color: #0284c7;
+              color: #000000;
               margin: 2px 0;
             }
             img {
@@ -4283,10 +4283,10 @@ class ModalManager {
               text-overflow: ellipsis;
             }
             .box-id-badge {
-              font-size: 10px;
+              font-size: 12px;
               font-weight: 800;
               font-family: monospace;
-              color: #0284c7;
+              color: #000000;
               margin: 2px 0;
             }
             img {
