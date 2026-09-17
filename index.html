@@ -19,7 +19,7 @@
     rel="stylesheet">
 
   <!-- CSS with cache buster -->
-  <link rel="stylesheet" href="css/styles.css?v=13300_team_lead_selection_anson_amal">
+  <link rel="stylesheet" href="css/styles.css?v=13420_standalone_qr_passport">
 
   <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -71,6 +71,117 @@
       <!-- Loading bar -->
       <div class="splash-loader-track">
         <div class="splash-loader-bar"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Standalone QR Code Component Passport (Isolated View for Scanned Components) -->
+  <div id="qr-passport-view" class="qr-passport-screen" style="display:none;">
+    <div class="passport-container" id="passport-container-root">
+      <div class="passport-header">
+        <div class="passport-brand">
+          <div class="passport-icon"><i data-lucide="cpu"></i></div>
+          <div class="passport-title-group">
+            <span class="passport-title">LabSphere</span>
+            <span class="passport-subtitle">Component Passport</span>
+          </div>
+        </div>
+        <button type="button" class="btn-passport-close" id="btn-passport-close-top" onclick="closeQrPassport()" title="Close Component Passport">
+          <i data-lucide="x"></i>
+          <span>Close</span>
+        </button>
+      </div>
+
+      <!-- Multi-item box selector (if box has >1 component) -->
+      <div id="passport-box-selector" class="passport-box-selector hidden"></div>
+
+      <div class="passport-body" id="passport-body-content">
+        <!-- Image Display -->
+        <div class="passport-image-container">
+          <img id="passport-comp-image" src="" alt="Component Image" />
+          <div id="passport-stock-badge" class="passport-badge">In Stock</div>
+        </div>
+
+        <!-- Main Identification -->
+        <div class="passport-section main-info">
+          <div class="passport-category" id="passport-comp-category">Category</div>
+          <h1 class="passport-name" id="passport-comp-name">Component Name</h1>
+          <div class="passport-meta">
+            <span id="passport-comp-pn">PN: N/A</span>
+            <span class="meta-sep">•</span>
+            <span id="passport-comp-mfg">Manufacturer</span>
+          </div>
+        </div>
+
+        <!-- Storage Location Details -->
+        <div class="passport-section location-info">
+          <div class="section-heading"><i data-lucide="map-pin"></i> Storage Location</div>
+          <div class="location-grid">
+            <div class="location-item">
+              <span class="loc-label">Rack</span>
+              <span class="loc-value" id="passport-comp-rack">Rack 1</span>
+            </div>
+            <div class="location-item">
+              <span class="loc-label">Shelf</span>
+              <span class="loc-value" id="passport-comp-shelf">Shelf B</span>
+            </div>
+            <div class="location-item">
+              <span class="loc-label">Box ID</span>
+              <span class="loc-value highlight" id="passport-comp-box">BOX A-001</span>
+            </div>
+            <div class="location-item">
+              <span class="loc-label">Layer / Tray</span>
+              <span class="loc-value" id="passport-comp-layer">Layer 1</span>
+            </div>
+          </div>
+          <div class="location-path" id="passport-comp-full-path">
+            Main Robotics Lab › Room 101 › Rack 1 › Shelf B › BOX A-001
+          </div>
+        </div>
+
+        <!-- Inventory & Quantity Details -->
+        <div class="passport-section inventory-info">
+          <div class="section-heading"><i data-lucide="package"></i> Inventory Status</div>
+          <div class="status-row">
+            <div class="status-metric">
+              <span class="metric-label">Available Qty</span>
+              <span class="metric-value" id="passport-comp-qty">10 pcs</span>
+            </div>
+            <div class="status-metric">
+              <span class="metric-label">Lifecycle State</span>
+              <span class="metric-value badge" id="passport-comp-state">AVAILABLE</span>
+            </div>
+            <div class="status-metric">
+              <span class="metric-label">Est. Unit Value</span>
+              <span class="metric-value" id="passport-comp-price">₹450</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Purpose & Technical Specifications -->
+        <div class="passport-section specs-info">
+          <div class="section-heading"><i data-lucide="file-text"></i> Purpose & Technical Details</div>
+          <div class="spec-block">
+            <strong>Purpose:</strong>
+            <p id="passport-comp-purpose">Component purpose description.</p>
+          </div>
+          <div class="spec-block" style="margin-top:8px;">
+            <strong>Specifications:</strong>
+            <p id="passport-comp-specs">Technical specifications.</p>
+          </div>
+          <div id="passport-datasheet-wrap" class="datasheet-wrap hidden" style="margin-top:10px;">
+            <a id="passport-comp-datasheet" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm" style="display:inline-flex; align-items:center; gap:6px;">
+              <i data-lucide="external-link"></i> Official Datasheet
+            </a>
+          </div>
+        </div>
+
+        <!-- Bottom Action Bar with Close Button -->
+        <div class="passport-footer">
+          <button type="button" class="btn-passport-close-bottom" onclick="closeQrPassport()">
+            <i data-lucide="x"></i> Close
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -1993,13 +2104,13 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
   </div>
 
   <!-- JavaScript App Logic with Cache Busters -->
-  <script src="js/types.js?v=13410_public_qr_guest_access"></script>
-  <script src="js/initialData.js?v=13410_public_qr_guest_access"></script>
-  <script src="js/storage.js?v=13410_public_qr_guest_access"></script>
-  <script src="js/rackViewer.js?v=13410_public_qr_guest_access"></script>
-  <script src="js/componentsView.js?v=13410_public_qr_guest_access"></script>
-  <script src="js/modalManager.js?v=13410_public_qr_guest_access"></script>
-  <script src="js/app.js?v=13410_public_qr_guest_access"></script>
+  <script src="js/types.js?v=13420_standalone_qr_passport"></script>
+  <script src="js/initialData.js?v=13420_standalone_qr_passport"></script>
+  <script src="js/storage.js?v=13420_standalone_qr_passport"></script>
+  <script src="js/rackViewer.js?v=13420_standalone_qr_passport"></script>
+  <script src="js/componentsView.js?v=13420_standalone_qr_passport"></script>
+  <script src="js/modalManager.js?v=13420_standalone_qr_passport"></script>
+  <script src="js/app.js?v=13420_standalone_qr_passport"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       if (window.lucide) {
@@ -2019,16 +2130,18 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
       const mainApp = document.getElementById('app');
 
       if (isQrArrival) {
-        window.__isGuestMode = true;
+        window.__isQrPassportMode = true;
         document.body.classList.add('qr-scan-mode');
         // Dismiss splash screen immediately for instant access
         if (splash) {
           splash.style.display = 'none';
           splash.remove();
         }
-        // Hide login screen immediately so it never blocks the guest
+        // Hide login screen AND main app so ONLY the component passport shows
         if (loginScreen) loginScreen.style.display = 'none';
-        if (mainApp) mainApp.style.display = 'block';
+        if (mainApp) mainApp.style.display = 'none';
+        const passportView = document.getElementById('qr-passport-view');
+        if (passportView) passportView.style.display = 'flex';
       } else {
         // Normal splash for root landing
         if (splash) {
@@ -2037,16 +2150,16 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
             setTimeout(() => splash.remove(), 750);
           }, 2300);
         }
-      }
 
-      // Automatically bypass login screen if user is already logged in (e.g. switching to Desktop Site mode or refreshing)
-      try {
-        const session = StorageService.getCurrentSession();
-        if (session) {
-          console.log("🔒 Active Session Restored on Startup:", session.fullName);
-          redirectToDashboard();
-        }
-      } catch (err) { }
+        // Automatically bypass login screen if user is already logged in (only on normal non-QR visits)
+        try {
+          const session = StorageService.getCurrentSession();
+          if (session) {
+            console.log("🔒 Active Session Restored on Startup:", session.fullName);
+            redirectToDashboard();
+          }
+        } catch (err) { }
+      }
     });
   </script>
 
@@ -2257,6 +2370,51 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
       }
     }
 
+    function closeQrPassport() {
+      // 1. Attempt to close the browser window/tab
+      try {
+        window.close();
+      } catch (e) {}
+
+      // 2. Render clean closed screen so nothing from the site is revealed
+      const passportView = document.getElementById('qr-passport-view');
+      if (passportView) {
+        passportView.innerHTML = `
+          <div class="passport-closed-card">
+            <div class="closed-icon-circle">
+              <i data-lucide="check-circle-2"></i>
+            </div>
+            <h2>Component Passport Closed</h2>
+            <p>The component inspection session has ended.<br>You may now close this browser tab.</p>
+            <button type="button" class="btn btn-secondary btn-sm" onclick="reopenQrPassport()" style="margin-top:18px; padding:9px 20px; border-radius:8px; display:inline-flex; align-items:center; gap:8px; cursor:pointer; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.18); color:#f8fafc; font-weight:700; font-size:0.85rem;">
+              <i data-lucide="rotate-ccw"></i> View Component Details Again
+            </button>
+          </div>
+        `;
+        if (window.lucide) window.lucide.createIcons();
+      }
+
+      // Ensure main app and login screen remain strictly hidden
+      const mainApp = document.getElementById('app');
+      if (mainApp) mainApp.style.display = 'none';
+      const loginScreen = document.getElementById('login-screen');
+      if (loginScreen) loginScreen.style.display = 'none';
+    }
+
+    function reopenQrPassport() {
+      window.location.reload();
+    }
+
+    // Safety guard: if user tries to hit back/forward in QR scan mode, keep main app & login hidden
+    window.addEventListener('popstate', () => {
+      if (window.__isQrPassportMode) {
+        const mainApp = document.getElementById('app');
+        if (mainApp) mainApp.style.display = 'none';
+        const loginScreen = document.getElementById('login-screen');
+        if (loginScreen) loginScreen.style.display = 'none';
+      }
+    });
+
     function loginWithRole(roleKey) {
       const users = StorageService.getUsers();
       const user = users.find(u => u.role === roleKey) || users[0];
@@ -2305,15 +2463,15 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
       const password = document.getElementById('reg-password').value;
       const fullNameInput = document.getElementById('reg-fullname').value;
       const fullName = fullNameInput && fullNameInput.trim() ? fullNameInput.trim() : username;
-      const role = document.getElementById('reg-role').value || 'STUDENT';
-
-      // Validate that all required columns/fields are filled in
-      if (!username || !email || !password || !fullNameInput || !fullNameInput.trim()) {
-        showLoginAlert('Please fill in all columns (Username, Email, Password, and Full Name) to create your account.', 'error');
-        return;
-      }
 
       try {
+        if (!username || !email || !password) {
+          throw new Error('Please fill in all required fields (Username, Email, Password).');
+        }
+
+        const roleSelect = document.getElementById('reg-role');
+        const role = roleSelect ? roleSelect.value : 'STUDENT';
+
         const newUser = StorageService.createUser(username, email, password, role, fullName);
 
         // Show prominent creation success message
@@ -2342,7 +2500,7 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/Labsphere/sw.js?v=13410_public_qr_guest_access', { scope: '/Labsphere/' })
+        navigator.serviceWorker.register('/Labsphere/sw.js?v=13420_standalone_qr_passport', { scope: '/Labsphere/' })
           .then(reg => {
             console.log('[LabSphere PWA] Service Worker registered:', reg.scope);
             if (reg.update) reg.update();

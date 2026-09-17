@@ -26,6 +26,33 @@ class App {
       StorageService.restoreFullLabCatalog();
     }
 
+    window.labsphereApp = this;
+
+    // Check if arriving via QR scan parameter (?box=... or ?comp=... etc.)
+    const urlParams = new URLSearchParams(window.location.search);
+    const hashStr = window.location.hash.replace("#", "");
+    const isQrArrival = window.__isQrPassportMode ||
+                        urlParams.has("box") || urlParams.has("boxId") || 
+                        urlParams.has("comp") || urlParams.has("compId") || 
+                        urlParams.has("id") || urlParams.has("q") ||
+                        hashStr.startsWith("box=") || hashStr.startsWith("comp=");
+
+    if (isQrArrival) {
+      window.__isQrPassportMode = true;
+      document.body.classList.add("qr-scan-mode");
+
+      const splash = document.getElementById("labsphere-splash");
+      if (splash) { splash.style.display = "none"; splash.remove(); }
+      const loginScreen = document.getElementById("login-screen");
+      if (loginScreen) loginScreen.style.display = "none";
+      const mainApp = document.getElementById("app");
+      if (mainApp) mainApp.style.display = "none";
+
+      this.checkUrlParamsForQrScan();
+      console.log("LabSphere Standalone QR Passport Ready!");
+      return;
+    }
+
     ModalManager.init({
       onInventoryChanged: () => this.refreshApp()
     });
@@ -38,14 +65,11 @@ class App {
     // Run automated return milestone notification check (7D, 14D, 1 Month reminders)
     StorageService.checkReturnDueNotifications();
 
-    // Auto-bypass login overlay on startup if session is already active (e.g. switching to Desktop Mode)
+    // Auto-bypass login overlay on startup if session is already active (only when not in QR scan mode)
     const activeSession = StorageService.getCurrentSession();
-    if (activeSession && typeof redirectToDashboard === "function") {
+    if (!window.__isQrPassportMode && activeSession && typeof redirectToDashboard === "function") {
       redirectToDashboard();
     }
-
-    // Auto-open mobile passport if QR code URL parameters present (?box=BOX_A-003 or ?comp=COMP-001)
-    this.checkUrlParamsForQrScan();
 
     console.log("LabSphere Search System Ready!");
   }
@@ -76,19 +100,15 @@ class App {
         targetShelf = /^[A-Z]$/.test(s) ? s.charCodeAt(0) - 64 : parseInt(s, 10);
       }
 
-      if (compParam || boxParam) {
-        document.body.classList.add("qr-scan-mode");
-        window.__isGuestMode = true;
-        const splash = document.getElementById("labsphere-splash");
-        if (splash) {
-          splash.style.display = "none";
-          splash.remove();
-        }
-        const loginScreen = document.getElementById("login-screen");
-        if (loginScreen) loginScreen.style.display = "none";
-        const mainApp = document.getElementById("app");
-        if (mainApp) mainApp.style.display = "block";
-      }
+      window.__isQrPassportMode = true;
+      document.body.classList.add("qr-scan-mode");
+
+      const splash = document.getElementById("labsphere-splash");
+      if (splash) { splash.style.display = "none"; splash.remove(); }
+      const loginScreen = document.getElementById("login-screen");
+      if (loginScreen) loginScreen.style.display = "none";
+      const mainApp = document.getElementById("app");
+      if (mainApp) mainApp.style.display = "none";
 
       if (compParam) {
         const cleanQuery = decodeURIComponent(compParam).trim().toUpperCase();
@@ -101,15 +121,12 @@ class App {
           allComponents.find(c => (c.name || "").trim().toUpperCase().includes(cleanQuery));
 
         if (comp) {
-          const cleanBoxId = boxParam ? decodeURIComponent(boxParam).trim().toUpperCase() : (comp.boxId || "").trim().toUpperCase();
-          this.selectedBoxId = cleanBoxId;
-          this.selectedRackId = targetRack || comp.rackId;
-          this.selectedShelfId = targetShelf || comp.shelfId;
-          this.refreshApp();
-
-          setTimeout(() => {
-            ModalManager.openComponentInspector(comp);
-          }, 150);
+          const effectiveRack = targetRack || comp.rackId || 1;
+          const effectiveShelf = targetShelf || comp.shelfId || 1;
+          this.showStandalonePassport([comp], comp.boxId, effectiveRack, effectiveShelf);
+          return;
+        } else {
+          this.showStandalonePassport([], cleanQuery, targetRack, targetShelf);
           return;
         }
       }
@@ -162,29 +179,187 @@ class App {
         const effectiveRackId = targetRack || (matchingComps[0] ? matchingComps[0].rackId : 1);
         const effectiveShelfId = targetShelf || (matchingComps[0] ? matchingComps[0].shelfId : 1);
 
-        const box = allBoxes.find(b => 
-          (b.id || "").trim().toUpperCase() === targetBoxId &&
-          Number(b.rackId) === Number(effectiveRackId) &&
-          Number(b.shelfId) === Number(effectiveShelfId)
-        ) || allBoxes.find(b => (b.id || "").trim().toUpperCase() === targetBoxId) ||
-          StorageService.ensureBoxExists(targetBoxId, effectiveRackId, effectiveShelfId);
-
-        this.selectedBoxId = box.id;
-        this.selectedRackId = box.rackId;
-        this.selectedShelfId = box.shelfId;
-        this.refreshApp();
-
-        setTimeout(() => {
-          if (matchingComps.length === 1) {
-            ModalManager.openComponentInspector(matchingComps[0]);
-          } else {
-            ModalManager.openBoxInspectorModal(box.id, matchingComps);
-          }
-        }, 150);
+        this.showStandalonePassport(matchingComps, targetBoxId, effectiveRackId, effectiveShelfId);
       }
     } catch (e) {
       console.warn("QR URL routing parse error:", e);
     }
+  }
+
+  showStandalonePassport(comps, targetBoxId, targetRack, targetShelf) {
+    window.__isQrPassportMode = true;
+    document.body.classList.add("qr-scan-mode");
+
+    const mainApp = document.getElementById("app");
+    if (mainApp) mainApp.style.display = "none";
+    const loginScreen = document.getElementById("login-screen");
+    if (loginScreen) loginScreen.style.display = "none";
+    const passportView = document.getElementById("qr-passport-view");
+    if (passportView) passportView.style.display = "flex";
+
+    this._passportComps = comps || [];
+
+    if (!comps || comps.length === 0) {
+      // Empty box or component not found
+      const shelfLetter = targetShelf ? (typeof targetShelf === "number" ? String.fromCharCode(64 + targetShelf) : targetShelf) : "N/A";
+      const body = document.getElementById("passport-body-content");
+      if (body) {
+        body.innerHTML = `
+          <div style="text-align: center; padding: 36px 16px;">
+            <div style="width: 56px; height: 56px; border-radius: 50%; background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.4); color: #fbbf24; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px auto;">
+              <i data-lucide="package-x" style="width: 28px; height: 28px;"></i>
+            </div>
+            <h2 style="font-size: 1.25rem; font-weight: 800; color: #f8fafc; margin-bottom: 8px;">Box Has No Active Components</h2>
+            <p style="font-size: 0.85rem; color: #94a3b8; margin-bottom: 20px;">
+              Identifier: <strong style="color: #38bdf8;">${targetBoxId || "Unknown"}</strong><br>
+              Location: Rack ${targetRack || 1}, Shelf ${shelfLetter}
+            </p>
+            <p style="font-size: 0.8rem; color: #64748b; margin-bottom: 24px;">
+              This box is currently empty or awaiting lab restocking.
+            </p>
+            <button type="button" class="btn-passport-close-bottom" onclick="closeQrPassport()">
+              <i data-lucide="x"></i> Close
+            </button>
+          </div>
+        `;
+      }
+      if (window.lucide) window.lucide.createIcons();
+      return;
+    }
+
+    // Multiple components in this box
+    const selector = document.getElementById("passport-box-selector");
+    if (comps.length > 1) {
+      if (selector) {
+        selector.classList.remove("hidden");
+        selector.innerHTML = comps.map((c, idx) => `
+          <button type="button" class="passport-selector-btn ${idx === 0 ? 'active' : ''}" onclick="window.labsphereApp.switchPassportComponent(${idx})">
+            <span>${c.name || 'Item ' + (idx + 1)}</span>
+            <span style="opacity:0.75; font-size:0.7rem; margin-left:4px;">(${c.quantity || 0} pcs)</span>
+          </button>
+        `).join("");
+      }
+    } else {
+      if (selector) {
+        selector.classList.add("hidden");
+        selector.innerHTML = "";
+      }
+    }
+
+    this.renderPassportComponent(comps[0]);
+  }
+
+  switchPassportComponent(idx) {
+    if (!this._passportComps || !this._passportComps[idx]) return;
+    const btns = document.querySelectorAll(".passport-selector-btn");
+    btns.forEach((btn, i) => {
+      if (i === idx) btn.classList.add("active");
+      else btn.classList.remove("active");
+    });
+    this.renderPassportComponent(this._passportComps[idx]);
+  }
+
+  renderPassportComponent(c) {
+    if (!c) return;
+
+    // Image
+    const imgEl = document.getElementById("passport-comp-image");
+    if (imgEl) {
+      const fallbackSvg = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(`
+        <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect width="18" height="18" x="3" y="3" rx="2"/><path d="M7 7h.01"/><path d="M17 7h.01"/><path d="M7 17h.01"/><path d="M17 17h.01"/>
+        </svg>
+      `);
+      imgEl.src = c.imageUrl || fallbackSvg;
+      imgEl.onerror = () => { imgEl.src = fallbackSvg; };
+    }
+
+    // Stock Badge
+    const stockBadge = document.getElementById("passport-stock-badge");
+    if (stockBadge) {
+      const qty = Number(c.quantity || 0);
+      const minThresh = Number(c.minThreshold || 5);
+      if (qty <= 0) {
+        stockBadge.className = "passport-badge out-stock";
+        stockBadge.innerText = "Out of Stock";
+      } else if (qty <= minThresh) {
+        stockBadge.className = "passport-badge low-stock";
+        stockBadge.innerText = `Low Stock (${qty})`;
+      } else {
+        stockBadge.className = "passport-badge in-stock";
+        stockBadge.innerText = `In Stock (${qty})`;
+      }
+    }
+
+    // Identity
+    const catEl = document.getElementById("passport-comp-category");
+    if (catEl) catEl.innerText = c.category || "General Electronics";
+
+    const nameEl = document.getElementById("passport-comp-name");
+    if (nameEl) nameEl.innerText = c.name || "Component";
+
+    const pnEl = document.getElementById("passport-comp-pn");
+    if (pnEl) pnEl.innerText = `PN: ${c.partNumber || c.barcode || c.id || "N/A"}`;
+
+    const mfgEl = document.getElementById("passport-comp-mfg");
+    if (mfgEl) mfgEl.innerText = c.manufacturer || "Lab Certified Stock";
+
+    // Location
+    const rackEl = document.getElementById("passport-comp-rack");
+    if (rackEl) rackEl.innerText = `Rack ${c.rackId || 1}`;
+
+    const shelfLetter = typeof c.shelfId === "number" ? String.fromCharCode(64 + c.shelfId) : (c.shelfId || "A");
+    const shelfEl = document.getElementById("passport-comp-shelf");
+    if (shelfEl) shelfEl.innerText = `Shelf ${shelfLetter}`;
+
+    const boxEl = document.getElementById("passport-comp-box");
+    if (boxEl) boxEl.innerText = c.boxId || "N/A";
+
+    const layerEl = document.getElementById("passport-comp-layer");
+    if (layerEl) layerEl.innerText = `Layer ${c.compartment || c.layer || 1}`;
+
+    const pathEl = document.getElementById("passport-comp-full-path");
+    if (pathEl) {
+      pathEl.innerText = `Main Robotics Lab › Rack ${c.rackId || 1} › Shelf ${shelfLetter} › ${c.boxId || "Box"}`;
+    }
+
+    // Inventory status
+    const qtyEl = document.getElementById("passport-comp-qty");
+    if (qtyEl) qtyEl.innerText = `${c.quantity || 0} ${c.unit || "pcs"}`;
+
+    const stateEl = document.getElementById("passport-comp-state");
+    if (stateEl) {
+      stateEl.innerText = c.status || (c.quantity > 0 ? "AVAILABLE" : "DEPLETED");
+      stateEl.style.color = c.quantity > 0 ? "#4ade80" : "#f87171";
+    }
+
+    const priceEl = document.getElementById("passport-comp-price");
+    if (priceEl) priceEl.innerText = c.unitPrice ? `₹${c.unitPrice}` : "₹—";
+
+    // Purpose & Technical specs
+    const purposeEl = document.getElementById("passport-comp-purpose");
+    if (purposeEl) {
+      purposeEl.innerText = c.purpose || c.description || "General laboratory prototyping and research component.";
+    }
+
+    const specsEl = document.getElementById("passport-comp-specs");
+    if (specsEl) {
+      specsEl.innerText = c.specs || c.specifications || (c.description ? c.description : "Standard laboratory grade specifications.");
+    }
+
+    // Datasheet
+    const sheetWrap = document.getElementById("passport-datasheet-wrap");
+    const sheetLink = document.getElementById("passport-comp-datasheet");
+    if (sheetWrap && sheetLink) {
+      if (c.datasheetUrl) {
+        sheetWrap.classList.remove("hidden");
+        sheetLink.href = c.datasheetUrl;
+      } else {
+        sheetWrap.classList.add("hidden");
+      }
+    }
+
+    if (window.lucide) window.lucide.createIcons();
   }
 
   bindEvents() {
@@ -591,14 +766,24 @@ class App {
 
     const urlParams = new URLSearchParams(window.location.search);
     const hashStr = window.location.hash.replace("#", "");
-    const isQrScan = urlParams.has("box") || urlParams.has("boxId") || 
+    const isQrScan = window.__isQrPassportMode ||
+                     urlParams.has("box") || urlParams.has("boxId") || 
                      urlParams.has("comp") || urlParams.has("compId") || 
                      urlParams.has("id") || urlParams.has("q") ||
                      hashStr.startsWith("box=") || hashStr.startsWith("comp=") ||
-                     document.body.classList.contains("qr-scan-mode") ||
-                     window.__isGuestMode;
+                     document.body.classList.contains("qr-scan-mode");
 
-    if (!session && !isQrScan) {
+    if (isQrScan) {
+      window.__isQrPassportMode = true;
+      document.body.classList.add("qr-scan-mode");
+      if (loginScreen) loginScreen.style.display = "none";
+      if (mainApp) mainApp.style.display = "none";
+      const passportView = document.getElementById("qr-passport-view");
+      if (passportView) passportView.style.display = "flex";
+      return;
+    }
+
+    if (!session) {
       if (loginScreen) loginScreen.style.display = "flex";
       if (mainApp) mainApp.style.display = "none";
       if (window.lucide) window.lucide.createIcons();
