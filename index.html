@@ -2103,7 +2103,9 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
           const compLinesHtml = boxComps.length
             ? boxComps.map(c => `<div class="comp-line">• ${c.name}</div>`).join('')
             : `<div class="comp-line">Empty (${bid})</div>`;
-          const qrUrl = `${hostOrigin}${window.location.pathname}?box=${encodeURIComponent(bid)}&rack=${targetRack}&shelf=${targetShelf}`;
+          const primaryCompId = boxComps[0] ? boxComps[0].id : '';
+          const compQuery = primaryCompId ? `&comp=${encodeURIComponent(primaryCompId)}` : '';
+          const qrUrl = `${hostOrigin}${window.location.pathname}?box=${encodeURIComponent(bid)}&rack=${targetRack}&shelf=${targetShelf}${compQuery}`;
           const qrImg = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrUrl)}`;
           return `
             <div class="sticker-card">

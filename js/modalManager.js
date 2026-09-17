@@ -3558,7 +3558,7 @@ class ModalManager {
         printBoxQrBtn.addEventListener("click", () => {
           let hostOrigin = window.location.origin;
           if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
-            hostOrigin = `http://192.168.82.40:${window.location.port || 3000}`;
+            hostOrigin = `http://192.168.81.89:${window.location.port || 3000}`;
           }
           const qrTargetUrl = `${hostOrigin}${window.location.pathname}?box=${encodeURIComponent(box.id)}`;
           this.printBoxQrCode(box.id, encodeURIComponent(qrTargetUrl));
@@ -3660,7 +3660,7 @@ class ModalManager {
 
     let hostOrigin = window.location.origin;
     if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
-      hostOrigin = `http://192.168.82.40:${window.location.port || 3000}`;
+      hostOrigin = `http://192.168.81.89:${window.location.port || 3000}`;
     }
 
     const mainCompId = components[0] ? components[0].id : cleanBoxId;
@@ -3853,7 +3853,7 @@ class ModalManager {
     const cleanBoxId = (boxIdInput || "").trim().toUpperCase();
     let hostOrigin = window.location.origin;
     if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
-      hostOrigin = `http://192.168.82.40:${window.location.port || 3000}`;
+      hostOrigin = `http://192.168.81.89:${window.location.port || 3000}`;
     }
     const components = StorageService.getComponents().filter(c => (c.boxId || "").trim().toUpperCase() === cleanBoxId);
     const box = StorageService.getBoxes().find(b => (b.id || "").trim().toUpperCase() === cleanBoxId);
@@ -3910,7 +3910,7 @@ class ModalManager {
 
     let hostOrigin = window.location.origin;
     if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
-      hostOrigin = `http://192.168.82.40:${window.location.port || 3000}`;
+      hostOrigin = `http://192.168.81.89:${window.location.port || 3000}`;
     }
 
     const qrTargetUrl = `${hostOrigin}${window.location.pathname}?comp=${encodeURIComponent(c.id)}`;
@@ -3973,7 +3973,7 @@ class ModalManager {
 
     let hostOrigin = window.location.origin;
     if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
-      hostOrigin = `http://192.168.82.40:${window.location.port || 3000}`;
+      hostOrigin = `http://192.168.81.89:${window.location.port || 3000}`;
     }
 
     let pagesHtml = "";
@@ -4166,7 +4166,7 @@ class ModalManager {
 
     let hostOrigin = window.location.origin;
     if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
-      hostOrigin = `http://192.168.82.40:${window.location.port || 3000}`;
+      hostOrigin = `http://192.168.81.89:${window.location.port || 3000}`;
     }
 
     let pagesHtml = "";
@@ -4187,7 +4187,9 @@ class ModalManager {
         let compLinesHtml = boxComps.map(c => `<div class="comp-line">• ${c.name}</div>`).join("");
         if (!compLinesHtml) compLinesHtml = `<div class="comp-line">Empty Box (${cleanBoxId})</div>`;
 
-        const qrTargetUrl = `${hostOrigin}${window.location.pathname}?box=${encodeURIComponent(cleanBoxId)}&rack=${targetRack}&shelf=${targetShelf}`;
+        const primaryCompId = boxComps[0] ? boxComps[0].id : "";
+        const compQuery = primaryCompId ? `&comp=${encodeURIComponent(primaryCompId)}` : "";
+        const qrTargetUrl = `${hostOrigin}${window.location.pathname}?box=${encodeURIComponent(cleanBoxId)}&rack=${targetRack}&shelf=${targetShelf}${compQuery}`;
         const qrImgUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrTargetUrl)}`;
 
         return `

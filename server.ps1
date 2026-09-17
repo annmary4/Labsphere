@@ -9,7 +9,11 @@ if (-not (Test-Path $dataDir)) {
 
 function Get-LanIP {
     try {
-        $ip = (Get-NetIPAddress -AddressFamily IPv4 -Type Unicast | Where-Object { $_.InterfaceAlias -notmatch 'Loopback|vEthernet' } | Select-Object -First 1).IPAddress
+        $ip = (Get-NetIPAddress -AddressFamily IPv4 -Type Unicast | Where-Object { 
+            $_.InterfaceAlias -notmatch 'Loopback|vEthernet|Virtual' -and 
+            $_.IPAddress -notlike '169.254.*' -and 
+            $_.IPAddress -notlike '127.*' 
+        } | Select-Object -First 1).IPAddress
         if ($ip) { return $ip }
     } catch {}
     return "127.0.0.1"

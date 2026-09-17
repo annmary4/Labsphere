@@ -91,24 +91,14 @@ class App {
           allComponents.find(c => (c.name || "").trim().toUpperCase().includes(cleanQuery));
 
         if (comp) {
-          const cleanBoxId = (comp.boxId || "").trim().toUpperCase();
-          this.selectedBoxId = comp.boxId;
-          this.selectedRackId = comp.rackId;
-          this.selectedShelfId = comp.shelfId;
+          const cleanBoxId = boxParam ? decodeURIComponent(boxParam).trim().toUpperCase() : (comp.boxId || "").trim().toUpperCase();
+          this.selectedBoxId = cleanBoxId;
+          this.selectedRackId = targetRack || comp.rackId;
+          this.selectedShelfId = targetShelf || comp.shelfId;
           this.refreshApp();
 
-          const boxComps = allComponents.filter(c => 
-            (c.boxId || "").trim().toUpperCase() === cleanBoxId &&
-            Number(c.rackId) === Number(comp.rackId) &&
-            Number(c.shelfId) === Number(comp.shelfId)
-          );
-          
           setTimeout(() => {
-            if (boxComps.length > 1) {
-              ModalManager.openBoxInspectorModal(comp.boxId, boxComps);
-            } else {
-              ModalManager.openComponentInspector(comp);
-            }
+            ModalManager.openComponentInspector(comp);
           }, 150);
           return;
         }
