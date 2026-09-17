@@ -1488,7 +1488,7 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
         <div class="modal-footer" style="display:flex; justify-content:space-between; align-items:center;">
           <button id="btn-batch-print-boxes" class="btn btn-secondary" onclick="ModalManager.printBatchBoxQrSheet()"
             style="display:none; border-color:var(--success); color:var(--success);">
-            <i data-lucide="printer"></i> Print Batch Print All Box QR Labels (16 Per Page)
+            <i data-lucide="printer"></i> Print Batch Print All Box QR Labels (17 Per Page)
           </button>
           <button class="btn btn-primary" id="btn-close-box-mgr">Close</button>
         </div>
@@ -1989,7 +1989,7 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
   <script src="js/storage.js?v=13370_box_a001_single_item"></script>
   <script src="js/rackViewer.js?v=13370_box_a001_single_item"></script>
   <script src="js/componentsView.js?v=13370_box_a001_single_item"></script>
-  <script src="js/modalManager.js?v=13380_qr_label_box_black"></script>
+  <script src="js/modalManager.js?v=13390_qr_17_per_page"></script>
   <script src="js/app.js?v=13370_box_a001_single_item"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -2086,7 +2086,7 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
       // Fetch real LAN IP from server so QR codes work on mobile devices
       const hostOrigin = await _getServerLanUrl();
 
-      const LABELS_PER_PAGE = 16;
+      const LABELS_PER_PAGE = 17;
       const totalPages = Math.ceil(activeBoxes.length / LABELS_PER_PAGE);
       let pagesHtml = '';
 
@@ -2122,16 +2122,16 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
       printWin.document.write(`<!DOCTYPE html><html><head>
         <title>QR Labels - Rack ${targetRack} Shelf ${shelfChar}</title>
         <style>
-          @page { size: A4 portrait; margin: 10mm; }
+          @page { size: A4 portrait; margin: 8mm; }
           body { font-family: sans-serif; margin:0; padding:0; background:#fff; color:#0f172a; -webkit-print-color-adjust:exact; }
-          .header-banner { text-align:center; font-size:16px; font-weight:800; color:#0284c7; margin-bottom:12px; padding-bottom:6px; border-bottom:2px solid #0f172a; }
-          .print-page { page-break-after:always; box-sizing:border-box; margin-bottom:20px; }
-          .grid-container { display:grid; grid-template-columns:repeat(4,1fr); grid-template-rows:repeat(4,1fr); gap:6mm; width:100%; box-sizing:border-box; }
-          .sticker-card { border:2px dashed #0f172a; border-radius:8px; padding:6px 4px; text-align:center; box-sizing:border-box; display:flex; flex-direction:column; align-items:center; justify-content:space-between; height:58mm; background:#fff; }
-          .comp-name-container { display:flex; flex-direction:column; gap:2px; width:100%; max-height:28px; overflow:hidden; }
-          .comp-line { font-size:10px; font-weight:800; color:#0f172a; line-height:1.1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-          .box-id-badge { font-size:12px; font-weight:800; font-family:monospace; color:#000000; margin:2px 0; }
-          img { width:34mm; height:34mm; border:1px solid #cbd5e1; border-radius:4px; padding:2px; background:#fff; }
+          .header-banner { text-align:center; font-size:13px; font-weight:800; color:#0284c7; margin-bottom:6px; padding-bottom:4px; border-bottom:2px solid #0f172a; }
+          .print-page { page-break-after:always; box-sizing:border-box; margin-bottom:15px; }
+          .grid-container { display:grid; grid-template-columns:repeat(4,1fr); grid-auto-rows:46mm; gap:3.5mm; width:100%; box-sizing:border-box; }
+          .sticker-card { border:2px dashed #0f172a; border-radius:6px; padding:4px 3px; text-align:center; box-sizing:border-box; display:flex; flex-direction:column; align-items:center; justify-content:space-between; height:46mm; background:#fff; }
+          .comp-name-container { display:flex; flex-direction:column; gap:1px; width:100%; max-height:20px; overflow:hidden; }
+          .comp-line { font-size:9.5px; font-weight:800; color:#0f172a; line-height:1.1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+          .box-id-badge { font-size:11.5px; font-weight:800; font-family:monospace; color:#000000; margin:1px 0; }
+          img { width:26mm; height:26mm; border:1px solid #cbd5e1; border-radius:4px; padding:2px; background:#fff; }
         </style>
       </head><body>
         <div class="header-banner">RACK ${targetRack} - SHELF ${shelfChar} • ${activeBoxes.length} BOXES • QR STICKERS</div>

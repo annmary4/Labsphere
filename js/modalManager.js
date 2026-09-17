@@ -3977,7 +3977,7 @@ class ModalManager {
     }
 
     let pagesHtml = "";
-    const LABELS_PER_PAGE = 16;
+    const LABELS_PER_PAGE = 17;
     const totalPages = Math.ceil(activeBoxes.length / LABELS_PER_PAGE);
 
     for (let p = 0; p < totalPages; p++) {
@@ -4017,11 +4017,11 @@ class ModalManager {
     printWin.document.write(`
       <html>
         <head>
-          <title>Batch Print All Box QR Labels (16 per page)</title>
+          <title>Batch Print All Box QR Labels (17 per page)</title>
           <style>
             @page {
               size: A4 portrait;
-              margin: 10mm;
+              margin: 8mm;
             }
             body {
               font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -4033,49 +4033,49 @@ class ModalManager {
             }
             .header-banner {
               text-align: center;
-              font-size: 16px;
+              font-size: 13px;
               font-weight: 800;
               color: #0284c7;
-              margin-bottom: 12px;
-              padding-bottom: 6px;
+              margin-bottom: 6px;
+              padding-bottom: 4px;
               border-bottom: 2px solid #0f172a;
             }
             .print-page {
               page-break-after: always;
               box-sizing: border-box;
-              margin-bottom: 20px;
+              margin-bottom: 15px;
             }
             .grid-container {
               display: grid;
               grid-template-columns: repeat(4, 1fr);
-              grid-template-rows: repeat(4, 1fr);
-              gap: 6mm;
+              grid-auto-rows: 46mm;
+              gap: 3.5mm;
               width: 100%;
               box-sizing: border-box;
             }
             .sticker-card {
               border: 2px dashed #0f172a;
-              border-radius: 8px;
-              padding: 6px 4px;
+              border-radius: 6px;
+              padding: 4px 3px;
               text-align: center;
               box-sizing: border-box;
               display: flex;
               flex-direction: column;
               align-items: center;
               justify-content: space-between;
-              height: 58mm;
+              height: 46mm;
               background: #fff;
             }
             .comp-name-container {
               display: flex;
               flex-direction: column;
-              gap: 2px;
+              gap: 1px;
               width: 100%;
-              max-height: 28px;
+              max-height: 20px;
               overflow: hidden;
             }
             .comp-line {
-              font-size: 10px;
+              font-size: 9.5px;
               font-weight: 800;
               color: #0f172a;
               line-height: 1.1;
@@ -4084,15 +4084,15 @@ class ModalManager {
               text-overflow: ellipsis;
             }
             .box-id-badge {
-              font-size: 12px;
+              font-size: 11.5px;
               font-weight: 800;
               font-family: monospace;
               color: #000000;
-              margin: 2px 0;
+              margin: 1px 0;
             }
             img {
-              width: 34mm;
-              height: 34mm;
+              width: 26mm;
+              height: 26mm;
               border: 1px solid #cbd5e1;
               border-radius: 4px;
               padding: 2px;
@@ -4170,7 +4170,7 @@ class ModalManager {
     }
 
     let pagesHtml = "";
-    const LABELS_PER_PAGE = 16;
+    const LABELS_PER_PAGE = 17;
     const totalPages = Math.ceil(activeShelfBoxes.length / LABELS_PER_PAGE);
 
     for (let p = 0; p < totalPages; p++) {
@@ -4220,7 +4220,7 @@ class ModalManager {
           <style>
             @page {
               size: A4 portrait;
-              margin: 10mm;
+              margin: 8mm;
             }
             body {
               font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -4232,49 +4232,49 @@ class ModalManager {
             }
             .header-banner {
               text-align: center;
-              font-size: 16px;
+              font-size: 13px;
               font-weight: 800;
               color: #0284c7;
-              margin-bottom: 12px;
-              padding-bottom: 6px;
+              margin-bottom: 6px;
+              padding-bottom: 4px;
               border-bottom: 2px solid #0f172a;
             }
             .print-page {
               page-break-after: always;
               box-sizing: border-box;
-              margin-bottom: 20px;
+              margin-bottom: 15px;
             }
             .grid-container {
               display: grid;
               grid-template-columns: repeat(4, 1fr);
-              grid-template-rows: repeat(4, 1fr);
-              gap: 6mm;
+              grid-auto-rows: 46mm;
+              gap: 3.5mm;
               width: 100%;
               box-sizing: border-box;
             }
             .sticker-card {
               border: 2px dashed #0f172a;
-              border-radius: 8px;
-              padding: 6px 4px;
+              border-radius: 6px;
+              padding: 4px 3px;
               text-align: center;
               box-sizing: border-box;
               display: flex;
               flex-direction: column;
               align-items: center;
               justify-content: space-between;
-              height: 58mm;
+              height: 46mm;
               background: #fff;
             }
             .comp-name-container {
               display: flex;
               flex-direction: column;
-              gap: 2px;
+              gap: 1px;
               width: 100%;
-              max-height: 28px;
+              max-height: 20px;
               overflow: hidden;
             }
             .comp-line {
-              font-size: 10px;
+              font-size: 9.5px;
               font-weight: 800;
               color: #0f172a;
               line-height: 1.1;
@@ -4283,15 +4283,15 @@ class ModalManager {
               text-overflow: ellipsis;
             }
             .box-id-badge {
-              font-size: 12px;
+              font-size: 11.5px;
               font-weight: 800;
               font-family: monospace;
               color: #000000;
-              margin: 2px 0;
+              margin: 1px 0;
             }
             img {
-              width: 34mm;
-              height: 34mm;
+              width: 26mm;
+              height: 26mm;
               border: 1px solid #cbd5e1;
               border-radius: 4px;
               padding: 2px;

@@ -2,7 +2,7 @@
    LabSphere Service Worker - Offline Cache & PWA Support
    ============================================================ */
 
-const CACHE_NAME = 'labsphere-v13380_qr_label_box_black';
+const CACHE_NAME = 'labsphere-v13390_qr_17_per_page';
 const ASSETS_TO_CACHE = [
   '/Labsphere/',
   '/Labsphere/index.html',
@@ -13,7 +13,7 @@ const ASSETS_TO_CACHE = [
   '/Labsphere/js/storage.js?v=13370_box_a001_single_item',
   '/Labsphere/js/rackViewer.js?v=13370_box_a001_single_item',
   '/Labsphere/js/componentsView.js?v=13370_box_a001_single_item',
-  '/Labsphere/js/modalManager.js?v=13380_qr_label_box_black',
+  '/Labsphere/js/modalManager.js?v=13390_qr_17_per_page',
   '/Labsphere/icons/icon-192.png',
   '/Labsphere/icons/icon-512.png',
   '/Labsphere/manifest.json'
