@@ -1,19 +1,19 @@
-/* ============================================================
+﻿/* ============================================================
    LabSphere Service Worker - Offline Cache & PWA Support
    ============================================================ */
 
-const CACHE_NAME = 'labsphere-v13420_standalone_qr_passport';
+const CACHE_NAME = 'labsphere-v13450_exact_components_verified_images';
 const ASSETS_TO_CACHE = [
   '/Labsphere/',
   '/Labsphere/index.html',
-  '/Labsphere/css/styles.css?v=13420_standalone_qr_passport',
-  '/Labsphere/js/app.js?v=13420_standalone_qr_passport',
-  '/Labsphere/js/types.js?v=13420_standalone_qr_passport',
-  '/Labsphere/js/initialData.js?v=13420_standalone_qr_passport',
-  '/Labsphere/js/storage.js?v=13420_standalone_qr_passport',
-  '/Labsphere/js/rackViewer.js?v=13420_standalone_qr_passport',
-  '/Labsphere/js/componentsView.js?v=13420_standalone_qr_passport',
-  '/Labsphere/js/modalManager.js?v=13420_standalone_qr_passport',
+  '/Labsphere/css/styles.css?v=13450_exact_components_verified_images',
+  '/Labsphere/js/app.js?v=13450_exact_components_verified_images',
+  '/Labsphere/js/types.js?v=13450_exact_components_verified_images',
+  '/Labsphere/js/initialData.js?v=13450_exact_components_verified_images',
+  '/Labsphere/js/storage.js?v=13450_exact_components_verified_images',
+  '/Labsphere/js/rackViewer.js?v=13450_exact_components_verified_images',
+  '/Labsphere/js/componentsView.js?v=13450_exact_components_verified_images',
+  '/Labsphere/js/modalManager.js?v=13450_exact_components_verified_images',
   '/Labsphere/icons/icon-192.png',
   '/Labsphere/icons/icon-512.png',
   '/Labsphere/manifest.json'
@@ -62,3 +62,4 @@ self.addEventListener('fetch', event => {
       .catch(() => caches.match(request))
   );
 });
+

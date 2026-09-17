@@ -2,7 +2,7 @@
  * LabSphere Storage Service - Complete 59-Component Catalog (v35)
  */
 
-const CURRENT_VERSION = "v10610_persist_component_edits";
+const CURRENT_VERSION = "v10650_exact_verified_components_photos";
 
 const STORAGE_KEYS = {
   VERSION: "labsphere_version_v10250",
@@ -111,30 +111,14 @@ class StorageService {
     // Preserve active login session across desktop/mobile mode switches & refreshes (logout only occurs on explicit Logout click)
 
     if (localStorage.getItem(STORAGE_KEYS.VERSION) !== CURRENT_VERSION) {
-      // PRESERVE existing components and any user edits (quantities, details, new items)
-      const existingComps = this.getComponents();
-      if (!existingComps || existingComps.length === 0) {
-        if (typeof INITIAL_COMPONENTS !== "undefined" && INITIAL_COMPONENTS.length > 0) {
-          localStorage.setItem(STORAGE_KEYS.COMPONENTS, JSON.stringify(INITIAL_COMPONENTS));
-          localStorage.setItem(STORAGE_KEYS.COMPONENTS + "_backup", JSON.stringify(INITIAL_COMPONENTS));
-        }
-      } else if (typeof INITIAL_COMPONENTS !== "undefined" && Array.isArray(INITIAL_COMPONENTS)) {
-        let modified = false;
-        INITIAL_COMPONENTS.forEach(ic => {
-          if (!existingComps.some(ec => ec.id === ic.id)) {
-            existingComps.push(ic);
-            modified = true;
-          }
-        });
-        if (modified) {
-          this.saveComponents(existingComps);
-        }
+      if (typeof INITIAL_COMPONENTS !== "undefined" && Array.isArray(INITIAL_COMPONENTS) && INITIAL_COMPONENTS.length > 0) {
+        localStorage.setItem(STORAGE_KEYS.COMPONENTS, JSON.stringify(INITIAL_COMPONENTS));
+        localStorage.setItem(STORAGE_KEYS.COMPONENTS + "_backup", JSON.stringify(INITIAL_COMPONENTS));
       }
-
-      if (!localStorage.getItem(STORAGE_KEYS.BOXES) && typeof INITIAL_BOXES !== "undefined" && INITIAL_BOXES.length > 0) {
+      if (typeof INITIAL_BOXES !== "undefined" && Array.isArray(INITIAL_BOXES) && INITIAL_BOXES.length > 0) {
         localStorage.setItem(STORAGE_KEYS.BOXES, JSON.stringify(INITIAL_BOXES));
       }
-      if (!localStorage.getItem(STORAGE_KEYS.RACKS) && typeof INITIAL_RACKS !== "undefined" && INITIAL_RACKS.length > 0) {
+      if (typeof INITIAL_RACKS !== "undefined" && Array.isArray(INITIAL_RACKS) && INITIAL_RACKS.length > 0) {
         localStorage.setItem(STORAGE_KEYS.RACKS, JSON.stringify(INITIAL_RACKS));
       }
       // Preserve all registered user accounts on version updates
@@ -2557,7 +2541,6 @@ class StorageService {
     this.saveProjects(INITIAL_PROJECTS);
     this.saveTransactions(INITIAL_TRANSACTIONS);
     this.saveRequests(INITIAL_REQUESTS);
-    this.forceRestoreDefaultBoxSetup();
   }
 
   static resetToDefaults() {
@@ -2572,7 +2555,6 @@ class StorageService {
     this.saveRequests(INITIAL_REQUESTS);
     this.saveUsers(INITIAL_USERS);
     this.createSessionForUser(INITIAL_USERS[0]);
-    this.forceRestoreDefaultBoxSetup();
   }
 
   static exportJSON() {

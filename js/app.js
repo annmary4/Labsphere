@@ -93,12 +93,27 @@ class App {
       const allComponents = StorageService.getComponents();
       const allBoxes = StorageService.getBoxes();
 
+      const parseShelfNum = (s) => {
+        if (s === null || s === undefined) return null;
+        if (typeof s === "number") return s;
+        const str = String(s).trim().toUpperCase();
+        if (/^[A-Z]$/.test(str)) return str.charCodeAt(0) - 64;
+        const num = parseInt(str, 10);
+        return isNaN(num) ? null : num;
+      };
+
+      const normBox = (id) => {
+        if (!id) return "";
+        const clean = String(id).toUpperCase().replace(/\s+/g, "").replace(/-/g, "").replace(/^BOX/, "");
+        const match = clean.match(/^([A-Z]+)0*(\d+)$/);
+        if (match) {
+          return match[1] + parseInt(match[2], 10);
+        }
+        return clean;
+      };
+
       let targetRack = rackParam ? parseInt(rackParam, 10) : null;
-      let targetShelf = null;
-      if (shelfParam) {
-        const s = String(shelfParam).trim().toUpperCase();
-        targetShelf = /^[A-Z]$/.test(s) ? s.charCodeAt(0) - 64 : parseInt(s, 10);
-      }
+      let targetShelf = parseShelfNum(shelfParam);
 
       window.__isQrPassportMode = true;
       document.body.classList.add("qr-scan-mode");
@@ -110,83 +125,104 @@ class App {
       const mainApp = document.getElementById("app");
       if (mainApp) mainApp.style.display = "none";
 
-      if (compParam) {
-        const cleanQuery = decodeURIComponent(compParam).trim().toUpperCase();
-        console.log("Mobile QR Scan Searching Component:", cleanQuery);
+      const cleanBoxId = boxParam ? decodeURIComponent(boxParam).trim().toUpperCase() : null;
+      const cleanCompQuery = compParam ? decodeURIComponent(compParam).trim().toUpperCase() : null;
 
-        const comp = allComponents.find(c => (c.id || "").trim().toUpperCase() === cleanQuery) ||
-          allComponents.find(c => (c.barcode || "").trim().toUpperCase() === cleanQuery) ||
-          allComponents.find(c => (c.partNumber || "").trim().toUpperCase() === cleanQuery) ||
-          allComponents.find(c => (c.name || "").trim().toUpperCase() === cleanQuery) ||
-          allComponents.find(c => (c.name || "").trim().toUpperCase().includes(cleanQuery));
+      // If a specific component query was supplied, resolve it to lock down rack and shelf
+      let targetComp = null;
+      if (cleanCompQuery) {
+        targetComp = allComponents.find(c => (c.id || "").trim().toUpperCase() === cleanCompQuery) ||
+          allComponents.find(c => (c.barcode || "").trim().toUpperCase() === cleanCompQuery) ||
+          allComponents.find(c => (c.partNumber || "").trim().toUpperCase() === cleanCompQuery) ||
+          allComponents.find(c => (c.name || "").trim().toUpperCase() === cleanCompQuery) ||
+          allComponents.find(c => (c.name || "").trim().toUpperCase().includes(cleanCompQuery));
 
-        if (comp) {
-          const effectiveRack = targetRack || comp.rackId || 1;
-          const effectiveShelf = targetShelf || comp.shelfId || 1;
-          this.showStandalonePassport([comp], comp.boxId, effectiveRack, effectiveShelf);
-          return;
-        } else {
-          this.showStandalonePassport([], cleanQuery, targetRack, targetShelf);
-          return;
+        if (targetComp) {
+          if (!targetRack) targetRack = Number(targetComp.rackId);
+          if (!targetShelf) targetShelf = parseShelfNum(targetComp.shelfId);
         }
       }
 
-      if (boxParam) {
-        const cleanBoxId = decodeURIComponent(boxParam).trim().toUpperCase();
-        console.log("Mobile QR Scan Detected Box Parameter:", cleanBoxId, "Rack:", targetRack, "Shelf:", targetShelf);
+      // PRIORITY 1: BOX SCAN (Physical container on shelf, with optional comp filter)
+      if (cleanBoxId) {
+        console.log("Mobile QR Scan Detected Box:", cleanBoxId, "Rack:", targetRack, "Shelf:", targetShelf, "Comp:", cleanCompQuery);
+        const targetBoxNorm = normBox(cleanBoxId);
 
-        let targetBoxId = cleanBoxId;
-
-        // 1. STRICT EXACT MATCH, SCOPED TO RACK & SHELF IF PROVIDED IN QR URL
+        // 1. Strict match: Box ID + Rack + Shelf
         let matchingComps = allComponents.filter(c => {
-          if ((c.boxId || "").trim().toUpperCase() !== cleanBoxId) return false;
+          const cBoxNorm = normBox(c.boxId);
+          const isBoxMatch = cBoxNorm === targetBoxNorm || (c.boxId || "").trim().toUpperCase() === cleanBoxId;
+          if (!isBoxMatch) return false;
           if (targetRack && Number(c.rackId) !== targetRack) return false;
-          if (targetShelf && Number(c.shelfId) !== targetShelf) return false;
+          if (targetShelf && parseShelfNum(c.shelfId) !== targetShelf) return false;
           return true;
         });
 
-        // If no comps matched with rack/shelf filter, fall back to boxId match across catalog
-        if (matchingComps.length === 0) {
-          matchingComps = allComponents.filter(c => (c.boxId || "").trim().toUpperCase() === cleanBoxId);
-        }
-
-        // 2. Normalized Hyphen/Space Match (e.g. BOX A014 -> BOX A-014 or BOX A015 -> BOX A-015)
-        if (matchingComps.length === 0) {
-          const targetNorm = cleanBoxId.replace(/\s+/g, "").replace(/-/g, "");
+        // 2. Fallback: Box ID + Rack match
+        if (matchingComps.length === 0 && targetRack) {
           matchingComps = allComponents.filter(c => {
-            const compBoxNorm = (c.boxId || "").trim().toUpperCase().replace(/\s+/g, "").replace(/-/g, "");
-            return compBoxNorm === targetNorm;
+            const cBoxNorm = normBox(c.boxId);
+            const isBoxMatch = cBoxNorm === targetBoxNorm || (c.boxId || "").trim().toUpperCase() === cleanBoxId;
+            return isBoxMatch && Number(c.rackId) === targetRack;
           });
         }
 
-        // 3. Exact Box Entry from Boxes List
+        // 3. Fallback: Box ID anywhere across catalog
         if (matchingComps.length === 0) {
-          const exactBox = allBoxes.find(b => {
-            const normB = (b.id || "").trim().toUpperCase().replace(/\s+/g, "").replace(/-/g, "");
-            const targetNorm = cleanBoxId.replace(/\s+/g, "").replace(/-/g, "");
-            const isMatch = normB === targetNorm || (b.id || "").trim().toUpperCase() === cleanBoxId;
-            if (!isMatch) return false;
-            if (targetRack && Number(b.rackId) !== targetRack) return false;
-            if (targetShelf && Number(b.shelfId) !== targetShelf) return false;
-            return true;
+          matchingComps = allComponents.filter(c => {
+            const cBoxNorm = normBox(c.boxId);
+            return cBoxNorm === targetBoxNorm || (c.boxId || "").trim().toUpperCase() === cleanBoxId;
           });
-          if (exactBox) {
-            targetBoxId = exactBox.id;
-            matchingComps = allComponents.filter(c => (c.boxId || "").trim().toUpperCase() === (exactBox.id || "").trim().toUpperCase());
-          }
         }
 
-        const effectiveRackId = targetRack || (matchingComps[0] ? matchingComps[0].rackId : 1);
-        const effectiveShelfId = targetShelf || (matchingComps[0] ? matchingComps[0].shelfId : 1);
+        // 4. Fallback to targetComp if box search was empty but comp exists
+        if (matchingComps.length === 0 && targetComp) {
+          matchingComps = [targetComp];
+        }
 
-        this.showStandalonePassport(matchingComps, targetBoxId, effectiveRackId, effectiveShelfId);
+        const effectiveRackId = targetRack || (matchingComps[0] ? Number(matchingComps[0].rackId) : 1);
+        const effectiveShelfId = targetShelf || (matchingComps[0] ? parseShelfNum(matchingComps[0].shelfId) : 1);
+
+        this.showStandalonePassport(matchingComps, cleanBoxId, effectiveRackId, effectiveShelfId, cleanCompQuery || (targetComp ? targetComp.id : null));
+        return;
+      }
+
+      // PRIORITY 2: COMPONENT-ONLY SCAN (?comp=COMP-001)
+      if (cleanCompQuery) {
+        console.log("Mobile QR Scan Searching Component:", cleanCompQuery);
+
+        const comp = allComponents.find(c => (c.id || "").trim().toUpperCase() === cleanCompQuery) ||
+          allComponents.find(c => (c.barcode || "").trim().toUpperCase() === cleanCompQuery) ||
+          allComponents.find(c => (c.partNumber || "").trim().toUpperCase() === cleanCompQuery) ||
+          allComponents.find(c => (c.name || "").trim().toUpperCase() === cleanCompQuery) ||
+          allComponents.find(c => (c.name || "").trim().toUpperCase().includes(cleanCompQuery));
+
+        if (comp) {
+          const effectiveRack = targetRack || Number(comp.rackId) || 1;
+          const effectiveShelf = targetShelf || parseShelfNum(comp.shelfId) || 1;
+
+          // Find all sibling components that share this same physical box
+          const targetBoxNorm = normBox(comp.boxId);
+          const siblings = allComponents.filter(c => {
+            const cBoxNorm = normBox(c.boxId);
+            const isBoxMatch = cBoxNorm === targetBoxNorm || (c.boxId || "").trim().toUpperCase() === (comp.boxId || "").trim().toUpperCase();
+            return isBoxMatch && Number(c.rackId) === effectiveRack && parseShelfNum(c.shelfId) === effectiveShelf;
+          });
+
+          const compsToShow = siblings.length > 0 ? siblings : [comp];
+          this.showStandalonePassport(compsToShow, comp.boxId, effectiveRack, effectiveShelf, comp.id);
+          return;
+        } else {
+          this.showStandalonePassport([], cleanCompQuery, targetRack, targetShelf);
+          return;
+        }
       }
     } catch (e) {
       console.warn("QR URL routing parse error:", e);
     }
   }
 
-  showStandalonePassport(comps, targetBoxId, targetRack, targetShelf) {
+  showStandalonePassport(comps, targetBoxId, targetRack, targetShelf, activeCompTarget = null) {
     window.__isQrPassportMode = true;
     document.body.classList.add("qr-scan-mode");
 
@@ -227,13 +263,27 @@ class App {
       return;
     }
 
-    // Multiple components in this box
+    // Determine initial active component
+    let initialIdx = 0;
+    if (activeCompTarget) {
+      const cleanTarget = String(activeCompTarget).trim().toUpperCase();
+      const matchIdx = comps.findIndex(c => 
+        (c.id || "").trim().toUpperCase() === cleanTarget ||
+        (c.barcode || "").trim().toUpperCase() === cleanTarget ||
+        (c.partNumber || "").trim().toUpperCase() === cleanTarget ||
+        (c.name || "").trim().toUpperCase() === cleanTarget ||
+        (c.name || "").trim().toUpperCase().includes(cleanTarget)
+      );
+      if (matchIdx >= 0) initialIdx = matchIdx;
+    }
+
+    // Multiple components in this box: render pill selector bar
     const selector = document.getElementById("passport-box-selector");
     if (comps.length > 1) {
       if (selector) {
         selector.classList.remove("hidden");
         selector.innerHTML = comps.map((c, idx) => `
-          <button type="button" class="passport-selector-btn ${idx === 0 ? 'active' : ''}" onclick="window.labsphereApp.switchPassportComponent(${idx})">
+          <button type="button" class="passport-selector-btn ${idx === initialIdx ? 'active' : ''}" onclick="window.labsphereApp.switchPassportComponent(${idx})">
             <span>${c.name || 'Item ' + (idx + 1)}</span>
             <span style="opacity:0.75; font-size:0.7rem; margin-left:4px;">(${c.quantity || 0} pcs)</span>
           </button>
@@ -246,7 +296,7 @@ class App {
       }
     }
 
-    this.renderPassportComponent(comps[0]);
+    this.renderPassportComponent(comps[initialIdx]);
   }
 
   switchPassportComponent(idx) {
@@ -270,6 +320,7 @@ class App {
           <rect width="18" height="18" x="3" y="3" rx="2"/><path d="M7 7h.01"/><path d="M17 7h.01"/><path d="M7 17h.01"/><path d="M17 17h.01"/>
         </svg>
       `);
+      imgEl.setAttribute("referrerpolicy", "no-referrer");
       imgEl.src = c.imageUrl || fallbackSvg;
       imgEl.onerror = () => { imgEl.src = fallbackSvg; };
     }

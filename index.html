@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -7,9 +7,10 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
+  <meta name="referrer" content="no-referrer">
   <title>LabSphere | Enterprise Laboratory Suite & Workflows</title>
   <meta name="description"
-    content="Enterprise digital laboratory system featuring Request Workflows, Partial Returns, 5 Inventory States, Project Workspaces, Real-Time Notifications, 6-Tier Hierarchy, Multi-Criteria Search, and Rupee Valuation (₹).">
+    content="Enterprise digital laboratory system featuring Request Workflows, Partial Returns, 5 Inventory States, Project Workspaces, Real-Time Notifications, 6-Tier Hierarchy, Multi-Criteria Search, and Rupee Valuation (â‚¹).">
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -19,7 +20,7 @@
     rel="stylesheet">
 
   <!-- CSS with cache buster -->
-  <link rel="stylesheet" href="css/styles.css?v=13420_standalone_qr_passport">
+  <link rel="stylesheet" href="css/styles.css?v=13450_exact_components_verified_images">
 
   <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -98,7 +99,7 @@
       <div class="passport-body" id="passport-body-content">
         <!-- Image Display -->
         <div class="passport-image-container">
-          <img id="passport-comp-image" src="" alt="Component Image" />
+          <img id="passport-comp-image" src="" alt="Component Image" referrerpolicy="no-referrer" />
           <div id="passport-stock-badge" class="passport-badge">In Stock</div>
         </div>
 
@@ -108,7 +109,7 @@
           <h1 class="passport-name" id="passport-comp-name">Component Name</h1>
           <div class="passport-meta">
             <span id="passport-comp-pn">PN: N/A</span>
-            <span class="meta-sep">•</span>
+            <span class="meta-sep">â€¢</span>
             <span id="passport-comp-mfg">Manufacturer</span>
           </div>
         </div>
@@ -135,7 +136,7 @@
             </div>
           </div>
           <div class="location-path" id="passport-comp-full-path">
-            Main Robotics Lab › Room 101 › Rack 1 › Shelf B › BOX A-001
+            Main Robotics Lab â€º Room 101 â€º Rack 1 â€º Shelf B â€º BOX A-001
           </div>
         </div>
 
@@ -153,7 +154,7 @@
             </div>
             <div class="status-metric">
               <span class="metric-label">Est. Unit Value</span>
-              <span class="metric-value" id="passport-comp-price">₹450</span>
+              <span class="metric-value" id="passport-comp-price">â‚¹450</span>
             </div>
           </div>
         </div>
@@ -227,7 +228,7 @@
         <div class="form-group">
           <label for="login-password"><i data-lucide="lock"></i> Password</label>
           <input type="password" id="login-password" name="password" autocomplete="current-password"
-            class="form-control" placeholder="••••••••" required />
+            class="form-control" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" required />
         </div>
 
         <button type="submit" class="btn btn-primary btn-block btn-lg" style="margin-top:8px;">
@@ -249,7 +250,7 @@
 
         <div class="form-group">
           <label for="reg-password"><i data-lucide="key"></i> Password</label>
-          <input type="password" id="reg-password" class="form-control" placeholder="••••••••" required />
+          <input type="password" id="reg-password" class="form-control" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" required />
         </div>
 
         <div class="form-group">
@@ -824,7 +825,7 @@
             style="text-align:center; padding:16px; background:var(--bg-dark); border-radius:12px; border:1px solid var(--border-color);">
             <div
               style="width:140px; height:140px; margin:0 auto 12px; background:#fff; border-radius:10px; display:flex; align-items:center; justify-content:center; color:#000; font-weight:800; font-family:monospace;">
-              [CAMERA SCANNER]<br>📷 LIVE SCAN
+              [CAMERA SCANNER]<br>ðŸ“· LIVE SCAN
             </div>
             <p class="text-muted" style="font-size:0.8rem;">Point scanner at physical box QR Code / Barcode tag or enter
               barcode below:</p>
@@ -1039,7 +1040,7 @@
                 <input type="number" id="form-min-qty" min="0" value="1">
               </div>
               <div class="form-group col-2">
-                <label for="form-unit-price">Price (₹ INR)</label>
+                <label for="form-unit-price">Price (â‚¹ INR)</label>
                 <input type="number" id="form-unit-price" min="0" value="450">
               </div>
             </div>
@@ -1230,10 +1231,10 @@
             <h4 style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px;">Power 1-Click Demo Accounts:
             </h4>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-              <button class="btn btn-secondary btn-sm" id="demo-login-admin">👑 Admin</button>
-              <button class="btn btn-secondary btn-sm" id="demo-login-engineer">⚙️ Engineer</button>
-              <button class="btn btn-secondary btn-sm" id="demo-login-student">🎓 Student</button>
-              <button class="btn btn-secondary btn-sm" id="demo-login-mgmt">📊 Management</button>
+              <button class="btn btn-secondary btn-sm" id="demo-login-admin">ðŸ‘‘ Admin</button>
+              <button class="btn btn-secondary btn-sm" id="demo-login-engineer">âš™ï¸ Engineer</button>
+              <button class="btn btn-secondary btn-sm" id="demo-login-student">ðŸŽ“ Student</button>
+              <button class="btn btn-secondary btn-sm" id="demo-login-mgmt">ðŸ“Š Management</button>
             </div>
           </div>
         </div>
@@ -1318,23 +1319,23 @@
           <div id="student-req-filter-tabs" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; border-bottom:1px solid var(--border-color); padding-bottom:12px;">
             <button id="sreq-tab-all" onclick="ModalManager.openStudentRequestsModal('all')"
               style="display:inline-flex; align-items:center; gap:6px; padding:8px 16px; border-radius:8px; font-weight:800; font-size:0.83rem; cursor:pointer; border:1px solid var(--border-color); background:var(--primary); color:white; transition:all 0.2s;">
-              📋 All <span id="sreq-count-all" style="background:rgba(255,255,255,0.2); border-radius:12px; padding:1px 7px; font-size:0.75rem; margin-left:2px;">0</span>
+              ðŸ“‹ All <span id="sreq-count-all" style="background:rgba(255,255,255,0.2); border-radius:12px; padding:1px 7px; font-size:0.75rem; margin-left:2px;">0</span>
             </button>
             <button id="sreq-tab-issued" onclick="ModalManager.openStudentRequestsModal('issued')"
               style="display:inline-flex; align-items:center; gap:6px; padding:8px 16px; border-radius:8px; font-weight:800; font-size:0.83rem; cursor:pointer; border:1px solid rgba(16,185,129,0.4); background:transparent; color:#10b981; transition:all 0.2s;">
-              📦 Issued Items <span id="sreq-count-issued" style="background:rgba(16,185,129,0.15); border-radius:12px; padding:1px 7px; font-size:0.75rem; margin-left:2px;">0</span>
+              ðŸ“¦ Issued Items <span id="sreq-count-issued" style="background:rgba(16,185,129,0.15); border-radius:12px; padding:1px 7px; font-size:0.75rem; margin-left:2px;">0</span>
             </button>
             <button id="sreq-tab-pending" onclick="ModalManager.openStudentRequestsModal('pending')"
               style="display:inline-flex; align-items:center; gap:6px; padding:8px 16px; border-radius:8px; font-weight:800; font-size:0.83rem; cursor:pointer; border:1px solid rgba(245,158,11,0.4); background:transparent; color:#f59e0b; transition:all 0.2s;">
-              ⏳ Pending Requests <span id="sreq-count-pending" style="background:rgba(245,158,11,0.15); border-radius:12px; padding:1px 7px; font-size:0.75rem; margin-left:2px;">0</span>
+              â³ Pending Requests <span id="sreq-count-pending" style="background:rgba(245,158,11,0.15); border-radius:12px; padding:1px 7px; font-size:0.75rem; margin-left:2px;">0</span>
             </button>
             <button id="sreq-tab-due" onclick="ModalManager.openStudentRequestsModal('due')"
               style="display:inline-flex; align-items:center; gap:6px; padding:8px 16px; border-radius:8px; font-weight:800; font-size:0.83rem; cursor:pointer; border:1px solid rgba(245,158,11,0.5); background:transparent; color:#f59e0b; transition:all 0.2s;">
-              📅 Due Date <span id="sreq-count-due" style="background:rgba(245,158,11,0.15); border-radius:12px; padding:1px 7px; font-size:0.75rem; margin-left:2px;">0</span>
+              ðŸ“… Due Date <span id="sreq-count-due" style="background:rgba(245,158,11,0.15); border-radius:12px; padding:1px 7px; font-size:0.75rem; margin-left:2px;">0</span>
             </button>
             <button id="sreq-tab-overdue" onclick="ModalManager.openStudentRequestsModal('overdue')"
               style="display:inline-flex; align-items:center; gap:6px; padding:8px 16px; border-radius:8px; font-weight:800; font-size:0.83rem; cursor:pointer; border:1px solid rgba(239,68,68,0.4); background:transparent; color:#ef4444; transition:all 0.2s;">
-              🚨 Overdue <span id="sreq-count-overdue" style="background:rgba(239,68,68,0.15); border-radius:12px; padding:1px 7px; font-size:0.75rem; margin-left:2px;">0</span>
+              ðŸš¨ Overdue <span id="sreq-count-overdue" style="background:rgba(239,68,68,0.15); border-radius:12px; padding:1px 7px; font-size:0.75rem; margin-left:2px;">0</span>
             </button>
           </div>
 
@@ -1411,13 +1412,13 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
       </div>
     </div>
 
-    <!-- Modal: Management Executive Financial Dashboard Modal (INR ₹) -->
+    <!-- Modal: Management Executive Financial Dashboard Modal (INR â‚¹) -->
     <div class="modal-backdrop hidden" id="management-modal">
       <div class="modal-content modal-lg">
         <div class="modal-header">
           <div class="modal-title-group">
             <i data-lucide="bar-chart-3"></i>
-            <h2>Executive Management Dashboard & Financial Asset Valuation (₹ INR)</h2>
+            <h2>Executive Management Dashboard & Financial Asset Valuation (â‚¹ INR)</h2>
           </div>
           <button class="modal-close" id="btn-close-mgmt-modal"><i data-lucide="x"></i></button>
         </div>
@@ -1425,7 +1426,7 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
           <div class="procure-summary-banner">
             <div class="procure-stat">
               <span class="procure-label">Total Asset Value (INR)</span>
-              <span class="procure-val primary-text" id="mgmt-total-value">₹0</span>
+              <span class="procure-val primary-text" id="mgmt-total-value">â‚¹0</span>
             </div>
             <div class="procure-stat">
               <span class="procure-label">Total Physical Units</span>
@@ -1441,7 +1442,7 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
             </div>
           </div>
 
-          <h3>Inventory Financial Asset Valuation by Category (₹ INR)</h3>
+          <h3>Inventory Financial Asset Valuation by Category (â‚¹ INR)</h3>
           <div class="procurement-table-wrapper">
             <table class="component-table">
               <thead>
@@ -1449,7 +1450,7 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
                   <th>Category</th>
                   <th>Component Diversity</th>
                   <th>Total Physical Quantity</th>
-                  <th>Total Estimated Asset Valuation (₹)</th>
+                  <th>Total Estimated Asset Valuation (â‚¹)</th>
                 </tr>
               </thead>
               <tbody id="mgmt-category-table-body">
@@ -1493,7 +1494,7 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
         </div>
         <div class="modal-body">
           <p class="modal-desc">Manage project workspaces, team members, BOMs, reserved inventory, consumables, reusable
-            assets, and cost estimates in ₹ INR.</p>
+            assets, and cost estimates in â‚¹ INR.</p>
 
           <div class="project-create-box">
             <h3><i data-lucide="plus"></i> Register New Lab Project Workspace</h3>
@@ -1643,7 +1644,7 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
         <div class="modal-footer" style="display:flex; gap:12px; justify-content:flex-end;">
           <button class="btn btn-secondary"
             onclick="document.body.classList.remove('qr-scan-mode'); window.history.pushState({}, '', window.location.pathname); if (window.closeBoxInspectorModal) window.closeBoxInspectorModal(); else ModalManager.closeBoxInspectorModal();"
-            style="cursor:pointer; border:1px solid #38bdf8; color:#38bdf8; font-weight:700; padding:8px 16px; border-radius:8px;">🏠
+            style="cursor:pointer; border:1px solid #38bdf8; color:#38bdf8; font-weight:700; padding:8px 16px; border-radius:8px;">ðŸ 
             View Full Site</button>
           <button class="btn btn-primary"
             onclick="window.closeBoxInspectorModal ? window.closeBoxInspectorModal() : ModalManager.closeBoxInspectorModal()"
@@ -1681,7 +1682,7 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
                 <option value="ENGINEER" selected>Systems Engineer (BOM & Design)</option>
                 <option value="STUDENT">Student / Intern (View & Request)</option>
                 <option value="MANAGEMENT">Operations Management (Executive)</option>
-                <option value="ADMIN" disabled>🔒 Administrator (Locked to Master Admin)</option>
+                <option value="ADMIN" disabled>ðŸ”’ Administrator (Locked to Master Admin)</option>
               </select>
               <button id="btn-create-user-submit" class="btn btn-primary col-4"
                 onclick="ModalManager.handleCreateUserSubmit()">
@@ -1748,7 +1749,7 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
             <div>
               <h2 style="margin:0; font-size:1.3rem; color:var(--text-main);" id="proj-wizard-modal-title">Project
                 Workspace Requisition</h2>
-              <span style="font-size:0.8rem; color:var(--text-muted);">Step 1: Enter Project Details ➔ Step 2: Search
+              <span style="font-size:0.8rem; color:var(--text-muted);">Step 1: Enter Project Details âž” Step 2: Search
                 Inventory & Request Components</span>
             </div>
           </div>
@@ -1772,7 +1773,7 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
             <div class="form-group" style="margin-bottom:18px;">
               <label
                 style="font-weight:700; color:var(--text-main); margin-bottom:6px; display:block; font-size:0.92rem;">
-                📁 Type Project Name *
+                ðŸ“ Type Project Name *
               </label>
               <input type="text" id="proj-wizard-name-input" class="form-control"
                 placeholder="e.g. Smart IoT Weather Station / Robotics Arm Prototype"
@@ -1794,7 +1795,7 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
             <div class="form-group" style="margin-bottom:24px;">
               <label
                 style="font-weight:700; color:var(--text-main); margin-bottom:6px; display:block; font-size:0.92rem;">
-                📝 Project Description / Scope Notes (Optional)
+                ðŸ“ Project Description / Scope Notes (Optional)
               </label>
               <textarea id="proj-wizard-desc-input" class="form-control" rows="3"
                 placeholder="Briefly describe project goals, target milestones, or team lead..."
@@ -1805,7 +1806,7 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
               style="display:flex; justify-content:flex-end; border-top:1px solid var(--border-color); padding-top:18px;">
               <button class="btn btn-primary btn-lg" onclick="ModalManager.goToProjectWizardStep2()"
                 style="font-weight:800; padding:12px 28px; background:linear-gradient(135deg, #0284c7 0%, #2563eb 100%); font-size:1rem; border:none; box-shadow:0 4px 14px rgba(2,132,199,0.4);">
-                Next: Select Components ➔
+                Next: Select Components âž”
               </button>
             </div>
           </div>
@@ -1821,7 +1822,7 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
               </div>
               <button class="btn btn-sm btn-secondary" onclick="ModalManager.goToProjectWizardStep1()"
                 style="font-weight:600;">
-                ✏ Edit Project Name
+                âœ Edit Project Name
               </button>
             </div>
 
@@ -1849,7 +1850,7 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
               style="background:var(--bg-dark); border:1px solid var(--border-color); border-radius:12px; padding:16px; margin-bottom:18px;">
               <h4
                 style="margin:0 0 12px 0; color:var(--text-main); font-size:0.95rem; display:flex; align-items:center; justify-content:space-between;">
-                <span>📦 Selected Components for Project (<span id="proj-wizard-cart-count"
+                <span>ðŸ“¦ Selected Components for Project (<span id="proj-wizard-cart-count"
                     style="color:var(--primary); font-weight:800;">0</span> items)</span>
               </h4>
               <div style="overflow-x:auto;">
@@ -1876,7 +1877,7 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
               style="background:var(--bg-dark); border:1px solid var(--border-color); border-radius:12px; padding:16px; margin-bottom:20px;">
               <label
                 style="font-weight:700; color:var(--text-main); margin-bottom:6px; display:block; font-size:0.9rem;">
-                📝 Request Notes for Lab Administrator *
+                ðŸ“ Request Notes for Lab Administrator *
               </label>
               <textarea id="proj-wizard-request-notes" class="form-control" rows="2"
                 placeholder="Add specific notes for administrator regarding project goals, checkout urgency, or testing timeframe..."
@@ -1888,16 +1889,16 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
               style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border-color); padding-top:18px;">
               <button class="btn btn-secondary" onclick="ModalManager.goToProjectWizardStep1()"
                 style="font-weight:700;">
-                ⬅ Back to Step 1
+                â¬… Back to Step 1
               </button>
               <div style="display:flex; gap:12px;">
                 <button class="btn btn-secondary" onclick="ModalManager.handleSaveProjectWizardDraft()"
                   style="font-weight:700; background:rgba(255,255,255,0.06); padding:10px 20px;">
-                  💾 Save as Draft
+                  ðŸ’¾ Save as Draft
                 </button>
                 <button class="btn btn-primary btn-lg" onclick="ModalManager.handleSubmitProjectWizardRequest()"
                   style="font-weight:800; padding:10px 24px; background:linear-gradient(135deg, #10b981 0%, #059669 100%); border:none; box-shadow:0 4px 14px rgba(16,185,129,0.4);">
-                  🚀 Submit Request to Team Lead
+                  ðŸš€ Submit Request to Team Lead
                 </button>
               </div>
             </div>
@@ -1932,11 +1933,11 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
             style="display:flex; gap:10px; border-bottom:1px solid var(--border-color); padding-bottom:10px;">
             <button id="tab-btn-req-components" class="btn btn-primary btn-sm"
               onclick="ModalManager.switchStudentReqTab('create')" style="font-weight:800; padding:8px 16px;">
-              ➕ Search & Add Components
+              âž• Search & Add Components
             </button>
             <button id="tab-btn-my-req-status" class="btn btn-secondary btn-sm"
               onclick="ModalManager.switchStudentReqTab('status')" style="font-weight:800; padding:8px 16px;">
-              📋 View Request Status, Edit & Cancel (<span id="student-my-req-count">0</span>)
+              ðŸ“‹ View Request Status, Edit & Cancel (<span id="student-my-req-count">0</span>)
             </button>
           </div>
 
@@ -2104,13 +2105,13 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
   </div>
 
   <!-- JavaScript App Logic with Cache Busters -->
-  <script src="js/types.js?v=13420_standalone_qr_passport"></script>
-  <script src="js/initialData.js?v=13420_standalone_qr_passport"></script>
-  <script src="js/storage.js?v=13420_standalone_qr_passport"></script>
-  <script src="js/rackViewer.js?v=13420_standalone_qr_passport"></script>
-  <script src="js/componentsView.js?v=13420_standalone_qr_passport"></script>
-  <script src="js/modalManager.js?v=13420_standalone_qr_passport"></script>
-  <script src="js/app.js?v=13420_standalone_qr_passport"></script>
+  <script src="js/types.js?v=13450_exact_components_verified_images"></script>
+  <script src="js/initialData.js?v=13450_exact_components_verified_images"></script>
+  <script src="js/storage.js?v=13450_exact_components_verified_images"></script>
+  <script src="js/rackViewer.js?v=13450_exact_components_verified_images"></script>
+  <script src="js/componentsView.js?v=13450_exact_components_verified_images"></script>
+  <script src="js/modalManager.js?v=13450_exact_components_verified_images"></script>
+  <script src="js/app.js?v=13450_exact_components_verified_images"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       if (window.lucide) {
@@ -2155,7 +2156,7 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
         try {
           const session = StorageService.getCurrentSession();
           if (session) {
-            console.log("🔒 Active Session Restored on Startup:", session.fullName);
+            console.log("ðŸ”’ Active Session Restored on Startup:", session.fullName);
             redirectToDashboard();
           }
         } catch (err) { }
@@ -2251,7 +2252,7 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
           } else if (boxComps.length === 1) {
             compLinesHtml = `<div class="comp-line single">${boxComps[0].name}</div>`;
           } else {
-            compLinesHtml = boxComps.map(c => `<div class="comp-line multi">• ${c.name}</div>`).join('');
+            compLinesHtml = boxComps.map(c => `<div class="comp-line multi">â€¢ ${c.name}</div>`).join('');
           }
 
           const primaryCompId = boxComps[0] ? boxComps[0].id : '';
@@ -2261,7 +2262,7 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
           return `
             <div class="sticker-card">
               <div class="comp-name-container">${compLinesHtml}</div>
-              <div class="box-id-badge">Box ${bid} • R${targetRack}S${shelfChar}</div>
+              <div class="box-id-badge">Box ${bid} â€¢ R${targetRack}S${shelfChar}</div>
               <img src="${qrImg}" alt="${bid} QR" />
             </div>`;
         }).join('');
@@ -2288,7 +2289,7 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
           img { width:21mm; height:21mm; border:1px solid #94a3b8; border-radius:3px; padding:1px; background:#fff; flex-shrink:0; display:block; }
         </style>
       </head><body>
-        <div class="header-banner">RACK ${targetRack} - SHELF ${shelfChar} • ${activeBoxes.length} BOXES • QR STICKERS</div>
+        <div class="header-banner">RACK ${targetRack} - SHELF ${shelfChar} â€¢ ${activeBoxes.length} BOXES â€¢ QR STICKERS</div>
         ${pagesHtml}
         <script>window.onload = function(){ window.print(); };<\/script>
       </body></html>`);
@@ -2431,7 +2432,7 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
       const alertBox = document.getElementById('login-alert-box');
       if (alertBox) {
         alertBox.className = `login-alert-banner ${type}`;
-        alertBox.innerHTML = `<span>${type === 'success' ? '✅' : 'Alert:'} ${message}</span>`;
+        alertBox.innerHTML = `<span>${type === 'success' ? 'âœ…' : 'Alert:'} ${message}</span>`;
         alertBox.classList.remove('hidden');
       }
       if (window.ModalManager && window.ModalManager.showToast) {
@@ -2445,7 +2446,7 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
       const passInput = document.getElementById('login-password').value;
 
       try {
-        showLoginAlert('⌛ Authenticating across cloud account database...', 'success');
+        showLoginAlert('âŒ› Authenticating across cloud account database...', 'success');
         const session = await StorageService.login(emailOrUser, passInput);
         if (window.ModalManager && window.ModalManager.showToast) {
           window.ModalManager.showToast(`Welcome back, ${session.fullName}! Signed in successfully.`, 'success');
@@ -2500,7 +2501,7 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/Labsphere/sw.js?v=13420_standalone_qr_passport', { scope: '/Labsphere/' })
+        navigator.serviceWorker.register('/Labsphere/sw.js?v=13450_exact_components_verified_images', { scope: '/Labsphere/' })
           .then(reg => {
             console.log('[LabSphere PWA] Service Worker registered:', reg.scope);
             if (reg.update) reg.update();
