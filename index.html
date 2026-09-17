@@ -2076,6 +2076,13 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
         return;
       }
 
+      // Arrange QR labels in increasing order of box IDs (e.g. BOX A-001, BOX A-002, ..., BOX A-016)
+      activeBoxes.sort((a, b) => {
+        const idA = (a.id || '').trim().toUpperCase();
+        const idB = (b.id || '').trim().toUpperCase();
+        return idA.localeCompare(idB, undefined, { numeric: true, sensitivity: 'base' });
+      });
+
       // Fetch real LAN IP from server so QR codes work on mobile devices
       const hostOrigin = await _getServerLanUrl();
 
@@ -2088,6 +2095,7 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
         const cardsHtml = pageBoxes.map(box => {
           const bid = (box.id || '').trim().toUpperCase();
           const boxComps = allComponents.filter(c => (c.boxId || '').trim().toUpperCase() === bid);
+          boxComps.sort((a, b) => (a.name || '').localeCompare(b.name || '', undefined, { numeric: true, sensitivity: 'base' }));
           const compLinesHtml = boxComps.length
             ? boxComps.map(c => `<div class="comp-line">• ${c.name}</div>`).join('')
             : `<div class="comp-line">Empty (${bid})</div>`;

@@ -3911,6 +3911,13 @@ class ModalManager {
       return;
     }
 
+    // Arrange QR labels in increasing order of box IDs (e.g. BOX A-001, BOX A-002, ..., BOX A-016)
+    activeBoxes.sort((a, b) => {
+      const idA = (a.id || "").trim().toUpperCase();
+      const idB = (b.id || "").trim().toUpperCase();
+      return idA.localeCompare(idB, undefined, { numeric: true, sensitivity: "base" });
+    });
+
     let hostOrigin = window.location.origin;
     if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
       hostOrigin = `http://192.168.82.40:${window.location.port || 3000}`;
@@ -3926,6 +3933,7 @@ class ModalManager {
       let cardsHtml = pageBoxes.map(box => {
         const cleanBoxId = (box.id || "").trim().toUpperCase();
         const boxComps = components.filter(c => (c.boxId || "").trim().toUpperCase() === cleanBoxId);
+        boxComps.sort((a, b) => (a.name || "").localeCompare(b.name || "", undefined, { numeric: true, sensitivity: "base" }));
         let compLinesHtml = boxComps.map(c => `<div class="comp-line">• ${c.name}</div>`).join("");
         if (!compLinesHtml) compLinesHtml = `<div class="comp-line">Empty Box (${cleanBoxId})</div>`;
 
@@ -4051,6 +4059,15 @@ class ModalManager {
     printWin.document.close();
   }
 
+  static parseShelfId(input) {
+    if (input === null || input === undefined) return 1;
+    if (typeof input === "number") return input;
+    const s = String(input).trim().toUpperCase();
+    if (/^[A-Z]$/.test(s)) return s.charCodeAt(0) - 64;
+    const n = parseInt(s, 10);
+    return isNaN(n) ? 1 : n;
+  }
+
   static printBatchShelfComponentQrSheet(rackIdInput, shelfIdInput) {
     if (!StorageService.isRole("ADMIN")) {
       alert("Access Restricted: Only Lab Administrators can print Shelf QR label sheets.");
@@ -4087,6 +4104,13 @@ class ModalManager {
       return;
     }
 
+    // Arrange QR labels in increasing order of box IDs (e.g. BOX A-001, BOX A-002, ..., BOX A-016)
+    activeShelfBoxes.sort((a, b) => {
+      const idA = (a.id || "").trim().toUpperCase();
+      const idB = (b.id || "").trim().toUpperCase();
+      return idA.localeCompare(idB, undefined, { numeric: true, sensitivity: "base" });
+    });
+
     let hostOrigin = window.location.origin;
     if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
       hostOrigin = `http://192.168.82.40:${window.location.port || 3000}`;
@@ -4102,6 +4126,7 @@ class ModalManager {
       let cardsHtml = pageBoxes.map(box => {
         const cleanBoxId = (box.id || "").trim().toUpperCase();
         const boxComps = allComponents.filter(c => (c.boxId || "").trim().toUpperCase() === cleanBoxId);
+        boxComps.sort((a, b) => (a.name || "").localeCompare(b.name || "", undefined, { numeric: true, sensitivity: "base" }));
         let compLinesHtml = boxComps.map(c => `<div class="comp-line">• ${c.name}</div>`).join("");
         if (!compLinesHtml) compLinesHtml = `<div class="comp-line">Empty Box (${cleanBoxId})</div>`;
 
