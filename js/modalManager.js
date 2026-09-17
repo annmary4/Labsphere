@@ -3987,8 +3987,15 @@ class ModalManager {
         const cleanBoxId = (box.id || "").trim().toUpperCase();
         const boxComps = components.filter(c => (c.boxId || "").trim().toUpperCase() === cleanBoxId);
         boxComps.sort((a, b) => (a.name || "").localeCompare(b.name || "", undefined, { numeric: true, sensitivity: "base" }));
-        let compLinesHtml = boxComps.map(c => `<div class="comp-line">• ${c.name}</div>`).join("");
-        if (!compLinesHtml) compLinesHtml = `<div class="comp-line">Empty Box (${cleanBoxId})</div>`;
+        
+        let compLinesHtml = "";
+        if (boxComps.length === 0) {
+          compLinesHtml = `<div class="comp-line empty">Empty Box (${cleanBoxId})</div>`;
+        } else if (boxComps.length === 1) {
+          compLinesHtml = `<div class="comp-line single">${boxComps[0].name}</div>`;
+        } else {
+          compLinesHtml = boxComps.map(c => `<div class="comp-line multi">• ${c.name}</div>`).join("");
+        }
 
         const qrTargetUrl = `${hostOrigin}${window.location.pathname}?box=${encodeURIComponent(cleanBoxId)}`;
         const qrImgUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrTargetUrl)}`;
@@ -4024,21 +4031,21 @@ class ModalManager {
               margin: 8mm;
             }
             body {
-              font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+              font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
               margin: 0;
               padding: 0;
               background: #fff;
-              color: #0f172a;
+              color: #000;
               -webkit-print-color-adjust: exact;
             }
             .header-banner {
               text-align: center;
               font-size: 13px;
               font-weight: 800;
-              color: #0284c7;
+              color: #000;
               margin-bottom: 6px;
               padding-bottom: 4px;
-              border-bottom: 2px solid #0f172a;
+              border-bottom: 2px solid #000;
             }
             .print-page {
               page-break-after: always;
@@ -4054,9 +4061,9 @@ class ModalManager {
               box-sizing: border-box;
             }
             .sticker-card {
-              border: 2px dashed #0f172a;
+              border: 1.5px solid #0f172a;
               border-radius: 6px;
-              padding: 4px 3px;
+              padding: 3px 3px 2px 3px;
               text-align: center;
               box-sizing: border-box;
               display: flex;
@@ -4065,38 +4072,70 @@ class ModalManager {
               justify-content: space-between;
               height: 46mm;
               background: #fff;
+              overflow: hidden;
             }
             .comp-name-container {
               display: flex;
               flex-direction: column;
-              gap: 1px;
+              justify-content: center;
+              align-items: center;
               width: 100%;
-              max-height: 20px;
+              flex: 1;
+              max-height: 19mm;
               overflow: hidden;
+              padding: 0 1px;
+              box-sizing: border-box;
             }
             .comp-line {
-              font-size: 9.5px;
+              font-size: 10px;
               font-weight: 800;
-              color: #0f172a;
-              line-height: 1.1;
-              white-space: nowrap;
+              color: #000000;
+              line-height: 1.25;
+              text-align: center;
+              word-break: break-word;
+              white-space: normal;
+              width: 100%;
+              display: -webkit-box;
+              -webkit-line-clamp: 3;
+              -webkit-box-orient: vertical;
               overflow: hidden;
-              text-overflow: ellipsis;
+            }
+            .comp-line.single {
+              font-size: 10.5px;
+              line-height: 1.25;
+              -webkit-line-clamp: 3;
+            }
+            .comp-line.multi {
+              font-size: 8.5px;
+              line-height: 1.15;
+              text-align: left;
+              -webkit-line-clamp: 2;
+              white-space: normal;
+              word-break: break-word;
+            }
+            .comp-line.empty {
+              font-size: 9.5px;
+              color: #64748b;
+              font-style: italic;
             }
             .box-id-badge {
-              font-size: 11.5px;
-              font-weight: 800;
+              font-size: 11px;
+              font-weight: 900;
               font-family: monospace;
               color: #000000;
               margin: 1px 0;
+              letter-spacing: 0.2px;
+              white-space: nowrap;
             }
             img {
-              width: 26mm;
-              height: 26mm;
-              border: 1px solid #cbd5e1;
-              border-radius: 4px;
-              padding: 2px;
+              width: 21mm;
+              height: 21mm;
+              border: 1px solid #94a3b8;
+              border-radius: 3px;
+              padding: 1px;
               background: #fff;
+              flex-shrink: 0;
+              display: block;
             }
           </style>
         </head>
@@ -4184,8 +4223,15 @@ class ModalManager {
           this.parseShelfId(c.shelfId) === targetShelf
         );
         boxComps.sort((a, b) => (a.name || "").localeCompare(b.name || "", undefined, { numeric: true, sensitivity: "base" }));
-        let compLinesHtml = boxComps.map(c => `<div class="comp-line">• ${c.name}</div>`).join("");
-        if (!compLinesHtml) compLinesHtml = `<div class="comp-line">Empty Box (${cleanBoxId})</div>`;
+        
+        let compLinesHtml = "";
+        if (boxComps.length === 0) {
+          compLinesHtml = `<div class="comp-line empty">Empty Box (${cleanBoxId})</div>`;
+        } else if (boxComps.length === 1) {
+          compLinesHtml = `<div class="comp-line single">${boxComps[0].name}</div>`;
+        } else {
+          compLinesHtml = boxComps.map(c => `<div class="comp-line multi">• ${c.name}</div>`).join("");
+        }
 
         const primaryCompId = boxComps[0] ? boxComps[0].id : "";
         const compQuery = primaryCompId ? `&comp=${encodeURIComponent(primaryCompId)}` : "";
@@ -4223,21 +4269,21 @@ class ModalManager {
               margin: 8mm;
             }
             body {
-              font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+              font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
               margin: 0;
               padding: 0;
               background: #fff;
-              color: #0f172a;
+              color: #000;
               -webkit-print-color-adjust: exact;
             }
             .header-banner {
               text-align: center;
               font-size: 13px;
               font-weight: 800;
-              color: #0284c7;
+              color: #000;
               margin-bottom: 6px;
               padding-bottom: 4px;
-              border-bottom: 2px solid #0f172a;
+              border-bottom: 2px solid #000;
             }
             .print-page {
               page-break-after: always;
@@ -4253,9 +4299,9 @@ class ModalManager {
               box-sizing: border-box;
             }
             .sticker-card {
-              border: 2px dashed #0f172a;
+              border: 1.5px solid #0f172a;
               border-radius: 6px;
-              padding: 4px 3px;
+              padding: 3px 3px 2px 3px;
               text-align: center;
               box-sizing: border-box;
               display: flex;
@@ -4264,38 +4310,70 @@ class ModalManager {
               justify-content: space-between;
               height: 46mm;
               background: #fff;
+              overflow: hidden;
             }
             .comp-name-container {
               display: flex;
               flex-direction: column;
-              gap: 1px;
+              justify-content: center;
+              align-items: center;
               width: 100%;
-              max-height: 20px;
+              flex: 1;
+              max-height: 19mm;
               overflow: hidden;
+              padding: 0 1px;
+              box-sizing: border-box;
             }
             .comp-line {
-              font-size: 9.5px;
+              font-size: 10px;
               font-weight: 800;
-              color: #0f172a;
-              line-height: 1.1;
-              white-space: nowrap;
+              color: #000000;
+              line-height: 1.25;
+              text-align: center;
+              word-break: break-word;
+              white-space: normal;
+              width: 100%;
+              display: -webkit-box;
+              -webkit-line-clamp: 3;
+              -webkit-box-orient: vertical;
               overflow: hidden;
-              text-overflow: ellipsis;
+            }
+            .comp-line.single {
+              font-size: 10.5px;
+              line-height: 1.25;
+              -webkit-line-clamp: 3;
+            }
+            .comp-line.multi {
+              font-size: 8.5px;
+              line-height: 1.15;
+              text-align: left;
+              -webkit-line-clamp: 2;
+              white-space: normal;
+              word-break: break-word;
+            }
+            .comp-line.empty {
+              font-size: 9.5px;
+              color: #64748b;
+              font-style: italic;
             }
             .box-id-badge {
-              font-size: 11.5px;
-              font-weight: 800;
+              font-size: 11px;
+              font-weight: 900;
               font-family: monospace;
               color: #000000;
               margin: 1px 0;
+              letter-spacing: 0.2px;
+              white-space: nowrap;
             }
             img {
-              width: 26mm;
-              height: 26mm;
-              border: 1px solid #cbd5e1;
-              border-radius: 4px;
-              padding: 2px;
+              width: 21mm;
+              height: 21mm;
+              border: 1px solid #94a3b8;
+              border-radius: 3px;
+              padding: 1px;
               background: #fff;
+              flex-shrink: 0;
+              display: block;
             }
           </style>
         </head>

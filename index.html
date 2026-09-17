@@ -1989,7 +1989,7 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
   <script src="js/storage.js?v=13370_box_a001_single_item"></script>
   <script src="js/rackViewer.js?v=13370_box_a001_single_item"></script>
   <script src="js/componentsView.js?v=13370_box_a001_single_item"></script>
-  <script src="js/modalManager.js?v=13390_qr_17_per_page"></script>
+  <script src="js/modalManager.js?v=13400_qr_shelf_b_text_readable"></script>
   <script src="js/app.js?v=13370_box_a001_single_item"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -2100,9 +2100,16 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
             _parseShelfId(c.shelfId) === targetShelf
           );
           boxComps.sort((a, b) => (a.name || '').localeCompare(b.name || '', undefined, { numeric: true, sensitivity: 'base' }));
-          const compLinesHtml = boxComps.length
-            ? boxComps.map(c => `<div class="comp-line">• ${c.name}</div>`).join('')
-            : `<div class="comp-line">Empty (${bid})</div>`;
+          
+          let compLinesHtml = '';
+          if (boxComps.length === 0) {
+            compLinesHtml = `<div class="comp-line empty">Empty (${bid})</div>`;
+          } else if (boxComps.length === 1) {
+            compLinesHtml = `<div class="comp-line single">${boxComps[0].name}</div>`;
+          } else {
+            compLinesHtml = boxComps.map(c => `<div class="comp-line multi">• ${c.name}</div>`).join('');
+          }
+
           const primaryCompId = boxComps[0] ? boxComps[0].id : '';
           const compQuery = primaryCompId ? `&comp=${encodeURIComponent(primaryCompId)}` : '';
           const qrUrl = `${hostOrigin}${window.location.pathname}?box=${encodeURIComponent(bid)}&rack=${targetRack}&shelf=${targetShelf}${compQuery}`;
@@ -2123,15 +2130,18 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
         <title>QR Labels - Rack ${targetRack} Shelf ${shelfChar}</title>
         <style>
           @page { size: A4 portrait; margin: 8mm; }
-          body { font-family: sans-serif; margin:0; padding:0; background:#fff; color:#0f172a; -webkit-print-color-adjust:exact; }
-          .header-banner { text-align:center; font-size:13px; font-weight:800; color:#0284c7; margin-bottom:6px; padding-bottom:4px; border-bottom:2px solid #0f172a; }
+          body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; margin:0; padding:0; background:#fff; color:#000; -webkit-print-color-adjust:exact; }
+          .header-banner { text-align:center; font-size:13px; font-weight:800; color:#000; margin-bottom:6px; padding-bottom:4px; border-bottom:2px solid #000; }
           .print-page { page-break-after:always; box-sizing:border-box; margin-bottom:15px; }
           .grid-container { display:grid; grid-template-columns:repeat(4,1fr); grid-auto-rows:46mm; gap:3.5mm; width:100%; box-sizing:border-box; }
-          .sticker-card { border:2px dashed #0f172a; border-radius:6px; padding:4px 3px; text-align:center; box-sizing:border-box; display:flex; flex-direction:column; align-items:center; justify-content:space-between; height:46mm; background:#fff; }
-          .comp-name-container { display:flex; flex-direction:column; gap:1px; width:100%; max-height:20px; overflow:hidden; }
-          .comp-line { font-size:9.5px; font-weight:800; color:#0f172a; line-height:1.1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-          .box-id-badge { font-size:11.5px; font-weight:800; font-family:monospace; color:#000000; margin:1px 0; }
-          img { width:26mm; height:26mm; border:1px solid #cbd5e1; border-radius:4px; padding:2px; background:#fff; }
+          .sticker-card { border:1.5px solid #0f172a; border-radius:6px; padding:3px 3px 2px 3px; text-align:center; box-sizing:border-box; display:flex; flex-direction:column; align-items:center; justify-content:space-between; height:46mm; background:#fff; overflow:hidden; }
+          .comp-name-container { display:flex; flex-direction:column; justify-content:center; align-items:center; width:100%; flex:1; max-height:19mm; overflow:hidden; padding:0 1px; box-sizing:border-box; }
+          .comp-line { font-size:10px; font-weight:800; color:#000000; line-height:1.25; text-align:center; word-break:break-word; white-space:normal; width:100%; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+          .comp-line.single { font-size:10.5px; line-height:1.25; -webkit-line-clamp:3; }
+          .comp-line.multi { font-size:8.5px; line-height:1.15; text-align:left; -webkit-line-clamp:2; white-space:normal; word-break:break-word; }
+          .comp-line.empty { font-size:9.5px; color:#64748b; font-style:italic; }
+          .box-id-badge { font-size:11px; font-weight:900; font-family:monospace; color:#000000; margin:1px 0; letter-spacing:0.2px; white-space:nowrap; }
+          img { width:21mm; height:21mm; border:1px solid #94a3b8; border-radius:3px; padding:1px; background:#fff; flex-shrink:0; display:block; }
         </style>
       </head><body>
         <div class="header-banner">RACK ${targetRack} - SHELF ${shelfChar} • ${activeBoxes.length} BOXES • QR STICKERS</div>
