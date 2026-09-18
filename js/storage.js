@@ -2,7 +2,7 @@
  * LabSphere Storage Service - Complete 59-Component Catalog (v35)
  */
 
-const CURRENT_VERSION = "v10663_restore_user_manual_locations_and_quantities";
+const CURRENT_VERSION = "v10664_manual_locations_nano_proto_update";
 
 const STORAGE_KEYS = {
   VERSION: "labsphere_version_v10250",

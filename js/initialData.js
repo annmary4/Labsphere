@@ -528,7 +528,7 @@ const INITIAL_COMPONENTS = [
         "roomName":  "Room 101 - Prototyping Hall",
         "rackId":  1,
         "shelfId":  1,
-        "boxId":  "BOX A-003",
+        "boxId":  "BOX A-005",
         "stackLayer":  "Layer 1 (Top Compartment Bin #3)",
         "category":  "Microcontrollers \u0026 Dev Boards",
         "purpose":  "Compact breadboard-friendly 8-bit microcontroller board.",
@@ -542,7 +542,7 @@ const INITIAL_COMPONENTS = [
                              "COMP-002 (Arduino Uno R3)"
                          ],
         "inventoryState":  "AVAILABLE",
-        "quantity":  2,
+        "quantity":  6,
         "unit":  "pcs",
         "minQuantity":  2,
         "unitPrice":  450,
@@ -2197,11 +2197,11 @@ const INITIAL_COMPONENTS = [
         "roomName":  "Room 101 - Prototyping Hall",
         "rackId":  1,
         "shelfId":  1,
-        "boxId":  "BOX A-015",
+        "boxId":  "BOX A-003",
         "stackLayer":  "Layer 1 (Top Compartment Bin #A)",
         "inventoryState":  "AVAILABLE",
         "category":  "Microcontrollers \u0026 Dev Boards",
-        "quantity":  1,
+        "quantity":  3,
         "unit":  "pcs",
         "minQuantity":  1,
         "unitPrice":  450,
@@ -5008,6 +5008,7 @@ const INITIAL_REQUESTS = [
   }
 ];
 const INITIAL_TRANSACTIONS = [];
+
 
 
 
