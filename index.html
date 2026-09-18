@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -20,7 +20,7 @@
     rel="stylesheet">
 
   <!-- CSS with cache buster -->
-  <link rel="stylesheet" href="css/styles.css?v=13460_local_git_component_images">
+  <link rel="stylesheet" href="css/styles.css?v=13461_fix_blank_screen">
 
   <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -2105,13 +2105,13 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
   </div>
 
   <!-- JavaScript App Logic with Cache Busters -->
-  <script src="js/types.js?v=13460_local_git_component_images"></script>
-  <script src="js/initialData.js?v=13460_local_git_component_images"></script>
-  <script src="js/storage.js?v=13460_local_git_component_images"></script>
-  <script src="js/rackViewer.js?v=13460_local_git_component_images"></script>
-  <script src="js/componentsView.js?v=13460_local_git_component_images"></script>
-  <script src="js/modalManager.js?v=13460_local_git_component_images"></script>
-  <script src="js/app.js?v=13460_local_git_component_images"></script>
+  <script src="js/types.js?v=13461_fix_blank_screen"></script>
+  <script src="js/initialData.js?v=13461_fix_blank_screen"></script>
+  <script src="js/storage.js?v=13461_fix_blank_screen"></script>
+  <script src="js/rackViewer.js?v=13461_fix_blank_screen"></script>
+  <script src="js/componentsView.js?v=13461_fix_blank_screen"></script>
+  <script src="js/modalManager.js?v=13461_fix_blank_screen"></script>
+  <script src="js/app.js?v=13461_fix_blank_screen"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       if (window.lucide) {
@@ -2356,7 +2356,7 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
 
     function enterGuestPublicMode() {
       window.__isGuestMode = true;
-      document.body.classList.add('qr-scan-mode');
+      document.body.classList.remove('qr-scan-mode');
       const loginScreen = document.getElementById('login-screen');
       const mainApp = document.getElementById('app');
       if (loginScreen) loginScreen.style.display = 'none';
@@ -2501,7 +2501,7 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/Labsphere/sw.js?v=13460_local_git_component_images', { scope: '/Labsphere/' })
+        navigator.serviceWorker.register('/Labsphere/sw.js?v=13461_fix_blank_screen', { scope: '/Labsphere/' })
           .then(reg => {
             console.log('[LabSphere PWA] Service Worker registered:', reg.scope);
             if (reg.update) reg.update();

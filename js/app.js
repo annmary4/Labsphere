@@ -112,6 +112,14 @@ class App {
         return clean;
       };
 
+      const cleanBoxId = boxParam ? decodeURIComponent(boxParam).trim().toUpperCase() : null;
+      const cleanCompQuery = compParam ? decodeURIComponent(compParam).trim().toUpperCase() : null;
+
+      // Only enter standalone QR passport mode if an actual box or component was targeted
+      if (!cleanBoxId && !cleanCompQuery) {
+        return;
+      }
+
       let targetRack = rackParam ? parseInt(rackParam, 10) : null;
       let targetShelf = parseShelfNum(shelfParam);
 
@@ -124,9 +132,6 @@ class App {
       if (loginScreen) loginScreen.style.display = "none";
       const mainApp = document.getElementById("app");
       if (mainApp) mainApp.style.display = "none";
-
-      const cleanBoxId = boxParam ? decodeURIComponent(boxParam).trim().toUpperCase() : null;
-      const cleanCompQuery = compParam ? decodeURIComponent(compParam).trim().toUpperCase() : null;
 
       // If a specific component query was supplied, resolve it to lock down rack and shelf
       let targetComp = null;

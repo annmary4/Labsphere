@@ -1,19 +1,19 @@
-﻿/* ============================================================
+/* ============================================================
    LabSphere Service Worker - Offline Cache & PWA Support
    ============================================================ */
 
-const CACHE_NAME = 'labsphere-v13460_local_git_component_images';
+const CACHE_NAME = 'labsphere-v13461_fix_blank_screen';
 const ASSETS_TO_CACHE = [
   '/Labsphere/',
   '/Labsphere/index.html',
-  '/Labsphere/css/styles.css?v=13460_local_git_component_images',
-  '/Labsphere/js/app.js?v=13460_local_git_component_images',
-  '/Labsphere/js/types.js?v=13460_local_git_component_images',
-  '/Labsphere/js/initialData.js?v=13460_local_git_component_images',
-  '/Labsphere/js/storage.js?v=13460_local_git_component_images',
-  '/Labsphere/js/rackViewer.js?v=13460_local_git_component_images',
-  '/Labsphere/js/componentsView.js?v=13460_local_git_component_images',
-  '/Labsphere/js/modalManager.js?v=13460_local_git_component_images',
+  '/Labsphere/css/styles.css?v=13461_fix_blank_screen',
+  '/Labsphere/js/app.js?v=13461_fix_blank_screen',
+  '/Labsphere/js/types.js?v=13461_fix_blank_screen',
+  '/Labsphere/js/initialData.js?v=13461_fix_blank_screen',
+  '/Labsphere/js/storage.js?v=13461_fix_blank_screen',
+  '/Labsphere/js/rackViewer.js?v=13461_fix_blank_screen',
+  '/Labsphere/js/componentsView.js?v=13461_fix_blank_screen',
+  '/Labsphere/js/modalManager.js?v=13461_fix_blank_screen',
   '/Labsphere/icons/icon-192.png',
   '/Labsphere/icons/icon-512.png',
   '/Labsphere/manifest.json'
