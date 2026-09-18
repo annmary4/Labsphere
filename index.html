@@ -20,7 +20,7 @@
     rel="stylesheet">
 
   <!-- CSS with cache buster -->
-  <link rel="stylesheet" href="css/styles.css?v=13461_fix_blank_screen">
+  <link rel="stylesheet" href="css/styles.css?v=13462_qr_component_match_fix">
 
   <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -2105,13 +2105,13 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
   </div>
 
   <!-- JavaScript App Logic with Cache Busters -->
-  <script src="js/types.js?v=13461_fix_blank_screen"></script>
-  <script src="js/initialData.js?v=13461_fix_blank_screen"></script>
-  <script src="js/storage.js?v=13461_fix_blank_screen"></script>
-  <script src="js/rackViewer.js?v=13461_fix_blank_screen"></script>
-  <script src="js/componentsView.js?v=13461_fix_blank_screen"></script>
-  <script src="js/modalManager.js?v=13461_fix_blank_screen"></script>
-  <script src="js/app.js?v=13461_fix_blank_screen"></script>
+  <script src="js/types.js?v=13462_qr_component_match_fix"></script>
+  <script src="js/initialData.js?v=13462_qr_component_match_fix"></script>
+  <script src="js/storage.js?v=13462_qr_component_match_fix"></script>
+  <script src="js/rackViewer.js?v=13462_qr_component_match_fix"></script>
+  <script src="js/componentsView.js?v=13462_qr_component_match_fix"></script>
+  <script src="js/modalManager.js?v=13462_qr_component_match_fix"></script>
+  <script src="js/app.js?v=13462_qr_component_match_fix"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       if (window.lucide) {
@@ -2216,54 +2216,47 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
         return allComponents.some(c => (c.boxId || '').trim().toUpperCase() === bid);
       });
 
-      if (activeBoxes.length === 0) {
-        alert(`No occupied boxes found on Rack ${targetRack}, Shelf ${shelfChar}.`);
+      // Gather all components on this shelf
+      const shelfComps = allComponents.filter(c => 
+        (parseInt(c.rackId) || 1) === targetRack &&
+        _parseShelfId(c.shelfId) === targetShelf
+      );
+
+      if (shelfComps.length === 0) {
+        alert(`No components found on Rack ${targetRack}, Shelf ${shelfChar}.`);
         return;
       }
 
-      // Arrange QR labels in increasing order of box IDs (e.g. BOX A-001, BOX A-002, ..., BOX A-016)
-      activeBoxes.sort((a, b) => {
-        const idA = (a.id || '').trim().toUpperCase();
-        const idB = (b.id || '').trim().toUpperCase();
-        return idA.localeCompare(idB, undefined, { numeric: true, sensitivity: 'base' });
+      // Arrange QR labels in order of box IDs then component name
+      shelfComps.sort((a, b) => {
+        const idA = (a.boxId || '').trim().toUpperCase();
+        const idB = (b.boxId || '').trim().toUpperCase();
+        const boxCmp = idA.localeCompare(idB, undefined, { numeric: true, sensitivity: 'base' });
+        if (boxCmp !== 0) return boxCmp;
+        return (a.name || '').localeCompare(b.name || '', undefined, { numeric: true, sensitivity: 'base' });
       });
 
       // Use canonical public URL so QR labels work for anyone on mobile devices
       const baseUrl = _getPublicLabBaseUrl();
 
       const LABELS_PER_PAGE = 17;
-      const totalPages = Math.ceil(activeBoxes.length / LABELS_PER_PAGE);
+      const totalPages = Math.ceil(shelfComps.length / LABELS_PER_PAGE);
       let pagesHtml = '';
 
       for (let p = 0; p < totalPages; p++) {
-        const pageBoxes = activeBoxes.slice(p * LABELS_PER_PAGE, (p + 1) * LABELS_PER_PAGE);
-        const cardsHtml = pageBoxes.map(box => {
-          const bid = (box.id || '').trim().toUpperCase();
-          const boxComps = allComponents.filter(c => 
-            (c.boxId || '').trim().toUpperCase() === bid &&
-            (parseInt(c.rackId) || 1) === targetRack &&
-            _parseShelfId(c.shelfId) === targetShelf
-          );
-          boxComps.sort((a, b) => (a.name || '').localeCompare(b.name || '', undefined, { numeric: true, sensitivity: 'base' }));
-          
-          let compLinesHtml = '';
-          if (boxComps.length === 0) {
-            compLinesHtml = `<div class="comp-line empty">Empty (${bid})</div>`;
-          } else if (boxComps.length === 1) {
-            compLinesHtml = `<div class="comp-line single">${boxComps[0].name}</div>`;
-          } else {
-            compLinesHtml = boxComps.map(c => `<div class="comp-line multi">â€¢ ${c.name}</div>`).join('');
-          }
-
-          const primaryCompId = boxComps[0] ? boxComps[0].id : '';
-          const compQuery = primaryCompId ? `&comp=${encodeURIComponent(primaryCompId)}` : '';
-          const qrUrl = `${baseUrl}/?box=${encodeURIComponent(bid)}&rack=${targetRack}&shelf=${targetShelf}${compQuery}`;
+        const pageComps = shelfComps.slice(p * LABELS_PER_PAGE, (p + 1) * LABELS_PER_PAGE);
+        const cardsHtml = pageComps.map(c => {
+          const bid = (c.boxId || '').trim().toUpperCase();
+          const qrUrl = `${baseUrl}/?comp=${encodeURIComponent(c.id)}&box=${encodeURIComponent(bid)}&rack=${targetRack}&shelf=${targetShelf}`;
           const qrImg = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrUrl)}`;
           return `
             <div class="sticker-card">
-              <div class="comp-name-container">${compLinesHtml}</div>
-              <div class="box-id-badge">Box ${bid} â€¢ R${targetRack}S${shelfChar}</div>
-              <img src="${qrImg}" alt="${bid} QR" />
+              <div class="comp-name-container">
+                <div class="comp-line single">${c.name}</div>
+                <div style="font-size:8px; color:#475569; font-weight:700; margin-top:2px;">${c.partNumber || c.id}</div>
+              </div>
+              <div class="box-id-badge">Box ${bid} • R${targetRack}S${shelfChar}</div>
+              <img src="${qrImg}" alt="${c.name} QR" />
             </div>`;
         }).join('');
         pagesHtml += `<div class="print-page"><div class="grid-container">${cardsHtml}</div></div>`;
@@ -2501,7 +2494,7 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/Labsphere/sw.js?v=13461_fix_blank_screen', { scope: '/Labsphere/' })
+        navigator.serviceWorker.register('/Labsphere/sw.js?v=13462_qr_component_match_fix', { scope: '/Labsphere/' })
           .then(reg => {
             console.log('[LabSphere PWA] Service Worker registered:', reg.scope);
             if (reg.update) reg.update();

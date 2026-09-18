@@ -2,7 +2,7 @@
  * LabSphere Storage Service - Complete 59-Component Catalog (v35)
  */
 
-const CURRENT_VERSION = "v10660_local_git_component_images";
+const CURRENT_VERSION = "v10662_sync_122_components";
 
 const STORAGE_KEYS = {
   VERSION: "labsphere_version_v10250",
@@ -134,12 +134,13 @@ class StorageService {
       localStorage.setItem(STORAGE_KEYS.VERSION, CURRENT_VERSION);
     }
 
-    // Always ensure catalog has initial items if localStorage was completely empty
-    const comps = this.getComponents();
-    if (!comps || comps.length === 0) {
+    // Always ensure catalog has initial items if localStorage was empty or has an outdated partial catalog (< 120 items)
+    let comps = this.getComponents();
+    if (!comps || comps.length < (typeof INITIAL_COMPONENTS !== "undefined" ? INITIAL_COMPONENTS.length : 120)) {
       if (typeof INITIAL_COMPONENTS !== "undefined" && INITIAL_COMPONENTS.length > 0) {
         localStorage.setItem(STORAGE_KEYS.COMPONENTS, JSON.stringify(INITIAL_COMPONENTS));
         localStorage.setItem(STORAGE_KEYS.COMPONENTS + "_backup", JSON.stringify(INITIAL_COMPONENTS));
+        comps = this.getComponents();
       }
     } else {
       let compsUpdated = false;

@@ -41,6 +41,18 @@ class ComponentsView {
     if (window.lucide) window.lucide.createIcons();
   }
 
+  static resolveImageUrl(url) {
+    if (!url || typeof url !== "string") return "";
+    const clean = url.trim();
+    if (!clean) return "";
+    if (clean.startsWith("data:") || clean.startsWith("http://") || clean.startsWith("https://")) {
+      return clean;
+    }
+    const pathPart = clean.replace(/^\.?\/+/, "");
+    const isGitHubPages = typeof window !== "undefined" && window.location && window.location.pathname.startsWith("/Labsphere");
+    return (isGitHubPages ? "/Labsphere/" : "./") + pathPart;
+  }
+
   static cleanImageUrl(rawUrl) {
     if (!rawUrl || typeof rawUrl !== "string") return "";
     let url = rawUrl.trim();
@@ -77,11 +89,11 @@ class ComponentsView {
     }
 
     if (customImage && defaultUrl) {
-      return defaultUrl;
+      return this.resolveImageUrl(defaultUrl);
     }
 
     if (defaultUrl && (defaultUrl.startsWith("data:image/") || !defaultUrl.includes("images.unsplash.com"))) {
-      return defaultUrl;
+      return this.resolveImageUrl(defaultUrl);
     }
 
     const n = name.toLowerCase();
@@ -238,8 +250,8 @@ class ComponentsView {
             View Info
           </button>
           ${StorageService.isRole("ADMIN") ? `
-            <button class="btn btn-secondary btn-sm btn-print-qr-direct" data-id="${c.id}" onclick="event.stopPropagation(); if (window.ModalManager && window.ModalManager.printBoxQrCode) window.ModalManager.printBoxQrCode('${c.boxId}');" title="Print Box QR Code Label for ${c.boxId}" style="padding:4px 8px; font-size:0.7rem; cursor:pointer;">
-              <i data-lucide="printer"></i> Box QR
+            <button class="btn btn-secondary btn-sm btn-print-qr-direct" data-id="${c.id}" onclick="event.stopPropagation(); if (window.ModalManager && window.ModalManager.printComponentQrCode) window.ModalManager.printComponentQrCode('${c.id}'); else if (window.ModalManager && window.ModalManager.printBoxQrCode) window.ModalManager.printBoxQrCode('${c.boxId}');" title="Print Component QR Code Label for ${c.name}" style="padding:4px 8px; font-size:0.7rem; cursor:pointer;">
+              <i data-lucide="printer"></i> Item QR
             </button>
           ` : ''}
         </div>
@@ -420,7 +432,9 @@ class ComponentsView {
       if (printQrBtn) {
         printQrBtn.addEventListener("click", (e) => {
           e.stopPropagation();
-          if (window.ModalManager && window.ModalManager.printBoxQrCode) {
+          if (window.ModalManager && window.ModalManager.printComponentQrCode) {
+            window.ModalManager.printComponentQrCode(c.id);
+          } else if (window.ModalManager && window.ModalManager.printBoxQrCode) {
             window.ModalManager.printBoxQrCode(c.boxId);
           }
         });
@@ -460,7 +474,7 @@ class ComponentsView {
         stockLabel = "Low Stock";
       }
 
-      const imgSrc = c.imageUrl || "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&q=80";
+      const imgSrc = this.getAccurateImageForComponent(c);
       const manufacturer = c.manufacturer || "Lab Vendor";
 
       tr.innerHTML = `
@@ -509,7 +523,9 @@ class ComponentsView {
       if (qrBtn) {
         qrBtn.addEventListener("click", (e) => {
           e.stopPropagation();
-          if (window.ModalManager && window.ModalManager.printBoxQrCode) {
+          if (window.ModalManager && window.ModalManager.printComponentQrCode) {
+            window.ModalManager.printComponentQrCode(c.id);
+          } else if (window.ModalManager && window.ModalManager.printBoxQrCode) {
             window.ModalManager.printBoxQrCode(c.boxId);
           }
         });

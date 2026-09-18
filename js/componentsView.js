@@ -250,8 +250,8 @@ class ComponentsView {
             View Info
           </button>
           ${StorageService.isRole("ADMIN") ? `
-            <button class="btn btn-secondary btn-sm btn-print-qr-direct" data-id="${c.id}" onclick="event.stopPropagation(); if (window.ModalManager && window.ModalManager.printBoxQrCode) window.ModalManager.printBoxQrCode('${c.boxId}');" title="Print Box QR Code Label for ${c.boxId}" style="padding:4px 8px; font-size:0.7rem; cursor:pointer;">
-              <i data-lucide="printer"></i> Box QR
+            <button class="btn btn-secondary btn-sm btn-print-qr-direct" data-id="${c.id}" onclick="event.stopPropagation(); if (window.ModalManager && window.ModalManager.printComponentQrCode) window.ModalManager.printComponentQrCode('${c.id}'); else if (window.ModalManager && window.ModalManager.printBoxQrCode) window.ModalManager.printBoxQrCode('${c.boxId}');" title="Print Component QR Code Label for ${c.name}" style="padding:4px 8px; font-size:0.7rem; cursor:pointer;">
+              <i data-lucide="printer"></i> Item QR
             </button>
           ` : ''}
         </div>
@@ -432,7 +432,9 @@ class ComponentsView {
       if (printQrBtn) {
         printQrBtn.addEventListener("click", (e) => {
           e.stopPropagation();
-          if (window.ModalManager && window.ModalManager.printBoxQrCode) {
+          if (window.ModalManager && window.ModalManager.printComponentQrCode) {
+            window.ModalManager.printComponentQrCode(c.id);
+          } else if (window.ModalManager && window.ModalManager.printBoxQrCode) {
             window.ModalManager.printBoxQrCode(c.boxId);
           }
         });
@@ -521,7 +523,9 @@ class ComponentsView {
       if (qrBtn) {
         qrBtn.addEventListener("click", (e) => {
           e.stopPropagation();
-          if (window.ModalManager && window.ModalManager.printBoxQrCode) {
+          if (window.ModalManager && window.ModalManager.printComponentQrCode) {
+            window.ModalManager.printComponentQrCode(c.id);
+          } else if (window.ModalManager && window.ModalManager.printBoxQrCode) {
             window.ModalManager.printBoxQrCode(c.boxId);
           }
         });

@@ -20,9 +20,9 @@ class App {
 
     await StorageService.init();
 
-    // Ensure all 59 components are guaranteed loaded and retrieved
+    // Ensure all 122 components are guaranteed loaded and retrieved
     let comps = StorageService.getComponents();
-    if (!comps || comps.length < 50) {
+    if (!comps || comps.length < 120) {
       StorageService.restoreFullLabCatalog();
     }
 
@@ -133,7 +133,7 @@ class App {
       const mainApp = document.getElementById("app");
       if (mainApp) mainApp.style.display = "none";
 
-      // If a specific component query was supplied, resolve it to lock down rack and shelf
+      // If a specific component query was supplied, resolve it to lock down rack, shelf, and box
       let targetComp = null;
       if (cleanCompQuery) {
         targetComp = allComponents.find(c => (c.id || "").trim().toUpperCase() === cleanCompQuery) ||
@@ -148,9 +148,44 @@ class App {
         }
       }
 
-      // PRIORITY 1: BOX SCAN (Physical container on shelf, with optional comp filter)
+      // PRIORITY 1: SPECIFIC COMPONENT SCAN (?comp=COMP-001 or comp with box)
+      // When a QR code is for a specific component, that exact component MUST always be shown
+      if (cleanCompQuery || targetComp) {
+        console.log("Mobile QR Scan Targeting Component:", cleanCompQuery);
+
+        const comp = targetComp || allComponents.find(c => (c.id || "").trim().toUpperCase() === cleanCompQuery) ||
+          allComponents.find(c => (c.barcode || "").trim().toUpperCase() === cleanCompQuery) ||
+          allComponents.find(c => (c.partNumber || "").trim().toUpperCase() === cleanCompQuery) ||
+          allComponents.find(c => (c.name || "").trim().toUpperCase() === cleanCompQuery) ||
+          allComponents.find(c => (c.name || "").trim().toUpperCase().includes(cleanCompQuery));
+
+        if (comp) {
+          const effectiveRack = targetRack || Number(comp.rackId) || 1;
+          const effectiveShelf = targetShelf || parseShelfNum(comp.shelfId) || 1;
+          const effectiveBox = comp.boxId || cleanBoxId;
+
+          // Find any sibling components that share this same physical box
+          const targetBoxNorm = normBox(effectiveBox);
+          const siblings = allComponents.filter(c => {
+            const cBoxNorm = normBox(c.boxId);
+            return cBoxNorm === targetBoxNorm || (c.boxId || "").trim().toUpperCase() === (effectiveBox || "").trim().toUpperCase();
+          });
+
+          // Always ensure the scanned target component is FIRST in the list so it is immediately displayed
+          const otherSiblings = siblings.filter(c => c.id !== comp.id);
+          const compsToShow = [comp, ...otherSiblings];
+
+          this.showStandalonePassport(compsToShow, effectiveBox, effectiveRack, effectiveShelf, comp.id);
+          return;
+        } else {
+          this.showStandalonePassport([], cleanCompQuery, targetRack, targetShelf);
+          return;
+        }
+      }
+
+      // PRIORITY 2: BOX CONTAINER SCAN (?box=BOX A-001 with no comp)
       if (cleanBoxId) {
-        console.log("Mobile QR Scan Detected Box:", cleanBoxId, "Rack:", targetRack, "Shelf:", targetShelf, "Comp:", cleanCompQuery);
+        console.log("Mobile QR Scan Detected Box:", cleanBoxId, "Rack:", targetRack, "Shelf:", targetShelf);
         const targetBoxNorm = normBox(cleanBoxId);
 
         // 1. Strict match: Box ID + Rack + Shelf
@@ -180,47 +215,11 @@ class App {
           });
         }
 
-        // 4. Fallback to targetComp if box search was empty but comp exists
-        if (matchingComps.length === 0 && targetComp) {
-          matchingComps = [targetComp];
-        }
-
         const effectiveRackId = targetRack || (matchingComps[0] ? Number(matchingComps[0].rackId) : 1);
         const effectiveShelfId = targetShelf || (matchingComps[0] ? parseShelfNum(matchingComps[0].shelfId) : 1);
 
-        this.showStandalonePassport(matchingComps, cleanBoxId, effectiveRackId, effectiveShelfId, cleanCompQuery || (targetComp ? targetComp.id : null));
+        this.showStandalonePassport(matchingComps, cleanBoxId, effectiveRackId, effectiveShelfId, null);
         return;
-      }
-
-      // PRIORITY 2: COMPONENT-ONLY SCAN (?comp=COMP-001)
-      if (cleanCompQuery) {
-        console.log("Mobile QR Scan Searching Component:", cleanCompQuery);
-
-        const comp = allComponents.find(c => (c.id || "").trim().toUpperCase() === cleanCompQuery) ||
-          allComponents.find(c => (c.barcode || "").trim().toUpperCase() === cleanCompQuery) ||
-          allComponents.find(c => (c.partNumber || "").trim().toUpperCase() === cleanCompQuery) ||
-          allComponents.find(c => (c.name || "").trim().toUpperCase() === cleanCompQuery) ||
-          allComponents.find(c => (c.name || "").trim().toUpperCase().includes(cleanCompQuery));
-
-        if (comp) {
-          const effectiveRack = targetRack || Number(comp.rackId) || 1;
-          const effectiveShelf = targetShelf || parseShelfNum(comp.shelfId) || 1;
-
-          // Find all sibling components that share this same physical box
-          const targetBoxNorm = normBox(comp.boxId);
-          const siblings = allComponents.filter(c => {
-            const cBoxNorm = normBox(c.boxId);
-            const isBoxMatch = cBoxNorm === targetBoxNorm || (c.boxId || "").trim().toUpperCase() === (comp.boxId || "").trim().toUpperCase();
-            return isBoxMatch && Number(c.rackId) === effectiveRack && parseShelfNum(c.shelfId) === effectiveShelf;
-          });
-
-          const compsToShow = siblings.length > 0 ? siblings : [comp];
-          this.showStandalonePassport(compsToShow, comp.boxId, effectiveRack, effectiveShelf, comp.id);
-          return;
-        } else {
-          this.showStandalonePassport([], cleanCompQuery, targetRack, targetShelf);
-          return;
-        }
       }
     } catch (e) {
       console.warn("QR URL routing parse error:", e);

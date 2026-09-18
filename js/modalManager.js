@@ -3924,7 +3924,7 @@ class ModalManager {
     if (!c) return;
 
     const baseUrl = ModalManager.getPublicLabBaseUrl();
-    const qrTargetUrl = `${baseUrl}/?comp=${encodeURIComponent(c.id)}`;
+    const qrTargetUrl = `${baseUrl}/?comp=${encodeURIComponent(c.id)}&box=${encodeURIComponent(c.boxId || "")}&rack=${c.rackId || 1}&shelf=${c.shelfId || 1}`;
     const qrImg = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(qrTargetUrl)}`;
 
     const shelfChar = String.fromCharCode(64 + Number(c.shelfId || 1));
@@ -4213,45 +4213,43 @@ class ModalManager {
       return idA.localeCompare(idB, undefined, { numeric: true, sensitivity: "base" });
     });
 
+    // Gather all components for this shelf
+    const shelfComps = allComponents.filter(c => 
+      (parseInt(c.rackId) || 1) === targetRack &&
+      this.parseShelfId(c.shelfId) === targetShelf
+    );
+
+    // Sort by box ID then component name
+    shelfComps.sort((a, b) => {
+      const idA = (a.boxId || "").trim().toUpperCase();
+      const idB = (b.boxId || "").trim().toUpperCase();
+      const boxCmp = idA.localeCompare(idB, undefined, { numeric: true, sensitivity: "base" });
+      if (boxCmp !== 0) return boxCmp;
+      return (a.name || "").localeCompare(b.name || "", undefined, { numeric: true, sensitivity: "base" });
+    });
+
     const baseUrl = ModalManager.getPublicLabBaseUrl();
 
     let pagesHtml = "";
     const LABELS_PER_PAGE = 17;
-    const totalPages = Math.ceil(activeShelfBoxes.length / LABELS_PER_PAGE);
+    const totalPages = Math.ceil(shelfComps.length / LABELS_PER_PAGE);
 
     for (let p = 0; p < totalPages; p++) {
-      const pageBoxes = activeShelfBoxes.slice(p * LABELS_PER_PAGE, (p + 1) * LABELS_PER_PAGE);
+      const pageComps = shelfComps.slice(p * LABELS_PER_PAGE, (p + 1) * LABELS_PER_PAGE);
 
-      let cardsHtml = pageBoxes.map(box => {
-        const cleanBoxId = (box.id || "").trim().toUpperCase();
-        const boxComps = allComponents.filter(c => 
-          (c.boxId || "").trim().toUpperCase() === cleanBoxId &&
-          (parseInt(c.rackId) || 1) === targetRack &&
-          this.parseShelfId(c.shelfId) === targetShelf
-        );
-        boxComps.sort((a, b) => (a.name || "").localeCompare(b.name || "", undefined, { numeric: true, sensitivity: "base" }));
-        
-        let compLinesHtml = "";
-        if (boxComps.length === 0) {
-          compLinesHtml = `<div class="comp-line empty">Empty Box (${cleanBoxId})</div>`;
-        } else if (boxComps.length === 1) {
-          compLinesHtml = `<div class="comp-line single">${boxComps[0].name}</div>`;
-        } else {
-          compLinesHtml = boxComps.map(c => `<div class="comp-line multi">• ${c.name}</div>`).join("");
-        }
-
-        const primaryCompId = boxComps[0] ? boxComps[0].id : "";
-        const compQuery = primaryCompId ? `&comp=${encodeURIComponent(primaryCompId)}` : "";
-        const qrTargetUrl = `${baseUrl}/?box=${encodeURIComponent(cleanBoxId)}&rack=${targetRack}&shelf=${targetShelf}${compQuery}`;
+      let cardsHtml = pageComps.map(c => {
+        const cleanBoxId = (c.boxId || "").trim().toUpperCase();
+        const qrTargetUrl = `${baseUrl}/?comp=${encodeURIComponent(c.id)}&box=${encodeURIComponent(cleanBoxId)}&rack=${targetRack}&shelf=${targetShelf}`;
         const qrImgUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrTargetUrl)}`;
 
         return `
           <div class="sticker-card">
             <div class="comp-name-container">
-              ${compLinesHtml}
+              <div class="comp-line single">${c.name}</div>
+              <div style="font-size:8px; color:#475569; font-weight:700; margin-top:2px;">${c.partNumber || c.id}</div>
             </div>
             <div class="box-id-badge">Box ${cleanBoxId} • R${targetRack}S${shelfChar}</div>
-            <img src="${qrImgUrl}" alt="${cleanBoxId} Box QR Code" />
+            <img src="${qrImgUrl}" alt="${c.name} QR Code" />
           </div>
         `;
       }).join("");
