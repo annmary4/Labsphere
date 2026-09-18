@@ -2,7 +2,7 @@
  * LabSphere Storage Service - Complete 59-Component Catalog (v35)
  */
 
-const CURRENT_VERSION = "v10662_sync_122_components";
+const CURRENT_VERSION = "v10663_restore_user_manual_locations_and_quantities";
 
 const STORAGE_KEYS = {
   VERSION: "labsphere_version_v10250",
@@ -138,9 +138,32 @@ class StorageService {
     let comps = this.getComponents();
     if (!comps || comps.length < (typeof INITIAL_COMPONENTS !== "undefined" ? INITIAL_COMPONENTS.length : 120)) {
       if (typeof INITIAL_COMPONENTS !== "undefined" && INITIAL_COMPONENTS.length > 0) {
-        localStorage.setItem(STORAGE_KEYS.COMPONENTS, JSON.stringify(INITIAL_COMPONENTS));
-        localStorage.setItem(STORAGE_KEYS.COMPONENTS + "_backup", JSON.stringify(INITIAL_COMPONENTS));
-        comps = this.getComponents();
+        if (Array.isArray(comps) && comps.length > 0) {
+          const map = new Map();
+          comps.forEach(c => { if (c && c.id) map.set(c.id, c); });
+          const merged = INITIAL_COMPONENTS.map(ic => {
+            const ex = map.get(ic.id);
+            if (!ex) return ic;
+            return {
+              ...ic,
+              boxId: ex.boxId || ic.boxId,
+              rackId: ex.rackId !== undefined ? ex.rackId : ic.rackId,
+              shelfId: ex.shelfId !== undefined ? ex.shelfId : ic.shelfId,
+              quantity: ex.quantity !== undefined ? ex.quantity : ic.quantity,
+              unitPrice: ex.unitPrice !== undefined ? ex.unitPrice : ic.unitPrice,
+              _userModified: ex._userModified || false,
+              lastUpdated: ex.lastUpdated || ic.lastUpdated
+            };
+          });
+          comps.forEach(ex => { if (ex && ex.id && !merged.some(m => m.id === ex.id)) merged.push(ex); });
+          localStorage.setItem(STORAGE_KEYS.COMPONENTS, JSON.stringify(merged));
+          localStorage.setItem(STORAGE_KEYS.COMPONENTS + "_backup", JSON.stringify(merged));
+          comps = merged;
+        } else {
+          localStorage.setItem(STORAGE_KEYS.COMPONENTS, JSON.stringify(INITIAL_COMPONENTS));
+          localStorage.setItem(STORAGE_KEYS.COMPONENTS + "_backup", JSON.stringify(INITIAL_COMPONENTS));
+          comps = this.getComponents();
+        }
       }
     } else {
       let compsUpdated = false;

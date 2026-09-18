@@ -2,18 +2,18 @@
    LabSphere Service Worker - Offline Cache & PWA Support
    ============================================================ */
 
-const CACHE_NAME = 'labsphere-v13462_qr_component_match_fix';
+const CACHE_NAME = 'labsphere-v13463_restored_user_locations_quantities';
 const ASSETS_TO_CACHE = [
   '/Labsphere/',
   '/Labsphere/index.html',
-  '/Labsphere/css/styles.css?v=13462_qr_component_match_fix',
-  '/Labsphere/js/app.js?v=13462_qr_component_match_fix',
-  '/Labsphere/js/types.js?v=13462_qr_component_match_fix',
-  '/Labsphere/js/initialData.js?v=13462_qr_component_match_fix',
-  '/Labsphere/js/storage.js?v=13462_qr_component_match_fix',
-  '/Labsphere/js/rackViewer.js?v=13462_qr_component_match_fix',
-  '/Labsphere/js/componentsView.js?v=13462_qr_component_match_fix',
-  '/Labsphere/js/modalManager.js?v=13462_qr_component_match_fix',
+  '/Labsphere/css/styles.css?v=13463_restored_user_locations_quantities',
+  '/Labsphere/js/app.js?v=13463_restored_user_locations_quantities',
+  '/Labsphere/js/types.js?v=13463_restored_user_locations_quantities',
+  '/Labsphere/js/initialData.js?v=13463_restored_user_locations_quantities',
+  '/Labsphere/js/storage.js?v=13463_restored_user_locations_quantities',
+  '/Labsphere/js/rackViewer.js?v=13463_restored_user_locations_quantities',
+  '/Labsphere/js/componentsView.js?v=13463_restored_user_locations_quantities',
+  '/Labsphere/js/modalManager.js?v=13463_restored_user_locations_quantities',
   '/Labsphere/icons/icon-192.png',
   '/Labsphere/icons/icon-512.png',
   '/Labsphere/manifest.json'
