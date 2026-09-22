@@ -253,25 +253,25 @@ const INITIAL_BOXES = [
         "id": "BOX C-001",
         "rackId": 1,
         "shelfId": 3,
-        "label": "BOX C-001: Johnson DC Motor 60 RPM"
+        "label": "BOX C-001: L293 Motor Driver Module"
     },
     {
         "id": "BOX C-002",
         "rackId": 1,
         "shelfId": 3,
-        "label": "BOX C-002: Johnson DC Motor 300 RPM 12V"
+        "label": "BOX C-002: Johnson DC Motor 60 RPM"
     },
     {
         "id": "BOX C-003",
         "rackId": 1,
         "shelfId": 3,
-        "label": "BOX C-003: Johnson DC Motor 200 RPM 12V"
+        "label": "BOX C-003: Johnson DC Motor 300 RPM 12V"
     },
     {
         "id": "BOX C-004",
         "rackId": 1,
         "shelfId": 3,
-        "label": "BOX C-004: Johnson DC Motor 100 RPM 12V"
+        "label": "BOX C-004: Stepper Motor with Driver Board"
     },
     {
         "id": "BOX C-005",
@@ -283,7 +283,7 @@ const INITIAL_BOXES = [
         "id": "BOX C-006",
         "rackId": 1,
         "shelfId": 3,
-        "label": "BOX C-006: NEMA Stepper Motor"
+        "label": "BOX C-006: Johnson DC Motor 200 RPM 12V"
     },
     {
         "id": "BOX C-007",
@@ -295,49 +295,55 @@ const INITIAL_BOXES = [
         "id": "BOX C-008",
         "rackId": 1,
         "shelfId": 3,
-        "label": "BOX C-008: MG90S Micro Metal Gear Servo"
+        "label": "BOX C-008: Tower Pro MG945 Metal Gear Servo Motor"
     },
     {
         "id": "BOX C-009",
         "rackId": 1,
         "shelfId": 3,
-        "label": "BOX C-009: Servo MG995 High Torque Motor"
+        "label": "BOX C-009: MG90S Micro Metal Gear Servo"
     },
     {
         "id": "BOX C-010",
         "rackId": 1,
         "shelfId": 3,
-        "label": "BOX C-010: Tower Pro MG945 Metal Gear Servo Motor"
+        "label": "BOX C-010: MG995 High Torque Metal Servo"
     },
     {
         "id": "BOX C-011",
         "rackId": 1,
         "shelfId": 3,
-        "label": "BOX C-011: 12V High Quality DC Mini Submersible Water Pump"
+        "label": "BOX C-011: L298N Dual H-Bridge Motor Driver Module"
     },
     {
         "id": "BOX C-012",
         "rackId": 1,
         "shelfId": 3,
-        "label": "BOX C-012: L293 / L293D Motor Driver Shield Module"
+        "label": "BOX C-012: BTS7960 43A High Power Motor Driver Module"
     },
     {
         "id": "BOX C-013",
         "rackId": 1,
         "shelfId": 3,
-        "label": "BOX C-013: L298N Dual H-Bridge Motor Driver Module"
+        "label": "BOX C-013: NEMA Stepper Motor"
     },
     {
         "id": "BOX C-014",
         "rackId": 1,
         "shelfId": 3,
-        "label": "BOX C-014: BTS7960 43A High Power Motor Driver Module"
+        "label": "BOX C-014: Johnson DC Motor 100 RPM 12V"
     },
     {
         "id": "BOX C-015",
         "rackId": 1,
         "shelfId": 3,
-        "label": "BOX C-015: L-Shape Mounting Bracket for Johnson DC Motor"
+        "label": "BOX C-015: 12V Submersible Water Pump"
+    },
+    {
+        "id": "BOX C-016",
+        "rackId": 1,
+        "shelfId": 3,
+        "label": "BOX C-016: L-Shape Mounting Bracket for Johnson DC Motor"
     },
     {
         "id": "BOX D-001",
@@ -2276,7 +2282,7 @@ const INITIAL_COMPONENTS = [
         "roomName": "Room 101 - Prototyping Hall",
         "rackId": 1,
         "shelfId": 3,
-        "boxId": "BOX C-001",
+        "boxId": "BOX C-002",
         "stackLayer": "Heavy Drive Bin #1",
         "category": "Hardware & Tools",
         "purpose": "High torque 12V DC motor at 60 RPM.",
@@ -2301,39 +2307,6 @@ const INITIAL_COMPONENTS = [
         "_userModified": true
     },
     {
-        "id": "COMP-5363",
-        "name": "Yellow DC motor",
-        "partNumber": "PN-COMP-5363",
-        "manufacturer": "Laboratory Certified",
-        "barcode": "89012345363",
-        "imageUrl": "images/components/COMP-5363.webp",
-        "labName": "Main Robotics & Embedded Systems Lab",
-        "roomName": "Room 101 - Prototyping Hall",
-        "rackId": 1,
-        "shelfId": 3,
-        "boxId": "BOX C-001",
-        "stackLayer": "Layer 1",
-        "category": "Motors & Drivers",
-        "purpose": "Standard TT dual-shaft yellow gearbox motor for robotics chassis.",
-        "specifications": "1:48 gear ratio, 3V - 6V DC, 200 RPM at 6V",
-        "compatibleComponents": [
-            "Standard Breadboard",
-            "Arduino",
-            "ESP32"
-        ],
-        "alternatives": [],
-        "inventoryState": "AVAILABLE",
-        "quantity": 5,
-        "unit": "pcs",
-        "minQuantity": 1,
-        "unitPrice": 75,
-        "tags": [
-            "yellow-dc-motor"
-        ],
-        "lastUpdated": "2026-09-16",
-        "customImage": false
-    },
-    {
         "id": "COMP-031",
         "name": "Johnson DC Motor 300 RPM 12V",
         "partNumber": "JOHNSON-300RPM",
@@ -2344,7 +2317,7 @@ const INITIAL_COMPONENTS = [
         "roomName": "Room 101 - Prototyping Hall",
         "rackId": 1,
         "shelfId": 3,
-        "boxId": "BOX C-002",
+        "boxId": "BOX C-003",
         "stackLayer": "Heavy Drive Bin #2",
         "category": "Hardware & Tools",
         "purpose": "High-speed 12V DC geared motor at 300 RPM.",
@@ -2379,7 +2352,7 @@ const INITIAL_COMPONENTS = [
         "roomName": "Room 101 - Prototyping Hall",
         "rackId": 1,
         "shelfId": 3,
-        "boxId": "BOX C-003",
+        "boxId": "BOX C-006",
         "stackLayer": "Heavy Drive Bin #3",
         "category": "Hardware & Tools",
         "purpose": "12V DC geared motor at 200 RPM.",
@@ -2414,7 +2387,7 @@ const INITIAL_COMPONENTS = [
         "roomName": "Room 101 - Prototyping Hall",
         "rackId": 1,
         "shelfId": 3,
-        "boxId": "BOX C-004",
+        "boxId": "BOX C-014",
         "stackLayer": "Heavy Drive Bin #4",
         "category": "Hardware & Tools",
         "purpose": "12V DC geared motor at 100 RPM.",
@@ -2474,39 +2447,6 @@ const INITIAL_COMPONENTS = [
         "_userModified": true
     },
     {
-        "id": "COMP-8747",
-        "name": "N20 Motor",
-        "partNumber": "PN-COMP-8747",
-        "manufacturer": "Laboratory Certified",
-        "barcode": "89012348747",
-        "imageUrl": "images/components/COMP-8747.webp",
-        "labName": "Main Robotics & Embedded Systems Lab",
-        "roomName": "Room 101 - Prototyping Hall",
-        "rackId": 1,
-        "shelfId": 3,
-        "boxId": "BOX C-005",
-        "stackLayer": "Layer 1",
-        "category": "Motors & Drivers",
-        "purpose": "Miniature precision metal gearbox N20 DC motor.",
-        "specifications": "Micro metal gear, 6V / 12V DC, 100-300 RPM, D-shaft",
-        "compatibleComponents": [
-            "Standard Breadboard",
-            "Arduino",
-            "ESP32"
-        ],
-        "alternatives": [],
-        "inventoryState": "AVAILABLE",
-        "quantity": 5,
-        "unit": "pcs",
-        "minQuantity": 1,
-        "unitPrice": 160,
-        "tags": [
-            "n20-motor"
-        ],
-        "lastUpdated": "2026-09-16",
-        "customImage": false
-    },
-    {
         "id": "COMP-035",
         "name": "NEMA Stepper Motor",
         "partNumber": "NEMA17",
@@ -2517,7 +2457,7 @@ const INITIAL_COMPONENTS = [
         "roomName": "Room 101 - Prototyping Hall",
         "rackId": 1,
         "shelfId": 3,
-        "boxId": "BOX C-006",
+        "boxId": "BOX C-013",
         "stackLayer": "Heavy Drive Bin #6",
         "category": "Hardware & Tools",
         "purpose": "1.8Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â '\"Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ã‚Â Ã‚Â¢ÃƒÆ’Ã‚Â¢\"Ã…Â¡Ã‚Â¬ÃƒÆ’Ã‚Â¢\"Ã…Â¾Ã‚Â¢Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â 'Ã‚Â¢ÃƒÆ’Ã‚Â¢\"Ã…Â¡Ã‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ã‚Â Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ã‚Â¢Ã‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ã‚Â¬Ã‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¾ÃƒÆ’Ã¢â‚¬Å¡Ã‚Â¢Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â '\"Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ã‚Â¢Ã‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ã‚Â¬Ã‚Â Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â 'Ã‚Â¢Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ã‚Â¢Ã‚Â¢ÃƒÆ’Ã‚Â¢\"Ã…Â¡Ã‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ã‚Â¡Ã‚Â¬Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ã‚Â¢Ã‚Â¢ÃƒÆ’Ã‚Â¢\"Ã…Â¡Ã‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ã‚Â¾Ã‚Â¢Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â '\"Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ã‚Â Ã‚Â¢ÃƒÆ’Ã‚Â¢\"Ã…Â¡Ã‚Â¬ÃƒÆ’Ã‚Â¢\"Ã…Â¾Ã‚Â¢Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â 'Ã‚Â¢ÃƒÆ’Ã‚Â¢\"Ã…Â¡Ã‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ã‚Â¡Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡Ã‚Â¢Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â '\"Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡Ã‚Â¢Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â 'Ã‚Â¢Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ã‚Â¢Ã‚Â¢ÃƒÆ’Ã‚Â¢\"Ã…Â¡Ã‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ã‚Â¡Ã‚Â¬Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ã‚Â¦Ã‚Â¡Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â 'Ã‚Â¢ÃƒÆ’Ã‚Â¢\"Ã…Â¡Ã‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ã‚Â¡Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡Ã‚Â¬Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â '\"Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ã‚Â¢Ã‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ã‚Â¬Ã‚Â¦Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â 'Ã‚Â¢ÃƒÆ’Ã‚Â¢\"Ã…Â¡Ã‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ã‚Â¡Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡Ã‚Â¡Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â '\"Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ã‚Â Ã‚Â¢ÃƒÆ’Ã‚Â¢\"Ã…Â¡Ã‚Â¬ÃƒÆ’Ã‚Â¢\"Ã…Â¾Ã‚Â¢Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â 'Ã‚Â¢ÃƒÆ’Ã‚Â¢\"Ã…Â¡Ã‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ã‚Â Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ã‚Â¢Ã‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ã‚Â¬Ã‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¾ÃƒÆ’Ã¢â‚¬Å¡Ã‚Â¢Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â '\"Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡Ã‚Â¢Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â 'Ã‚Â¢Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ã‚Â¢Ã‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ã‚Â¬\"Ã‚Â¦ÃƒÆ’Ã¢â‚¬Å¡Ã‚Â¡Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡Ã‚Â¬Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â 'Ã‚Â¢ÃƒÆ’Ã‚Â¢\"Ã…Â¡Ã‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ã‚Â¦Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡Ã‚Â¡Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â '\"Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ã‚Â Ã‚Â¢ÃƒÆ’Ã‚Â¢\"Ã…Â¡Ã‚Â¬ÃƒÆ’Ã‚Â¢\"Ã…Â¾Ã‚Â¢Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â 'Ã‚Â¢Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ã‚Â¢Ã‚Â¢ÃƒÆ’Ã‚Â¢\"Ã…Â¡Ã‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ã‚Â¡Ã‚Â¬Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ã‚Â¦Ã‚Â¡Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â '\"Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ã‚Â¢Ã‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ã‚Â¬\"Ã‚Â¦ÃƒÆ’Ã¢â‚¬Å¡Ã‚Â¡Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â 'Ã‚Â¢ÃƒÆ’Ã‚Â¢\"Ã…Â¡Ã‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ã‚Â¡Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡Ã‚Â° Bipolar 4-wire NEMA 17 stepper motor.",
@@ -2552,7 +2492,7 @@ const INITIAL_COMPONENTS = [
         "roomName": "Room 101 - Prototyping Hall",
         "rackId": 1,
         "shelfId": 3,
-        "boxId": "BOX C-006",
+        "boxId": "BOX C-004",
         "stackLayer": "Layer 1 (Main Storage Compartment)",
         "category": "Motors & Drivers",
         "purpose": "Laboratory component entry for Stepper motor with driver board.",
@@ -2622,7 +2562,7 @@ const INITIAL_COMPONENTS = [
         "roomName": "Room 101 - Prototyping Hall",
         "rackId": 1,
         "shelfId": 3,
-        "boxId": "BOX C-008",
+        "boxId": "BOX C-009",
         "stackLayer": "Servo Tray Bin #B",
         "category": "Hardware & Tools",
         "purpose": "9g micro servo with metal gears.",
@@ -2657,7 +2597,7 @@ const INITIAL_COMPONENTS = [
         "roomName": "Room 101 - Prototyping Hall",
         "rackId": 1,
         "shelfId": 3,
-        "boxId": "BOX C-009",
+        "boxId": "BOX C-010",
         "stackLayer": "Layer 1 (Main Storage Compartment)",
         "category": "Motors & Drivers",
         "purpose": "Laboratory component entry for MG995 Servo.",
@@ -2692,7 +2632,7 @@ const INITIAL_COMPONENTS = [
         "roomName": "Room 101 - Prototyping Hall",
         "rackId": 1,
         "shelfId": 3,
-        "boxId": "BOX C-010",
+        "boxId": "BOX C-008",
         "stackLayer": "Servo Tray Bin #D",
         "category": "Hardware & Tools",
         "purpose": "12 kg-cm digital metal gear servo.",
@@ -2726,7 +2666,7 @@ const INITIAL_COMPONENTS = [
         "roomName": "Room 101 - Prototyping Hall",
         "rackId": 1,
         "shelfId": 3,
-        "boxId": "BOX C-011",
+        "boxId": "BOX C-015",
         "stackLayer": "Fluidic Bin #1",
         "category": "Hardware & Tools",
         "purpose": "Brushless submersible water pump.",
@@ -2749,40 +2689,6 @@ const INITIAL_COMPONENTS = [
         "customImage": true
     },
     {
-        "id": "COMP-041",
-        "name": "L293 / L293D Motor Driver Shield Module",
-        "partNumber": "L293D-SHIELD",
-        "manufacturer": "STMicroelectronics",
-        "barcode": "8901234000415",
-        "imageUrl": "images/components/COMP-041.jpg",
-        "labName": "Main Robotics & Embedded Systems Lab",
-        "roomName": "Room 101 - Prototyping Hall",
-        "rackId": 1,
-        "shelfId": 3,
-        "boxId": "BOX C-012",
-        "stackLayer": "Driver Board Tray #A",
-        "category": "Sensors & Modules",
-        "purpose": "4-Channel H-Bridge motor driver shield.",
-        "specifications": "Drives 4 DC motors, 0.6A per channel",
-        "compatibleComponents": [
-            "Arduino Uno R3"
-        ],
-        "alternatives": [
-            "L298N Motor Driver"
-        ],
-        "inventoryState": "AVAILABLE",
-        "quantity": 5,
-        "unit": "pcs",
-        "minQuantity": 2,
-        "unitPrice": 240,
-        "tags": [
-            "l293d",
-            "motordriver"
-        ],
-        "lastUpdated": "2026-08-05",
-        "customImage": true
-    },
-    {
         "id": "COMP-3578",
         "name": "L293 motor",
         "partNumber": "PN-COMP-3578",
@@ -2793,7 +2699,7 @@ const INITIAL_COMPONENTS = [
         "roomName": "Room 101 - Prototyping Hall",
         "rackId": 1,
         "shelfId": 3,
-        "boxId": "BOX C-012",
+        "boxId": "BOX C-001",
         "stackLayer": "Layer 1",
         "category": "Motors & Drivers",
         "purpose": "Quadruple half-H motor driver IC for bi-directional DC motor control.",
@@ -2826,7 +2732,7 @@ const INITIAL_COMPONENTS = [
         "roomName": "Room 101 - Prototyping Hall",
         "rackId": 1,
         "shelfId": 3,
-        "boxId": "BOX C-013",
+        "boxId": "BOX C-011",
         "stackLayer": "Driver Board Tray #B",
         "category": "Sensors & Modules",
         "purpose": "Dual H-Bridge motor driver module.",
@@ -2861,7 +2767,7 @@ const INITIAL_COMPONENTS = [
         "roomName": "Room 101 - Prototyping Hall",
         "rackId": 1,
         "shelfId": 3,
-        "boxId": "BOX C-014",
+        "boxId": "BOX C-012",
         "stackLayer": "Driver Board Tray #C",
         "category": "Sensors & Modules",
         "purpose": "43A high power H-bridge motor driver.",
@@ -2896,7 +2802,7 @@ const INITIAL_COMPONENTS = [
         "roomName": "Room 101 - Prototyping Hall",
         "rackId": 1,
         "shelfId": 3,
-        "boxId": "BOX C-015",
+        "boxId": "BOX C-016",
         "stackLayer": "Hardware Tray #1",
         "category": "Hardware & Tools",
         "purpose": "3mm steel L-bracket for Johnson DC motors.",
