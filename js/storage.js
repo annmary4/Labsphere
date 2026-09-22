@@ -2,7 +2,7 @@
  * LabSphere Storage Service - Complete 59-Component Catalog (v35)
  */
 
-const CURRENT_VERSION = 'v10671_box12_stm32f4dccu6_only';
+const CURRENT_VERSION = 'v10672_handwritten_shelf_2_layout';
 
 const STORAGE_KEYS = {
   VERSION: "labsphere_version_v10250",
@@ -150,7 +150,7 @@ class StorageService {
       }
     }
     let boxes = this.getBoxes();
-    if (!boxes || boxes.length !== (typeof INITIAL_BOXES !== "undefined" ? INITIAL_BOXES.length : 90)) {
+    if (!boxes || boxes.length !== (typeof INITIAL_BOXES !== "undefined" ? INITIAL_BOXES.length : 92)) {
       if (typeof INITIAL_BOXES !== "undefined" && INITIAL_BOXES.length > 0) {
         localStorage.setItem(STORAGE_KEYS.BOXES, JSON.stringify(INITIAL_BOXES));
       }

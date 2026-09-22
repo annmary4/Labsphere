@@ -151,7 +151,7 @@ const INITIAL_BOXES = [
         "id": "BOX B-001",
         "rackId": 1,
         "shelfId": 2,
-        "label": "BOX B-001: Metal Touch & MPR121 Touch Sensors"
+        "label": "BOX B-001: Temperature & Humidity / DHT-11"
     },
     {
         "id": "BOX B-002",
@@ -163,79 +163,91 @@ const INITIAL_BOXES = [
         "id": "BOX B-003",
         "rackId": 1,
         "shelfId": 2,
-        "label": "BOX B-003: SW-18015P Vibration & Infrared (K) Sensors"
+        "label": "BOX B-003: SW-18015P Vibration Sensor & Infrared (IR) Sensor"
     },
     {
         "id": "BOX B-004",
         "rackId": 1,
         "shelfId": 2,
-        "label": "BOX B-004: MQ Gas Sensors Box (MQ-2, MQ-3, MQ-7, MQ-135)"
+        "label": "BOX B-004: MQ Gas Sensors Box"
     },
     {
         "id": "BOX B-005",
         "rackId": 1,
         "shelfId": 2,
-        "label": "BOX B-005: Heart Rate Pulse & TTP223 Touch Sensors"
+        "label": "BOX B-005: Metal Touch & MPR121 Touch Sensor"
     },
     {
         "id": "BOX B-006",
         "rackId": 1,
         "shelfId": 2,
-        "label": "BOX B-006: Temperature & Humidity Sensor"
+        "label": "BOX B-006: BFD-1000 5-channel IR line Tracking Sensor"
     },
     {
         "id": "BOX B-007",
         "rackId": 1,
         "shelfId": 2,
-        "label": "BOX B-007: Sound Sensor Module"
+        "label": "BOX B-007: Sound Sensor Module & Rain Drop Sensor Board"
     },
     {
         "id": "BOX B-008",
         "rackId": 1,
         "shelfId": 2,
-        "label": "BOX B-008: Force Sensing Resistor (FSR)"
+        "label": "BOX B-008: Waterflow Sensor"
     },
     {
         "id": "BOX B-009",
         "rackId": 1,
         "shelfId": 2,
-        "label": "BOX B-009: Rain Drop Sensor Board"
+        "label": "BOX B-009: Pulse Sensor & Capacitive Touch TTP-223"
     },
     {
         "id": "BOX B-010",
         "rackId": 1,
         "shelfId": 2,
-        "label": "BOX B-010: Touch Sensor Module TTP 224 (4-Key)"
+        "label": "BOX B-010: Touch Sensor Module TTP-224 & Force Sensing Sensor"
     },
     {
         "id": "BOX B-011",
         "rackId": 1,
         "shelfId": 2,
-        "label": "BOX B-011: HC-SR501 PIR Motion Sensor Module"
+        "label": "BOX B-011: PWM Driver, GY-271 & HC-SR501"
     },
     {
         "id": "BOX B-012",
         "rackId": 1,
         "shelfId": 2,
-        "label": "BOX B-012: Sound Sensor (Big Microphone Module)"
+        "label": "BOX B-012: Soil Moisture Sensor & Sound Sensor (Big Mic)"
     },
     {
         "id": "BOX B-013",
         "rackId": 1,
         "shelfId": 2,
-        "label": "BOX B-013: Soil Moisture Sensor Module"
+        "label": "BOX B-013: ICM-20948, JQ-6500 MP3, INMP441 & VL53L0X TOF"
     },
     {
         "id": "BOX B-014",
         "rackId": 1,
         "shelfId": 2,
-        "label": "BOX B-014: LDR Light Dependent Resistor 5mm"
+        "label": "BOX B-014: LDR Photoresistors & LDR Sensor Module"
     },
     {
         "id": "BOX B-015",
         "rackId": 1,
         "shelfId": 2,
-        "label": "BOX B-015: Flex Sensor & Color Sensor TCS3200"
+        "label": "BOX B-015: Fingerprint Reader"
+    },
+    {
+        "id": "BOX B-016",
+        "rackId": 1,
+        "shelfId": 2,
+        "label": "BOX B-016: BMI-160 Sensor"
+    },
+    {
+        "id": "BOX B-017",
+        "rackId": 1,
+        "shelfId": 2,
+        "label": "BOX B-017: Flex Sensor & TCS3200 Color Sensor"
     },
     {
         "id": "BOX C-001",
@@ -1273,7 +1285,7 @@ const INITIAL_COMPONENTS = [
         "roomName": "Room 101 - Prototyping Hall",
         "rackId": 1,
         "shelfId": 2,
-        "boxId": "BOX B-001",
+        "boxId": "BOX B-005",
         "stackLayer": "Layer 1 (Tray #A)",
         "category": "Sensors & Modules",
         "purpose": "Capacitive touch sensing array.",
@@ -1308,7 +1320,7 @@ const INITIAL_COMPONENTS = [
         "roomName": "Room 101 - Prototyping Hall",
         "rackId": 1,
         "shelfId": 2,
-        "boxId": "BOX B-001",
+        "boxId": "BOX B-005",
         "stackLayer": "Layer 1",
         "category": "Sensors & Modules",
         "purpose": "12-Channel capacitive touch sensor controller with I2C interface.",
@@ -1375,7 +1387,7 @@ const INITIAL_COMPONENTS = [
         "roomName": "Room 101 - Prototyping Hall",
         "rackId": 1,
         "shelfId": 2,
-        "boxId": "BOX B-002",
+        "boxId": "BOX B-013",
         "stackLayer": "Layer 1",
         "category": "Sensors & Modules",
         "purpose": "Time-of-flight (ToF) laser ranging sensor module up to 2 meters.",
@@ -1478,7 +1490,7 @@ const INITIAL_COMPONENTS = [
         "roomName": "Room 101 - Prototyping Hall",
         "rackId": 1,
         "shelfId": 2,
-        "boxId": "BOX B-003",
+        "boxId": "BOX B-006",
         "stackLayer": "Layer 1 (Main Storage Compartment)",
         "category": "Sensors & Modules",
         "purpose": "Laboratory component entry for BFD-1000 5-channel IR line Tracking Sensor.",
@@ -1549,7 +1561,7 @@ const INITIAL_COMPONENTS = [
         "roomName": "Room 101 - Prototyping Hall",
         "rackId": 1,
         "shelfId": 2,
-        "boxId": "BOX B-005",
+        "boxId": "BOX B-009",
         "stackLayer": "Layer 1",
         "category": "Sensors & Modules",
         "purpose": "Capacitive touch switch sensor module with momentary toggle output.",
@@ -1582,7 +1594,7 @@ const INITIAL_COMPONENTS = [
         "roomName": "Room 101 - Prototyping Hall",
         "rackId": 1,
         "shelfId": 2,
-        "boxId": "BOX B-005",
+        "boxId": "BOX B-009",
         "stackLayer": "Layer 1 (Main Storage Compartment)",
         "category": "Sensors & Modules",
         "purpose": "Laboratory component entry for Pulse sensor and capacitive touch sensor-TTP 223.",
@@ -1594,7 +1606,7 @@ const INITIAL_COMPONENTS = [
         ],
         "alternatives": [],
         "inventoryState": "AVAILABLE",
-        "quantity": 2,
+        "quantity": 5,
         "unit": "pcs",
         "minQuantity": 1,
         "unitPrice": 150,
@@ -1617,7 +1629,7 @@ const INITIAL_COMPONENTS = [
         "roomName": "Room 101 - Prototyping Hall",
         "rackId": 1,
         "shelfId": 2,
-        "boxId": "BOX B-006",
+        "boxId": "BOX B-001",
         "stackLayer": "Layer 2 (Middle Tray #C)",
         "category": "Sensors & Modules",
         "purpose": "Digital temperature and humidity sensor.",
@@ -1687,7 +1699,7 @@ const INITIAL_COMPONENTS = [
         "roomName": "Room 101 - Prototyping Hall",
         "rackId": 1,
         "shelfId": 2,
-        "boxId": "BOX B-007",
+        "boxId": "BOX B-013",
         "stackLayer": "Layer 1",
         "category": "Sensors & Modules",
         "purpose": "High-performance omnidirectional I2S digital microphone module.",
@@ -1720,7 +1732,7 @@ const INITIAL_COMPONENTS = [
         "roomName": "Room 101 - Prototyping Hall",
         "rackId": 1,
         "shelfId": 2,
-        "boxId": "BOX B-008",
+        "boxId": "BOX B-010",
         "stackLayer": "Layer 1 (Main Storage Compartment)",
         "category": "Sensors & Modules",
         "purpose": "Laboratory component entry for Forse sensing sensor.",
@@ -1755,7 +1767,7 @@ const INITIAL_COMPONENTS = [
         "roomName": "Room 101 - Prototyping Hall",
         "rackId": 1,
         "shelfId": 2,
-        "boxId": "BOX B-009",
+        "boxId": "BOX B-007",
         "stackLayer": "Layer 3 (Bottom Tray #B)",
         "category": "Sensors & Modules",
         "purpose": "Raindrop moisture sensing board.",
@@ -1767,7 +1779,7 @@ const INITIAL_COMPONENTS = [
             "Soil Moisture Sensor"
         ],
         "inventoryState": "AVAILABLE",
-        "quantity": 3,
+        "quantity": 2,
         "unit": "pcs",
         "minQuantity": 1,
         "unitPrice": 190,
@@ -1789,7 +1801,7 @@ const INITIAL_COMPONENTS = [
         "roomName": "Room 101 - Prototyping Hall",
         "rackId": 1,
         "shelfId": 2,
-        "boxId": "BOX B-009",
+        "boxId": "BOX B-015",
         "stackLayer": "Layer 1 (Main Storage Compartment)",
         "category": "Sensors & Modules",
         "purpose": "Laboratory component entry for Fingerprint Reader.",
@@ -1869,7 +1881,7 @@ const INITIAL_COMPONENTS = [
         ],
         "alternatives": [],
         "inventoryState": "AVAILABLE",
-        "quantity": 1,
+        "quantity": 3,
         "unit": "pcs",
         "minQuantity": 1,
         "unitPrice": 150,
@@ -1995,7 +2007,7 @@ const INITIAL_COMPONENTS = [
         "roomName": "Room 101 - Prototyping Hall",
         "rackId": 1,
         "shelfId": 2,
-        "boxId": "BOX B-012",
+        "boxId": "BOX B-013",
         "stackLayer": "Layer 1",
         "category": "Sensors & Modules",
         "purpose": "Mini hardware audio decoding module with onboard flash and serial control.",
@@ -2028,7 +2040,7 @@ const INITIAL_COMPONENTS = [
         "roomName": "Room 101 - Prototyping Hall",
         "rackId": 1,
         "shelfId": 2,
-        "boxId": "BOX B-013",
+        "boxId": "BOX B-012",
         "stackLayer": "Layer 4 (Bottom Bin #F)",
         "category": "Sensors & Modules",
         "purpose": "Soil humidity moisture probe.",
@@ -2062,7 +2074,7 @@ const INITIAL_COMPONENTS = [
         "roomName": "Room 101 - Prototyping Hall",
         "rackId": 1,
         "shelfId": 2,
-        "boxId": "BOX B-013",
+        "boxId": "BOX B-008",
         "stackLayer": "Layer 1 (Main Storage Compartment)",
         "category": "Sensors & Modules",
         "purpose": "Laboratory component entry for Waterflow Sensor.",
@@ -2200,7 +2212,7 @@ const INITIAL_COMPONENTS = [
         "roomName": "Room 101 - Prototyping Hall",
         "rackId": 1,
         "shelfId": 2,
-        "boxId": "BOX B-015",
+        "boxId": "BOX B-017",
         "stackLayer": "Layer 4 (Bottom Bin #H)",
         "category": "Sensors & Modules",
         "purpose": "2.2-inch Flex sensors & TCS3200 color sensors.",
@@ -2212,7 +2224,7 @@ const INITIAL_COMPONENTS = [
             "TCS34725 RGB Sensor"
         ],
         "inventoryState": "AVAILABLE",
-        "quantity": 4,
+        "quantity": 2,
         "unit": "pcs",
         "minQuantity": 2,
         "unitPrice": 950,
@@ -2234,7 +2246,7 @@ const INITIAL_COMPONENTS = [
         "roomName": "Room 101 - Prototyping Hall",
         "rackId": 1,
         "shelfId": 2,
-        "boxId": "BOX B-015",
+        "boxId": "BOX B-013",
         "stackLayer": "Layer 1",
         "category": "Sensors & Modules",
         "purpose": "9-Axis motion tracking sensor with 3-axis gyro, accelerometer, and compass.",
@@ -2267,7 +2279,7 @@ const INITIAL_COMPONENTS = [
         "roomName": "Room 101 - Prototyping Hall",
         "rackId": 1,
         "shelfId": 2,
-        "boxId": "BOX B-015",
+        "boxId": "BOX B-017",
         "stackLayer": "Layer 1",
         "category": "Sensors & Modules",
         "purpose": "RGB color detection sensor with white LED illuminator.",
@@ -2300,7 +2312,7 @@ const INITIAL_COMPONENTS = [
         "roomName": "Room 101 - Prototyping Hall",
         "rackId": 1,
         "shelfId": 2,
-        "boxId": "BOX B-015",
+        "boxId": "BOX B-016",
         "stackLayer": "Layer 1",
         "category": "Sensors & Modules",
         "purpose": "6-Axis inertial measurement unit (IMU) with 16-bit 3-axis gyro and accelerometer.",
