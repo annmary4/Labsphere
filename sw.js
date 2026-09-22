@@ -2,18 +2,18 @@
    LabSphere Service Worker - Offline Cache & PWA Support
    ============================================================ */
 
-const CACHE_NAME = 'labsphere-v13464_manual_locations_nano_proto_update';
+const CACHE_NAME = 'labsphere-v13470_force_sync_shelf_a_and_boxes';
 const ASSETS_TO_CACHE = [
   '/Labsphere/',
   '/Labsphere/index.html',
-  '/Labsphere/css/styles.css?v=13464_manual_locations_nano_proto_update',
-  '/Labsphere/js/app.js?v=13464_manual_locations_nano_proto_update',
-  '/Labsphere/js/types.js?v=13464_manual_locations_nano_proto_update',
-  '/Labsphere/js/initialData.js?v=13464_manual_locations_nano_proto_update',
-  '/Labsphere/js/storage.js?v=13464_manual_locations_nano_proto_update',
-  '/Labsphere/js/rackViewer.js?v=13464_manual_locations_nano_proto_update',
-  '/Labsphere/js/componentsView.js?v=13464_manual_locations_nano_proto_update',
-  '/Labsphere/js/modalManager.js?v=13464_manual_locations_nano_proto_update',
+  '/Labsphere/css/styles.css?v=13470_force_sync_shelf_a_and_boxes',
+  '/Labsphere/js/app.js?v=13470_force_sync_shelf_a_and_boxes',
+  '/Labsphere/js/types.js?v=13470_force_sync_shelf_a_and_boxes',
+  '/Labsphere/js/initialData.js?v=13470_force_sync_shelf_a_and_boxes',
+  '/Labsphere/js/storage.js?v=13470_force_sync_shelf_a_and_boxes',
+  '/Labsphere/js/rackViewer.js?v=13470_force_sync_shelf_a_and_boxes',
+  '/Labsphere/js/componentsView.js?v=13470_force_sync_shelf_a_and_boxes',
+  '/Labsphere/js/modalManager.js?v=13470_force_sync_shelf_a_and_boxes',
   '/Labsphere/icons/icon-192.png',
   '/Labsphere/icons/icon-512.png',
   '/Labsphere/manifest.json'

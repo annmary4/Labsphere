@@ -2,7 +2,7 @@
  * LabSphere Storage Service - Complete 59-Component Catalog (v35)
  */
 
-const CURRENT_VERSION = "v10664_manual_locations_nano_proto_update";
+const CURRENT_VERSION = 'v10670_force_sync_shelf_a_and_boxes';
 
 const STORAGE_KEYS = {
   VERSION: "labsphere_version_v10250",
@@ -131,39 +131,28 @@ class StorageService {
       if (!localStorage.getItem(STORAGE_KEYS.REQUESTS) && typeof INITIAL_REQUESTS !== "undefined") {
         this.saveRequests(INITIAL_REQUESTS);
       }
+      if (typeof INITIAL_TRANSACTIONS !== "undefined" && Array.isArray(INITIAL_TRANSACTIONS) && INITIAL_TRANSACTIONS.length > 0) {
+        const localTxns = this.getTransactions();
+        if (!localTxns || localTxns.length < INITIAL_TRANSACTIONS.length) {
+          localStorage.setItem(STORAGE_KEYS.TRANSACTIONS, JSON.stringify(INITIAL_TRANSACTIONS));
+        }
+      }
       localStorage.setItem(STORAGE_KEYS.VERSION, CURRENT_VERSION);
     }
 
-    // Always ensure catalog has initial items if localStorage was empty or has an outdated partial catalog (< 120 items)
+    // Always ensure catalog has all initial items and boxes
     let comps = this.getComponents();
-    if (!comps || comps.length < (typeof INITIAL_COMPONENTS !== "undefined" ? INITIAL_COMPONENTS.length : 120)) {
+    if (!comps || comps.length !== (typeof INITIAL_COMPONENTS !== "undefined" ? INITIAL_COMPONENTS.length : 151)) {
       if (typeof INITIAL_COMPONENTS !== "undefined" && INITIAL_COMPONENTS.length > 0) {
-        if (Array.isArray(comps) && comps.length > 0) {
-          const map = new Map();
-          comps.forEach(c => { if (c && c.id) map.set(c.id, c); });
-          const merged = INITIAL_COMPONENTS.map(ic => {
-            const ex = map.get(ic.id);
-            if (!ex) return ic;
-            return {
-              ...ic,
-              boxId: ex.boxId || ic.boxId,
-              rackId: ex.rackId !== undefined ? ex.rackId : ic.rackId,
-              shelfId: ex.shelfId !== undefined ? ex.shelfId : ic.shelfId,
-              quantity: ex.quantity !== undefined ? ex.quantity : ic.quantity,
-              unitPrice: ex.unitPrice !== undefined ? ex.unitPrice : ic.unitPrice,
-              _userModified: ex._userModified || false,
-              lastUpdated: ex.lastUpdated || ic.lastUpdated
-            };
-          });
-          comps.forEach(ex => { if (ex && ex.id && !merged.some(m => m.id === ex.id)) merged.push(ex); });
-          localStorage.setItem(STORAGE_KEYS.COMPONENTS, JSON.stringify(merged));
-          localStorage.setItem(STORAGE_KEYS.COMPONENTS + "_backup", JSON.stringify(merged));
-          comps = merged;
-        } else {
-          localStorage.setItem(STORAGE_KEYS.COMPONENTS, JSON.stringify(INITIAL_COMPONENTS));
-          localStorage.setItem(STORAGE_KEYS.COMPONENTS + "_backup", JSON.stringify(INITIAL_COMPONENTS));
-          comps = this.getComponents();
-        }
+        localStorage.setItem(STORAGE_KEYS.COMPONENTS, JSON.stringify(INITIAL_COMPONENTS));
+        localStorage.setItem(STORAGE_KEYS.COMPONENTS + "_backup", JSON.stringify(INITIAL_COMPONENTS));
+        comps = this.getComponents();
+      }
+    }
+    let boxes = this.getBoxes();
+    if (!boxes || boxes.length !== (typeof INITIAL_BOXES !== "undefined" ? INITIAL_BOXES.length : 90)) {
+      if (typeof INITIAL_BOXES !== "undefined" && INITIAL_BOXES.length > 0) {
+        localStorage.setItem(STORAGE_KEYS.BOXES, JSON.stringify(INITIAL_BOXES));
       }
     } else {
       let compsUpdated = false;
