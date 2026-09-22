@@ -602,42 +602,8 @@
       "_userModified": true
     },
     {
-      "id": "COMP-6858",
-      "name": "STM 32",
-      "partNumber": "PN-COMP-6858",
-      "manufacturer": "Laboratory Certified",
-      "barcode": "89012346858",
-      "imageUrl": "images/components/COMP-6858.webp",
-      "labName": "Main Robotics & Embedded Systems Lab",
-      "roomName": "Room 101 - Prototyping Hall",
-      "rackId": 1,
-      "shelfId": 1,
-      "boxId": "BOX A-012",
-      "stackLayer": "Layer 1",
-      "category": "Microcontrollers & Dev Boards",
-      "purpose": "STM32 ARM Cortex-M microcontrollers for embedded control.",
-      "specifications": "ARM 32-bit Cortex-M, 72MHz, 64KB Flash",
-      "compatibleComponents": [
-        "Standard Breadboard",
-        "Arduino",
-        "ESP32"
-      ],
-      "alternatives": [],
-      "inventoryState": "AVAILABLE",
-      "quantity": 5,
-      "unit": "pcs",
-      "minQuantity": 1,
-      "unitPrice": 350,
-      "tags": [
-        "stm-32"
-      ],
-      "lastUpdated": "2026-09-16",
-      "customImage": false,
-      "_userModified": true
-    },
-    {
       "id": "COMP-012",
-      "name": "STM32 F4VE Core Board",
+      "name": "STM32 F4VE",
       "partNumber": "STM32F407VET6",
       "manufacturer": "STMicroelectronics",
       "barcode": "8901234000125",
@@ -671,7 +637,7 @@
     },
     {
       "id": "COMP-013",
-      "name": "STM32F4DCCU6 Core Board",
+      "name": "STM 32 F4DCCU6",
       "partNumber": "STM32F401CCU6",
       "manufacturer": "STMicroelectronics",
       "barcode": "8901234000132",
@@ -5257,7 +5223,7 @@
       "id": "BOX A-012",
       "rackId": 1,
       "shelfId": 1,
-      "label": "BOX A-012: STM 32 & STM32F4DCCU6 Core Board"
+      "label": "BOX A-012: STM 32 F4DCCU6"
     },
     {
       "id": "BOX A-013",
@@ -5317,7 +5283,7 @@
       "id": "BOX A-022",
       "rackId": 1,
       "shelfId": 1,
-      "label": "BOX A-022: STM32 F4VE Core Board"
+      "label": "BOX A-022: STM32 F4VE"
     },
     {
       "id": "BOX B-001",

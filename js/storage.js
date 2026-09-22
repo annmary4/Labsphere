@@ -2,7 +2,7 @@
  * LabSphere Storage Service - Complete 59-Component Catalog (v35)
  */
 
-const CURRENT_VERSION = 'v10670_force_sync_shelf_a_and_boxes';
+const CURRENT_VERSION = 'v10671_box12_stm32f4dccu6_only';
 
 const STORAGE_KEYS = {
   VERSION: "labsphere_version_v10250",
