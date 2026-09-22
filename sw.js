@@ -2,18 +2,18 @@
    LabSphere Service Worker - Offline Cache & PWA Support
    ============================================================ */
 
-const CACHE_NAME = 'labsphere-v13474_shelf_3_motor_layout';
+const CACHE_NAME = 'labsphere-v13475_user_manual_locations';
 const ASSETS_TO_CACHE = [
   '/Labsphere/',
   '/Labsphere/index.html',
-  '/Labsphere/css/styles.css?v=13474_shelf_3_motor_layout',
-  '/Labsphere/js/app.js?v=13474_shelf_3_motor_layout',
-  '/Labsphere/js/types.js?v=13474_shelf_3_motor_layout',
-  '/Labsphere/js/initialData.js?v=13474_shelf_3_motor_layout',
-  '/Labsphere/js/storage.js?v=13474_shelf_3_motor_layout',
-  '/Labsphere/js/rackViewer.js?v=13474_shelf_3_motor_layout',
-  '/Labsphere/js/componentsView.js?v=13474_shelf_3_motor_layout',
-  '/Labsphere/js/modalManager.js?v=13474_shelf_3_motor_layout',
+  '/Labsphere/css/styles.css?v=13475_user_manual_locations',
+  '/Labsphere/js/app.js?v=13475_user_manual_locations',
+  '/Labsphere/js/types.js?v=13475_user_manual_locations',
+  '/Labsphere/js/initialData.js?v=13475_user_manual_locations',
+  '/Labsphere/js/storage.js?v=13475_user_manual_locations',
+  '/Labsphere/js/rackViewer.js?v=13475_user_manual_locations',
+  '/Labsphere/js/componentsView.js?v=13475_user_manual_locations',
+  '/Labsphere/js/modalManager.js?v=13475_user_manual_locations',
   '/Labsphere/icons/icon-192.png',
   '/Labsphere/icons/icon-512.png',
   '/Labsphere/manifest.json'

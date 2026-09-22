@@ -2,7 +2,7 @@
  * LabSphere Storage Service - Complete 59-Component Catalog (v35)
  */
 
-const CURRENT_VERSION = 'v10674_shelf_3_motor_layout';
+const CURRENT_VERSION = 'v10675_user_manual_locations';
 
 const STORAGE_KEYS = {
   VERSION: "labsphere_version_v10250",
