@@ -2,7 +2,7 @@
  * LabSphere Storage Service - Complete 59-Component Catalog (v35)
  */
 
-const CURRENT_VERSION = 'v10672_handwritten_shelf_2_layout';
+const CURRENT_VERSION = 'v10673_user_manual_quantities_and_adds';
 
 const STORAGE_KEYS = {
   VERSION: "labsphere_version_v10250",
@@ -142,7 +142,7 @@ class StorageService {
 
     // Always ensure catalog has all initial items and boxes
     let comps = this.getComponents();
-    if (!comps || comps.length !== (typeof INITIAL_COMPONENTS !== "undefined" ? INITIAL_COMPONENTS.length : 151)) {
+    if (!comps || comps.length === 0) {
       if (typeof INITIAL_COMPONENTS !== "undefined" && INITIAL_COMPONENTS.length > 0) {
         localStorage.setItem(STORAGE_KEYS.COMPONENTS, JSON.stringify(INITIAL_COMPONENTS));
         localStorage.setItem(STORAGE_KEYS.COMPONENTS + "_backup", JSON.stringify(INITIAL_COMPONENTS));
@@ -150,7 +150,7 @@ class StorageService {
       }
     }
     let boxes = this.getBoxes();
-    if (!boxes || boxes.length !== (typeof INITIAL_BOXES !== "undefined" ? INITIAL_BOXES.length : 92)) {
+    if (!boxes || boxes.length === 0) {
       if (typeof INITIAL_BOXES !== "undefined" && INITIAL_BOXES.length > 0) {
         localStorage.setItem(STORAGE_KEYS.BOXES, JSON.stringify(INITIAL_BOXES));
       }
