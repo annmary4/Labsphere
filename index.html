@@ -20,7 +20,7 @@
     rel="stylesheet">
 
   <!-- CSS with cache buster -->
-  <link rel="stylesheet" href="css/styles.css?v=13550_git_parallel_sync">
+  <link rel="stylesheet" href="css/styles.css?v=13560_clean_frontpage">
 
   <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -438,12 +438,6 @@
           <i data-lucide="shopping-cart"></i>
         </button>
 
-        <button id="btn-git-sync-trigger" class="btn btn-secondary git-sync-btn" title="GitHub Parallel Auto-Sync" onclick="openGitSyncModal()">
-          <i data-lucide="git-branch"></i>
-          <span id="git-sync-dot">⚙️</span>
-          <span id="git-sync-text">Git Sync</span>
-        </button>
-
 
         <!-- User Session Profile & Role Badge with Top-Right Popover -->
         <div class="nav-user-profile">
@@ -481,6 +475,11 @@
                   title="Administrator User Management & Accounts"
                   style="width:100%; display:flex; justify-content:center; align-items:center; gap:6px;">
                   <i data-lucide="users"></i> Manage User Accounts
+                </button>
+                <button id="popover-btn-git-sync" class="btn btn-secondary btn-sm"
+                  title="Configure GitHub Auto-Sync & Repository Connection" onclick="openGitSyncModal()"
+                  style="width:100%; display:flex; justify-content:center; align-items:center; gap:6px;">
+                  <i data-lucide="git-branch"></i> GitHub Sync Settings
                 </button>
                 <button id="btn-nav-logout" class="btn btn-secondary btn-sm danger-btn" title="Log Out of Session"
                   style="width:100%; display:flex; justify-content:center; align-items:center; gap:6px; color:#ef4444; border-color:rgba(239,68,68,0.4);">
@@ -2172,14 +2171,14 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
   </div>
 
   <!-- JavaScript App Logic with Cache Busters -->
-  <script src="js/types.js?v=13550_git_parallel_sync"></script>
-  <script src="js/initialData.js?v=13550_git_parallel_sync"></script>
-  <script src="js/githubSync.js?v=13550_git_parallel_sync"></script>
-  <script src="js/storage.js?v=13550_git_parallel_sync"></script>
-  <script src="js/rackViewer.js?v=13550_git_parallel_sync"></script>
-  <script src="js/componentsView.js?v=13550_git_parallel_sync"></script>
-  <script src="js/modalManager.js?v=13550_git_parallel_sync"></script>
-  <script src="js/app.js?v=13550_git_parallel_sync"></script>
+  <script src="js/types.js?v=13560_clean_frontpage"></script>
+  <script src="js/initialData.js?v=13560_clean_frontpage"></script>
+  <script src="js/githubSync.js?v=13560_clean_frontpage"></script>
+  <script src="js/storage.js?v=13560_clean_frontpage"></script>
+  <script src="js/rackViewer.js?v=13560_clean_frontpage"></script>
+  <script src="js/componentsView.js?v=13560_clean_frontpage"></script>
+  <script src="js/modalManager.js?v=13560_clean_frontpage"></script>
+  <script src="js/app.js?v=13560_clean_frontpage"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       if (window.lucide) {
@@ -2562,7 +2561,7 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/Labsphere/sw.js?v=13550_git_parallel_sync', { scope: '/Labsphere/' })
+        navigator.serviceWorker.register('/Labsphere/sw.js?v=13560_clean_frontpage', { scope: '/Labsphere/' })
           .then(reg => {
             console.log('[LabSphere PWA] Service Worker registered:', reg.scope);
             if (reg.update) reg.update();

@@ -2,7 +2,7 @@
  * LabSphere Storage Service - Complete 59-Component Catalog (v35)
  */
 
-const CURRENT_VERSION = 'v10750_git_parallel_sync';
+const CURRENT_VERSION = 'v10760_clean_frontpage';
 
 const STORAGE_KEYS = {
   VERSION: "labsphere_version_v10250",
