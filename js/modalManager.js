@@ -1579,6 +1579,7 @@ class ModalManager {
           alternatives,
           tags,
           supplierInfo,
+          _userModified: true,
           lastUpdated: new Date().toISOString().slice(0, 10)
         };
 

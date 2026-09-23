@@ -2,7 +2,7 @@
  * LabSphere Storage Service - Complete 59-Component Catalog (v35)
  */
 
-const CURRENT_VERSION = 'v10760_clean_frontpage';
+const CURRENT_VERSION = 'v10800_bulletproof_refresh_persistence';
 
 const STORAGE_KEYS = {
   VERSION: "labsphere_version_v10250",
@@ -16,7 +16,8 @@ const STORAGE_KEYS = {
   SESSION: "labsphere_session_v10250",
   SECURITY_LOGS: "labsphere_sec_logs_v10250",
   NOTIFICATIONS: "labsphere_notifs_v10250",
-  REQUISITION_DRAFTS: "labsphere_req_drafts_v10250"
+  REQUISITION_DRAFTS: "labsphere_req_drafts_v10250",
+  USER_MANUAL_EDITS: "labsphere_user_manual_edits"
 };
 
 function sanitizeMojibake(str) {
@@ -102,21 +103,80 @@ class StorageService {
     } catch (e) {}
   }
 
+  static getUserManualEdits() {
+    try {
+      const data = localStorage.getItem(STORAGE_KEYS.USER_MANUAL_EDITS);
+      return data ? JSON.parse(data) : {};
+    } catch (e) {
+      return {};
+    }
+  }
+
+  static recordUserManualEdit(componentId, patch) {
+    if (!componentId) return;
+    try {
+      const edits = this.getUserManualEdits();
+      edits[componentId] = {
+        ...(edits[componentId] || {}),
+        ...patch,
+        lastUpdated: new Date().toISOString()
+      };
+      safeSetItem(STORAGE_KEYS.USER_MANUAL_EDITS, JSON.stringify(edits));
+    } catch (e) {}
+  }
+
   static async init() {
     console.log("Initializing LabSphere Storage Engine & Central Master DB Sync...");
 
     // Immediately clean up old version keys from browser localStorage to free quota space
     this.cleanupLegacyLocalStorage();
 
-    // Preserve active login session across desktop/mobile mode switches & refreshes (logout only occurs on explicit Logout click)
+    const manualEdits = this.getUserManualEdits();
 
     if (localStorage.getItem(STORAGE_KEYS.VERSION) !== CURRENT_VERSION) {
-      if (typeof INITIAL_COMPONENTS !== "undefined" && Array.isArray(INITIAL_COMPONENTS) && INITIAL_COMPONENTS.length > 0) {
-        localStorage.setItem(STORAGE_KEYS.COMPONENTS, JSON.stringify(INITIAL_COMPONENTS));
-        localStorage.setItem(STORAGE_KEYS.COMPONENTS + "_backup", JSON.stringify(INITIAL_COMPONENTS));
+      let existingComps = this.getComponents();
+      if (Array.isArray(existingComps) && existingComps.length > 0) {
+        // Smart merge: Preserve all existing user modifications, custom components, and manual edits
+        const localMap = new Map();
+        existingComps.forEach(c => { if (c && c.id) localMap.set(c.id, c); });
+
+        let mergedComps = [];
+        if (typeof INITIAL_COMPONENTS !== "undefined" && Array.isArray(INITIAL_COMPONENTS)) {
+          INITIAL_COMPONENTS.forEach(sc => {
+            const lc = localMap.get(sc.id);
+            const me = manualEdits[sc.id];
+            if (lc && (lc._userModified || me)) {
+              // User has custom edits on this component - KEEP USER EDITS!
+              mergedComps.push(lc);
+            } else if (me) {
+              mergedComps.push({ ...sc, ...me, _userModified: true });
+            } else if (lc) {
+              mergedComps.push(lc);
+            } else {
+              mergedComps.push(sc);
+            }
+            localMap.delete(sc.id);
+          });
+        }
+        // Retain any user-created custom components not in INITIAL_COMPONENTS
+        localMap.forEach(lc => {
+          mergedComps.push(lc);
+        });
+
+        safeSetItem(STORAGE_KEYS.COMPONENTS, JSON.stringify(mergedComps));
+        safeSetItem(STORAGE_KEYS.COMPONENTS + "_backup", JSON.stringify(mergedComps));
+      } else {
+        if (typeof INITIAL_COMPONENTS !== "undefined" && Array.isArray(INITIAL_COMPONENTS) && INITIAL_COMPONENTS.length > 0) {
+          safeSetItem(STORAGE_KEYS.COMPONENTS, JSON.stringify(INITIAL_COMPONENTS));
+          safeSetItem(STORAGE_KEYS.COMPONENTS + "_backup", JSON.stringify(INITIAL_COMPONENTS));
+        }
       }
+
       if (typeof INITIAL_BOXES !== "undefined" && Array.isArray(INITIAL_BOXES) && INITIAL_BOXES.length > 0) {
-        localStorage.setItem(STORAGE_KEYS.BOXES, JSON.stringify(INITIAL_BOXES));
+        let existingBoxes = this.getBoxes();
+        if (!existingBoxes || existingBoxes.length === 0) {
+          localStorage.setItem(STORAGE_KEYS.BOXES, JSON.stringify(INITIAL_BOXES));
+        }
       }
       if (typeof INITIAL_RACKS !== "undefined" && Array.isArray(INITIAL_RACKS) && INITIAL_RACKS.length > 0) {
         localStorage.setItem(STORAGE_KEYS.RACKS, JSON.stringify(INITIAL_RACKS));
@@ -140,12 +200,12 @@ class StorageService {
       localStorage.setItem(STORAGE_KEYS.VERSION, CURRENT_VERSION);
     }
 
-    // Always ensure catalog has all initial items and boxes
+    // Always ensure catalog has components and boxes
     let comps = this.getComponents();
     if (!comps || comps.length === 0) {
       if (typeof INITIAL_COMPONENTS !== "undefined" && INITIAL_COMPONENTS.length > 0) {
-        localStorage.setItem(STORAGE_KEYS.COMPONENTS, JSON.stringify(INITIAL_COMPONENTS));
-        localStorage.setItem(STORAGE_KEYS.COMPONENTS + "_backup", JSON.stringify(INITIAL_COMPONENTS));
+        safeSetItem(STORAGE_KEYS.COMPONENTS, JSON.stringify(INITIAL_COMPONENTS));
+        safeSetItem(STORAGE_KEYS.COMPONENTS + "_backup", JSON.stringify(INITIAL_COMPONENTS));
         comps = this.getComponents();
       }
     }
@@ -154,20 +214,31 @@ class StorageService {
       if (typeof INITIAL_BOXES !== "undefined" && INITIAL_BOXES.length > 0) {
         localStorage.setItem(STORAGE_KEYS.BOXES, JSON.stringify(INITIAL_BOXES));
       }
-    } else {
-      let compsUpdated = false;
+    }
+
+    // Always re-apply permanent user manual edits over components to guarantee preservation across refreshes
+    if (comps && Array.isArray(comps) && Object.keys(manualEdits).length > 0) {
+      let modified = false;
       comps.forEach(c => {
-        if (c.id === "COMP-0689" && c.boxId === "BOX A-001") {
-          c.boxId = "BOX A-002";
-          compsUpdated = true;
-        }
-        if (c.id === "COMP-5194" && c.boxId === "BOX A-002") {
-          c.boxId = "BOX A-006";
-          compsUpdated = true;
+        const me = manualEdits[c.id];
+        if (me) {
+          let needsUpdate = false;
+          for (const k in me) {
+            if (me[k] !== undefined && c[k] !== me[k]) {
+              needsUpdate = true;
+              break;
+            }
+          }
+          if (needsUpdate) {
+            Object.assign(c, me);
+            c._userModified = true;
+            modified = true;
+          }
         }
       });
-      if (compsUpdated) {
-        this.saveComponents(comps);
+      if (modified) {
+        safeSetItem(STORAGE_KEYS.COMPONENTS, JSON.stringify(comps));
+        safeSetItem(STORAGE_KEYS.COMPONENTS + "_backup", JSON.stringify(comps));
       }
     }
 
@@ -2384,6 +2455,34 @@ class StorageService {
   static saveComponents(components) {
     safeSetItem(STORAGE_KEYS.COMPONENTS, JSON.stringify(components));
     safeSetItem(STORAGE_KEYS.COMPONENTS + "_backup", JSON.stringify(components));
+
+    // Permanently record all user-modified components so they survive reloads, cache purges, and version changes
+    try {
+      const edits = this.getUserManualEdits();
+      let updatedAny = false;
+      components.forEach(c => {
+        if (c && c.id && c._userModified) {
+          edits[c.id] = {
+            quantity: c.quantity,
+            boxId: c.boxId,
+            rackId: c.rackId,
+            shelfId: c.shelfId,
+            name: c.name,
+            unitPrice: c.unitPrice,
+            minQuantity: c.minQuantity,
+            specifications: c.specifications,
+            purpose: c.purpose,
+            category: c.category,
+            lastUpdated: c.lastUpdated || new Date().toISOString()
+          };
+          updatedAny = true;
+        }
+      });
+      if (updatedAny) {
+        safeSetItem(STORAGE_KEYS.USER_MANUAL_EDITS, JSON.stringify(edits));
+      }
+    } catch (e) {}
+
     this.pushCentralServerSync();
   }
 
