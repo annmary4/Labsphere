@@ -20,7 +20,7 @@
     rel="stylesheet">
 
   <!-- CSS with cache buster -->
-  <link rel="stylesheet" href="css/styles.css?v=13500_rack2_shelf_c">
+  <link rel="stylesheet" href="css/styles.css?v=13550_git_parallel_sync">
 
   <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -436,6 +436,12 @@
         </button>
         <button id="btn-procurement-insights" class="btn btn-icon" title="Procurement Restock List">
           <i data-lucide="shopping-cart"></i>
+        </button>
+
+        <button id="btn-git-sync-trigger" class="btn btn-secondary git-sync-btn" title="GitHub Parallel Auto-Sync" onclick="openGitSyncModal()">
+          <i data-lucide="git-branch"></i>
+          <span id="git-sync-dot">⚙️</span>
+          <span id="git-sync-text">Git Sync</span>
         </button>
 
 
@@ -2100,18 +2106,80 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
       </div>
     </div>
 
+        <!-- Modal: GitHub Parallel Auto-Sync Modal -->
+    <div class="modal-backdrop hidden" id="modal-git-sync" style="z-index:1150;">
+      <div class="modal-card" style="max-width:540px; background:#0f172a; border:1px solid var(--border-color); border-radius:14px; padding:22px; box-shadow:0 20px 50px rgba(0,0,0,0.8);">
+        <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; border-bottom:1px solid var(--border-color); padding-bottom:12px;">
+          <h2 style="margin:0; font-size:1.15rem; color:var(--text-main); display:flex; align-items:center; gap:8px;">
+            <i data-lucide="git-branch" style="color:#0284c7;"></i> GitHub Parallel Auto-Sync
+          </h2>
+          <button class="btn-close" onclick="closeGitSyncModal()" style="background:none; border:none; color:white; font-size:1.4rem; cursor:pointer;">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p class="text-muted" style="font-size:0.85rem; line-height:1.5; margin-bottom:16px;">
+            Whenever you add or update components, locations, or quantities manually on the site, LabSphere automatically commits and pushes those updates directly to your GitHub repository (<strong style="color:var(--text-main);">annmary4/Labsphere</strong>) in parallel.
+          </p>
+
+          <div class="form-group" style="margin-bottom:16px;">
+            <label style="font-weight:600; font-size:0.85rem; display:block; margin-bottom:6px; color:var(--text-main);">GitHub Personal Access Token (PAT):</label>
+            <div style="display:flex; gap:8px;">
+              <input type="password" id="git-pat-input" class="form-control" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx or github_pat_..." style="flex:1; font-family:monospace; font-size:0.85rem; background:#1e293b; border:1px solid var(--border-color); color:white; padding:8px 12px; border-radius:6px;" />
+              <button type="button" class="btn btn-secondary btn-sm" onclick="togglePatVisibility()" title="Show/Hide Token" id="btn-toggle-pat">
+                <i data-lucide="eye"></i>
+              </button>
+            </div>
+            <small style="font-size:0.75rem; color:var(--text-muted); display:block; margin-top:5px;">
+              Requires <code>Contents: Read and write</code> (or Classic <code>repo</code>) scope. Token is saved only in your browser's private LocalStorage.
+            </small>
+          </div>
+
+          <div class="form-group" style="margin-bottom:18px; display:flex; align-items:center; justify-content:space-between; background:rgba(255,255,255,0.04); padding:12px 14px; border-radius:8px; border:1px solid var(--border-color);">
+            <div>
+              <span style="font-weight:600; font-size:0.85rem; display:block; color:var(--text-main);">Automatic Background Sync</span>
+              <small style="font-size:0.75rem; color:var(--text-muted);">Pushes to GitHub 2.5s after editing components or quantities</small>
+            </div>
+            <label class="switch" style="position:relative; display:inline-block; width:44px; height:24px; margin:0;">
+              <input type="checkbox" id="git-autosync-toggle" onchange="toggleAutoSync(this.checked)" checked style="opacity:0; width:0; height:0;">
+              <span class="slider round" style="position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0; background-color:#334155; transition:.3s; border-radius:24px;"></span>
+            </label>
+          </div>
+
+          <div id="git-sync-status-box" style="margin-bottom:16px; padding:12px; border-radius:8px; background:rgba(2,132,199,0.08); border:1px solid rgba(2,132,199,0.25); font-size:0.85rem;">
+            <div id="git-sync-status-details">
+              <div>Connection: <strong id="git-sync-status-str" style="color:var(--text-main);">Checking...</strong></div>
+              <div id="git-last-sync-time" style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">No sync history recorded yet.</div>
+            </div>
+          </div>
+
+          <div style="display:flex; gap:10px;">
+            <button type="button" class="btn btn-secondary" onclick="testGitConnection()" id="btn-test-git" style="flex:1; display:flex; align-items:center; justify-content:center; gap:6px;">
+              <i data-lucide="refresh-cw"></i> Test Connection
+            </button>
+            <button type="button" class="btn btn-primary" onclick="triggerManualGitSync()" id="btn-manual-sync" style="flex:1; display:flex; align-items:center; justify-content:center; gap:6px; background:linear-gradient(135deg, #0284c7 0%, #2563eb 100%);">
+              <i data-lucide="upload-cloud"></i> Sync to Git Now
+            </button>
+          </div>
+        </div>
+        <div class="modal-footer" style="margin-top:16px; padding-top:12px; border-top:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+          <button type="button" class="btn btn-primary btn-sm" onclick="saveGitSettings()" style="background:#0284c7; font-weight:700;">Save Token</button>
+          <button type="button" class="btn btn-secondary btn-sm" onclick="closeGitSyncModal()">Close</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Toast Notifications -->
     <div class="toast-container" id="toast-container"></div>
   </div>
 
   <!-- JavaScript App Logic with Cache Busters -->
-  <script src="js/types.js?v=13500_rack2_shelf_c"></script>
-  <script src="js/initialData.js?v=13500_rack2_shelf_c"></script>
-  <script src="js/storage.js?v=13500_rack2_shelf_c"></script>
-  <script src="js/rackViewer.js?v=13500_rack2_shelf_c"></script>
-  <script src="js/componentsView.js?v=13500_rack2_shelf_c"></script>
-  <script src="js/modalManager.js?v=13500_rack2_shelf_c"></script>
-  <script src="js/app.js?v=13500_rack2_shelf_c"></script>
+  <script src="js/types.js?v=13550_git_parallel_sync"></script>
+  <script src="js/initialData.js?v=13550_git_parallel_sync"></script>
+  <script src="js/githubSync.js?v=13550_git_parallel_sync"></script>
+  <script src="js/storage.js?v=13550_git_parallel_sync"></script>
+  <script src="js/rackViewer.js?v=13550_git_parallel_sync"></script>
+  <script src="js/componentsView.js?v=13550_git_parallel_sync"></script>
+  <script src="js/modalManager.js?v=13550_git_parallel_sync"></script>
+  <script src="js/app.js?v=13550_git_parallel_sync"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       if (window.lucide) {
@@ -2494,7 +2562,7 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/Labsphere/sw.js?v=13500_rack2_shelf_c', { scope: '/Labsphere/' })
+        navigator.serviceWorker.register('/Labsphere/sw.js?v=13550_git_parallel_sync', { scope: '/Labsphere/' })
           .then(reg => {
             console.log('[LabSphere PWA] Service Worker registered:', reg.scope);
             if (reg.update) reg.update();

@@ -2,7 +2,7 @@
    LabSphere Service Worker - Offline Cache & PWA Support
    ============================================================ */
 
-const CACHE_NAME = 'labsphere-13500_rack2_shelf_c';
+const CACHE_NAME = 'labsphere-13550_git_parallel_sync';
 const ASSETS_TO_CACHE = [
   '/Labsphere/',
   '/Labsphere/index.html',

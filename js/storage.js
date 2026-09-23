@@ -2,7 +2,7 @@
  * LabSphere Storage Service - Complete 59-Component Catalog (v35)
  */
 
-const CURRENT_VERSION = 'v10700_rack2_shelf_c';
+const CURRENT_VERSION = 'v10750_git_parallel_sync';
 
 const STORAGE_KEYS = {
   VERSION: "labsphere_version_v10250",
@@ -323,6 +323,11 @@ class StorageService {
 
   static async pushCentralServerSync() {
     try {
+      // 1. Direct In-Browser GitHub Auto-Sync via GitHub REST API (for GitHub Pages & all devices)
+      if (typeof window !== "undefined" && window.GitHubSync && typeof window.GitHubSync.queueSync === "function") {
+        window.GitHubSync.queueSync("Live Site: Inventory & stock update");
+      }
+
       const allUsers = this.getUsers();
       fetch("https://jsonblob.com/api/jsonBlob/019fd57b-3e4a-7996-8d3b-034f027f9209", {
         method: "PUT",
@@ -345,6 +350,7 @@ class StorageService {
         securityLogs: this.getSecurityLogs()
       };
 
+      // 2. Query local server / local sync daemon if active
       await fetch("api/db", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -355,7 +361,13 @@ class StorageService {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(masterData)
         });
-      });
+      }).catch(async () => {
+        return fetch("http://127.0.0.1:5000/api/db", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(masterData)
+        });
+      }).catch(() => {});
     } catch (e) {}
   }
 

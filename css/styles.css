@@ -3089,3 +3089,55 @@ body.drawer-open {
   margin: 0;
 }
 
+/* ============================================================
+   GitHub Parallel Auto-Sync UI Styles
+   ============================================================ */
+.git-sync-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 8px;
+  padding: 6px 12px;
+}
+
+.git-sync-btn:hover {
+  background: rgba(2, 132, 199, 0.15);
+  border-color: #0284c7;
+}
+
+.git-sync-badge.syncing #git-sync-dot {
+  animation: pulse-sync 1.2s infinite;
+}
+
+@keyframes pulse-sync {
+  0% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.9); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.switch input:checked + .slider {
+  background-color: #0284c7 !important;
+}
+
+.switch input:checked + .slider:before {
+  transform: translateX(20px);
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .3s;
+  border-radius: 50%;
+}
+
