@@ -3279,9 +3279,9 @@
       "imageUrl": "images/components/COMP-9685.webp",
       "labName": "Main Robotics & Embedded Systems Lab",
       "roomName": "Room 101 - Prototyping Hall",
-      "rackId": 1,
-      "shelfId": 4,
-      "boxId": "BOX D-014",
+      "rackId": 2,
+      "shelfId": 3,
+      "boxId": "BOX C-014",
       "stackLayer": "Layer 1",
       "category": "Connectors & Cabling",
       "purpose": "Heat shrinkable tubing sleeves for wire insulation and strain relief.",
@@ -3300,7 +3300,7 @@
       "tags": [
         "sleeves"
       ],
-      "lastUpdated": "2026-09-16",
+      "lastUpdated": "2026-09-23",
       "customImage": false
     },
     {
@@ -3747,7 +3747,7 @@
       "tags": [
         "pcm-1808"
       ],
-      "lastUpdated": "2026-09-22",
+      "lastUpdated": "2026-09-23",
       "customImage": false,
       "_userModified": true
     },
@@ -3936,7 +3936,7 @@
       "roomName": "Room 102 - Storage Bay",
       "rackId": 2,
       "shelfId": 3,
-      "boxId": "BOX C-001",
+      "boxId": "BOX C-009",
       "stackLayer": "Layer 1 (Main Storage Compartment)",
       "category": "Connectors & Cabling",
       "purpose": "Laboratory component entry for 9V Lithium ion USB Rechargable.",
@@ -3956,7 +3956,7 @@
         "connectors & cabling",
         "9v"
       ],
-      "lastUpdated": "2026-08-05",
+      "lastUpdated": "2026-09-23",
       "customImage": true
     },
     {
@@ -3970,7 +3970,7 @@
       "roomName": "Room 102 - Storage Bay",
       "rackId": 2,
       "shelfId": 3,
-      "boxId": "BOX C-001",
+      "boxId": "BOX C-009",
       "stackLayer": "Layer 1 (Main Storage Compartment)",
       "category": "Power & Energy",
       "purpose": "Laboratory component entry for Battery.",
@@ -3990,12 +3990,12 @@
         "power & energy",
         "battery"
       ],
-      "lastUpdated": "2026-08-04",
+      "lastUpdated": "2026-09-23",
       "_userModified": true
     },
     {
       "id": "COMP-2662",
-      "name": "13 Batteries",
+      "name": "Li-ion Batteries",
       "partNumber": "COMP-2662-PART",
       "manufacturer": "LabSphere Verified Vendor",
       "barcode": "8901234002662",
@@ -4004,7 +4004,7 @@
       "roomName": "Room 102 - Storage Bay",
       "rackId": 2,
       "shelfId": 3,
-      "boxId": "BOX C-001",
+      "boxId": "BOX C-015",
       "stackLayer": "Layer 1 (Main Storage Compartment)",
       "category": "General Components",
       "purpose": "Laboratory component entry for 13 Batteries.",
@@ -4024,12 +4024,12 @@
         "general components",
         "13"
       ],
-      "lastUpdated": "2026-08-04",
+      "lastUpdated": "2026-09-23",
       "_userModified": true
     },
     {
       "id": "COMP-9566",
-      "name": "Lithium-ion rechargable Battery(3.7V)",
+      "name": "Lithium Battery charge indicators",
       "partNumber": "COMP-9566-PART",
       "manufacturer": "LabSphere Verified Vendor",
       "barcode": "8901234009566",
@@ -4058,7 +4058,7 @@
         "power & energy",
         "lithium-ion"
       ],
-      "lastUpdated": "2026-08-05",
+      "lastUpdated": "2026-09-23",
       "customImage": true,
       "_userModified": true
     },
@@ -4073,7 +4073,7 @@
       "roomName": "Room 102 - Storage Bay",
       "rackId": 2,
       "shelfId": 3,
-      "boxId": "BOX C-002",
+      "boxId": "BOX C-016",
       "stackLayer": "Layer 1 (Main Storage Compartment)",
       "category": "Power & Energy",
       "purpose": "Laboratory component entry for Single cell battery holder.",
@@ -4093,7 +4093,7 @@
         "power & energy",
         "single"
       ],
-      "lastUpdated": "2026-08-05",
+      "lastUpdated": "2026-09-23",
       "customImage": true,
       "_userModified": true
     },
@@ -4108,7 +4108,7 @@
       "roomName": "Room 102 - Storage Bay",
       "rackId": 2,
       "shelfId": 3,
-      "boxId": "BOX C-002",
+      "boxId": "BOX C-017",
       "stackLayer": "Layer 1 (Main Storage Compartment)",
       "category": "Power & Energy",
       "purpose": "Laboratory component entry for 2 Cell battery holder.",
@@ -4128,7 +4128,7 @@
         "power & energy",
         "2"
       ],
-      "lastUpdated": "2026-08-05",
+      "lastUpdated": "2026-09-23",
       "customImage": true,
       "_userModified": true
     },
@@ -4143,7 +4143,7 @@
       "roomName": "Room 102 - Storage Bay",
       "rackId": 2,
       "shelfId": 3,
-      "boxId": "BOX C-002",
+      "boxId": "BOX C-013",
       "stackLayer": "Layer 1 (Main Storage Compartment)",
       "category": "Power & Energy",
       "purpose": "Laboratory component entry for 4 Cell Battery holder.",
@@ -4163,13 +4163,13 @@
         "power & energy",
         "4"
       ],
-      "lastUpdated": "2026-08-05",
+      "lastUpdated": "2026-09-23",
       "customImage": true,
       "_userModified": true
     },
     {
       "id": "COMP-4793",
-      "name": "Single channel  Relay",
+      "name": "Single channel Relay",
       "partNumber": "COMP-4793-PART",
       "manufacturer": "LabSphere Verified Vendor",
       "barcode": "8901234004793",
@@ -4178,7 +4178,7 @@
       "roomName": "Room 101 - Prototyping Hall",
       "rackId": 2,
       "shelfId": 3,
-      "boxId": "BOX C-003",
+      "boxId": "BOX C-006",
       "stackLayer": "Layer 1 (Main Storage Compartment)",
       "category": "Motors & Drivers",
       "purpose": "Laboratory component entry for Single channel 5V Relay.",
@@ -4198,7 +4198,7 @@
         "motors & drivers",
         "single"
       ],
-      "lastUpdated": "2026-08-05",
+      "lastUpdated": "2026-09-23",
       "customImage": true,
       "_userModified": true
     },
@@ -4213,7 +4213,7 @@
       "roomName": "Room 102 - Storage Bay",
       "rackId": 2,
       "shelfId": 3,
-      "boxId": "BOX C-003",
+      "boxId": "BOX C-004",
       "stackLayer": "Layer 1 (Main Storage Compartment)",
       "category": "Power & Energy",
       "purpose": "Laboratory component entry for Micro Lithium Cell passive buzzer 5mm.",
@@ -4233,7 +4233,7 @@
         "power & energy",
         "micro"
       ],
-      "lastUpdated": "2026-08-05",
+      "lastUpdated": "2026-09-23",
       "customImage": true,
       "_userModified": true
     },
@@ -4248,7 +4248,7 @@
       "roomName": "Room 101 - Prototyping Hall",
       "rackId": 2,
       "shelfId": 3,
-      "boxId": "BOX C-003",
+      "boxId": "BOX C-021",
       "stackLayer": "Layer 1 (Main Storage Compartment)",
       "category": "Motors & Drivers",
       "purpose": "Laboratory component entry for 2 channel 5V Relay.",
@@ -4268,7 +4268,7 @@
         "motors & drivers",
         "2"
       ],
-      "lastUpdated": "2026-08-05",
+      "lastUpdated": "2026-09-23",
       "customImage": true,
       "_userModified": true
     },
@@ -4283,7 +4283,7 @@
       "roomName": "Room 102 - Storage Bay",
       "rackId": 2,
       "shelfId": 3,
-      "boxId": "BOX C-003",
+      "boxId": "BOX C-005",
       "stackLayer": "Layer 1 (Main Storage Compartment)",
       "category": "Power & Energy",
       "purpose": "Laboratory component entry for Lithium Battery level indicator.",
@@ -4303,7 +4303,7 @@
         "power & energy",
         "lithium"
       ],
-      "lastUpdated": "2026-08-05",
+      "lastUpdated": "2026-09-23",
       "customImage": true,
       "_userModified": true
     },
@@ -4319,7 +4319,7 @@
       "roomName": "Room 101 - Prototyping Hall",
       "rackId": 2,
       "shelfId": 3,
-      "boxId": "BOX C-004",
+      "boxId": "BOX C-018",
       "stackLayer": "Layer 1 (Top Compartment Bin #A)",
       "inventoryState": "AVAILABLE",
       "category": "Microcontrollers & Dev Boards",
@@ -4339,7 +4339,7 @@
         "unitPrice": 450,
         "leadTimeDays": 3
       },
-      "lastUpdated": "2026-08-05",
+      "lastUpdated": "2026-09-23",
       "customImage": true,
       "_userModified": true
     },
@@ -4354,7 +4354,7 @@
       "roomName": "Room 102 - Storage Bay",
       "rackId": 2,
       "shelfId": 3,
-      "boxId": "BOX C-004",
+      "boxId": "BOX C-007",
       "stackLayer": "Layer 1",
       "category": "Power & Energy",
       "purpose": "High-power 300W 20A constant current constant voltage step-down converter.",
@@ -4373,7 +4373,7 @@
       "tags": [
         "dc-dc-buck-converter-300w,20a"
       ],
-      "lastUpdated": "2026-09-16",
+      "lastUpdated": "2026-09-23",
       "customImage": false
     },
     {
@@ -4387,7 +4387,7 @@
       "roomName": "Room 102 - Storage Bay",
       "rackId": 2,
       "shelfId": 3,
-      "boxId": "BOX C-004",
+      "boxId": "BOX C-012",
       "stackLayer": "Layer 1",
       "category": "Power & Energy",
       "purpose": "Ultra-small efficient step-down voltage regulator module.",
@@ -4406,7 +4406,7 @@
       "tags": [
         "mini-560-dc-dc-buck-converter"
       ],
-      "lastUpdated": "2026-09-16",
+      "lastUpdated": "2026-09-23",
       "customImage": false
     },
     {
@@ -4420,7 +4420,7 @@
       "roomName": "Room 102 - Storage Bay",
       "rackId": 2,
       "shelfId": 3,
-      "boxId": "BOX C-004",
+      "boxId": "BOX C-002",
       "stackLayer": "Layer 1",
       "category": "Power & Energy",
       "purpose": "Type-C input 5V 1A step-up booster and lithium battery charging board.",
@@ -4439,7 +4439,7 @@
       "tags": [
         "lithium-battery-charge-booster-module-type-c"
       ],
-      "lastUpdated": "2026-09-16",
+      "lastUpdated": "2026-09-23",
       "customImage": false
     },
     {
@@ -4453,7 +4453,7 @@
       "roomName": "Room 102 - Storage Bay",
       "rackId": 2,
       "shelfId": 3,
-      "boxId": "BOX C-004",
+      "boxId": "BOX C-010",
       "stackLayer": "Layer 1 (Main Storage Compartment)",
       "category": "Power & Energy",
       "purpose": "Laboratory component entry for Booster converter module X260096.",
@@ -4473,7 +4473,7 @@
         "power & energy",
         "booster"
       ],
-      "lastUpdated": "2026-08-05",
+      "lastUpdated": "2026-09-23",
       "customImage": true,
       "_userModified": true
     },
@@ -4488,7 +4488,7 @@
       "roomName": "Room 102 - Storage Bay",
       "rackId": 2,
       "shelfId": 3,
-      "boxId": "BOX C-004",
+      "boxId": "BOX C-019",
       "stackLayer": "Layer 1 (Main Storage Compartment)",
       "category": "Power & Energy",
       "purpose": "Laboratory component entry for UBEC 5A.",
@@ -4508,7 +4508,7 @@
         "power & energy",
         "ubec"
       ],
-      "lastUpdated": "2026-08-05",
+      "lastUpdated": "2026-09-23",
       "customImage": true,
       "_userModified": true
     },
@@ -4523,7 +4523,7 @@
       "roomName": "Room 102 - Storage Bay",
       "rackId": 2,
       "shelfId": 3,
-      "boxId": "BOX C-004",
+      "boxId": "BOX C-003",
       "stackLayer": "Layer 1",
       "category": "Power & Energy",
       "purpose": "1A constant-current linear charger module with battery protection IC.",
@@ -4542,7 +4542,7 @@
       "tags": [
         "tp-4056,-li-ion-battery-charging-module"
       ],
-      "lastUpdated": "2026-09-16",
+      "lastUpdated": "2026-09-23",
       "customImage": false
     },
     {
@@ -4557,7 +4557,7 @@
       "roomName": "Room 101 - Prototyping Hall",
       "rackId": 2,
       "shelfId": 3,
-      "boxId": "BOX C-004",
+      "boxId": "BOX C-018",
       "stackLayer": "Layer 1 (Top Compartment Bin #A)",
       "inventoryState": "AVAILABLE",
       "category": "Microcontrollers & Dev Boards",
@@ -4577,7 +4577,7 @@
         "unitPrice": 450,
         "leadTimeDays": 3
       },
-      "lastUpdated": "2026-08-05",
+      "lastUpdated": "2026-09-23",
       "customImage": true,
       "_userModified": true
     },
@@ -4592,7 +4592,7 @@
       "roomName": "Room 102 - Storage Bay",
       "rackId": 2,
       "shelfId": 3,
-      "boxId": "BOX C-004",
+      "boxId": "BOX C-020",
       "stackLayer": "Layer 1",
       "category": "Power & Energy",
       "purpose": "Adjustable step-down power supply module with multi-turn potentiometer.",
@@ -4611,7 +4611,7 @@
       "tags": [
         "lm-2596-dc-dc-buck-converter"
       ],
-      "lastUpdated": "2026-09-16",
+      "lastUpdated": "2026-09-23",
       "customImage": false
     },
     {
@@ -4760,8 +4760,8 @@
       "labName": "Main Robotics & Embedded Systems Lab",
       "roomName": "Room 102 - Storage Bay",
       "rackId": 2,
-      "shelfId": 5,
-      "boxId": "BOX E-001",
+      "shelfId": 3,
+      "boxId": "BOX C-011",
       "stackLayer": "Layer 1",
       "category": "Passive Components",
       "purpose": "Piezoelectric passive sounder buzzer needing external square wave signal.",
@@ -4780,7 +4780,7 @@
       "tags": [
         "passive-buzzer"
       ],
-      "lastUpdated": "2026-09-16",
+      "lastUpdated": "2026-09-23",
       "customImage": false
     },
     {
@@ -5305,18 +5305,6 @@
       "label": "BOX E-001: Micro Lithium Cell passive buzzer 5mm"
     },
     {
-      "id": "BOX C-001",
-      "rackId": 2,
-      "shelfId": 3,
-      "label": "BOX C-001: Male & Female Battery Connectors (XT60/T-Plug)"
-    },
-    {
-      "id": "BOX C-002",
-      "rackId": 2,
-      "shelfId": 3,
-      "label": "BOX C-002: 18650 Battery Holder Case 2-Slot"
-    },
-    {
       "id": "BOX D-002",
       "rackId": 2,
       "shelfId": 4,
@@ -5333,18 +5321,6 @@
       "rackId": 2,
       "shelfId": 4,
       "label": "BOX D-001: Standoff and Black plastic corner protector"
-    },
-    {
-      "id": "BOX C-004",
-      "rackId": 2,
-      "shelfId": 3,
-      "label": "BOX C-004: XL4015 DC-DC Buck converter"
-    },
-    {
-      "id": "BOX C-003",
-      "rackId": 2,
-      "shelfId": 3,
-      "label": "BOX C-003: Lithium Battery level indicator"
     },
     {
       "id": "BOX B-004",
@@ -5411,6 +5387,132 @@
       "rackId": 2,
       "shelfId": 1,
       "label": "BOX A-001: SIM 800t Corpse cosm"
+    },
+    {
+      "id": "BOX C-001",
+      "rackId": 2,
+      "shelfId": 3,
+      "label": "BOX C-001: Lithium Battery charge indicators"
+    },
+    {
+      "id": "BOX C-002",
+      "rackId": 2,
+      "shelfId": 3,
+      "label": "BOX C-002: Lithium battery charge booster module-Type C"
+    },
+    {
+      "id": "BOX C-003",
+      "rackId": 2,
+      "shelfId": 3,
+      "label": "BOX C-003: TP-4056, Li-ion battery charging module"
+    },
+    {
+      "id": "BOX C-004",
+      "rackId": 2,
+      "shelfId": 3,
+      "label": "BOX C-004: Micro Lithium Cell passive buzzer 5mm"
+    },
+    {
+      "id": "BOX C-005",
+      "rackId": 2,
+      "shelfId": 3,
+      "label": "BOX C-005: Lithium Battery level indicator"
+    },
+    {
+      "id": "BOX C-006",
+      "rackId": 2,
+      "shelfId": 3,
+      "label": "BOX C-006: Single channel Relay"
+    },
+    {
+      "id": "BOX C-007",
+      "rackId": 2,
+      "shelfId": 3,
+      "label": "BOX C-007: DC-DC Buck converter 300W, 20A"
+    },
+    {
+      "id": "BOX C-008",
+      "rackId": 2,
+      "shelfId": 3,
+      "label": "BOX C-008: PCM 1808"
+    },
+    {
+      "id": "BOX C-009",
+      "rackId": 2,
+      "shelfId": 3,
+      "label": "BOX C-009: Battery"
+    },
+    {
+      "id": "BOX C-010",
+      "rackId": 2,
+      "shelfId": 3,
+      "label": "BOX C-010: Booster converter module X260096"
+    },
+    {
+      "id": "BOX C-011",
+      "rackId": 2,
+      "shelfId": 3,
+      "label": "BOX C-011: Passive Buzzer"
+    },
+    {
+      "id": "BOX C-012",
+      "rackId": 2,
+      "shelfId": 3,
+      "label": "BOX C-012: Mini 560 DC-DC buck converter"
+    },
+    {
+      "id": "BOX C-013",
+      "rackId": 2,
+      "shelfId": 3,
+      "label": "BOX C-013: 4 Cell Battery holder"
+    },
+    {
+      "id": "BOX C-014",
+      "rackId": 2,
+      "shelfId": 3,
+      "label": "BOX C-014: Sleeves"
+    },
+    {
+      "id": "BOX C-015",
+      "rackId": 2,
+      "shelfId": 3,
+      "label": "BOX C-015: Li-ion Batteries"
+    },
+    {
+      "id": "BOX C-016",
+      "rackId": 2,
+      "shelfId": 3,
+      "label": "BOX C-016: Single cell battery holder"
+    },
+    {
+      "id": "BOX C-017",
+      "rackId": 2,
+      "shelfId": 3,
+      "label": "BOX C-017: 2 Cell battery holder"
+    },
+    {
+      "id": "BOX C-018",
+      "rackId": 2,
+      "shelfId": 3,
+      "label": "BOX C-018: XL 7015 Stepdown & XL 4015 DC-DC Buck"
+    },
+    {
+      "id": "BOX C-019",
+      "rackId": 2,
+      "shelfId": 3,
+      "label": "BOX C-019: UBEC 5A"
+    },
+    {
+      "id": "BOX C-020",
+      "rackId": 2,
+      "shelfId": 3,
+      "label": "BOX C-020: LM-2596 DC-DC Buck converter"
+    },
+    {
+      "id": "BOX C-021",
+      "rackId": 2,
+      "shelfId": 3,
+      "label": "BOX C-021: 2 channel 5V Relay"
     }
   ],
   "racks": [
@@ -5472,6 +5574,282 @@
   ],
   "requests": [],
   "transactions": [
+    {
+      "id": "TXN-1790136731008",
+      "componentId": "COMP-8578",
+      "componentName": "2 channel 5V Relay",
+      "actionType": "EDIT_DETAILS",
+      "qtyChanged": 0,
+      "previousQty": 15,
+      "newQty": 15,
+      "userRole": "Lab Administrator (Fulfill & Issue Stock)",
+      "timestamp": "9/23/2026, 9:45:00 AM",
+      "notes": "Updated Rack 2 Shelf C physical audit: Box BOX C-021, Qty 15."
+    },
+    {
+      "id": "TXN-1790136731007",
+      "componentId": "COMP-6904",
+      "componentName": "LM-2596 DC-DC Buck converter",
+      "actionType": "EDIT_DETAILS",
+      "qtyChanged": 0,
+      "previousQty": 1,
+      "newQty": 1,
+      "userRole": "Lab Administrator (Fulfill & Issue Stock)",
+      "timestamp": "9/23/2026, 9:45:00 AM",
+      "notes": "Updated Rack 2 Shelf C physical audit: Box BOX C-020, Qty 1."
+    },
+    {
+      "id": "TXN-1790136731006",
+      "componentId": "COMP-5937",
+      "componentName": "UBEC 5A",
+      "actionType": "EDIT_DETAILS",
+      "qtyChanged": 0,
+      "previousQty": 2,
+      "newQty": 2,
+      "userRole": "Lab Administrator (Fulfill & Issue Stock)",
+      "timestamp": "9/23/2026, 9:45:00 AM",
+      "notes": "Updated Rack 2 Shelf C physical audit: Box BOX C-019, Qty 2."
+    },
+    {
+      "id": "TXN-1790136731005",
+      "componentId": "COMP-6126",
+      "componentName": "XL 4015 dc-dc Buck coverter",
+      "actionType": "EDIT_DETAILS",
+      "qtyChanged": 0,
+      "previousQty": 5,
+      "newQty": 5,
+      "userRole": "Lab Administrator (Fulfill & Issue Stock)",
+      "timestamp": "9/23/2026, 9:45:00 AM",
+      "notes": "Updated Rack 2 Shelf C physical audit: Box BOX C-018, Qty 5."
+    },
+    {
+      "id": "TXN-1790136731004",
+      "componentId": "COMP-3239",
+      "componentName": "XL 7015 Stepdown Converter",
+      "actionType": "EDIT_DETAILS",
+      "qtyChanged": 0,
+      "previousQty": 2,
+      "newQty": 2,
+      "userRole": "Lab Administrator (Fulfill & Issue Stock)",
+      "timestamp": "9/23/2026, 9:45:00 AM",
+      "notes": "Updated Rack 2 Shelf C physical audit: Box BOX C-018, Qty 2."
+    },
+    {
+      "id": "TXN-1790136731003",
+      "componentId": "COMP-6170",
+      "componentName": "2 Cell battery holder",
+      "actionType": "EDIT_DETAILS",
+      "qtyChanged": 0,
+      "previousQty": 15,
+      "newQty": 15,
+      "userRole": "Lab Administrator (Fulfill & Issue Stock)",
+      "timestamp": "9/23/2026, 9:45:00 AM",
+      "notes": "Updated Rack 2 Shelf C physical audit: Box BOX C-017, Qty 15."
+    },
+    {
+      "id": "TXN-1790136731002",
+      "componentId": "COMP-4221",
+      "componentName": "Single cell battery holder",
+      "actionType": "EDIT_DETAILS",
+      "qtyChanged": 0,
+      "previousQty": 11,
+      "newQty": 11,
+      "userRole": "Lab Administrator (Fulfill & Issue Stock)",
+      "timestamp": "9/23/2026, 9:45:00 AM",
+      "notes": "Updated Rack 2 Shelf C physical audit: Box BOX C-016, Qty 11."
+    },
+    {
+      "id": "TXN-1790136731001",
+      "componentId": "COMP-2662",
+      "componentName": "Li-ion Batteries",
+      "actionType": "EDIT_DETAILS",
+      "qtyChanged": 0,
+      "previousQty": 10,
+      "newQty": 10,
+      "userRole": "Lab Administrator (Fulfill & Issue Stock)",
+      "timestamp": "9/23/2026, 9:45:00 AM",
+      "notes": "Updated Rack 2 Shelf C physical audit: Box BOX C-015, Qty 10."
+    },
+    {
+      "id": "TXN-1790136731000",
+      "componentId": "COMP-9685",
+      "componentName": "Sleeves",
+      "actionType": "EDIT_DETAILS",
+      "qtyChanged": 0,
+      "previousQty": 30,
+      "newQty": 30,
+      "userRole": "Lab Administrator (Fulfill & Issue Stock)",
+      "timestamp": "9/23/2026, 9:45:00 AM",
+      "notes": "Updated Rack 2 Shelf C physical audit: Box BOX C-014, Qty 30."
+    },
+    {
+      "id": "TXN-1790136730999",
+      "componentId": "COMP-6776",
+      "componentName": "4 Cell Battery holder",
+      "actionType": "EDIT_DETAILS",
+      "qtyChanged": 0,
+      "previousQty": 2,
+      "newQty": 2,
+      "userRole": "Lab Administrator (Fulfill & Issue Stock)",
+      "timestamp": "9/23/2026, 9:45:00 AM",
+      "notes": "Updated Rack 2 Shelf C physical audit: Box BOX C-013, Qty 2."
+    },
+    {
+      "id": "TXN-1790136730998",
+      "componentId": "COMP-4040",
+      "componentName": "Mini 560 DC-DC buck converter",
+      "actionType": "EDIT_DETAILS",
+      "qtyChanged": 0,
+      "previousQty": 1,
+      "newQty": 1,
+      "userRole": "Lab Administrator (Fulfill & Issue Stock)",
+      "timestamp": "9/23/2026, 9:45:00 AM",
+      "notes": "Updated Rack 2 Shelf C physical audit: Box BOX C-012, Qty 1."
+    },
+    {
+      "id": "TXN-1790136730997",
+      "componentId": "COMP-6254",
+      "componentName": "Passive Buzzer",
+      "actionType": "EDIT_DETAILS",
+      "qtyChanged": 0,
+      "previousQty": 3,
+      "newQty": 3,
+      "userRole": "Lab Administrator (Fulfill & Issue Stock)",
+      "timestamp": "9/23/2026, 9:45:00 AM",
+      "notes": "Updated Rack 2 Shelf C physical audit: Box BOX C-011, Qty 3."
+    },
+    {
+      "id": "TXN-1790136730996",
+      "componentId": "COMP-5724",
+      "componentName": "Booster converter module X260096",
+      "actionType": "EDIT_DETAILS",
+      "qtyChanged": 0,
+      "previousQty": 2,
+      "newQty": 2,
+      "userRole": "Lab Administrator (Fulfill & Issue Stock)",
+      "timestamp": "9/23/2026, 9:45:00 AM",
+      "notes": "Updated Rack 2 Shelf C physical audit: Box BOX C-010, Qty 2."
+    },
+    {
+      "id": "TXN-1790136730995",
+      "componentId": "COMP-0156",
+      "componentName": "9V Lithium ion USB Rechargable",
+      "actionType": "EDIT_DETAILS",
+      "qtyChanged": 0,
+      "previousQty": 1,
+      "newQty": 1,
+      "userRole": "Lab Administrator (Fulfill & Issue Stock)",
+      "timestamp": "9/23/2026, 9:45:00 AM",
+      "notes": "Updated Rack 2 Shelf C physical audit: Box BOX C-009, Qty 1."
+    },
+    {
+      "id": "TXN-1790136730994",
+      "componentId": "COMP-0277",
+      "componentName": "Battery",
+      "actionType": "EDIT_DETAILS",
+      "qtyChanged": 0,
+      "previousQty": 10,
+      "newQty": 10,
+      "userRole": "Lab Administrator (Fulfill & Issue Stock)",
+      "timestamp": "9/23/2026, 9:45:00 AM",
+      "notes": "Updated Rack 2 Shelf C physical audit: Box BOX C-009, Qty 10."
+    },
+    {
+      "id": "TXN-1790136730993",
+      "componentId": "COMP-5171",
+      "componentName": "PCM 1808",
+      "actionType": "EDIT_DETAILS",
+      "qtyChanged": 0,
+      "previousQty": 1,
+      "newQty": 1,
+      "userRole": "Lab Administrator (Fulfill & Issue Stock)",
+      "timestamp": "9/23/2026, 9:45:00 AM",
+      "notes": "Updated Rack 2 Shelf C physical audit: Box BOX C-008, Qty 1."
+    },
+    {
+      "id": "TXN-1790136730992",
+      "componentId": "COMP-3908",
+      "componentName": "DC-DC Buck converter 300W,20A",
+      "actionType": "EDIT_DETAILS",
+      "qtyChanged": 0,
+      "previousQty": 2,
+      "newQty": 2,
+      "userRole": "Lab Administrator (Fulfill & Issue Stock)",
+      "timestamp": "9/23/2026, 9:45:00 AM",
+      "notes": "Updated Rack 2 Shelf C physical audit: Box BOX C-007, Qty 2."
+    },
+    {
+      "id": "TXN-1790136730991",
+      "componentId": "COMP-4793",
+      "componentName": "Single channel Relay",
+      "actionType": "EDIT_DETAILS",
+      "qtyChanged": 0,
+      "previousQty": 19,
+      "newQty": 19,
+      "userRole": "Lab Administrator (Fulfill & Issue Stock)",
+      "timestamp": "9/23/2026, 9:45:00 AM",
+      "notes": "Updated Rack 2 Shelf C physical audit: Box BOX C-006, Qty 19."
+    },
+    {
+      "id": "TXN-1790136730990",
+      "componentId": "COMP-8671",
+      "componentName": "Lithium Battery level indicator",
+      "actionType": "EDIT_DETAILS",
+      "qtyChanged": 0,
+      "previousQty": 4,
+      "newQty": 4,
+      "userRole": "Lab Administrator (Fulfill & Issue Stock)",
+      "timestamp": "9/23/2026, 9:45:00 AM",
+      "notes": "Updated Rack 2 Shelf C physical audit: Box BOX C-005, Qty 4."
+    },
+    {
+      "id": "TXN-1790136730989",
+      "componentId": "COMP-6568",
+      "componentName": "Micro Lithium Cell passive buzzer 5mm",
+      "actionType": "EDIT_DETAILS",
+      "qtyChanged": 0,
+      "previousQty": 12,
+      "newQty": 12,
+      "userRole": "Lab Administrator (Fulfill & Issue Stock)",
+      "timestamp": "9/23/2026, 9:45:00 AM",
+      "notes": "Updated Rack 2 Shelf C physical audit: Box BOX C-004, Qty 12."
+    },
+    {
+      "id": "TXN-1790136730988",
+      "componentId": "COMP-6066",
+      "componentName": "TP-4056, Li-ion battery charging module",
+      "actionType": "EDIT_DETAILS",
+      "qtyChanged": 0,
+      "previousQty": 4,
+      "newQty": 4,
+      "userRole": "Lab Administrator (Fulfill & Issue Stock)",
+      "timestamp": "9/23/2026, 9:45:00 AM",
+      "notes": "Updated Rack 2 Shelf C physical audit: Box BOX C-003, Qty 4."
+    },
+    {
+      "id": "TXN-1790136730987",
+      "componentId": "COMP-4974",
+      "componentName": "Lithium battery charge booster module-Type C",
+      "actionType": "EDIT_DETAILS",
+      "qtyChanged": 0,
+      "previousQty": 1,
+      "newQty": 1,
+      "userRole": "Lab Administrator (Fulfill & Issue Stock)",
+      "timestamp": "9/23/2026, 9:45:00 AM",
+      "notes": "Updated Rack 2 Shelf C physical audit: Box BOX C-002, Qty 1."
+    },
+    {
+      "id": "TXN-1790136730986",
+      "componentId": "COMP-9566",
+      "componentName": "Lithium Battery charge indicators",
+      "actionType": "EDIT_DETAILS",
+      "qtyChanged": 0,
+      "previousQty": 4,
+      "newQty": 4,
+      "userRole": "Lab Administrator (Fulfill & Issue Stock)",
+      "timestamp": "9/23/2026, 9:45:00 AM",
+      "notes": "Updated Rack 2 Shelf C physical audit: Box BOX C-001, Qty 4."
+    },
     {
       "id": "TXN-1790079003320",
       "componentId": "COMP-8993",
