@@ -1200,7 +1200,7 @@ class App {
 
   handleShelfSelect(rackId, shelfId) {
     if (shelfId === null) {
-      this.selectedRackId = rackId;
+      this.selectedRackId = null;
       this.selectedShelfId = null;
       this.selectedBoxId = null;
     } else {
@@ -1208,11 +1208,16 @@ class App {
       this.selectedShelfId = shelfId;
       this.selectedBoxId = null;
     }
+
+    if (shelfId && this.currentViewMode === "racks") {
+      this.setViewMode("split");
+    }
+
     this.refreshApp();
 
-    if (shelfId && window.innerWidth <= 768) {
+    if (shelfId) {
       const compPanel = document.getElementById("components-panel");
-      if (compPanel) {
+      if (compPanel && window.innerWidth <= 768) {
         compPanel.scrollIntoView({ behavior: "smooth", block: "start" });
       }
     }
@@ -1264,28 +1269,34 @@ class App {
         (c.tags && c.tags.some(t => t.toLowerCase().includes(q))) ||
         (c.compatibleComponents && c.compatibleComponents.some(cc => cc.toLowerCase().includes(q)))
       );
-
-      if (viewTitle) viewTitle.innerHTML = `Search Results for "<span class="primary-text" style="color:var(--primary); font-weight:700;">${this.searchQuery}</span>"`;
-
-      if (activeFiltersBar && activeLocText) {
-        activeFiltersBar.classList.remove("hidden");
-        activeLocText.innerText = `Global Search: "${this.searchQuery}" (Searching All Shelves & Boxes)`;
-      }
-    } else {
-      if (viewTitle) {
-        viewTitle.innerText = "All Components (59 Items)";
-      }
-
-      if (activeFiltersBar) {
-        activeFiltersBar.classList.add("hidden");
-      }
     }
 
+    // 1. Filter by Selected Shelf (when user clicks on a shelf in Rack Viewer)
+    if (this.selectedShelfId !== null) {
+      const targetRackId = Number(this.selectedRackId);
+      const targetShelfId = Number(this.selectedShelfId);
+      components = components.filter(c => 
+        Number(c.rackId) === targetRackId && 
+        (Number(c.shelfId) === targetShelfId || (targetShelfId === 1 && String(c.shelfId || "").trim().toLowerCase() === "screws"))
+      );
+    } else if (this.locationFilter !== "ALL") {
+      const rackNum = this.locationFilter === "RACK_1" ? 1 : (this.locationFilter === "RACK_2" ? 2 : (this.locationFilter === "RACK_3" ? 3 : Number(this.locationFilter.replace("RACK_", ""))));
+      components = components.filter(c => Number(c.rackId) === Number(rackNum));
+    }
+
+    // 2. Filter by Selected Box (if a specific box is selected)
+    if (this.selectedBoxId !== null) {
+      const targetBox = String(this.selectedBoxId).trim().toUpperCase();
+      components = components.filter(c => String(c.boxId || "").trim().toUpperCase() === targetBox);
+    }
+
+    // 3. Filter by Category
     if (this.categoryFilter !== "ALL") {
       const targetCat = this.categoryFilter.trim().toLowerCase();
       components = components.filter(c => (c.category || "").trim().toLowerCase() === targetCat);
     }
 
+    // 4. Filter by Stock
     if (this.stockFilter !== "ALL") {
       if (this.stockFilter === "IN_STOCK") {
         components = components.filter(c => c.quantity > c.minQuantity);
@@ -1296,9 +1307,41 @@ class App {
       }
     }
 
-    if (this.locationFilter !== "ALL") {
+    // Dynamic Header Title & Active Filters Bar UI
+    if (this.searchQuery) {
+      if (viewTitle) viewTitle.innerHTML = `Search Results for "<span class="primary-text" style="color:var(--primary); font-weight:700;">${this.searchQuery}</span>"`;
+      if (activeFiltersBar && activeLocText) {
+        activeFiltersBar.classList.remove("hidden");
+        activeLocText.innerText = `Global Search: "${this.searchQuery}" (${components.length} found)`;
+      }
+    } else if (this.selectedShelfId !== null) {
+      const shelfName = (typeof StorageService !== "undefined" && StorageService.formatRackShelf)
+        ? StorageService.formatRackShelf(this.selectedRackId, this.selectedShelfId)
+        : `Rack ${this.selectedRackId} › Shelf ${this.selectedShelfId}`;
+      if (viewTitle) {
+        viewTitle.innerHTML = `Shelf Components: <span class="primary-text" style="color:var(--primary); font-weight:700;">${shelfName}</span>`;
+      }
+      if (activeFiltersBar && activeLocText) {
+        activeFiltersBar.classList.remove("hidden");
+        activeLocText.innerHTML = `Shelf Filter: <strong>${shelfName}</strong> (${components.length} ${components.length === 1 ? 'component' : 'components'})`;
+      }
+    } else if (this.locationFilter !== "ALL") {
       const rackNum = this.locationFilter === "RACK_1" ? 1 : (this.locationFilter === "RACK_2" ? 2 : (this.locationFilter === "RACK_3" ? 3 : Number(this.locationFilter.replace("RACK_", ""))));
-      components = components.filter(c => Number(c.rackId) === Number(rackNum));
+      const rName = (typeof StorageService !== "undefined" && StorageService.getRackName) ? StorageService.getRackName(rackNum) : `Rack ${rackNum}`;
+      if (viewTitle) {
+        viewTitle.innerHTML = `Components in <span class="primary-text" style="color:var(--primary); font-weight:700;">${rName}</span>`;
+      }
+      if (activeFiltersBar && activeLocText) {
+        activeFiltersBar.classList.remove("hidden");
+        activeLocText.innerHTML = `Location Filter: <strong>${rName}</strong> (${components.length} items)`;
+      }
+    } else {
+      if (viewTitle) {
+        viewTitle.innerText = "All Components";
+      }
+      if (activeFiltersBar) {
+        activeFiltersBar.classList.add("hidden");
+      }
     }
 
     components.sort((a, b) => {

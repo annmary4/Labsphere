@@ -2,18 +2,18 @@
    LabSphere Service Worker - Offline Cache & PWA Support
    ============================================================ */
 
-const CACHE_NAME = 'labsphere-13710_rack3_minirack_edit_details';
+const CACHE_NAME = 'labsphere-13720_shelf_click_filtering';
 const ASSETS_TO_CACHE = [
   '/Labsphere/',
   '/Labsphere/index.html',
-  '/Labsphere/css/styles.css?v=13710_rack3_minirack_edit_details',
-  '/Labsphere/js/app.js?v=13710_rack3_minirack_edit_details',
-  '/Labsphere/js/types.js?v=13710_rack3_minirack_edit_details',
-  '/Labsphere/js/initialData.js?v=13710_rack3_minirack_edit_details',
-  '/Labsphere/js/storage.js?v=13710_rack3_minirack_edit_details',
-  '/Labsphere/js/rackViewer.js?v=13710_rack3_minirack_edit_details',
-  '/Labsphere/js/componentsView.js?v=13710_rack3_minirack_edit_details',
-  '/Labsphere/js/modalManager.js?v=13710_rack3_minirack_edit_details',
+  '/Labsphere/css/styles.css?v=13720_shelf_click_filtering',
+  '/Labsphere/js/app.js?v=13720_shelf_click_filtering',
+  '/Labsphere/js/types.js?v=13720_shelf_click_filtering',
+  '/Labsphere/js/initialData.js?v=13720_shelf_click_filtering',
+  '/Labsphere/js/storage.js?v=13720_shelf_click_filtering',
+  '/Labsphere/js/rackViewer.js?v=13720_shelf_click_filtering',
+  '/Labsphere/js/componentsView.js?v=13720_shelf_click_filtering',
+  '/Labsphere/js/modalManager.js?v=13720_shelf_click_filtering',
   '/Labsphere/icons/icon-192.png',
   '/Labsphere/icons/icon-512.png',
   '/Labsphere/manifest.json'

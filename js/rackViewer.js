@@ -180,12 +180,13 @@ class RackViewer {
 
         shelvesHtml += `
           <div class="shelf-row nested-shelf-accordion ${isShelfExpanded ? 'is-expanded' : 'is-collapsed'} ${isShelfSelected ? 'selected' : ''}" data-rack-id="${rack.id}" data-shelf-id="${shelfNum}" data-shelf-key="${shelfKey}">
-            <div class="shelf-header shelf-accordion-trigger" style="cursor:pointer; user-select:none;">
+            <div class="shelf-header shelf-accordion-trigger" style="cursor:pointer; user-select:none; ${isShelfSelected ? 'background:rgba(56,189,248,0.18); border-radius:6px; padding:6px 8px;' : ''}" title="Click to display only components on this shelf">
               <div style="display:flex; align-items:center; gap:8px;">
-                <span class="shelf-chevron" style="display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; border-radius:4px; background:rgba(56,189,248,0.12); color:var(--primary); font-size:0.75rem; transition:transform 0.2s ease; transform:${isShelfExpanded ? 'rotate(0deg)' : 'rotate(-90deg)'};">
+                <span class="shelf-chevron" style="display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; border-radius:4px; background:rgba(56,189,248,0.12); color:var(--primary); font-size:0.75rem; transition:transform 0.2s ease; transform:${isShelfExpanded ? 'rotate(0deg)' : 'rotate(-90deg)'};" title="${isShelfExpanded ? 'Collapse' : 'Expand'} boxes">
                   <i data-lucide="${isShelfExpanded ? 'chevron-down' : 'chevron-right'}"></i>
                 </span>
-                <span class="shelf-letter font-bold" style="font-size:0.85rem; color:var(--text-main);">${shelfHeaderTitle}</span>
+                <span class="shelf-letter font-bold" style="font-size:0.85rem; color:${isShelfSelected ? 'var(--primary)' : 'var(--text-main)'};">${shelfHeaderTitle}</span>
+                ${isShelfSelected ? '<span style="background:var(--primary); color:#0f172a; font-weight:800; font-size:0.65rem; padding:2px 8px; border-radius:10px;">ACTIVE FILTER</span>' : ''}
               </div>
               <div style="display:flex; align-items:center; gap:6px;">
                 <span class="shelf-count text-muted" style="font-size:0.7rem;">${shelfBoxes.length} Boxes • ${shelfComps.length} Components</span>
@@ -321,49 +322,48 @@ class RackViewer {
             e.preventDefault();
             if (e.target.closest(".btn-print-shelf-qr")) return;
 
-            const contentEl = shelfEl.querySelector(".shelf-accordion-content");
-            const chevronEl = shelfEl.querySelector(".shelf-chevron");
-            const isCurrentlyExpanded = shelfEl.classList.contains("is-expanded") || RackViewer.expandedShelfKeys.has(sKey);
+            // If user clicked the chevron icon specifically, toggle accordion collapse/expand without changing component selection
+            if (e.target.closest(".shelf-chevron")) {
+              const contentEl = shelfEl.querySelector(".shelf-accordion-content");
+              const chevronEl = shelfEl.querySelector(".shelf-chevron");
+              const isCurrentlyExpanded = RackViewer.expandedShelfKeys.has(sKey);
 
-            if (isCurrentlyExpanded) {
-              // Collapse Shelf
-              RackViewer.expandedShelfKeys.delete(sKey);
-              shelfEl.classList.remove("is-expanded");
-              shelfEl.classList.add("is-collapsed");
-              if (contentEl) contentEl.style.display = "none";
-              if (chevronEl) {
-                chevronEl.style.transform = "rotate(-90deg)";
-                chevronEl.innerHTML = `<i data-lucide="chevron-right"></i>`;
+              if (isCurrentlyExpanded) {
+                RackViewer.expandedShelfKeys.delete(sKey);
+                shelfEl.classList.remove("is-expanded");
+                shelfEl.classList.add("is-collapsed");
+                if (contentEl) contentEl.style.display = "none";
+                if (chevronEl) {
+                  chevronEl.style.transform = "rotate(-90deg)";
+                  chevronEl.innerHTML = `<i data-lucide="chevron-right"></i>`;
+                }
+              } else {
+                RackViewer.expandedShelfKeys.add(sKey);
+                shelfEl.classList.remove("is-collapsed");
+                shelfEl.classList.add("is-expanded");
+                if (contentEl) contentEl.style.display = "flex";
+                if (chevronEl) {
+                  chevronEl.style.transform = "rotate(0deg)";
+                  chevronEl.innerHTML = `<i data-lucide="chevron-down"></i>`;
+                }
               }
+              if (window.lucide) window.lucide.createIcons();
+              return;
+            }
+
+            // Clicked anywhere on the shelf row / header:
+            // Check if this shelf was already selected
+            const isAlreadySelected = (Number(selectedRackId) === rId && Number(selectedShelfId) === sId);
+
+            if (isAlreadySelected) {
+              // Clicked again -> Toggle off / Deselect shelf filter
               if (onShelfClick) onShelfClick(rId, null);
             } else {
-              // Close all other shelves first so ONLY this clicked shelf is expanded!
-              document.querySelectorAll(".shelf-row").forEach(otherShelfEl => {
-                const otherKey = otherShelfEl.getAttribute("data-shelf-key");
-                RackViewer.expandedShelfKeys.delete(otherKey);
-                otherShelfEl.classList.remove("is-expanded");
-                otherShelfEl.classList.add("is-collapsed");
-                const otherContent = otherShelfEl.querySelector(".shelf-accordion-content");
-                const otherChevron = otherShelfEl.querySelector(".shelf-chevron");
-                if (otherContent) otherContent.style.display = "none";
-                if (otherChevron) {
-                  otherChevron.style.transform = "rotate(-90deg)";
-                  otherChevron.innerHTML = `<i data-lucide="chevron-right"></i>`;
-                }
-              });
-
-              // Expand ONLY this shelf
+              // Select shelf & ensure both this shelf and its rack are expanded
               RackViewer.expandedShelfKeys.add(sKey);
-              shelfEl.classList.remove("is-collapsed");
-              shelfEl.classList.add("is-expanded");
-              if (contentEl) contentEl.style.display = "flex";
-              if (chevronEl) {
-                chevronEl.style.transform = "rotate(0deg)";
-                chevronEl.innerHTML = `<i data-lucide="chevron-down"></i>`;
-              }
+              RackViewer.expandedRackIds.add(rId);
               if (onShelfClick) onShelfClick(rId, sId);
             }
-            if (window.lucide) window.lucide.createIcons();
           });
         }
       });
