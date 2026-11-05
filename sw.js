@@ -2,18 +2,18 @@
    LabSphere Service Worker - Offline Cache & PWA Support
    ============================================================ */
 
-const CACHE_NAME = 'labsphere-13600_bulletproof_refresh_persistence';
+const CACHE_NAME = 'labsphere-13700_screws_category_update';
 const ASSETS_TO_CACHE = [
   '/Labsphere/',
   '/Labsphere/index.html',
-  '/Labsphere/css/styles.css?v=13475_user_manual_locations',
-  '/Labsphere/js/app.js?v=13475_user_manual_locations',
-  '/Labsphere/js/types.js?v=13475_user_manual_locations',
-  '/Labsphere/js/initialData.js?v=13475_user_manual_locations',
-  '/Labsphere/js/storage.js?v=13475_user_manual_locations',
-  '/Labsphere/js/rackViewer.js?v=13475_user_manual_locations',
-  '/Labsphere/js/componentsView.js?v=13475_user_manual_locations',
-  '/Labsphere/js/modalManager.js?v=13475_user_manual_locations',
+  '/Labsphere/css/styles.css?v=13700_screws_category_update',
+  '/Labsphere/js/app.js?v=13700_screws_category_update',
+  '/Labsphere/js/types.js?v=13700_screws_category_update',
+  '/Labsphere/js/initialData.js?v=13700_screws_category_update',
+  '/Labsphere/js/storage.js?v=13700_screws_category_update',
+  '/Labsphere/js/rackViewer.js?v=13700_screws_category_update',
+  '/Labsphere/js/componentsView.js?v=13700_screws_category_update',
+  '/Labsphere/js/modalManager.js?v=13700_screws_category_update',
   '/Labsphere/icons/icon-192.png',
   '/Labsphere/icons/icon-512.png',
   '/Labsphere/manifest.json'

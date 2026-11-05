@@ -4846,25 +4846,43 @@ window.openComponentEditDialog = function (compId) {
     color: white !important;
   `;
 
-  const catOptions = [
+  const catSet = new Set([
     "Microcontrollers & Dev Boards",
     "Sensors & Modules",
-    "Power & Energy",
-    "Connectors & Cabling",
     "Passive Components",
-    "Switches & Controls",
+    "Integrated Circuits (ICs)",
+    "Power & Regulators",
+    "Power & Energy",
     "Wireless & Comms",
+    "Optoelectronics & Displays",
+    "Displays & Indicators",
+    "Connectors & Cabling",
     "Hardware & Tools",
     "Screws",
+    "Motors & Drivers",
     "Actuators & Motors",
-    "Displays & Indicators",
-    "IC & Semiconductors",
-    "Prototyping & Breadboards"
-  ];
-  if (c.category && !catOptions.includes(c.category)) {
-    catOptions.push(c.category);
+    "Switches & Controls",
+    "General Components",
+    "Prototyping & Breadboards",
+    "IC & Semiconductors"
+  ]);
+
+  const formCat = document.getElementById("form-category");
+  if (formCat) {
+    Array.from(formCat.options).forEach(opt => {
+      if (opt.value && opt.value !== "ALL") catSet.add(opt.value);
+    });
+  }
+  if (typeof StorageService !== "undefined" && StorageService.getComponents) {
+    StorageService.getComponents().forEach(item => {
+      if (item.category) catSet.add(item.category);
+    });
+  }
+  if (c.category) {
+    catSet.add(c.category);
   }
 
+  const catOptions = Array.from(catSet);
   const catHtml = catOptions.map(cat => `<option value="${cat}" ${c.category === cat ? 'selected' : ''}>${cat}</option>`).join('');
 
   content.innerHTML = `
@@ -4912,7 +4930,7 @@ window.openComponentEditDialog = function (compId) {
         </div>
         <div style="width: 85px;">
           <label style="display: block; font-size: 0.78rem; font-weight: 700; color: #94a3b8; margin-bottom: 4px;">Rack #</label>
-          <input type="number" id="dedit-rack" min="1" max="2" value="${c.rackId}" required style="width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: white; font-size: 0.9rem; box-sizing: border-box; outline: none;" />
+          <input type="number" id="dedit-rack" min="1" max="3" value="${c.rackId}" required style="width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: white; font-size: 0.9rem; box-sizing: border-box; outline: none;" />
         </div>
         <div style="width: 85px;">
           <label style="display: block; font-size: 0.78rem; font-weight: 700; color: #94a3b8; margin-bottom: 4px;">Shelf #</label>
