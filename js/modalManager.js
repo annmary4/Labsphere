@@ -4922,19 +4922,24 @@ window.openComponentEditDialog = function (compId) {
         </div>
       </div>
 
-      <!-- Row 3: Move Box & Location (Rack #, Shelf #, Stack Layer) -->
+      <!-- Row 3: Move Box & Location (Rack, Shelf, Stack Layer) -->
       <div style="display: flex; gap: 12px; flex-wrap: wrap; background: #1e293b; padding: 12px; border-radius: 8px; border: 1px solid #334155;">
         <div style="flex: 1; min-width: 140px;">
           <label style="display: block; font-size: 0.78rem; font-weight: 700; color: #38bdf8; margin-bottom: 4px;">Box Relocate Box ID *</label>
           <input type="text" id="dedit-box" value="${c.boxId}" required style="width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid #38bdf8; background: #0f172a; color: #38bdf8; font-weight: 800; font-size: 0.9rem; box-sizing: border-box; outline: none;" />
         </div>
-        <div style="width: 85px;">
-          <label style="display: block; font-size: 0.78rem; font-weight: 700; color: #94a3b8; margin-bottom: 4px;">Rack #</label>
-          <input type="number" id="dedit-rack" min="1" max="3" value="${c.rackId}" required style="width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: white; font-size: 0.9rem; box-sizing: border-box; outline: none;" />
+        <div style="flex: 1; min-width: 150px;">
+          <label style="display: block; font-size: 0.78rem; font-weight: 700; color: #94a3b8; margin-bottom: 4px;">Rack *</label>
+          <select id="dedit-rack" required style="width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: white; font-size: 0.9rem; box-sizing: border-box; outline: none;">
+            <option value="1" ${Number(c.rackId) === 1 ? 'selected' : ''}>Rack 1 (Workbench)</option>
+            <option value="2" ${Number(c.rackId) === 2 ? 'selected' : ''}>Rack 2 (Storage)</option>
+            <option value="3" ${Number(c.rackId) === 3 ? 'selected' : ''}>Rack 3: Mini Rack (Screws)</option>
+          </select>
         </div>
-        <div style="width: 85px;">
-          <label style="display: block; font-size: 0.78rem; font-weight: 700; color: #94a3b8; margin-bottom: 4px;">Shelf #</label>
-          <input type="number" id="dedit-shelf" min="1" max="6" value="${c.shelfId}" required style="width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: white; font-size: 0.9rem; box-sizing: border-box; outline: none;" />
+        <div style="flex: 1; min-width: 150px;">
+          <label style="display: block; font-size: 0.78rem; font-weight: 700; color: #94a3b8; margin-bottom: 4px;">Shelf *</label>
+          <select id="dedit-shelf" required style="width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: white; font-size: 0.9rem; box-sizing: border-box; outline: none;">
+          </select>
         </div>
         <div style="flex: 1; min-width: 150px;">
           <label style="display: block; font-size: 0.78rem; font-weight: 700; color: #94a3b8; margin-bottom: 4px;">Sub-location / Layer</label>
@@ -4985,6 +4990,15 @@ window.openComponentEditDialog = function (compId) {
 
   backdrop.appendChild(content);
   document.body.appendChild(backdrop);
+
+  // Initialize shelf dropdown based on currently selected rack
+  ModalManager.updateShelfDropdown("dedit-rack", "dedit-shelf", c.shelfId || 1);
+  const deditRackSelect = content.querySelector("#dedit-rack");
+  if (deditRackSelect) {
+    deditRackSelect.addEventListener("change", () => {
+      ModalManager.updateShelfDropdown("dedit-rack", "dedit-shelf", 1);
+    });
+  }
 
   const closeBtn = content.querySelector("#close-edit-dialog");
   const cancelBtn = content.querySelector("#cancel-edit-dialog");
@@ -5039,6 +5053,13 @@ window.openComponentEditDialog = function (compId) {
         target.boxId = newBox;
         target.rackId = newRack;
         target.shelfId = newShelf;
+        if (newRack === 3) {
+          target.roomName = "Room 101 - Prototyping Hall (Hardware Station)";
+        } else if (newRack === 2) {
+          target.roomName = "Room 102 - Storage Bay";
+        } else {
+          target.roomName = "Room 101 - Prototyping Hall";
+        }
         target.stackLayer = document.getElementById("dedit-stack").value.trim() || target.stackLayer;
 
         target.category = document.getElementById("dedit-category").value;
@@ -5053,7 +5074,9 @@ window.openComponentEditDialog = function (compId) {
         StorageService.logTransaction(target.id, target.name, "EDIT_DETAILS", target.quantity - prevQty, prevQty, target.quantity, "Updated details, stock qty, rate, and box location.");
 
         backdrop.remove();
-        alert(`Success: Successfully updated '${target.name}'!\n\nNew Box: ${target.boxId} (Rack ${target.rackId}, Shelf ${target.shelfId})\nStock Qty: ${target.quantity}\nUnit Rate: ₹${target.unitPrice}`);
+        const rackLabel = newRack === 3 ? "Rack 3 (Mini Rack)" : `Rack ${target.rackId}`;
+        const shelfLabel = (typeof StorageService !== "undefined" && StorageService.getShelfName) ? StorageService.getShelfName(target.rackId, target.shelfId) : `Shelf ${target.shelfId}`;
+        alert(`Success: Successfully updated '${target.name}'!\n\nNew Location: ${target.boxId} (${rackLabel}, ${shelfLabel})\nStock Qty: ${target.quantity}\nUnit Rate: ₹${target.unitPrice}`);
 
         if (window.app && window.app.refreshApp) window.app.refreshApp();
       }

@@ -2,18 +2,18 @@
    LabSphere Service Worker - Offline Cache & PWA Support
    ============================================================ */
 
-const CACHE_NAME = 'labsphere-13700_screws_category_update';
+const CACHE_NAME = 'labsphere-13710_rack3_minirack_edit_details';
 const ASSETS_TO_CACHE = [
   '/Labsphere/',
   '/Labsphere/index.html',
-  '/Labsphere/css/styles.css?v=13700_screws_category_update',
-  '/Labsphere/js/app.js?v=13700_screws_category_update',
-  '/Labsphere/js/types.js?v=13700_screws_category_update',
-  '/Labsphere/js/initialData.js?v=13700_screws_category_update',
-  '/Labsphere/js/storage.js?v=13700_screws_category_update',
-  '/Labsphere/js/rackViewer.js?v=13700_screws_category_update',
-  '/Labsphere/js/componentsView.js?v=13700_screws_category_update',
-  '/Labsphere/js/modalManager.js?v=13700_screws_category_update',
+  '/Labsphere/css/styles.css?v=13710_rack3_minirack_edit_details',
+  '/Labsphere/js/app.js?v=13710_rack3_minirack_edit_details',
+  '/Labsphere/js/types.js?v=13710_rack3_minirack_edit_details',
+  '/Labsphere/js/initialData.js?v=13710_rack3_minirack_edit_details',
+  '/Labsphere/js/storage.js?v=13710_rack3_minirack_edit_details',
+  '/Labsphere/js/rackViewer.js?v=13710_rack3_minirack_edit_details',
+  '/Labsphere/js/componentsView.js?v=13710_rack3_minirack_edit_details',
+  '/Labsphere/js/modalManager.js?v=13710_rack3_minirack_edit_details',
   '/Labsphere/icons/icon-192.png',
   '/Labsphere/icons/icon-512.png',
   '/Labsphere/manifest.json'

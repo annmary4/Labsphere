@@ -20,7 +20,7 @@
     rel="stylesheet">
 
   <!-- CSS with cache buster -->
-  <link rel="stylesheet" href="css/styles.css?v=13700_screws_category_update">
+  <link rel="stylesheet" href="css/styles.css?v=13710_rack3_minirack_edit_details">
 
   <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -717,7 +717,7 @@
             <option value="ALL">All Locations</option>
             <option value="RACK_1">Rack 1 (Workbench)</option>
             <option value="RACK_2">Rack 2 (Storage)</option>
-            <option value="RACK_3">Mini Rack (Hardware & Screws)</option>
+            <option value="RACK_3">Rack 3: Mini Rack (Hardware & Screws)</option>
           </select>
         </div>
 
@@ -960,7 +960,7 @@
                   <select id="form-rack" required>
                     <option value="1">Rack 1 (Workbench)</option>
                     <option value="2">Rack 2 (Storage)</option>
-                    <option value="3">Mini Rack (Hardware & Screws)</option>
+                    <option value="3">Rack 3: Mini Rack (Hardware & Screws)</option>
                   </select>
                 </div>
                 <div class="form-group col-3">
@@ -1601,7 +1601,7 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
             <select id="new-box-rack">
               <option value="1">Rack 1</option>
               <option value="2">Rack 2</option>
-              <option value="3">Mini Rack</option>
+              <option value="3">Rack 3 (Mini Rack)</option>
             </select>
             <select id="new-box-shelf">
               <option value="1">Shelf A</option>
@@ -2178,14 +2178,14 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
   </div>
 
   <!-- JavaScript App Logic with Cache Busters -->
-  <script src="js/types.js?v=13700_screws_category_update"></script>
-  <script src="js/initialData.js?v=13700_screws_category_update"></script>
-  <script src="js/githubSync.js?v=13700_screws_category_update"></script>
-  <script src="js/storage.js?v=13700_screws_category_update"></script>
-  <script src="js/rackViewer.js?v=13700_screws_category_update"></script>
-  <script src="js/componentsView.js?v=13700_screws_category_update"></script>
-  <script src="js/modalManager.js?v=13700_screws_category_update"></script>
-  <script src="js/app.js?v=13700_screws_category_update"></script>
+  <script src="js/types.js?v=13710_rack3_minirack_edit_details"></script>
+  <script src="js/initialData.js?v=13710_rack3_minirack_edit_details"></script>
+  <script src="js/githubSync.js?v=13710_rack3_minirack_edit_details"></script>
+  <script src="js/storage.js?v=13710_rack3_minirack_edit_details"></script>
+  <script src="js/rackViewer.js?v=13710_rack3_minirack_edit_details"></script>
+  <script src="js/componentsView.js?v=13710_rack3_minirack_edit_details"></script>
+  <script src="js/modalManager.js?v=13710_rack3_minirack_edit_details"></script>
+  <script src="js/app.js?v=13710_rack3_minirack_edit_details"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       if (window.lucide) {
@@ -2568,7 +2568,7 @@ Submersible Water Pump, 1" class="bom-textarea"></textarea>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/Labsphere/sw.js?v=13700_screws_category_update', { scope: '/Labsphere/' })
+        navigator.serviceWorker.register('/Labsphere/sw.js?v=13710_rack3_minirack_edit_details', { scope: '/Labsphere/' })
           .then(reg => {
             console.log('[LabSphere PWA] Service Worker registered:', reg.scope);
             if (reg.update) reg.update();
