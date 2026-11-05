@@ -7,7 +7,7 @@ class RackViewer {
   // Static set to persist expanded racks state (Racks start closed by default on load)
   static expandedRackIds = new Set();
   // Static set to persist expanded shelves state (Shelves & boxes open by default when rack is expanded)
-  static expandedShelfKeys = new Set(["1_1", "1_2", "1_3", "1_4", "1_5", "1_6", "2_1", "2_2", "2_3", "2_4", "2_5"]);
+  static expandedShelfKeys = new Set(["1_1", "1_2", "1_3", "1_4", "1_5", "1_6", "2_1", "2_2", "2_3", "2_4", "2_5", "3_1"]);
 
   static render(options) {
     const {
@@ -64,7 +64,7 @@ class RackViewer {
       rackCard.className = `rack-card vertical-cabinet-frame nested-rack-accordion ${isExpanded ? 'is-expanded' : 'is-collapsed'}`;
       rackCard.setAttribute("data-rack-id", rack.id);
 
-      const roomLabel = rack.id === 1 ? "Room 101 Prototyping" : (rack.id === 2 ? "Room 102 Storage Bay" : `Room ${100 + rack.id}`);
+      const roomLabel = rack.roomName || (rack.id === 1 ? "Room 101 Prototyping" : (rack.id === 2 ? "Room 102 Storage Bay" : (rack.id === 3 ? "Room 101 Prototyping - Hardware Station" : `Room ${100 + rack.id}`)));
       const shelfLabels = [
         "Shelf A (Top Shelf)",
         "Shelf B (Upper Shelf)",
@@ -80,10 +80,16 @@ class RackViewer {
         const isShelfSelected = Number(selectedRackId) === rackIdNum && Number(selectedShelfId) === shelfNum;
         
         // Dynamic Rack Box Synthesis: Include boxes for this rack & shelf and any box with components
-        const shelfComponents = activeComps.filter(c => Number(c.rackId) === rackIdNum && Number(c.shelfId) === shelfNum);
+        const shelfComponents = activeComps.filter(c => 
+          Number(c.rackId) === rackIdNum && 
+          (Number(c.shelfId) === shelfNum || (shelfNum === 1 && String(c.shelfId || "").trim().toLowerCase() === "screws"))
+        );
 
         const shelfBoxesMap = new Map();
-        activeBoxes.filter(b => Number(b.rackId) === rackIdNum && Number(b.shelfId) === shelfNum).forEach(b => {
+        activeBoxes.filter(b => 
+          Number(b.rackId) === rackIdNum && 
+          (Number(b.shelfId) === shelfNum || (shelfNum === 1 && String(b.shelfId || "").trim().toLowerCase() === "screws"))
+        ).forEach(b => {
           shelfBoxesMap.set(b.id, b);
         });
 
@@ -108,7 +114,7 @@ class RackViewer {
           const boxComponents = activeComps.filter(c => 
             String(c.boxId || "").trim().toUpperCase() === String(box.id || "").trim().toUpperCase() && 
             Number(c.rackId) === rackIdNum && 
-            Number(c.shelfId) === shelfNum
+            (Number(c.shelfId) === shelfNum || (shelfNum === 1 && String(c.shelfId || "").trim().toLowerCase() === "screws"))
           );
 
           const compNames = boxComponents.map(c => c.name).join(" + ");
@@ -146,9 +152,16 @@ class RackViewer {
           `;
         });
 
-        const shelfLetter = String.fromCharCode(64 + shelfNum);
-        const shelfNameLabel = `Shelf ${shelfLetter}`;
-        const shelfComps = activeComps.filter(c => Number(c.rackId) === rackIdNum && Number(c.shelfId) === shelfNum);
+        const shelfLetter = (typeof StorageService !== "undefined" && StorageService.getShelfName)
+          ? StorageService.getShelfName(rack.id, shelfNum)
+          : String.fromCharCode(64 + shelfNum);
+        const shelfNameLabel = shelfLetter.toLowerCase().startsWith("shelf") ? shelfLetter : `Shelf ${shelfLetter}`;
+        const isMiniRack = Number(rack.id) === 3 || String(rack.name || "").toLowerCase().includes("mini");
+        const shelfHeaderTitle = isMiniRack ? shelfNameLabel : `Rack ${shelfNameLabel}`;
+        const shelfComps = activeComps.filter(c => 
+          Number(c.rackId) === rackIdNum && 
+          (Number(c.shelfId) === shelfNum || (shelfNum === 1 && String(c.shelfId || "").trim().toLowerCase() === "screws"))
+        );
         const totalUnitsInShelf = shelfComps.reduce((sum, c) => sum + (Number(c.quantity) || 0), 0);
 
         let shelfCompsHtml = "";
@@ -172,12 +185,24 @@ class RackViewer {
                 <span class="shelf-chevron" style="display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; border-radius:4px; background:rgba(56,189,248,0.12); color:var(--primary); font-size:0.75rem; transition:transform 0.2s ease; transform:${isShelfExpanded ? 'rotate(0deg)' : 'rotate(-90deg)'};">
                   <i data-lucide="${isShelfExpanded ? 'chevron-down' : 'chevron-right'}"></i>
                 </span>
-                <span class="shelf-letter font-bold" style="font-size:0.85rem; color:var(--text-main);">Rack ${shelfNameLabel}</span>
+                <span class="shelf-letter font-bold" style="font-size:0.85rem; color:var(--text-main);">${shelfHeaderTitle}</span>
               </div>
               <div style="display:flex; align-items:center; gap:6px;">
                 <span class="shelf-count text-muted" style="font-size:0.7rem;">${shelfBoxes.length} Boxes • ${shelfComps.length} Components</span>
                 ${StorageService.isRole("ADMIN") ? `
                 <button class="btn btn-secondary btn-sm btn-print-shelf-qr" data-rack="${rack.id}" data-shelf="${shelfNum}" style="padding:2px 8px; font-size:0.7rem;" title="Print QR Labels for all components on ${shelfNameLabel}">
+                  <i data-lucide="printer"></i> Print Shelf QR
+                </button>` : ''}
+                ${isShelfSelected ? '<span class="active-dot" title="Active Selected Shelf"></span>' : ''}
+              </div>
+            </div>
+            <div class="boxes-grid shelf-accordion-content" style="display:${isShelfExpanded ? 'flex' : 'none'}; flex-wrap:wrap; margin-top:8px;">
+              ${boxesPillsHtml || '<span class="text-muted" style="font-size:0.75rem; font-style:italic; padding:4px 0;">No active components on this shelf.</span>'}
+              ${shelfCompsHtml}
+            </div>
+          </div>
+        `;
+      }
                   <i data-lucide="printer"></i> Print Shelf QR
                 </button>` : ''}
                 ${isShelfSelected ? '<span class="active-dot" title="Active Selected Shelf"></span>' : ''}
@@ -259,7 +284,7 @@ class RackViewer {
           if (statusBadge) statusBadge.innerText = "Expanded";
 
           // When expanding a rack, collapse all shelves inside it so only shelf headers are shown
-          for (let s = 1; s <= 5; s++) {
+          for (let s = 1; s <= (rack.shelvesCount || 6); s++) {
             RackViewer.expandedShelfKeys.delete(`${rackIdNum}_${s}`);
           }
           rackCard.querySelectorAll(".shelf-row").forEach(shelfEl => {

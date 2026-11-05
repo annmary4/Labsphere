@@ -176,10 +176,45 @@ class StorageService {
         let existingBoxes = this.getBoxes();
         if (!existingBoxes || existingBoxes.length === 0) {
           localStorage.setItem(STORAGE_KEYS.BOXES, JSON.stringify(INITIAL_BOXES));
+        } else {
+          let updatedBoxes = false;
+          INITIAL_BOXES.forEach(ib => {
+            if (!existingBoxes.some(b => String(b.id).toUpperCase() === String(ib.id).toUpperCase())) {
+              existingBoxes.push(ib);
+              updatedBoxes = true;
+            }
+          });
+          if (updatedBoxes) {
+            localStorage.setItem(STORAGE_KEYS.BOXES, JSON.stringify(existingBoxes));
+          }
         }
       }
       if (typeof INITIAL_RACKS !== "undefined" && Array.isArray(INITIAL_RACKS) && INITIAL_RACKS.length > 0) {
-        localStorage.setItem(STORAGE_KEYS.RACKS, JSON.stringify(INITIAL_RACKS));
+        let existingRacks = this.getRacks();
+        if (!existingRacks || existingRacks.length === 0) {
+          localStorage.setItem(STORAGE_KEYS.RACKS, JSON.stringify(INITIAL_RACKS));
+        } else {
+          let updatedRacks = false;
+          INITIAL_RACKS.forEach(ir => {
+            const found = existingRacks.find(r => Number(r.id) === Number(ir.id) || String(r.name).toLowerCase() === String(ir.name).toLowerCase());
+            if (!found) {
+              existingRacks.push(ir);
+              updatedRacks = true;
+            } else {
+              if (ir.shelves && !found.shelves) {
+                found.shelves = ir.shelves;
+                updatedRacks = true;
+              }
+              if (ir.roomName && !found.roomName) {
+                found.roomName = ir.roomName;
+                updatedRacks = true;
+              }
+            }
+          });
+          if (updatedRacks) {
+            localStorage.setItem(STORAGE_KEYS.RACKS, JSON.stringify(existingRacks));
+          }
+        }
       }
       // Preserve all registered user accounts on version updates
       const existingUsers = this.getUsers();
@@ -2622,6 +2657,18 @@ class StorageService {
       if (data) {
         const parsed = JSON.parse(data);
         if (Array.isArray(parsed) && parsed.length > 0) {
+          if (typeof INITIAL_BOXES !== "undefined" && Array.isArray(INITIAL_BOXES)) {
+            let updated = false;
+            INITIAL_BOXES.forEach(ib => {
+              if (!parsed.some(b => String(b.id).toUpperCase() === String(ib.id).toUpperCase())) {
+                parsed.push(ib);
+                updated = true;
+              }
+            });
+            if (updated) {
+              this.saveBoxes(parsed);
+            }
+          }
           return parsed;
         }
       }
@@ -2640,9 +2687,31 @@ class StorageService {
       if (data) {
         const parsed = JSON.parse(data);
         if (Array.isArray(parsed) && parsed.length > 0) {
+          let modified = false;
           const rack2 = parsed.find(r => Number(r.id) === 2);
           if (rack2 && rack2.shelvesCount !== 5) {
             rack2.shelvesCount = 5;
+            modified = true;
+          }
+          if (typeof INITIAL_RACKS !== "undefined" && Array.isArray(INITIAL_RACKS)) {
+            INITIAL_RACKS.forEach(ir => {
+              const found = parsed.find(r => Number(r.id) === Number(ir.id) || String(r.name).toLowerCase() === String(ir.name).toLowerCase());
+              if (!found) {
+                parsed.push(ir);
+                modified = true;
+              } else {
+                if (ir.shelves && !found.shelves) {
+                  found.shelves = ir.shelves;
+                  modified = true;
+                }
+                if (ir.roomName && !found.roomName) {
+                  found.roomName = ir.roomName;
+                  modified = true;
+                }
+              }
+            });
+          }
+          if (modified) {
             this.saveRacks(parsed);
           }
           return parsed;
@@ -2650,6 +2719,43 @@ class StorageService {
       }
     } catch (e) {}
     return (typeof INITIAL_RACKS !== "undefined" && Array.isArray(INITIAL_RACKS)) ? INITIAL_RACKS : [];
+  }
+
+  static getShelfName(rackId, shelfId) {
+    const racks = this.getRacks();
+    const rack = racks.find(r => Number(r.id) === Number(rackId) || String(r.name).toLowerCase() === String(rackId).toLowerCase());
+    if (rack && Array.isArray(rack.shelves)) {
+      const s = rack.shelves.find(x => Number(x.id) === Number(shelfId) || String(x.name).toLowerCase() === String(shelfId).toLowerCase());
+      if (s && s.name) return s.name;
+    }
+    if (rack && rack.shelfNames && rack.shelfNames[shelfId]) {
+      return rack.shelfNames[shelfId];
+    }
+    if (Number(rackId) === 3 || (rack && String(rack.name).toLowerCase().includes("mini"))) {
+      if (Number(shelfId) === 1 || String(shelfId).toLowerCase() === "screws" || !shelfId) {
+        return "Screws";
+      }
+    }
+    const num = Number(shelfId);
+    if (!isNaN(num) && num >= 1 && num <= 26) {
+      return String.fromCharCode(64 + num);
+    }
+    return String(shelfId || "A");
+  }
+
+  static getRackName(rackId) {
+    const racks = this.getRacks();
+    const rack = racks.find(r => Number(r.id) === Number(rackId) || String(r.name).toLowerCase() === String(rackId).toLowerCase());
+    if (rack && rack.name) return rack.name;
+    if (Number(rackId) === 3) return "Mini Rack";
+    return `Rack ${rackId || 1}`;
+  }
+
+  static formatRackShelf(rackId, shelfId) {
+    const rName = this.getRackName(rackId);
+    const sName = this.getShelfName(rackId, shelfId);
+    const sLabel = sName.toLowerCase().startsWith("shelf") ? sName : `Shelf ${sName}`;
+    return `${rName} › ${sLabel}`;
   }
 
   static saveRacks(racks) {

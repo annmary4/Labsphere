@@ -5516,6 +5516,12 @@ const INITIAL_BOXES = [
     "rackId": 2,
     "shelfId": 3,
     "label": "BOX C-021: 2 channel 5V Relay"
+  },
+  {
+    "id": "BOX S-001",
+    "rackId": 3,
+    "shelfId": 1,
+    "label": "BOX S-001: Screws & Fasteners"
   }
 ];
 
@@ -5531,6 +5537,20 @@ const INITIAL_RACKS = [
     "name": "Rack 2",
     "subtitle": "Wireless Comms, Displays & Traffic Lights, Batteries & Power, Hardware",
     "shelvesCount": 5
+  },
+  {
+    "id": 3,
+    "name": "Mini Rack",
+    "subtitle": "Fasteners, Screws, Bolts & Mechanical Hardware",
+    "roomName": "Room 101 - Prototyping Hall (Hardware Station)",
+    "shelvesCount": 1,
+    "shelves": [
+      {
+        "id": 1,
+        "name": "Screws",
+        "label": "Shelf Screws"
+      }
+    ]
   }
 ];
 

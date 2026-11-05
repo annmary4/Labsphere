@@ -97,6 +97,7 @@ class App {
         if (s === null || s === undefined) return null;
         if (typeof s === "number") return s;
         const str = String(s).trim().toUpperCase();
+        if (str === "SCREWS" || str === "SCREW") return 1;
         if (/^[A-Z]$/.test(str)) return str.charCodeAt(0) - 64;
         const num = parseInt(str, 10);
         return isNaN(num) ? null : num;
@@ -120,7 +121,7 @@ class App {
         return;
       }
 
-      let targetRack = rackParam ? parseInt(rackParam, 10) : null;
+      let targetRack = rackParam ? (/mini/i.test(rackParam) ? 3 : parseInt(rackParam, 10)) : null;
       let targetShelf = parseShelfNum(shelfParam);
 
       window.__isQrPassportMode = true;
@@ -241,7 +242,9 @@ class App {
 
     if (!comps || comps.length === 0) {
       // Empty box or component not found
-      const shelfLetter = targetShelf ? (typeof targetShelf === "number" ? String.fromCharCode(64 + targetShelf) : targetShelf) : "N/A";
+      const rackDisplay = (typeof StorageService !== "undefined" && StorageService.getRackName) ? StorageService.getRackName(targetRack || 1) : `Rack ${targetRack || 1}`;
+      const shelfDisplay = (typeof StorageService !== "undefined" && StorageService.getShelfName) ? StorageService.getShelfName(targetRack || 1, targetShelf || 1) : (targetShelf ? String.fromCharCode(64 + targetShelf) : "N/A");
+      const shelfLetter = shelfDisplay.toLowerCase().startsWith("shelf") ? shelfDisplay : `Shelf ${shelfDisplay}`;
       const body = document.getElementById("passport-body-content");
       if (body) {
         body.innerHTML = `
@@ -252,7 +255,7 @@ class App {
             <h2 style="font-size: 1.25rem; font-weight: 800; color: #f8fafc; margin-bottom: 8px;">Box Has No Active Components</h2>
             <p style="font-size: 0.85rem; color: #94a3b8; margin-bottom: 20px;">
               Identifier: <strong style="color: #38bdf8;">${targetBoxId || "Unknown"}</strong><br>
-              Location: Rack ${targetRack || 1}, Shelf ${shelfLetter}
+              Location: ${rackDisplay}, ${shelfLetter}
             </p>
             <p style="font-size: 0.8rem; color: #64748b; margin-bottom: 24px;">
               This box is currently empty or awaiting lab restocking.
@@ -370,11 +373,11 @@ class App {
 
     // Location
     const rackEl = document.getElementById("passport-comp-rack");
-    if (rackEl) rackEl.innerText = `Rack ${c.rackId || 1}`;
+    if (rackEl) rackEl.innerText = (typeof StorageService !== "undefined" && StorageService.getRackName) ? StorageService.getRackName(c.rackId || 1) : `Rack ${c.rackId || 1}`;
 
-    const shelfLetter = typeof c.shelfId === "number" ? String.fromCharCode(64 + c.shelfId) : (c.shelfId || "A");
+    const sName = (typeof StorageService !== "undefined" && StorageService.getShelfName) ? StorageService.getShelfName(c.rackId || 1, c.shelfId || 1) : (typeof c.shelfId === "number" ? String.fromCharCode(64 + c.shelfId) : (c.shelfId || "A"));
     const shelfEl = document.getElementById("passport-comp-shelf");
-    if (shelfEl) shelfEl.innerText = `Shelf ${shelfLetter}`;
+    if (shelfEl) shelfEl.innerText = sName.toLowerCase().startsWith("shelf") ? sName : `Shelf ${sName}`;
 
     const boxEl = document.getElementById("passport-comp-box");
     if (boxEl) boxEl.innerText = c.boxId || "N/A";
@@ -384,7 +387,8 @@ class App {
 
     const pathEl = document.getElementById("passport-comp-full-path");
     if (pathEl) {
-      pathEl.innerText = `Main Robotics Lab › Rack ${c.rackId || 1} › Shelf ${shelfLetter} › ${c.boxId || "Box"}`;
+      const locPath = (typeof StorageService !== "undefined" && StorageService.formatRackShelf) ? StorageService.formatRackShelf(c.rackId || 1, c.shelfId || 1) : `Rack ${c.rackId || 1} › Shelf ${sName}`;
+      pathEl.innerText = `Main Robotics Lab › ${locPath} › ${c.boxId || "Box"}`;
     }
 
     // Inventory status
@@ -1293,7 +1297,7 @@ class App {
     }
 
     if (this.locationFilter !== "ALL") {
-      const rackNum = this.locationFilter === "RACK_1" ? 1 : 2;
+      const rackNum = this.locationFilter === "RACK_1" ? 1 : (this.locationFilter === "RACK_2" ? 2 : (this.locationFilter === "RACK_3" ? 3 : Number(this.locationFilter.replace("RACK_", ""))));
       components = components.filter(c => Number(c.rackId) === Number(rackNum));
     }
 

@@ -229,7 +229,7 @@ class ComponentsView {
         <p class="card-desc">${c.purpose || 'No purpose description available.'}</p>
 
         <div class="card-meta-tags" style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">
-          Location Rack ${c.rackId} > Shelf ${String.fromCharCode(64 + Number(c.shelfId))} ${c.subLocation || c.stackLayer ? `> ${c.subLocation || c.stackLayer}` : ''}
+          Location ${typeof StorageService !== "undefined" && StorageService.formatRackShelf ? StorageService.formatRackShelf(c.rackId, c.shelfId) : `Rack ${c.rackId} > Shelf ${String.fromCharCode(64 + Number(c.shelfId))}`} ${c.subLocation || c.stackLayer ? `> ${c.subLocation || c.stackLayer}` : ''}
         </div>
 
         <div class="card-footer" style="display:flex; align-items:center; justify-content:space-between; gap:6px; flex-wrap:wrap; margin-top:10px;">
@@ -488,7 +488,7 @@ class ComponentsView {
           </div>
         </td>
         <td class="mono">${c.partNumber || 'N/A'}</td>
-        <td class="mono">Rack ${c.rackId} > Shelf ${String.fromCharCode(64 + Number(c.shelfId))} > ${c.boxId}</td>
+        <td class="mono">${typeof StorageService !== "undefined" && StorageService.formatRackShelf ? StorageService.formatRackShelf(c.rackId, c.shelfId) : `Rack ${c.rackId} > Shelf ${String.fromCharCode(64 + Number(c.shelfId))}`} > ${c.boxId}</td>
         <td>${c.category}</td>
         <td><span class="stock-tag ${stockTagClass}">${stockLabel}</span></td>
         <td class="mono"><strong>${c.quantity}</strong> ${c.unit || 'pcs'}</td>

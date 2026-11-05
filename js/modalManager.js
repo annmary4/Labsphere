@@ -219,6 +219,26 @@ class ModalManager {
       });
     }
 
+    const formRack = document.getElementById("form-rack");
+    if (formRack) {
+      formRack.addEventListener("change", () => {
+        const rId = Number(formRack.value);
+        let roomName = "Room 101 - Prototyping Hall";
+        if (rId === 2) roomName = "Room 102 - Storage Bay";
+        else if (rId === 3) roomName = "Room 101 - Prototyping Hall (Hardware Station)";
+        const roomInput = document.getElementById("form-room-name");
+        if (roomInput) roomInput.value = roomName;
+        ModalManager.updateShelfDropdown("form-rack", "form-shelf");
+      });
+    }
+
+    const newBoxRack = document.getElementById("new-box-rack");
+    if (newBoxRack) {
+      newBoxRack.addEventListener("change", () => {
+        ModalManager.updateShelfDropdown("new-box-rack", "new-box-shelf");
+      });
+    }
+
     const saveBtn = document.getElementById("btn-save-component");
     if (saveBtn) {
       saveBtn.addEventListener("click", (e) => {
@@ -821,8 +841,9 @@ class ModalManager {
     if (components.length > 0) {
       const c = components[0];
       const lab = c.labName || "Main Robotics & Embedded Systems Lab";
-      const room = c.roomName || (c.rackId === 1 ? "Room 101 - Prototyping Hall" : "Room 102 - Storage Bay");
-      if (pathEl) pathEl.innerText = `Location ${lab} › ${room} › Rack ${c.rackId} › Shelf ${String.fromCharCode(64 + Number(c.shelfId))} › ${boxId}`;
+      const room = c.roomName || (c.rackId === 1 ? "Room 101 - Prototyping Hall" : (c.rackId === 2 ? "Room 102 - Storage Bay" : "Room 101 - Prototyping Hall (Hardware Station)"));
+      const locPath = (typeof StorageService !== "undefined" && StorageService.formatRackShelf) ? StorageService.formatRackShelf(c.rackId, c.shelfId) : `Rack ${c.rackId} › Shelf ${String.fromCharCode(64 + Number(c.shelfId))}`;
+      if (pathEl) pathEl.innerText = `Location ${lab} › ${room} › ${locPath} › ${boxId}`;
     }
 
     if (descEl) descEl.innerText = `This physical box (${boxId}) contains ${typeCount} component(s): [ ${components.map(c => c.name).join(" + ")} ]. All items inside are displayed side-by-side below:`;
@@ -976,6 +997,53 @@ class ModalManager {
     }
   }
 
+  static updateShelfDropdown(rackSelectId, shelfSelectId, selectedShelfValue = 1) {
+    const rackEl = document.getElementById(rackSelectId);
+    const shelfEl = document.getElementById(shelfSelectId);
+    if (!rackEl || !shelfEl) return;
+
+    const rackId = Number(rackEl.value);
+    shelfEl.innerHTML = "";
+
+    if (rackId === 3) {
+      const opt = document.createElement("option");
+      opt.value = "1";
+      opt.textContent = "Shelf Screws";
+      shelfEl.appendChild(opt);
+    } else if (rackId === 2) {
+      const shelves = [
+        { v: 1, label: "Shelf A (Top)" },
+        { v: 2, label: "Shelf B" },
+        { v: 3, label: "Shelf C" },
+        { v: 4, label: "Shelf D" },
+        { v: 5, label: "Shelf E (Bottom)" }
+      ];
+      shelves.forEach(s => {
+        const opt = document.createElement("option");
+        opt.value = s.v;
+        opt.textContent = s.label;
+        shelfEl.appendChild(opt);
+      });
+    } else {
+      const shelves = [
+        { v: 1, label: "Shelf A (Top)" },
+        { v: 2, label: "Shelf B" },
+        { v: 3, label: "Shelf C" },
+        { v: 4, label: "Shelf D" },
+        { v: 5, label: "Shelf E" },
+        { v: 6, label: "Shelf F (Bottom)" }
+      ];
+      shelves.forEach(s => {
+        const opt = document.createElement("option");
+        opt.value = s.v;
+        opt.textContent = s.label;
+        shelfEl.appendChild(opt);
+      });
+    }
+
+    shelfEl.value = String(selectedShelfValue || 1);
+  }
+
   static openAddComponentModal(defaultRackId = 1, defaultShelfId = 1, defaultBoxId = "") {
     if (!StorageService.isRole("ADMIN")) {
       alert("Access Restricted: Only Lab Administrators can add new components.");
@@ -988,13 +1056,19 @@ class ModalManager {
     const form = document.getElementById("component-form");
     if (form) form.reset();
 
+    const rId = Number(defaultRackId);
+    let defRoom = "Room 101 - Prototyping Hall";
+    if (rId === 2) defRoom = "Room 102 - Storage Bay";
+    else if (rId === 3) defRoom = "Room 101 - Prototyping Hall (Hardware Station)";
+
     const setVal = (id, v) => { const el = document.getElementById(id); if (el) el.value = v; };
     setVal("form-comp-id", "");
     setVal("form-lab-name", "Main Robotics & Embedded Systems Lab");
-    setVal("form-room-name", (Number(defaultRackId) === 2 ? "Room 102 - Storage Bay" : "Room 101 - Prototyping Hall"));
+    setVal("form-room-name", defRoom);
     setVal("form-rack", defaultRackId || 1);
+    this.updateShelfDropdown("form-rack", "form-shelf", defaultShelfId || 1);
     setVal("form-shelf", defaultShelfId || 1);
-    setVal("form-box", defaultBoxId || "BOX A-001");
+    setVal("form-box", defaultBoxId || (rId === 3 ? "BOX S-001" : "BOX A-001"));
     setVal("form-stack-layer", "Layer 1 (Top Compartment Bin #A)");
     setVal("form-category", "Microcontrollers & Dev Boards");
     setVal("form-state", "AVAILABLE");
@@ -1145,10 +1219,11 @@ class ModalManager {
 
     // 6-TIER STORAGE HIERARCHY BREADCRUMB PATH
     const lab = c.labName || "Main Robotics & Embedded Systems Lab";
-    const room = c.roomName || (c.rackId === 1 ? "Room 101 - Prototyping Hall" : "Room 102 - Storage Bay");
+    const room = c.roomName || (c.rackId === 1 ? "Room 101 - Prototyping Hall" : (c.rackId === 2 ? "Room 102 - Storage Bay" : "Room 101 - Prototyping Hall (Hardware Station)"));
     const stack = c.stackLayer || "Layer 1 (Top Tray Bin #A)";
+    const locPath = (typeof StorageService !== "undefined" && StorageService.formatRackShelf) ? StorageService.formatRackShelf(c.rackId, c.shelfId) : `Rack ${c.rackId} › Shelf ${String.fromCharCode(64 + Number(c.shelfId))}`;
 
-    setTxt("insp-location-path", `${lab} › ${room} › Rack ${c.rackId} › Shelf ${String.fromCharCode(64 + Number(c.shelfId))} › ${c.boxId} › ${stack}`);
+    setTxt("insp-location-path", `${lab} › ${room} › ${locPath} › ${c.boxId} › ${stack}`);
 
     setTxt("insp-purpose", c.purpose || "No purpose description available.");
     setTxt("insp-specs", c.specifications || "No technical specs available.");
@@ -1401,6 +1476,7 @@ class ModalManager {
     setVal("form-lab-name", c.labName || "Main Robotics & Embedded Systems Lab");
     setVal("form-room-name", c.roomName || "Room 101 - Prototyping Hall");
     setVal("form-rack", c.rackId);
+    this.updateShelfDropdown("form-rack", "form-shelf", c.shelfId);
     setVal("form-shelf", c.shelfId);
     setVal("form-box", c.boxId);
     setVal("form-stack-layer", c.stackLayer || "Layer 1 (Top Compartment)");
@@ -3483,7 +3559,8 @@ class ModalManager {
 
     try {
       StorageService.renameOrMoveBox(cleanOldId, newBoxIdInput, newRackId, newShelfId);
-      alert(`Success! Physical box updated to '${newBoxIdInput.trim().toUpperCase()}' (Rack ${newRackId}, Shelf ${String.fromCharCode(64 + newShelfId)}). All stored component IDs and location paths updated!`);
+      const locDesc = (typeof StorageService !== "undefined" && StorageService.formatRackShelf) ? StorageService.formatRackShelf(newRackId, newShelfId) : `Rack ${newRackId}, Shelf ${String.fromCharCode(64 + newShelfId)}`;
+      alert(`Success! Physical box updated to '${newBoxIdInput.trim().toUpperCase()}' (${locDesc}). All stored component IDs and location paths updated!`);
       this.renderBoxList();
 
       if (this.callbacks.onInventoryChanged) {
@@ -3527,7 +3604,7 @@ class ModalManager {
         <div class="box-info" style="flex:1; margin-right:12px;">
           <div style="display:flex; align-items:center; gap:8px;">
             <span class="box-badge mono" style="font-weight:800; color:var(--primary); font-size:0.95rem;">Box ${box.id}</span>
-            <span class="box-path text-muted" style="font-size:0.8rem;">Location Rack ${box.rackId} > Shelf ${String.fromCharCode(64 + Number(box.shelfId))}</span>
+            <span class="box-path text-muted" style="font-size:0.8rem;">Location ${(typeof StorageService !== "undefined" && StorageService.formatRackShelf) ? StorageService.formatRackShelf(box.rackId, box.shelfId) : `Rack ${box.rackId} > Shelf ${String.fromCharCode(64 + Number(box.shelfId))}`}</span>
             <span class="badge" style="background:var(--primary); color:#0f172a; font-weight:700; font-size:0.7rem; margin-left:auto;">${boxComponents.length} Stored Component${boxComponents.length === 1 ? '' : 's'}</span>
           </div>
           <div style="margin-top:6px; display:flex; flex-direction:column; gap:4px;">
@@ -3663,7 +3740,8 @@ class ModalManager {
 
     const rackId = components[0] ? components[0].rackId : (box ? box.rackId : 1);
     const shelfId = components[0] ? components[0].shelfId : (box ? box.shelfId : 1);
-    const shelfChar = String.fromCharCode(64 + Number(shelfId));
+    const shelfChar = (typeof StorageService !== "undefined" && StorageService.getShelfName) ? StorageService.getShelfName(rackId, shelfId) : String.fromCharCode(64 + Number(shelfId));
+    const locDisplay = (typeof StorageService !== "undefined" && StorageService.formatRackShelf) ? StorageService.formatRackShelf(rackId, shelfId) : `Rack ${rackId} > Shelf ${shelfChar}`;
 
     const baseUrl = ModalManager.getPublicLabBaseUrl();
     const mainCompId = components[0] ? components[0].id : cleanBoxId;
@@ -3688,7 +3766,7 @@ class ModalManager {
         <div style="background:var(--bg-dark); padding:14px; border-radius:10px; border:1px solid var(--border-color); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
           <div>
             <div style="font-size:0.95rem; font-weight:700; color:var(--primary);">
-              Location Rack ${rackId} > Shelf ${shelfChar} (Shelf ${shelfId}) > Box ${cleanBoxId}
+              Location ${locDisplay} > Box ${cleanBoxId}
             </div>
             <div style="font-size:0.8rem; color:var(--text-muted); margin-top:2px;">
               Main Robotics & Embedded Systems Lab • Room 101 • <strong style="color:var(--text-main);">${typeCount} Component${typeCount === 1 ? '' : 's'} Stored</strong>
@@ -3876,7 +3954,8 @@ class ModalManager {
     const mainCompId = components[0] ? components[0].id : cleanBoxId;
     const rackId = components[0] ? components[0].rackId : (box ? box.rackId : 1);
     const shelfId = components[0] ? components[0].shelfId : (box ? box.shelfId : 1);
-    const shelfChar = String.fromCharCode(64 + Number(shelfId));
+    const shelfChar = (typeof StorageService !== "undefined" && StorageService.getShelfName) ? StorageService.getShelfName(rackId, shelfId) : String.fromCharCode(64 + Number(shelfId));
+    const locTag = (typeof StorageService !== "undefined" && StorageService.formatRackShelf) ? StorageService.formatRackShelf(rackId, shelfId) : `Rack ${rackId} Shelf ${shelfChar}`;
 
     const targetUrl = encodedQrUrl ? decodeURIComponent(encodedQrUrl) : `${baseUrl}/?box=${encodeURIComponent(cleanBoxId)}&rack=${rackId}&shelf=${shelfId}`;
     const qrImg = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(targetUrl)}`;
@@ -3903,7 +3982,7 @@ class ModalManager {
             <div class="comp-name-container">
               ${compNamesHtml}
             </div>
-            <div class="box-tag">Box ${cleanBoxId} • Rack ${rackId} Shelf ${shelfChar}</div>
+            <div class="box-tag">Box ${cleanBoxId} • ${locTag}</div>
             <img src="${qrImg}" alt="Box ${cleanBoxId} QR Code" />
           </div>
           <script>
@@ -3928,7 +4007,8 @@ class ModalManager {
     const qrTargetUrl = `${baseUrl}/?comp=${encodeURIComponent(c.id)}&box=${encodeURIComponent(c.boxId || "")}&rack=${c.rackId || 1}&shelf=${c.shelfId || 1}`;
     const qrImg = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(qrTargetUrl)}`;
 
-    const shelfChar = String.fromCharCode(64 + Number(c.shelfId || 1));
+    const shelfChar = (typeof StorageService !== "undefined" && StorageService.getShelfName) ? StorageService.getShelfName(c.rackId || 1, c.shelfId || 1) : String.fromCharCode(64 + Number(c.shelfId || 1));
+    const locTag = (typeof StorageService !== "undefined" && StorageService.formatRackShelf) ? StorageService.formatRackShelf(c.rackId || 1, c.shelfId || 1) : `Rack ${c.rackId} Shelf ${shelfChar}`;
 
     const printWin = window.open("", "_blank", "width=450,height=570");
     printWin.document.write(`
@@ -3946,7 +4026,7 @@ class ModalManager {
         <body>
           <div class="label-box">
             <div class="comp-name">${c.name}</div>
-            <div class="box-tag">Box ${c.boxId} • Rack ${c.rackId} Shelf ${shelfChar}</div>
+            <div class="box-tag">Box ${c.boxId} • ${locTag}</div>
             <img src="${qrImg}" alt="QR Code" />
           </div>
           <script>
@@ -4166,6 +4246,7 @@ class ModalManager {
     if (input === null || input === undefined) return 1;
     if (typeof input === "number") return input;
     const s = String(input).trim().toUpperCase();
+    if (s === "SCREWS" || s === "SCREW") return 1;
     if (/^[A-Z]$/.test(s)) return s.charCodeAt(0) - 64;
     const n = parseInt(s, 10);
     return isNaN(n) ? 1 : n;
@@ -4178,7 +4259,7 @@ class ModalManager {
     }
     const targetRack = parseInt(rackIdInput) || 1;
     const targetShelf = this.parseShelfId(shelfIdInput);
-    const shelfChar = String.fromCharCode(64 + targetShelf);
+    const shelfChar = (typeof StorageService !== "undefined" && StorageService.getShelfName) ? StorageService.getShelfName(targetRack, targetShelf) : String.fromCharCode(64 + targetShelf);
 
     const allComponents = StorageService.getComponents();
     const boxes = StorageService.getBoxes();
