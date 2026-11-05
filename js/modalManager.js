@@ -4855,6 +4855,7 @@ window.openComponentEditDialog = function (compId) {
     "Switches & Controls",
     "Wireless & Comms",
     "Hardware & Tools",
+    "Screws",
     "Actuators & Motors",
     "Displays & Indicators",
     "IC & Semiconductors",

@@ -135,7 +135,10 @@ class ComponentsView {
     // 9. Passive Components (Resistors, Capacitors, Diodes)
     if (n.includes("resistor") || n.includes("capacitor") || n.includes("diode") || n.includes("1n4007") || n.includes("zener") || n.includes("inductor") || n.includes("potentiometer") || c.includes("passive")) return "https://images.unsplash.com/photo-1608564697071-ddf911d81370?w=500&auto=format&fit=crop&q=80";
 
-    // 10. Breadboards, Cabling, Hardware & Tools
+    // 10. Screws & Fasteners
+    if (c.includes("screw") || n.includes("screw") || n.includes("fastener") || n.includes("bolt") || n.includes("nut")) return "https://images.unsplash.com/photo-1586864387967-d02ef85d93e8?w=500&auto=format&fit=crop&q=80";
+
+    // 11. Breadboards, Cabling, Hardware & Tools
     if (n.includes("breadboard") || n.includes("wire") || n.includes("cable") || n.includes("jumper") || n.includes("connector") || n.includes("header") || n.includes("barrel jack") || n.includes("screw terminal") || n.includes("tool") || n.includes("soldering") || n.includes("multimeter") || c.includes("connector") || c.includes("hardware") || c.includes("cabling")) return "https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=500&auto=format&fit=crop&q=80";
 
     if (defaultUrl) return defaultUrl;
