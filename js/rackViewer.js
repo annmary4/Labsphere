@@ -203,18 +203,6 @@ class RackViewer {
           </div>
         `;
       }
-                  <i data-lucide="printer"></i> Print Shelf QR
-                </button>` : ''}
-                ${isShelfSelected ? '<span class="active-dot" title="Active Selected Shelf"></span>' : ''}
-              </div>
-            </div>
-            <div class="boxes-grid shelf-accordion-content" style="display:${isShelfExpanded ? 'flex' : 'none'}; flex-wrap:wrap; margin-top:8px;">
-              ${boxesPillsHtml || '<span class="text-muted" style="font-size:0.75rem; font-style:italic; padding:4px 0;">No active components on this shelf.</span>'}
-              ${shelfCompsHtml}
-            </div>
-          </div>
-        `;
-      }
 
       const totalRackTypes = activeComps.filter(c => Number(c.rackId) === rackIdNum).length;
 
